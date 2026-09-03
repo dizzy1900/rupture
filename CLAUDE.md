@@ -125,7 +125,7 @@ below for Phase-2 verbs are the planned ones; the implementing module is authori
 | `rupture forecast fit --model etas --region <r> --cutoff <utc>` | fit the baseline on events with `origin_time < cutoff`; persist the `FitResult` + diagnostics to `baselines/etas/<region>/` | forecast-engineer |
 | `rupture forecast issue --model etas --region <r> --horizon 30d --issue <utc>` | issue a `ForecastGrid` at `issue_time` from the persisted fit | forecast-engineer |
 | `rupture evaluate run --forecast <id>` | N/M/S/L(CL) tests + plot bundle → `reports/eval/<forecast_id>/` | forecast-engineer |
-| `rupture evaluate schedule --region <r> --model etas --from <utc> --to <utc> --step 30d` | rolling pseudo-prospective issue-and-evaluate; aggregates to `reports/eval/schedule-<region>.json` | forecast-engineer |
+| `rupture evaluate schedule --region <r> --model etas --from <utc> --to <utc> --step 30d` | rolling pseudo-prospective issue-and-evaluate; aggregates to `reports/eval/schedule-<region>-<model>.json` | forecast-engineer |
 | `rupture hazard demo` / `rupture hazard classical` | run the OpenQuake bundled demo / a classical PSHA job in the pinned image; skip with reason if Docker is absent | hazard-engineer |
 | `rupture schema export [--out DIR] [--check]` | write (or drift-check) JSON Schema for every domain contract into `contracts/` | architect |
 | `rupture validate <gate>` | run one gate (`language`, `schema`, `catalog`, `etas`, `eval`, `hazard`); `rupture validate gate <name>` is the same by argument | gate owner |

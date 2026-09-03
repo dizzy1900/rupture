@@ -111,7 +111,7 @@ sequenceDiagram
   Eval->>Eval: target = [issue_time, issue_time+horizon), earthquakes only, frozen hash
   Eval->>Eval: N, M, S, L, CL (and T/W vs other models)
   Eval->>Arch: EvaluationResult + plot bundle → reports/eval/<forecast_id>/
-  Arch->>Arch: schedule aggregate reports/eval/schedule-<region>.json
+  Arch->>Arch: schedule aggregate reports/eval/schedule-<region>-<model>.json
 ```
 
 Cadence:

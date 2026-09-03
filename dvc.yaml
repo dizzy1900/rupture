@@ -44,4 +44,4 @@ stages:
         - baselines/etas/${item}
       outs:
         - data/forecasts/${item}
-        - reports/eval/schedule-${item}.json
+        - reports/eval/schedule-${item}-etas.json

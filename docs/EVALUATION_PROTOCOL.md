@@ -158,7 +158,7 @@ There is no other route to promotion. The baseline's own pass rates are publishe
 - `rupture evaluate run --forecast <id>` writes one `EvaluationResult` record per test (JSON,
   schema `contracts/evaluation-result.v0.json`) and a plot bundle (pycsep consistency and
   comparison plots as PNG) under `reports/eval/<forecast_id>/`, together with `target.parquet`.
-- `rupture evaluate schedule ...` writes `reports/eval/schedule-<region>.json`: per window, the
+- `rupture evaluate schedule ...` writes `reports/eval/schedule-<region>-<model>.json`: per window, the
   issue time, horizon, target count, excluded non-earthquake count, `parameter_snapshot_hash`,
   each test's statistic/quantile/pass, and the `n_only` flag; plus aggregates: pass rate per test
   with denominator, refit log, catalogue build hash, pycsep version, seed.
