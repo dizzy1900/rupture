@@ -35,15 +35,20 @@ ClassicalPSHAJob ──job_builder──▶ work_dir/job.ini + copied inputs
 - The adapter talks to Docker only through the `docker` CLI (`subprocess`), never through the
   Docker SDK, and never imports `openquake.*`.
 - Run and export happen inside **one** container because `--rm` discards the engine's datastore.
-- `HazardCurveSet.job_hash` = sha256 over `job.ini` and every staged input file (name + bytes,
-  sorted); `provenance.sha256` = sha256 over the exported CSV text; `provenance.source_url` =
+- `HazardCurveSet.job_hash` = sha256 over an explicit list — `job.ini`, the inputs
+  `referenced_inputs()` names and the source-model files the logic tree names (for the demo: the
+  file list the copy step recorded in `.demo_files`) — as relative name + bytes, sorted. Nothing
+  else in the work directory is hashed, so re-running the same job in the same directory gives the
+  same hash (unit-tested); `provenance.sha256` = sha256 over the exported CSV text; `provenance.source_url` =
   `docker://openquake/engine@sha256:<digest>` (the local image's repo digest);
   `provenance.licence` = `AGPL-3.0 (engine); inputs per source model`; `engine_version` is what
   the CSV header's `generated_by` reports (so a fixture produced by 3.20 says 3.20).
 - `available()` → `(False, reason)` when `docker` is not on `PATH` or `docker info` fails. Every
   entry point prints that reason and does not pretend to run:
   `make validate-hazard` → `SKIPPED` (non-blocking), `rupture hazard demo|classical|check` →
-  exit 3, the integration test → `pytest.skip`.
+  exit 3, the integration test → `pytest.skip`. With `RUPTURE_HAZARD_REQUIRE=1` (set only in the
+  CI job `hazard-integration`) the gate reports `FAILED` and the integration fixture
+  `pytest.fail`s instead, so that job can never pass without a container having run.
 
 ### `job.ini` keys written
 

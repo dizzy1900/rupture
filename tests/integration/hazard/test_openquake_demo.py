@@ -16,6 +16,7 @@ from rupture.adapters.hazard import DEFAULT_DEMO, OpenQuakeDocker
 from rupture.adapters.hazard.result_parser import check_curve_set, parse_job_ini
 from rupture.domain import HazardCurveSet, contracts
 from rupture.pipelines import hazard as pipeline
+from rupture.validation.hazard import REQUIRE_ENV, required
 
 pytestmark = pytest.mark.integration
 
@@ -25,6 +26,8 @@ def engine() -> OpenQuakeDocker:
     eng = OpenQuakeDocker(run_timeout_s=2400.0)
     ok, reason = eng.available()
     if not ok:
+        if required():
+            pytest.fail(f"Docker not available but {REQUIRE_ENV} is set: {reason}")
         pytest.skip(f"Docker not available: {reason}")
     eng.ensure_image()
     return eng

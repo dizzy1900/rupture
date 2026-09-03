@@ -45,6 +45,7 @@ DEFAULT_DEMO = "hazard/AreaSourceClassicalPSHA"
 CONTAINER_WORK = "/work"
 LOG_NAME = "oq.log"
 DEMO_SOURCE_MARKER = ".demo_source"
+DEMO_FILES_MARKER = ".demo_files"
 ADAPTER_VERSION = __version__
 LICENCE = "AGPL-3.0 (engine); inputs per source model"
 
@@ -145,8 +146,8 @@ class OpenQuakeDocker:
     # ------------------------------------------------------------------ port methods
     def run_classical(self, job: ClassicalPSHAJob, work_dir: Path) -> HazardCurveSet:
         """Render, copy inputs, run ``oq engine`` + ``oq export hcurves``, parse mean curves."""
-        self._stage(job, work_dir, job_builder.classical_job_ini(job))
-        job_hash = hash_inputs(work_dir)
+        staged = self._stage(job, work_dir, job_builder.classical_job_ini(job))
+        job_hash = hash_inputs(work_dir, staged)
         self._run_job_dir(work_dir, export_keys=("hcurves",))
         return self._collect_curves(
             work_dir,
@@ -172,13 +173,13 @@ class OpenQuakeDocker:
             msg = f"demo must look like 'hazard/<Name>', got {demo!r}"
             raise ValueError(msg)
         work_dir.mkdir(parents=True, exist_ok=True)
-        _make_shared(work_dir)
+        _make_shared(work_dir, work_dir / "oq-copy-demo.log")
         self._copy_demo(work_dir, demo)
         job_ini = work_dir / job_builder.JOB_INI
         if not job_ini.is_file():
             msg = f"demo {demo!r} was not copied out of {self.image}; see {work_dir / LOG_NAME}"
             raise OpenQuakeError(msg)
-        job_hash = hash_inputs(work_dir)
+        job_hash = hash_inputs(work_dir, _demo_files(work_dir))
         params = result_parser.parse_job_ini(job_ini.read_text(encoding="utf-8"))
         smlt = params.get("source_model_logic_tree_file", "source_model_logic_tree.xml")
         gslt = params.get("gsim_logic_tree_file") or params.get("gsim")
@@ -196,6 +197,7 @@ class OpenQuakeDocker:
         demos_dir = os.environ.get(DEMOS_DIR_ENV) or DEFAULT_DEMOS_DIR
         expected = shlex.quote(f"{demos_dir.rstrip('/')}/{demo}")
         pattern = shlex.quote(f"*/demos/{demo}/job.ini")
+        q_demo = shlex.quote(demo)
         script = (
             "set -e; umask 000; "
             f"d={expected}; "
@@ -203,27 +205,33 @@ class OpenQuakeDocker:
             f'f=$(find / -path {pattern} -not -path "/proc/*" 2>/dev/null | head -n 1); '
             'd=$(dirname "${f:-/nonexistent/x}"); '
             "fi; "
-            f'[ -f "$d/job.ini" ] || {{ echo "demo {demo} not found in image" >&2; exit 3; }}; '
+            f'[ -f "$d/job.ini" ] || {{ echo "demo {q_demo} not found in image" >&2; exit 3; }}; '
             f'cp -R "$d"/. {CONTAINER_WORK}/; '
-            f'echo "$d" > {CONTAINER_WORK}/{DEMO_SOURCE_MARKER}'
+            f'echo "$d" > {CONTAINER_WORK}/{DEMO_SOURCE_MARKER}; '
+            f'(cd "$d" && find . -type f | sed "s|^\\./||" | sort) '
+            f"> {CONTAINER_WORK}/{DEMO_FILES_MARKER}"
         )
         self._docker_bash(work_dir, script, log_name="oq-copy-demo.log", timeout_s=600.0)
 
     # ------------------------------------------------------------------ internals
     def _stage(
         self, job: ClassicalPSHAJob | ScenarioGroundMotionJob, work_dir: Path, ini_text: str
-    ) -> None:
+    ) -> list[str]:
+        """Write ``job.ini`` and copy the inputs; returns the staged file names (hash list)."""
         work_dir.mkdir(parents=True, exist_ok=True)
         inputs = job_builder.referenced_inputs(job)
+        staged = [job_builder.JOB_INI]
         for name, src in inputs.items():
             if not src.is_file():
                 msg = f"input file for {name!r} does not exist: {src}"
                 raise FileNotFoundError(msg)
             shutil.copyfile(src, work_dir / name)
+            staged.append(name)
         if isinstance(job, ClassicalPSHAJob):
-            _copy_source_models(job.source_model_logic_tree, work_dir)
+            staged.extend(_copy_source_models(job.source_model_logic_tree, work_dir))
         (work_dir / job_builder.JOB_INI).write_text(ini_text, encoding="utf-8")
-        _make_shared(work_dir)
+        _make_shared(work_dir, work_dir / LOG_NAME)
+        return staged
 
     def _run_job_dir(self, work_dir: Path, *, export_keys: tuple[str, ...]) -> Path:
         out_dir = work_dir / job_builder.EXPORT_SUBDIR
@@ -338,26 +346,38 @@ class OpenQuakeDocker:
 
 
 # ---------------------------------------------------------------------- helpers
-def hash_inputs(work_dir: Path, *, exclude: Iterable[str] = ()) -> str:
-    """sha256 over ``job.ini`` and every other input file in ``work_dir`` (name + bytes, sorted).
+def hash_inputs(work_dir: Path, names: Iterable[str]) -> str:
+    """sha256 over an explicit list of input files (relative name + bytes, sorted, de-duplicated).
 
-    Skips the export directory, logs, hidden files and anything in ``exclude``.
+    Only the files that define the calculation are hashed — ``job.ini``, the referenced inputs
+    and the source models the logic tree names — never anything else that happens to sit in the
+    work directory (exports, logs, a previous run's ``hazard-curve-set.json``), so re-running the
+    same job in the same directory yields the same hash.
     """
-    skip = {LOG_NAME, "oq-copy-demo.log", *exclude}
     h = hashlib.sha256()
-    for path in sorted(p for p in work_dir.rglob("*") if p.is_file()):
-        rel = path.relative_to(work_dir)
-        if (
-            rel.parts[0] == job_builder.EXPORT_SUBDIR
-            or rel.name in skip
-            or rel.name.startswith(".")
-        ):
-            continue
-        h.update(rel.as_posix().encode("utf-8") + b"\0" + path.read_bytes() + b"\0")
+    for rel in sorted(set(names)):
+        path = work_dir / rel
+        if not path.is_file():
+            msg = f"input to hash is missing: {path}"
+            raise FileNotFoundError(msg)
+        h.update(rel.encode("utf-8") + b"\0" + path.read_bytes() + b"\0")
     return h.hexdigest()
 
 
-def _copy_source_models(logic_tree: Path, work_dir: Path) -> None:
+def _demo_files(work_dir: Path) -> list[str]:
+    """The file list the demo copy step recorded (relative names, one per line)."""
+    marker = work_dir / DEMO_FILES_MARKER
+    if not marker.is_file():
+        msg = f"demo copy step did not record its file list ({marker})"
+        raise OpenQuakeError(msg)
+    names = [ln.strip() for ln in marker.read_text(encoding="utf-8").splitlines() if ln.strip()]
+    if job_builder.JOB_INI not in names:
+        msg = f"demo file list has no {job_builder.JOB_INI}: {names}"
+        raise OpenQuakeError(msg)
+    return names
+
+
+def _copy_source_models(logic_tree: Path, work_dir: Path) -> list[str]:
     """Copy the source-model files a logic tree names, keeping their relative names."""
     names = job_builder.referenced_source_models(logic_tree.read_text(encoding="utf-8"))
     for name in names:
@@ -368,16 +388,25 @@ def _copy_source_models(logic_tree: Path, work_dir: Path) -> None:
         dst = work_dir / name
         dst.parent.mkdir(parents=True, exist_ok=True)
         shutil.copyfile(src, dst)
+    return names
 
 
-def _make_shared(work_dir: Path) -> None:
-    """Let the container's uid 1000 write into a directory owned by the host user."""
-    try:
-        work_dir.chmod(0o777)
-        for p in work_dir.rglob("*"):
+def _make_shared(work_dir: Path, log_path: Path) -> None:
+    """Let the container's uid 1000 write into a directory owned by the host user.
+
+    A failing ``chmod`` is not fatal (the run may still work, e.g. under Docker Desktop's uid
+    mapping) but it is recorded in the run log so a later permission error can be attributed.
+    """
+    failures: list[str] = []
+    for p in (work_dir, *work_dir.rglob("*")):
+        try:
             p.chmod(0o777 if p.is_dir() else 0o666)
-    except OSError:  # pragma: no cover - platform specific
-        pass
+        except OSError as exc:  # pragma: no cover - platform specific
+            failures.append(f"{p}: {exc}")
+    if failures:  # pragma: no cover - platform specific
+        with log_path.open("a", encoding="utf-8") as fh:
+            fh.write("chmod for the container user failed (run may hit permission errors):\n")
+            fh.writelines(f"  {f}\n" for f in failures)
 
 
 def _append_log(path: Path, argv: list[str], stdout: Any, stderr: Any) -> None:

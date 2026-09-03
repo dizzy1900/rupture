@@ -1,8 +1,4 @@
-"""Every infra/jobs/*.yaml validates against infra/jobs/schema.json and matches the CLI verbs.
-
-``yaml`` (pyyaml) is declared in pyproject on main; this worktree may only have it transitively,
-so the module is imported with ``importorskip`` and the tests activate wherever it is present.
-"""
+"""Every infra/jobs/*.yaml validates against infra/jobs/schema.json and matches the CLI verbs."""
 
 from __future__ import annotations
 
@@ -12,11 +8,10 @@ from pathlib import Path
 
 import jsonschema
 import pytest
+import yaml
 
 from rupture.pipelines.hazard import load_classical_job
 from tests.unit.hazard.conftest import REPO_ROOT
-
-yaml = pytest.importorskip("yaml")
 
 JOBS = REPO_ROOT / "infra" / "jobs"
 MANIFESTS = sorted(JOBS.glob("*.yaml"))

@@ -126,7 +126,8 @@ def test_run_classical_stages_inputs_builds_docker_argv_and_parses(
     assert curve_set.gsim_logic_tree_id == "gsim_logic_tree"
     assert curve_set.realisation == "mean"
     assert len(curve_set.curves) == 8
-    assert curve_set.job_hash == oqd.hash_inputs(work), "hash covers job.ini + inputs, not outputs"
+    staged = ["job.ini", "source_model_logic_tree.xml", "gsim_logic_tree.xml", "source_model.xml"]
+    assert curve_set.job_hash == oqd.hash_inputs(work, staged), "job.ini + inputs only"
     assert curve_set.provenance.source == "openquake.engine"
     assert curve_set.provenance.source_url is not None
     assert curve_set.provenance.source_url.startswith("docker://openquake/engine@sha256:")
@@ -192,17 +193,6 @@ def test_gate_runs_demo_through_fake_docker_and_fails_on_time_mismatch(
     assert (tmp_path / "gate-work" / "job.ini").is_file(), "work dir kept for artifact upload"
 
 
-def test_hash_inputs_ignores_outputs_and_logs(tmp_path: Path) -> None:
-    (tmp_path / "job.ini").write_text("[general]\n")
-    before = oqd.hash_inputs(tmp_path)
-    (tmp_path / "out").mkdir()
-    (tmp_path / "out" / "hazard_curve-mean-PGA_1.csv").write_text("x")
-    (tmp_path / "oq.log").write_text("y")
-    assert oqd.hash_inputs(tmp_path) == before
-    (tmp_path / "source_model.xml").write_text("<nrml/>")
-    assert oqd.hash_inputs(tmp_path) != before
-
-
 def test_load_classical_job_resolves_relative_paths(tmp_path: Path) -> None:
     job_file = tmp_path / "job.json"
     job_file.write_text(
@@ -220,3 +210,60 @@ def test_load_classical_job_resolves_relative_paths(tmp_path: Path) -> None:
     assert job.source_model_logic_tree == tmp_path / "in" / "smlt.xml"
     assert job.gsim_logic_tree == Path("/abs/gslt.xml")
     assert job.sites_csv == tmp_path / "in" / "sites.csv"
+
+
+def test_job_hash_is_reproducible_when_rerun_in_the_same_work_dir(
+    tmp_path: Path, fake_docker: FakeDocker
+) -> None:
+    """A previous run's exports, log and hazard-curve-set.json must not leak into the hash."""
+    engine = OpenQuakeDocker(runner=fake_docker, which=lambda _: "/usr/bin/docker")
+    job = _job(tmp_path)
+    work = tmp_path / "work"
+    first = pipeline.run_classical(engine, job, work)
+    assert (work / pipeline.CURVE_SET_FILE).is_file()
+    assert (work / "oq.log").is_file()
+    second = pipeline.run_classical(engine, job, work)
+    assert first.job_hash == second.job_hash
+    fresh = pipeline.run_classical(engine, job, tmp_path / "fresh")
+    assert fresh.job_hash == first.job_hash, "the hash depends on job.ini + inputs only"
+
+
+def test_demo_job_hash_is_reproducible_when_rerun_in_the_same_work_dir(
+    tmp_path: Path, fake_docker: FakeDocker
+) -> None:
+    engine = OpenQuakeDocker(runner=fake_docker, which=lambda _: "/usr/bin/docker")
+    work = tmp_path / "demo"
+    first = pipeline.run_demo(engine, work, oqd.DEFAULT_DEMO)
+    second = pipeline.run_demo(engine, work, oqd.DEFAULT_DEMO)
+    assert first.job_hash == second.job_hash
+    assert (work / oqd.DEMO_FILES_MARKER).is_file()
+
+
+def test_hash_inputs_uses_only_the_named_files(tmp_path: Path) -> None:
+    (tmp_path / "job.ini").write_text("[general]\n")
+    (tmp_path / "source_model.xml").write_text("<nrml/>")
+    names = ["job.ini", "source_model.xml"]
+    before = oqd.hash_inputs(tmp_path, names)
+    (tmp_path / "hazard-curve-set.json").write_text("{}")
+    (tmp_path / "oq.log").write_text("y")
+    (tmp_path / "out").mkdir()
+    (tmp_path / "out" / "hazard_curve-mean-PGA_1.csv").write_text("x")
+    assert oqd.hash_inputs(tmp_path, names) == before
+    assert oqd.hash_inputs(tmp_path, [*names, "source_model.xml"]) == before, "de-duplicated"
+    (tmp_path / "source_model.xml").write_text("<nrml>changed</nrml>")
+    assert oqd.hash_inputs(tmp_path, names) != before
+    with pytest.raises(FileNotFoundError, match="missing"):
+        oqd.hash_inputs(tmp_path, ["job.ini", "absent.xml"])
+
+
+def test_gate_fails_instead_of_skipping_when_a_run_is_required(
+    no_docker_on_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    monkeypatch.setenv(gate.REQUIRE_ENV, "1")
+    result = gate.run(REPO_ROOT)
+    assert result.status == GateStatus.FAILED
+    assert not result.ok
+    assert any("not found on PATH" in f for f in result.findings)
+    assert any(gate.REQUIRE_ENV in f for f in result.findings)
+    monkeypatch.delenv(gate.REQUIRE_ENV)
+    assert gate.run(REPO_ROOT).status == GateStatus.SKIPPED

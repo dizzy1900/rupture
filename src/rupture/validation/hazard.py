@@ -6,7 +6,8 @@ hazard curves and checks: at least one site, PoE in [0, 1], PoE non-increasing w
 ``investigation_time`` equal to the job's.
 
 Set ``RUPTURE_HAZARD_WORK_DIR`` to keep the work directory (CI uploads it on failure); otherwise
-a temporary directory is used and removed.
+a temporary directory is used and removed. Set ``RUPTURE_HAZARD_REQUIRE=1`` where a container run
+is mandatory (the CI job): a Docker-unavailable skip then becomes FAILED.
 """
 
 from __future__ import annotations
@@ -23,6 +24,8 @@ from rupture.validation.result import GateResult, GateStatus
 
 GATE = "validate-hazard"
 WORK_DIR_ENV = "RUPTURE_HAZARD_WORK_DIR"
+REQUIRE_ENV = "RUPTURE_HAZARD_REQUIRE"
+"""Set to ``1`` (CI job hazard-integration) to turn a Docker-unavailable skip into a failure."""
 CI_HINT = "CI job hazard-integration runs this demo"
 
 
@@ -30,11 +33,16 @@ def run(repo_root: Path, *, engine: OpenQuakeDocker | None = None) -> GateResult
     eng = engine or OpenQuakeDocker()
     ok, reason = eng.available()
     if not ok:
+        findings = [f"image pinned: {eng.image}", f"demo: {DEFAULT_DEMO}"]
+        if required():
+            findings.insert(0, f"Docker not available: {reason}")
+            findings.append(f"{REQUIRE_ENV} is set: a skip is not acceptable here")
+            return GateResult(name=GATE, status=GateStatus.FAILED, findings=findings)
         return GateResult(
             name=GATE,
             status=GateStatus.SKIPPED,
             reason=f"Docker not available: {reason}; {CI_HINT}",
-            findings=[f"image pinned: {eng.image}", f"demo: {DEFAULT_DEMO}"],
+            findings=findings,
         )
 
     keep = os.environ.get(WORK_DIR_ENV)
@@ -44,6 +52,11 @@ def run(repo_root: Path, *, engine: OpenQuakeDocker | None = None) -> GateResult
         return _run_in(eng, work_dir)
     with tempfile.TemporaryDirectory(prefix="rupture-hazard-") as tmp:
         return _run_in(eng, Path(tmp))
+
+
+def required() -> bool:
+    """True when the environment demands a real container run (``RUPTURE_HAZARD_REQUIRE=1``)."""
+    return os.environ.get(REQUIRE_ENV, "").strip().lower() in {"1", "true", "yes"}
 
 
 def _run_in(eng: OpenQuakeDocker, work_dir: Path) -> GateResult:

@@ -2,8 +2,8 @@
 #   docker compose -f infra/docker/compose.yml build
 #   docker compose -f infra/docker/compose.yml run --rm rupture hazard check
 #   docker compose -f infra/docker/compose.yml up -d openquake   # WebUI on http://127.0.0.1:8800
-# Not used by CI (the hazard-integration job calls `docker run` through the adapter) and not a
-# deployment target.
+# Not used by CI (the hazard-integration job calls `docker run` through the adapter), not a
+# deployment target, and NOT YET EXERCISED (no Docker on the development machine).
 
 services:
   rupture:
@@ -13,9 +13,12 @@ services:
       args:
         GIT_SHA: ${GIT_SHA:-dev}
     image: rupture:dev
-    # Mount the checkout over /app so edits are live; the venv stays the image's.
+    # Mount only the source, contracts and data so edits are live while the image's venv at
+    # /app/.venv stays visible (mounting the whole checkout over /app would hide it).
     volumes:
-      - ../..:/app
+      - ../../src:/app/src
+      - ../../contracts:/app/contracts
+      - ../../data:/app/data
     # `rupture hazard ...` is run from the host (uv run rupture hazard demo): the image carries
     # no docker CLI, so inside this container those verbs skip with a printed reason.
     env_file:
@@ -24,8 +27,7 @@ services:
     environment:
       RUPTURE_OPENQUAKE_IMAGE: ${RUPTURE_OPENQUAKE_IMAGE:-openquake/engine:3.26.2}
     working_dir: /app
-    entrypoint: ["rupture"]
-    command: ["--help"]
+    command: ["rupture", "--help"]
 
   openquake:
     image: openquake/engine:3.26.2

@@ -44,6 +44,8 @@ jobs:
     needs: offline
     env:
       RUPTURE_HAZARD_WORK_DIR: ${{ github.workspace }}/.hazard-work
+      # A skip is not acceptable in this job: the gate and the integration fixture FAIL instead.
+      RUPTURE_HAZARD_REQUIRE: "1"
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
@@ -53,6 +55,8 @@ jobs:
       - name: Pull the pinned OpenQuake image
         timeout-minutes: 10
         run: docker pull openquake/engine:3.26.2
+      - name: Docker must be usable here (exits 3 otherwise)
+        run: uv run rupture hazard check
       - name: validate-hazard (bundled demo through the adapter)
         timeout-minutes: 20
         run: make validate-hazard
