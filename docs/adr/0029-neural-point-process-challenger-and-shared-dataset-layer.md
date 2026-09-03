@@ -85,6 +85,25 @@ statistics)* as eight exactly-representable 32-bit chunks. Any retrain, any retu
 and any refitted standardiser changes `parameter_snapshot_hash`, so a schedule that quietly
 retrained between windows fails the existing check without that check being modified.
 
+### 3b. The fitted process is subcritical by construction
+
+The productivity law is parameterised by *(branching ratio, magnitude sensitivity)* rather than by
+`(k0, alpha)`: `alpha` is a sigmoid fraction of `beta` and the branching ratio is a sigmoid below a
+ceiling, with `k0` derived. Both constraints hold identically rather than by hope, and the
+diagnostics recompute the ratio from the published scalars so the constraint is checked.
+
+Unconstrained, maximum likelihood drove the model supercritical on every catalogue tried — 1.00 on
+a two-year California fixture, 0.96 on Nepal, 1.83 on Türkiye, where `alpha` had climbed to within
+nine percent of `beta`. A supercritical Hawkes process has cascades that never terminate and
+forecasts that are unstable rather than merely wrong. Every operational ETAS implementation
+constrains its parameters for this reason. The decision was taken on the *training-set* branching
+ratio, before any test window was scored, and it makes the model more conservative, never less.
+
+Recorded alongside it because it matters for how both models are read: the ETAS baseline's own
+`turkiye-eaf` fit has a branching ratio of **1.044** with `a > beta`, inside the package's own
+inversion bounds. Near-critical fits are a property of these catalogues and of maximum likelihood
+on them, not a defect peculiar to the challenger.
+
 ### 4. Forecasts are Monte Carlo continuations with an analytic background
 
 The branching representation is simulated exactly (Poisson offspring counts from the closed-form
@@ -117,8 +136,13 @@ table.
 
 - The gridded challenger inherits the leakage machinery rather than reimplementing it, and any
   future model that does reimplement it is visibly not using the shared layer.
-- The negative result this model is expected to produce is comparable to a published benchmark's,
-  because the conventions are the published ones and the departures are enumerated.
+- The negative result this model produces is comparable to a published benchmark's, because the
+  conventions are the published ones and the departures are enumerated. It is also the same
+  result: not promoted in either region run, losing on the spatial component, which is where
+  EarthquakeNPP finds every neural point process losing.
+- The likelihood is O(targets × sources) per epoch, so `california` (55 828 training events at
+  Mc 2.7) could not be fitted and the protocol's two-of-three-regions condition is unreachable
+  from this implementation. A sparse or windowed source set is the obvious fix and is not done.
 - The model cannot express aftershock anisotropy, finite-fault geometry, time-varying
   completeness, or magnitude dependence in the mark distribution. Those are real limitations of
   this architecture, not of neural point processes in general, and a reader should not generalise
