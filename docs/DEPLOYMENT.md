@@ -9,7 +9,7 @@ else. Decisions: ADR-0016 (image + manifests), ADR-0011 and ADR-0030 (OpenQuake 
 | Artifact | Purpose |
 |---|---|
 | `infra/docker/Dockerfile` (+ `Dockerfile.dockerignore`) | multi-stage build of the locked `uv` environment and the `rupture` CLI on `python:3.12-slim`; non-root user; OCI labels with the git sha |
-| `infra/docker/compose.yml` | local development: `rupture` (repo mounted over `/app`) next to `openquake/engine:3.26.2` (named volume `oqdata`, WebUI on 127.0.0.1:8800) |
+| `infra/docker/compose.yml` | local development: `rupture` (`src/`, `contracts/`, `data/` mounted into `/app`) next to `openquake/engine:3.26.2` (named volume `oqdata`, WebUI on 127.0.0.1:8800). **Unexercised**: never brought up (no Docker here) |
 | `infra/jobs/*.yaml` + `schema.json` + `README.md` | five portable job manifests with `aws:` annotations, validated in the unit suite |
 | `infra/jobs/examples/turkiye-eaf-classical.json` | example `ClassicalPSHAJob` input (not run) |
 
@@ -21,6 +21,8 @@ else. Decisions: ADR-0016 (image + manifests), ADR-0011 and ADR-0030 (OpenQuake 
 - No registry, no published image. The image has **not been built** on the development machine
   (no Docker); it was reviewed by hand and the CI does not build it yet.
 - No docker CLI inside the rupture image: `rupture hazard ...` requires a host with Docker.
+- No `dvc` inside the rupture image (dev-group dependency; the image is built `--no-dev`). DVC
+  transfer is the deployer's init step or sidecar, outside the job container, and is unverified.
 
 ## The image
 
@@ -29,17 +31,22 @@ docker build -f infra/docker/Dockerfile \
   --build-arg GIT_SHA=$(git rev-parse HEAD) \
   --build-arg BUILD_DATE=$(date -u +%Y-%m-%dT%H:%M:%SZ) \
   -t rupture:$(git rev-parse --short HEAD) .
-docker run --rm rupture:<sha> --help
-docker run --rm -v "$PWD/data:/app/data" rupture:<sha> region list
+docker run --rm rupture:<sha> rupture --help
+docker run --rm -v "$PWD/data:/app/data" rupture:<sha> rupture region list
 ```
+
+The image has **not been built anywhere yet** (no Docker on the development machine; the CI does
+not build it): the Dockerfile was reviewed by hand only.
 
 - Build context is the repository root; `infra/docker/Dockerfile.dockerignore` (read by BuildKit
   for this Dockerfile) keeps it to `pyproject.toml`, `uv.lock`, `README.md`, `LICENSE`, `src/`,
-  `contracts/`, `data/regions/`. `data/regions/` must exist (it is created in Phase 2A).
+  `contracts/`, `data/regions/`.
 - Stage 1 installs `uv` from `ghcr.io/astral-sh/uv:0.11.7`, syncs dependencies from the lock
   (`--locked --no-dev`, `git` present for the pinned ETAS dependency), then installs the project.
-  Stage 2 copies the venv, `src/`, `contracts/` and `data/regions/`; runs as `rupture`
-  (uid 10001); `ENTRYPOINT ["rupture"]`.
+  Stage 2 copies the venv, `src/`, `contracts/` and `data/regions/` (tracked via
+  `data/regions/.gitkeep` until Phase 2A populates it); runs as `rupture` (uid 10001). There is
+  **no `ENTRYPOINT`**: the container command is the full argv (`rupture ...`), exactly as the job
+  manifests' `command` lists it; the default `CMD` is `rupture --help`.
 - Inputs and outputs live on volumes (`/app/data`, `/app/baselines`, `/app/reports`) or come and
   go through DVC; the image contains no data and no credentials. Configuration is environment
   variables named in `.env.example` (`docs/CREDENTIALS.md`).
@@ -65,8 +72,12 @@ For each manifest:
    the S3 prefix of the DVC remote). `service: batch-fargate` jobs run on a Fargate compute
    environment; `batch-ec2` jobs (long wall clock, or `resources.docker_socket: true`) need an
    EC2-backed environment.
-3. Container command: `sh -c 'dvc pull <inputs> && <command> && dvc push <outputs>'`, with
+3. Container command: the manifest's `command` argv as-is (the image has no `ENTRYPOINT`), with
    `RUPTURE_DVC_REMOTE_URL` and the other `env` names injected from Secrets Manager / SSM.
+   **DVC transfer happens outside the job container**: the image carries no `dvc`, so the
+   deployer pulls `inputs` onto the job's volume before the container starts (an init container
+   or a step with `dvc` installed, or `aws s3 sync` against the same prefixes) and pushes
+   `outputs` after it exits. This wrapper is a description; none of it has been exercised.
 4. Schedule (where `schedule` is not null) with EventBridge Scheduler using the cron in UTC; the
    `issue-forecast` job is idempotent per `(region, issue time)` so retries are safe.
 
@@ -86,14 +97,18 @@ same cron. Nothing in the manifests is AWS-specific outside the `aws:` block.
 
 ```bash
 docker compose -f infra/docker/compose.yml build
-docker compose -f infra/docker/compose.yml run --rm rupture --version
+docker compose -f infra/docker/compose.yml run --rm rupture rupture --version
 docker compose -f infra/docker/compose.yml up -d openquake      # WebUI http://127.0.0.1:8800
 uv run rupture hazard demo                                       # from the host, uses docker run
 ```
 
+The compose file mounts only `src/`, `contracts/` and `data/` (mounting the whole checkout over
+`/app` would hide the image's venv at `/app/.venv`). It has not been brought up anywhere yet.
+
 ## CI
 
 `.github/workflows/ci.yml`: the `offline` job on every push and pull request; `hazard-integration`
-(pull the pinned engine image, `make validate-hazard`, `pytest tests/integration/hazard
--m integration`, upload the work directory on failure) on manual dispatch and on pushes to
-`main`. Building the rupture image in CI is not wired yet.
+(pull the pinned engine image, `rupture hazard check`, `make validate-hazard`, `pytest
+tests/integration/hazard -m integration`, upload the work directory on failure) on manual dispatch
+and on pushes to `main`. That job sets `RUPTURE_HAZARD_REQUIRE=1`, so a Docker-unavailable skip
+fails it instead of passing silently. Building the rupture image in CI is not wired yet.

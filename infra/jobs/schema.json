@@ -23,7 +23,7 @@
       "type": "array",
       "minItems": 2,
       "items": { "type": "string" },
-      "description": "argv passed to the image entrypoint-less container: the exact `rupture ...` invocation."
+      "description": "argv run as the container command (the image defines no ENTRYPOINT, only a default CMD): the exact `rupture ...` invocation, starting with the token `rupture`."
     },
     "inputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
     "outputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },

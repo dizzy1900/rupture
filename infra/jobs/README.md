@@ -20,8 +20,9 @@ by anything that runs locally: every `command` is the same `rupture ...` verb yo
 - `name`: equals the file stem.
 - `image`: `${RUPTURE_IMAGE}` — the image built from `infra/docker/Dockerfile` and pushed to a
   registry of your choice (the tag is the git sha; see `docs/DEPLOYMENT.md`).
-- `command`: argv, one token per list item. Angle-bracket tokens (`<r>`, `<from>`, `<t>`,
-  `<path>`) are placeholders the submitter fills in.
+- `command`: argv run as the container command, one token per list item, starting with the
+  token `rupture` (the image has no `ENTRYPOINT`, only a default `CMD`). Angle-bracket tokens
+  (`<r>`, `<from>`, `<t>`, `<path>`) are placeholders the submitter fills in.
 - `inputs` / `outputs`: repository-relative paths with the DVC remote URI they are pulled from or
   pushed to (`${RUPTURE_DVC_REMOTE_URL}/<path>`). `kind` is `dvc` (tracked by `dvc.yaml`),
   `source` (git-tracked, listed for completeness) or `report`.
@@ -39,11 +40,14 @@ by anything that runs locally: every `command` is the same `rupture ...` verb yo
 ## Translating to a platform
 
 The manifests contain what a job definition needs and nothing platform-specific in the top-level
-keys. For AWS Batch: create one job definition per manifest from `aws.batch`, mount nothing (DVC
-pulls inputs at start: `dvc pull <inputs> && <command> && dvc push <outputs>` is the container
-command wrapper the deployer writes), pass `env` names from Secrets Manager / SSM, and use the IAM
-role for S3 read/write on the DVC remote prefix. For cron, Kubernetes or a plain VM the same
-fields map onto a CronJob or a systemd timer. There is no Terraform or CDK in this repository.
+keys. For AWS Batch: create one job definition per manifest from `aws.batch`, run `command` as
+the container command, pass `env` names from Secrets Manager / SSM, and use the IAM role for S3
+read/write on the DVC remote prefix. **DVC transfer happens outside the job container**: the
+rupture image is built `--no-dev` and carries no `dvc`, so `inputs` must be pulled onto the job's
+volume before the container starts and `outputs` pushed after it exits (an init step or sidecar
+with `dvc` installed, or `aws s3 sync` against the same prefixes). None of this has been
+exercised. For cron, Kubernetes or a plain VM the same fields map onto a CronJob or a systemd
+timer. There is no Terraform or CDK in this repository.
 
 ## Example job input
 

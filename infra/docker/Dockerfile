@@ -1,6 +1,8 @@
 # rupture deployment unit (ADR-0016): the locked uv environment plus the `rupture` CLI.
 # Build from the repository root:
 #   docker build -f infra/docker/Dockerfile --build-arg GIT_SHA=$(git rev-parse HEAD) -t rupture:dev .
+#   docker run --rm rupture:dev rupture --version
+# Not yet built anywhere (no Docker on the development machine, not wired in CI): reviewed by hand.
 # Context ignores are in infra/docker/Dockerfile.dockerignore (BuildKit reads <Dockerfile>.dockerignore).
 # The OpenQuake engine is NOT in this image; rupture drives the separate pinned image
 # openquake/engine:3.26.2 through the docker CLI (ADR-0011), which needs a docker socket at run time.
@@ -65,5 +67,6 @@ ENV PATH="/app/.venv/bin:$PATH" \
 VOLUME ["/app/data", "/app/baselines", "/app/reports"]
 
 USER rupture
-ENTRYPOINT ["rupture"]
-CMD ["--help"]
+# No ENTRYPOINT: the job manifests pass the full argv (`rupture ...`) as the container command,
+# and a deployer may wrap it in `sh -c '...'`.
+CMD ["rupture", "--help"]

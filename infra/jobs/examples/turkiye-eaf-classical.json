@@ -1,6 +1,6 @@
 {
   "id": "turkiye-eaf-classical-eshm20-coarse",
-  "description": "Coarse classical PSHA over the East Anatolian Fault bounding box from the ESHM20 source model and GSIM logic tree; 50-year investigation time; 0.2 degree grid (about 20 km). NOT RUN: the ESHM20 inputs are fetched by adapters/sources/openquake_sources.py (ADR-0008) and were not present when this example was written; file names below must match what that adapter writes.",
+  "description": "Coarse classical PSHA over the East Anatolian Fault bounding box from the ESHM20 source model and GSIM logic tree; 50-year investigation time; 0.2 degree grid (about 20 km). NOT RUN. The ESHM20 file names below are placeholders: the inputs are fetched by adapters/sources/openquake_sources.py (ADR-0008) and were not present when this example was written, so the names must be replaced by what that adapter writes. The bbox is a placeholder approximation of the EAF zone, to be replaced by the bounding box of the turkiye-eaf polygon in data/regions/.",
   "source_model_logic_tree": "../../../data/raw/oq_sources/eshm20/source_model_logic_tree.xml",
   "gsim_logic_tree": "../../../data/raw/oq_sources/eshm20/gmm_logic_tree.xml",
   "sites_csv": null,

@@ -62,6 +62,8 @@ class FakeDocker:
                     if p.name != "provenance.json":
                         shutil.copyfile(p, host_dir / p.name)
                 (host_dir / ".demo_source").write_text("/opt/openquake/demos/hazard/X\n")
+                names = sorted(p.name for p in DEMO.iterdir() if p.name != "provenance.json")
+                (host_dir / ".demo_files").write_text("\n".join(names) + "\n")
             else:
                 out = host_dir / "out"
                 out.mkdir(exist_ok=True)
