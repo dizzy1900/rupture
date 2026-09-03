@@ -1,0 +1,17 @@
+{
+  "contract_version": "0",
+  "event_id": "usgs-comcat:us7000tbwb",
+  "source_catalog": "usgs-comcat",
+  "assessed_at": "2026-09-03T00:00:00Z",
+  "p_mass_movement": 0.93,
+  "p_tectonic": 0.05,
+  "p_other": 0.02,
+  "classifier_id": "example-discriminator",
+  "classifier_version": "0.0.0",
+  "evidence": [
+    "Illustrative example payload for the shared file contract; probabilities are not a real assessment.",
+    "ComCat lists this event with type=landslide (verified 2026-09-03)."
+  ],
+  "features": {"comcat_type_is_landslide": 1.0, "depth_km": 0.0},
+  "notes": "Example only. serac produces real assessments; rupture consumes them as files."
+}

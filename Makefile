@@ -55,9 +55,14 @@ schema-export: ## regenerate contracts/*.json from the domain models
 schema-check: ## fail if contracts/*.json drift from the domain models
 	$(RUN) rupture schema export --check
 
-# The aggregate. Phase-2 targets are appended here as they land (append-only section).
-validate-rupture: lint typecheck test validate-language ## everything, offline (schema-check joins in Phase 1)
-	@echo "validate-rupture: green"
+# The aggregate. Phase-2 gates register themselves by adding `mk/<name>.mk` with
+#   VALIDATE_GATES += validate-<name>
+# so no two agents edit this file. Gates must be offline-safe or skip with a printed reason.
+VALIDATE_GATES := validate-language schema-check
+-include mk/*.mk
+
+validate-rupture: lint typecheck test $(VALIDATE_GATES) ## everything, offline
+	@echo "validate-rupture: green ($(VALIDATE_GATES))"
 
 promote: ## refuse unless validate-rupture is green; then print the promotion record
 	@$(MAKE) --no-print-directory validate-rupture || { echo "promote: REFUSED (validate-rupture not green)"; exit 1; }

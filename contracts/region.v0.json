@@ -1,0 +1,227 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/region.v0.json",
+  "$defs": {
+    "CompletenessEstimate": {
+      "additionalProperties": false,
+      "description": "One Mc estimate for a catalogue slice. Report every method run; do not pick silently.",
+      "properties": {
+        "mc": {
+          "maximum": 9.0,
+          "minimum": 0.0,
+          "title": "Mc",
+          "type": "number"
+        },
+        "method": {
+          "$ref": "#/$defs/McMethod"
+        },
+        "b_value": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "B Value"
+        },
+        "b_value_uncertainty": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "B Value Uncertainty"
+        },
+        "n_events": {
+          "description": "Events at or above mc used in the estimate.",
+          "minimum": 0,
+          "title": "N Events",
+          "type": "integer"
+        },
+        "window_start": {
+          "format": "date-time",
+          "title": "Window Start",
+          "type": "string"
+        },
+        "window_end": {
+          "format": "date-time",
+          "title": "Window End",
+          "type": "string"
+        },
+        "computed_at": {
+          "format": "date-time",
+          "title": "Computed At",
+          "type": "string"
+        },
+        "correction": {
+          "default": 0.0,
+          "description": "Additive correction applied (e.g. +0.2).",
+          "title": "Correction",
+          "type": "number"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "mc",
+        "method",
+        "n_events",
+        "window_start",
+        "window_end",
+        "computed_at"
+      ],
+      "title": "CompletenessEstimate",
+      "type": "object"
+    },
+    "McMethod": {
+      "description": "Completeness-magnitude estimators rupture reports.",
+      "enum": [
+        "maximum_curvature",
+        "b_value_stability",
+        "mc_ks"
+      ],
+      "title": "McMethod",
+      "type": "string"
+    },
+    "TectonicSetting": {
+      "enum": [
+        "continental_collision",
+        "subduction",
+        "transform",
+        "intraplate",
+        "extensional",
+        "mixed",
+        "other"
+      ],
+      "title": "TectonicSetting",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A polygonal test region with its forecasting grid definition and completeness metadata.\n\nThe polygon is a single exterior ring of (longitude, latitude) pairs, closed or open.\n``mc`` is the *fitted* completeness estimate for the region (``None`` until a catalogue has\nbeen built); ``target_min_magnitude`` is the protocol threshold, which the evaluation protocol\nties to the published Mc and only changes by ADR.",
+  "properties": {
+    "id": {
+      "pattern": "^[a-z0-9][a-z0-9-]*$",
+      "title": "Id",
+      "type": "string"
+    },
+    "name": {
+      "title": "Name",
+      "type": "string"
+    },
+    "polygon": {
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "minItems": 3,
+      "title": "Polygon",
+      "type": "array"
+    },
+    "depth_min_km": {
+      "default": 0.0,
+      "title": "Depth Min Km",
+      "type": "number"
+    },
+    "depth_max_km": {
+      "exclusiveMinimum": 0.0,
+      "title": "Depth Max Km",
+      "type": "number"
+    },
+    "tectonic_setting": {
+      "$ref": "#/$defs/TectonicSetting"
+    },
+    "cell_size_deg": {
+      "default": 0.1,
+      "exclusiveMinimum": 0.0,
+      "title": "Cell Size Deg",
+      "type": "number"
+    },
+    "target_min_magnitude": {
+      "maximum": 9.0,
+      "minimum": 0.0,
+      "title": "Target Min Magnitude",
+      "type": "number"
+    },
+    "magnitude_bin_width": {
+      "default": 0.1,
+      "exclusiveMinimum": 0.0,
+      "title": "Magnitude Bin Width",
+      "type": "number"
+    },
+    "magnitude_max": {
+      "default": 8.95,
+      "title": "Magnitude Max",
+      "type": "number"
+    },
+    "mc": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CompletenessEstimate"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "description": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Description"
+    },
+    "references": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "References",
+      "type": "array"
+    }
+  },
+  "required": [
+    "id",
+    "name",
+    "polygon",
+    "depth_max_km",
+    "tectonic_setting",
+    "target_min_magnitude"
+  ],
+  "title": "Region",
+  "type": "object"
+}

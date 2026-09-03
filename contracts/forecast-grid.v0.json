@@ -1,0 +1,142 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/forecast-grid.v0.json",
+  "additionalProperties": false,
+  "description": "Expected event counts per cell and magnitude bin over one horizon from one issue time.\n\n``cell_origins`` are the lower-left (longitude, latitude) corners of square cells of side\n``cell_size_deg``. ``magnitude_bin_edges`` are the lower edges of bins of width\n``magnitude_bin_width``; the last bin is open. ``expected_counts[i][j]`` is for cell ``i``,\nbin ``j``. All counts are finite and non-negative.",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "region_id": {
+      "title": "Region Id",
+      "type": "string"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_version": {
+      "title": "Model Version",
+      "type": "string"
+    },
+    "parameter_snapshot_hash": {
+      "title": "Parameter Snapshot Hash",
+      "type": "string"
+    },
+    "fit_cutoff": {
+      "format": "date-time",
+      "title": "Fit Cutoff",
+      "type": "string"
+    },
+    "training_catalog_hash": {
+      "title": "Training Catalog Hash",
+      "type": "string"
+    },
+    "issue_time": {
+      "format": "date-time",
+      "title": "Issue Time",
+      "type": "string"
+    },
+    "horizon": {
+      "format": "duration",
+      "title": "Horizon",
+      "type": "string"
+    },
+    "cell_size_deg": {
+      "exclusiveMinimum": 0.0,
+      "title": "Cell Size Deg",
+      "type": "number"
+    },
+    "cell_origins": {
+      "items": {
+        "maxItems": 2,
+        "minItems": 2,
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array"
+      },
+      "minItems": 1,
+      "title": "Cell Origins",
+      "type": "array"
+    },
+    "magnitude_bin_edges": {
+      "items": {
+        "type": "number"
+      },
+      "minItems": 1,
+      "title": "Magnitude Bin Edges",
+      "type": "array"
+    },
+    "magnitude_bin_width": {
+      "exclusiveMinimum": 0.0,
+      "title": "Magnitude Bin Width",
+      "type": "number"
+    },
+    "expected_counts": {
+      "items": {
+        "items": {
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "title": "Expected Counts",
+      "type": "array"
+    },
+    "n_simulations": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "N Simulations"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "region_id",
+    "model_id",
+    "model_version",
+    "parameter_snapshot_hash",
+    "fit_cutoff",
+    "training_catalog_hash",
+    "issue_time",
+    "horizon",
+    "cell_size_deg",
+    "cell_origins",
+    "magnitude_bin_edges",
+    "magnitude_bin_width",
+    "expected_counts",
+    "created_at"
+  ],
+  "title": "ForecastGrid",
+  "type": "object"
+}

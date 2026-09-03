@@ -1,0 +1,195 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/evaluation-result.v0.json",
+  "$defs": {
+    "TestName": {
+      "enum": [
+        "N",
+        "M",
+        "S",
+        "L",
+        "CL",
+        "T",
+        "W"
+      ],
+      "title": "TestName",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "One test applied to one forecast against a frozen target catalogue slice.\n\n``quantile`` is the position of the observed statistic in the simulated distribution\n(one-sided tests); ``quantile_low``/``quantile_high`` are the two-sided N-test quantiles.\n``passed`` is the protocol decision at ``alpha``. ``target_catalog_hash`` freezes the exact\nslice used, so a later catalogue revision cannot silently change the verdict.",
+  "properties": {
+    "forecast_id": {
+      "title": "Forecast Id",
+      "type": "string"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "test_name": {
+      "$ref": "#/$defs/TestName"
+    },
+    "statistic": {
+      "description": "Observed statistic (count, log-likelihood, IG per event...).",
+      "title": "Statistic",
+      "type": "number"
+    },
+    "quantile": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quantile"
+    },
+    "quantile_low": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quantile Low"
+    },
+    "quantile_high": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Quantile High"
+    },
+    "p_value": {
+      "anyOf": [
+        {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "P Value"
+    },
+    "alpha": {
+      "default": 0.05,
+      "exclusiveMaximum": 1.0,
+      "exclusiveMinimum": 0.0,
+      "title": "Alpha",
+      "type": "number"
+    },
+    "passed": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "description": "None when the test could not be decided (e.g. no targets).",
+      "title": "Passed"
+    },
+    "benchmark_model_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "For T/W comparisons.",
+      "title": "Benchmark Model Id"
+    },
+    "n_target_events": {
+      "minimum": 0,
+      "title": "N Target Events",
+      "type": "integer"
+    },
+    "n_simulations": {
+      "anyOf": [
+        {
+          "minimum": 1,
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "N Simulations"
+    },
+    "target_window_start": {
+      "format": "date-time",
+      "title": "Target Window Start",
+      "type": "string"
+    },
+    "target_window_end": {
+      "format": "date-time",
+      "title": "Target Window End",
+      "type": "string"
+    },
+    "target_catalog_hash": {
+      "title": "Target Catalog Hash",
+      "type": "string"
+    },
+    "evaluated_at": {
+      "format": "date-time",
+      "title": "Evaluated At",
+      "type": "string"
+    },
+    "evaluator_version": {
+      "title": "Evaluator Version",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "forecast_id",
+    "model_id",
+    "test_name",
+    "statistic",
+    "passed",
+    "n_target_events",
+    "target_window_start",
+    "target_window_end",
+    "target_catalog_hash",
+    "evaluated_at",
+    "evaluator_version"
+  ],
+  "title": "EvaluationResult",
+  "type": "object"
+}

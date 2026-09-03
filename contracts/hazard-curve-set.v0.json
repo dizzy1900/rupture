@@ -1,0 +1,225 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/hazard-curve-set.v0.json",
+  "$defs": {
+    "HazardCurve": {
+      "additionalProperties": false,
+      "description": "Probability of exceedance of intensity measure levels at one site for one IMT.",
+      "properties": {
+        "site_longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Site Longitude",
+          "type": "number"
+        },
+        "site_latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Site Latitude",
+          "type": "number"
+        },
+        "imt": {
+          "description": "Intensity measure type, OpenQuake spelling, e.g. 'PGA', 'SA(0.3)'.",
+          "title": "Imt",
+          "type": "string"
+        },
+        "imls": {
+          "description": "Intensity measure levels (g for PGA/SA).",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "title": "Imls",
+          "type": "array"
+        },
+        "poes": {
+          "description": "Probabilities of exceedance in investigation_time.",
+          "items": {
+            "type": "number"
+          },
+          "minItems": 1,
+          "title": "Poes",
+          "type": "array"
+        }
+      },
+      "required": [
+        "site_longitude",
+        "site_latitude",
+        "imt",
+        "imls",
+        "poes"
+      ],
+      "title": "HazardCurve",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Where a record came from. Required on every ingested row and every derived product.\n\n``licence`` is the upstream licence identifier (SPDX where one exists, otherwise the\nprovider's own terms label). ``sha256`` is the digest of the raw payload the record was\nparsed from, so a re-fetch can be compared byte-for-byte. Unknowns are ``None``, never guessed.",
+      "properties": {
+        "source": {
+          "description": "Provider/catalogue identifier, e.g. 'usgs-comcat', 'isc', 'gcmt'.",
+          "title": "Source",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Exact URL or file path the payload came from.",
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "description": "When the payload was fetched (UTC).",
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Digest of the raw payload, hex.",
+          "title": "Sha256"
+        },
+        "licence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upstream licence (SPDX id or provider terms label).",
+          "title": "Licence"
+        },
+        "adapter_version": {
+          "description": "Version of the rupture adapter that parsed the payload.",
+          "title": "Adapter Version",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "source",
+        "retrieved_at",
+        "adapter_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "All hazard curves from one classical PSHA run (one realisation or mean).",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "source_model_id": {
+      "title": "Source Model Id",
+      "type": "string"
+    },
+    "gsim_logic_tree_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Gsim Logic Tree Id"
+    },
+    "realisation": {
+      "default": "mean",
+      "description": "'mean', 'quantile-0.84', or a branch id.",
+      "title": "Realisation",
+      "type": "string"
+    },
+    "investigation_time_years": {
+      "exclusiveMinimum": 0.0,
+      "title": "Investigation Time Years",
+      "type": "number"
+    },
+    "curves": {
+      "items": {
+        "$ref": "#/$defs/HazardCurve"
+      },
+      "title": "Curves",
+      "type": "array"
+    },
+    "engine": {
+      "description": "e.g. 'openquake.engine'",
+      "title": "Engine",
+      "type": "string"
+    },
+    "engine_version": {
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "job_hash": {
+      "description": "sha256 of the job configuration and inputs.",
+      "title": "Job Hash",
+      "type": "string"
+    },
+    "computed_at": {
+      "format": "date-time",
+      "title": "Computed At",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "source_model_id",
+    "investigation_time_years",
+    "curves",
+    "engine",
+    "engine_version",
+    "job_hash",
+    "computed_at",
+    "provenance"
+  ],
+  "title": "HazardCurveSet",
+  "type": "object"
+}

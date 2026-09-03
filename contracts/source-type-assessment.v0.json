@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/source-type-assessment.v0.json",
+  "additionalProperties": false,
+  "description": "Probability that a catalogued event is a mass movement rather than a tectonic rupture.\n\nProduced by a discriminator (in serac or rupture), consumed by the other side as a file.\n``p_mass_movement + p_tectonic + p_other`` must sum to 1 within tolerance.",
+  "properties": {
+    "contract_version": {
+      "default": "0",
+      "title": "Contract Version",
+      "type": "string"
+    },
+    "event_id": {
+      "description": "rupture event id, or '<catalog>:<source_event_id>'.",
+      "title": "Event Id",
+      "type": "string"
+    },
+    "source_catalog": {
+      "title": "Source Catalog",
+      "type": "string"
+    },
+    "assessed_at": {
+      "format": "date-time",
+      "title": "Assessed At",
+      "type": "string"
+    },
+    "p_mass_movement": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "P Mass Movement",
+      "type": "number"
+    },
+    "p_tectonic": {
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "P Tectonic",
+      "type": "number"
+    },
+    "p_other": {
+      "default": 0.0,
+      "maximum": 1.0,
+      "minimum": 0.0,
+      "title": "P Other",
+      "type": "number"
+    },
+    "classifier_id": {
+      "title": "Classifier Id",
+      "type": "string"
+    },
+    "classifier_version": {
+      "title": "Classifier Version",
+      "type": "string"
+    },
+    "evidence": {
+      "default": [],
+      "description": "Human-readable reasons.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Evidence",
+      "type": "array"
+    },
+    "features": {
+      "additionalProperties": {
+        "anyOf": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "null"
+          }
+        ]
+      },
+      "title": "Features",
+      "type": "object"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "event_id",
+    "source_catalog",
+    "assessed_at",
+    "p_mass_movement",
+    "p_tectonic",
+    "classifier_id",
+    "classifier_version"
+  ],
+  "title": "SourceTypeAssessment",
+  "type": "object"
+}

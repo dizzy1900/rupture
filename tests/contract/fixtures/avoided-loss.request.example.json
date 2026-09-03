@@ -1,0 +1,58 @@
+{
+  "contract_version": "0",
+  "request_id": "example-req-0001",
+  "requested_at": "2026-09-03T00:00:00Z",
+  "portfolio": {
+    "id": "example-portfolio",
+    "name": "Illustrative two-asset portfolio",
+    "currency": "USD",
+    "valuation_date": "2026-01-01T00:00:00Z",
+    "assets": [
+      {
+        "id": "a1",
+        "longitude": 85.32,
+        "latitude": 27.71,
+        "taxonomy": "CR/LFINF+DUL/H:3",
+        "value": 1500000.0,
+        "occupants": 40
+      },
+      {
+        "id": "a2",
+        "longitude": 85.3,
+        "latitude": 27.69,
+        "taxonomy": "MUR/H:2",
+        "value": 250000.0,
+        "occupants": 8
+      }
+    ],
+    "provenance": {
+      "source": "example",
+      "source_url": null,
+      "retrieved_at": "2026-09-03T00:00:00Z",
+      "sha256": null,
+      "licence": "example-not-real-data",
+      "adapter_version": "0.1.0",
+      "notes": "Illustrative values for schema testing only."
+    }
+  },
+  "trigger_kind": "scenario",
+  "trigger_id": "example-scenario-mw7.8-mht",
+  "horizon": null,
+  "loss_types": [
+    "structural",
+    "fatalities"
+  ],
+  "interventions": [
+    {
+      "id": "retrofit-a1",
+      "description": "Seismic retrofit of asset a1",
+      "cost": 200000.0,
+      "applies_to_asset_ids": [
+        "a1"
+      ],
+      "parameters": {}
+    }
+  ],
+  "interval_level": 0.9,
+  "consumer": "example-consumer"
+}

@@ -1,19 +1,31 @@
 """``rupture`` command-line interface.
 
-rupture does not predict earthquakes. Sub-commands are added by phase; those not yet implemented
-exit with status 2 and say which phase delivers them, rather than pretending to run.
+rupture does not predict earthquakes. Sub-commands live in :mod:`rupture.commands`; validation
+gates in :mod:`rupture.validation` (resolved by name through the registry). Anything not yet
+implemented exits with status 2 and names the phase that delivers it.
 """
 
 from __future__ import annotations
 
+import json
 import sys
 from pathlib import Path
 from typing import Annotated
 
+import jsonschema
 import typer
 
 from rupture import __version__
-from rupture.validation import GateResult, GateStatus, language
+from rupture.commands import catalog, evaluate, forecast, hazard, region
+from rupture.domain import contracts, loss, utc_now
+from rupture.validation import GateResult, GateStatus
+from rupture.validation.registry import GATES, run_gate
+
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
+EXIT_OK = 0
+EXIT_FAIL = 1
+EXIT_NOT_IMPLEMENTED = 2
 
 app = typer.Typer(
     name="rupture",
@@ -28,12 +40,11 @@ validate_app = typer.Typer(help="Validation gates behind `make validate-*`.", no
 schema_app = typer.Typer(help="JSON Schema export for contracts/.", no_args_is_help=True)
 app.add_typer(validate_app, name="validate")
 app.add_typer(schema_app, name="schema")
-
-REPO_ROOT = Path(__file__).resolve().parents[2]
-
-EXIT_OK = 0
-EXIT_FAIL = 1
-EXIT_NOT_IMPLEMENTED = 2
+app.add_typer(catalog.app, name="catalog")
+app.add_typer(region.app, name="region")
+app.add_typer(forecast.app, name="forecast")
+app.add_typer(evaluate.app, name="evaluate")
+app.add_typer(hazard.app, name="hazard")
 
 
 def _finish(result: GateResult) -> None:
@@ -41,14 +52,6 @@ def _finish(result: GateResult) -> None:
     if result.status == GateStatus.NOT_IMPLEMENTED:
         raise typer.Exit(EXIT_NOT_IMPLEMENTED)
     raise typer.Exit(EXIT_OK if result.ok else EXIT_FAIL)
-
-
-def _not_implemented(name: str, phase: str) -> GateResult:
-    return GateResult(
-        name=name,
-        status=GateStatus.NOT_IMPLEMENTED,
-        reason=f"not implemented yet: delivered in {phase}",
-    )
 
 
 def _version_callback(value: bool) -> None:
@@ -70,45 +73,44 @@ def _root(
 
 
 # ------------------------------------------------------------------ validate
-@validate_app.command("language")
-def validate_language(
-    root: Annotated[Path, typer.Option(help="Tree to scan.")] = REPO_ROOT,
+@validate_app.command("gate")
+def validate_gate(
+    name: Annotated[str, typer.Argument(help=f"One of: {', '.join(GATES)}")],
+    root: Annotated[Path, typer.Option(help="Repository root.")] = REPO_ROOT,
 ) -> None:
-    """Banned-phrase scan over docs, code, contracts and configuration."""
-    _finish(language.run(root))
+    """Run one gate by name."""
+    _finish(run_gate(name, root))
 
 
-@validate_app.command("catalog")
-def validate_catalog() -> None:
-    """Catalogue schema, provenance, Mc present, no duplicates, landslide events retained."""
-    _finish(_not_implemented("validate-catalog", "Phase 2A (catalog-engineer)"))
+def _make_gate_command(gate: str) -> None:
+    def _cmd(root: Annotated[Path, typer.Option(help="Repository root.")] = REPO_ROOT) -> None:
+        _finish(run_gate(gate, root))
+
+    _cmd.__doc__ = f"Run the {gate} gate (`make validate-{gate}`)."
+    validate_app.command(gate)(_cmd)
 
 
-@validate_app.command("etas")
-def validate_etas() -> None:
-    """ETAS fit diagnostics present; parameters plausible; forecast grid sums finite."""
-    _finish(_not_implemented("validate-etas", "Phase 2B (forecast-engineer)"))
-
-
-@validate_app.command("eval")
-def validate_eval() -> None:
-    """CSEP harness runs on fixtures; leakage assertion passes."""
-    _finish(_not_implemented("validate-eval", "Phase 2B (forecast-engineer)"))
-
-
-@validate_app.command("hazard")
-def validate_hazard() -> None:
-    """OpenQuake demo runs in the pinned Docker image; skips with a reason if Docker is absent."""
-    _finish(_not_implemented("validate-hazard", "Phase 2C (hazard-engineer)"))
+for _gate in GATES:
+    _make_gate_command(_gate)
 
 
 # ------------------------------------------------------------------ schema
 @schema_app.command("export")
 def schema_export(
+    out: Annotated[Path, typer.Option(help="Target directory.")] = REPO_ROOT / "contracts",
     check: Annotated[bool, typer.Option("--check", help="Fail if files would change.")] = False,
 ) -> None:
-    """Write JSON Schema for every domain contract into contracts/."""
-    _finish(_not_implemented("schema export", "Phase 1 (architect)"))
+    """Write JSON Schema for every domain contract into contracts/ (or check for drift)."""
+    if check:
+        drifted = contracts.drift(out)
+        if drifted:
+            for name in drifted:
+                print(f"drift: {name}")
+            raise typer.Exit(EXIT_FAIL)
+        print(f"contracts up to date ({len(contracts.CONTRACTS)} files)")
+        raise typer.Exit(EXIT_OK)
+    for path in contracts.export_all(out):
+        print(f"wrote {path.relative_to(REPO_ROOT) if path.is_relative_to(REPO_ROOT) else path}")
 
 
 # ------------------------------------------------------------------ release
@@ -120,8 +122,33 @@ def promote() -> None:
 
 @app.command("underwriting-check")
 def underwriting_check() -> None:
-    """Validate the AvoidedLossRequest round-trip; exits non-zero: not implemented (Prompt 2)."""
-    _finish(_not_implemented("underwriting-check", "Prompt 2 (loss layer)"))
+    """Round-trip an AvoidedLossRequest through its schema; exit 2: not implemented (Prompt 2)."""
+    example_path = (
+        REPO_ROOT / "tests" / "contract" / "fixtures" / "avoided-loss.request.example.json"
+    )
+    payload = json.loads(example_path.read_text(encoding="utf-8"))
+    request = loss.AvoidedLossRequest.model_validate(payload)
+    schema = contracts.schema_for("avoided-loss.v0.json")
+    jsonschema.validate(
+        {
+            "request": request.model_dump(mode="json"),
+            "response": _not_implemented_response(request),
+        },
+        schema,
+    )
+    print("underwriting-check: AvoidedLossRequest round-trip OK")
+    print("underwriting-check: not implemented: Prompt 2 (loss layer)")
+    raise typer.Exit(EXIT_NOT_IMPLEMENTED)
+
+
+def _not_implemented_response(request: loss.AvoidedLossRequest) -> dict[str, object]:
+    resp = loss.AvoidedLossResponse(
+        request_id=request.request_id,
+        status=loss.ResponseStatus.NOT_IMPLEMENTED,
+        responded_at=utc_now(),
+        message="not implemented: Prompt 2 (loss layer)",
+    )
+    return resp.model_dump(mode="json")
 
 
 def main() -> None:

@@ -30,13 +30,16 @@ jobs:
         run: make test
       - name: Language gate
         run: make validate-language
+      - name: Contract drift
+        run: make schema-check
 
   hazard-integration:
     name: OpenQuake demo in pinned Docker image
     # Docker is available on ubuntu runners; it is not assumed on developer machines.
+    # Manual-dispatch only until the hazard adapter lands (Phase 2C flips this to run on main).
     runs-on: ubuntu-latest
     timeout-minutes: 45
-    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    if: github.event_name == 'workflow_dispatch'
     needs: offline
     steps:
       - uses: actions/checkout@v4

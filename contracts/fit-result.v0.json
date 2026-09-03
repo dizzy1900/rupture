@@ -1,0 +1,116 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/fit-result.v0.json",
+  "additionalProperties": false,
+  "description": "What a model learned from a catalogue up to a hard cutoff, and how well.",
+  "properties": {
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_version": {
+      "title": "Model Version",
+      "type": "string"
+    },
+    "region_id": {
+      "title": "Region Id",
+      "type": "string"
+    },
+    "fit_cutoff": {
+      "description": "Only events with origin_time < fit_cutoff were used.",
+      "format": "date-time",
+      "title": "Fit Cutoff",
+      "type": "string"
+    },
+    "training_start": {
+      "format": "date-time",
+      "title": "Training Start",
+      "type": "string"
+    },
+    "training_catalog_hash": {
+      "title": "Training Catalog Hash",
+      "type": "string"
+    },
+    "n_events": {
+      "minimum": 0,
+      "title": "N Events",
+      "type": "integer"
+    },
+    "mc": {
+      "title": "Mc",
+      "type": "number"
+    },
+    "parameters": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "title": "Parameters",
+      "type": "object"
+    },
+    "parameter_snapshot_hash": {
+      "title": "Parameter Snapshot Hash",
+      "type": "string"
+    },
+    "log_likelihood": {
+      "anyOf": [
+        {
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Log Likelihood"
+    },
+    "diagnostics": {
+      "additionalProperties": true,
+      "title": "Diagnostics",
+      "type": "object"
+    },
+    "converged": {
+      "anyOf": [
+        {
+          "type": "boolean"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Converged"
+    },
+    "fitted_at": {
+      "format": "date-time",
+      "title": "Fitted At",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "model_id",
+    "model_version",
+    "region_id",
+    "fit_cutoff",
+    "training_start",
+    "training_catalog_hash",
+    "n_events",
+    "mc",
+    "parameters",
+    "parameter_snapshot_hash",
+    "fitted_at"
+  ],
+  "title": "FitResult",
+  "type": "object"
+}

@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/loss-result.v0.json",
+  "$defs": {
+    "Interval": {
+      "additionalProperties": false,
+      "description": "A central interval on a quantity.",
+      "properties": {
+        "lower": {
+          "title": "Lower",
+          "type": "number"
+        },
+        "upper": {
+          "title": "Upper",
+          "type": "number"
+        },
+        "level": {
+          "default": 0.9,
+          "description": "Coverage, e.g. 0.9.",
+          "exclusiveMaximum": 1.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Level",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lower",
+        "upper"
+      ],
+      "title": "Interval",
+      "type": "object"
+    },
+    "LossType": {
+      "enum": [
+        "structural",
+        "nonstructural",
+        "contents",
+        "business_interruption",
+        "fatalities",
+        "injuries",
+        "displaced"
+      ],
+      "title": "LossType",
+      "type": "string"
+    },
+    "TriggerKind": {
+      "enum": [
+        "scenario",
+        "forecast",
+        "hazard"
+      ],
+      "title": "TriggerKind",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "properties": {
+    "portfolio_id": {
+      "title": "Portfolio Id",
+      "type": "string"
+    },
+    "trigger_kind": {
+      "$ref": "#/$defs/TriggerKind"
+    },
+    "trigger_id": {
+      "title": "Trigger Id",
+      "type": "string"
+    },
+    "loss_type": {
+      "$ref": "#/$defs/LossType"
+    },
+    "expected_loss": {
+      "minimum": 0.0,
+      "title": "Expected Loss",
+      "type": "number"
+    },
+    "interval": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Interval"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "currency": {
+      "anyOf": [
+        {
+          "maxLength": 3,
+          "minLength": 3,
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Currency"
+    },
+    "method": {
+      "description": "e.g. 'openquake.scenario_risk', 'openquake.event_based_risk'.",
+      "title": "Method",
+      "type": "string"
+    },
+    "method_version": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Method Version"
+    },
+    "computed_at": {
+      "format": "date-time",
+      "title": "Computed At",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "portfolio_id",
+    "trigger_kind",
+    "trigger_id",
+    "loss_type",
+    "expected_loss",
+    "method",
+    "computed_at"
+  ],
+  "title": "LossResult",
+  "type": "object"
+}

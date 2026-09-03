@@ -1,0 +1,653 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/catalog.v0.json",
+  "$defs": {
+    "Bounds": {
+      "additionalProperties": false,
+      "description": "Spatial and temporal extent actually covered by the events.",
+      "properties": {
+        "min_longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Min Longitude",
+          "type": "number"
+        },
+        "max_longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Max Longitude",
+          "type": "number"
+        },
+        "min_latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Min Latitude",
+          "type": "number"
+        },
+        "max_latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Max Latitude",
+          "type": "number"
+        },
+        "min_depth_km": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Min Depth Km"
+        },
+        "max_depth_km": {
+          "anyOf": [
+            {
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Max Depth Km"
+        },
+        "start_time": {
+          "format": "date-time",
+          "title": "Start Time",
+          "type": "string"
+        },
+        "end_time": {
+          "format": "date-time",
+          "title": "End Time",
+          "type": "string"
+        }
+      },
+      "required": [
+        "min_longitude",
+        "max_longitude",
+        "min_latitude",
+        "max_latitude",
+        "start_time",
+        "end_time"
+      ],
+      "title": "Bounds",
+      "type": "object"
+    },
+    "CompletenessEstimate": {
+      "additionalProperties": false,
+      "description": "One Mc estimate for a catalogue slice. Report every method run; do not pick silently.",
+      "properties": {
+        "mc": {
+          "maximum": 9.0,
+          "minimum": 0.0,
+          "title": "Mc",
+          "type": "number"
+        },
+        "method": {
+          "$ref": "#/$defs/McMethod"
+        },
+        "b_value": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "B Value"
+        },
+        "b_value_uncertainty": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "B Value Uncertainty"
+        },
+        "n_events": {
+          "description": "Events at or above mc used in the estimate.",
+          "minimum": 0,
+          "title": "N Events",
+          "type": "integer"
+        },
+        "window_start": {
+          "format": "date-time",
+          "title": "Window Start",
+          "type": "string"
+        },
+        "window_end": {
+          "format": "date-time",
+          "title": "Window End",
+          "type": "string"
+        },
+        "computed_at": {
+          "format": "date-time",
+          "title": "Computed At",
+          "type": "string"
+        },
+        "correction": {
+          "default": 0.0,
+          "description": "Additive correction applied (e.g. +0.2).",
+          "title": "Correction",
+          "type": "number"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "mc",
+        "method",
+        "n_events",
+        "window_start",
+        "window_end",
+        "computed_at"
+      ],
+      "title": "CompletenessEstimate",
+      "type": "object"
+    },
+    "Event": {
+      "additionalProperties": false,
+      "description": "A single catalogued event with homogenised Mw and full provenance.\n\n``mw`` is the homogenised moment magnitude and ``mw_conversion`` names the method that\nproduced it (e.g. ``\"identity:mwc\"`` when the source gave a moment magnitude, or\n``\"scordilis2006:mb\"`` for a converted body-wave magnitude). Both are ``None`` when no\naccepted conversion exists for the reported scale; such events stay in the catalogue and are\nexcluded from magnitude-based analyses by filter, never by deletion.",
+      "properties": {
+        "id": {
+          "description": "rupture-wide unique id, assigned at merge; stable across rebuilds.",
+          "title": "Id",
+          "type": "string"
+        },
+        "origin_time": {
+          "format": "date-time",
+          "title": "Origin Time",
+          "type": "string"
+        },
+        "origin_time_uncertainty_s": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Origin Time Uncertainty S"
+        },
+        "latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "horizontal_uncertainty_km": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Horizontal Uncertainty Km"
+        },
+        "depth_km": {
+          "anyOf": [
+            {
+              "maximum": 800.0,
+              "minimum": -10.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depth Km"
+        },
+        "depth_uncertainty_km": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Depth Uncertainty Km"
+        },
+        "magnitude": {
+          "$ref": "#/$defs/MagnitudeRecord",
+          "description": "Preferred magnitude as reported by the source."
+        },
+        "other_magnitudes": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/MagnitudeRecord"
+          },
+          "title": "Other Magnitudes",
+          "type": "array"
+        },
+        "mw": {
+          "anyOf": [
+            {
+              "maximum": 10.0,
+              "minimum": -2.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Homogenised Mw.",
+          "title": "Mw"
+        },
+        "mw_conversion": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Method reference, '<relation>:<from_type>'.",
+          "title": "Mw Conversion"
+        },
+        "event_type": {
+          "$ref": "#/$defs/EventType",
+          "default": "earthquake"
+        },
+        "source_catalog": {
+          "description": "Catalogue the preferred solution came from.",
+          "title": "Source Catalog",
+          "type": "string"
+        },
+        "source_event_id": {
+          "description": "The id in the source catalogue.",
+          "title": "Source Event Id",
+          "type": "string"
+        },
+        "contributing_ids": {
+          "default": [],
+          "description": "'<catalog>:<id>' for every source record merged into this event.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Contributing Ids",
+          "type": "array"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "id",
+        "origin_time",
+        "latitude",
+        "longitude",
+        "magnitude",
+        "source_catalog",
+        "source_event_id",
+        "provenance"
+      ],
+      "title": "Event",
+      "type": "object"
+    },
+    "EventType": {
+      "description": "Catalogue event class. Landslide-type entries are retained and tagged, never dropped.",
+      "enum": [
+        "earthquake",
+        "landslide",
+        "explosion",
+        "other"
+      ],
+      "title": "EventType",
+      "type": "string"
+    },
+    "HomogenisationLogEntry": {
+      "additionalProperties": false,
+      "description": "One logged decision about one event.",
+      "properties": {
+        "event_id": {
+          "title": "Event Id",
+          "type": "string"
+        },
+        "step": {
+          "$ref": "#/$defs/HomogenisationStep"
+        },
+        "detail": {
+          "title": "Detail",
+          "type": "string"
+        },
+        "source_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Ids",
+          "type": "array"
+        },
+        "at": {
+          "format": "date-time",
+          "title": "At",
+          "type": "string"
+        }
+      },
+      "required": [
+        "event_id",
+        "step",
+        "detail",
+        "at"
+      ],
+      "title": "HomogenisationLogEntry",
+      "type": "object"
+    },
+    "HomogenisationStep": {
+      "description": "Steps logged per event while merging sources.",
+      "enum": [
+        "ingested",
+        "duplicate_merged",
+        "preferred_solution",
+        "magnitude_converted",
+        "magnitude_unconvertible",
+        "event_type_tagged",
+        "outside_region_dropped",
+        "depth_filtered"
+      ],
+      "title": "HomogenisationStep",
+      "type": "string"
+    },
+    "MagnitudeRecord": {
+      "additionalProperties": false,
+      "description": "One magnitude estimate as reported by an agency.",
+      "properties": {
+        "value": {
+          "maximum": 10.0,
+          "minimum": -2.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "type": {
+          "$ref": "#/$defs/MagnitudeType"
+        },
+        "agency": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Reporting network/agency code, e.g. 'us', 'ISC', 'GCMT'.",
+          "title": "Agency"
+        },
+        "uncertainty": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Uncertainty"
+        },
+        "raw_type": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "The type string exactly as the source gave it.",
+          "title": "Raw Type"
+        }
+      },
+      "required": [
+        "value",
+        "type"
+      ],
+      "title": "MagnitudeRecord",
+      "type": "object"
+    },
+    "MagnitudeType": {
+      "description": "Magnitude scales seen across the merged catalogues. Lower-case, agency-neutral.",
+      "enum": [
+        "mw",
+        "mww",
+        "mwc",
+        "mwb",
+        "mwr",
+        "mb",
+        "ms",
+        "ml",
+        "md",
+        "mlv",
+        "other"
+      ],
+      "title": "MagnitudeType",
+      "type": "string"
+    },
+    "McMethod": {
+      "description": "Completeness-magnitude estimators rupture reports.",
+      "enum": [
+        "maximum_curvature",
+        "b_value_stability",
+        "mc_ks"
+      ],
+      "title": "McMethod",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Where a record came from. Required on every ingested row and every derived product.\n\n``licence`` is the upstream licence identifier (SPDX where one exists, otherwise the\nprovider's own terms label). ``sha256`` is the digest of the raw payload the record was\nparsed from, so a re-fetch can be compared byte-for-byte. Unknowns are ``None``, never guessed.",
+      "properties": {
+        "source": {
+          "description": "Provider/catalogue identifier, e.g. 'usgs-comcat', 'isc', 'gcmt'.",
+          "title": "Source",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Exact URL or file path the payload came from.",
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "description": "When the payload was fetched (UTC).",
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Digest of the raw payload, hex.",
+          "title": "Sha256"
+        },
+        "licence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upstream licence (SPDX id or provider terms label).",
+          "title": "Licence"
+        },
+        "adapter_version": {
+          "description": "Version of the rupture adapter that parsed the payload.",
+          "title": "Adapter Version",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "source",
+        "retrieved_at",
+        "adapter_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "An immutable, provenance-complete set of events for one region and time span.\n\nHelper methods return new catalogues; nothing mutates. Time filters are half-open\n``[start, end)`` and compare ``origin_time`` only — this is the single place the\nleakage assertions rely on.",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "region_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Region Id"
+    },
+    "events": {
+      "items": {
+        "$ref": "#/$defs/Event"
+      },
+      "title": "Events",
+      "type": "array"
+    },
+    "completeness": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/CompletenessEstimate"
+      },
+      "title": "Completeness",
+      "type": "array"
+    },
+    "bounds": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/Bounds"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "homogenisation_log": {
+      "default": [],
+      "items": {
+        "$ref": "#/$defs/HomogenisationLogEntry"
+      },
+      "title": "Homogenisation Log",
+      "type": "array"
+    },
+    "sources": {
+      "default": [],
+      "description": "Source catalogues merged, in precedence order.",
+      "items": {
+        "type": "string"
+      },
+      "title": "Sources",
+      "type": "array"
+    },
+    "built_at": {
+      "format": "date-time",
+      "title": "Built At",
+      "type": "string"
+    },
+    "builder_version": {
+      "title": "Builder Version",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "events",
+    "built_at",
+    "builder_version"
+  ],
+  "title": "Catalog",
+  "type": "object"
+}

@@ -1,0 +1,654 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/avoided-loss.v0.json",
+  "$defs": {
+    "Asset": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "taxonomy": {
+          "description": "GEM taxonomy string or a consumer-defined class.",
+          "title": "Taxonomy",
+          "type": "string"
+        },
+        "value": {
+          "description": "Replacement value in the portfolio currency.",
+          "minimum": 0.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "occupants": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occupants"
+        },
+        "attributes": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Attributes",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "longitude",
+        "latitude",
+        "taxonomy",
+        "value"
+      ],
+      "title": "Asset",
+      "type": "object"
+    },
+    "AvoidedLossRequest": {
+      "additionalProperties": false,
+      "description": "Ask rupture for expected loss with and without interventions.",
+      "properties": {
+        "contract_version": {
+          "default": "0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "requested_at": {
+          "format": "date-time",
+          "title": "Requested At",
+          "type": "string"
+        },
+        "portfolio": {
+          "$ref": "#/$defs/ExposurePortfolio"
+        },
+        "trigger_kind": {
+          "$ref": "#/$defs/TriggerKind"
+        },
+        "trigger_id": {
+          "description": "Scenario id, ForecastGrid id, or HazardCurveSet id.",
+          "title": "Trigger Id",
+          "type": "string"
+        },
+        "horizon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Forecast horizon like '30d'; None for scenario/hazard.",
+          "title": "Horizon"
+        },
+        "loss_types": {
+          "default": [
+            "structural"
+          ],
+          "items": {
+            "$ref": "#/$defs/LossType"
+          },
+          "title": "Loss Types",
+          "type": "array"
+        },
+        "interventions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Intervention"
+          },
+          "title": "Interventions",
+          "type": "array"
+        },
+        "interval_level": {
+          "default": 0.9,
+          "exclusiveMaximum": 1.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Interval Level",
+          "type": "number"
+        },
+        "consumer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Identifier of the requesting system.",
+          "title": "Consumer"
+        }
+      },
+      "required": [
+        "request_id",
+        "requested_at",
+        "portfolio",
+        "trigger_kind",
+        "trigger_id"
+      ],
+      "title": "AvoidedLossRequest",
+      "type": "object"
+    },
+    "AvoidedLossResponse": {
+      "additionalProperties": false,
+      "properties": {
+        "contract_version": {
+          "default": "0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ResponseStatus"
+        },
+        "responded_at": {
+          "format": "date-time",
+          "title": "Responded At",
+          "type": "string"
+        },
+        "baseline": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/LossResult"
+          },
+          "title": "Baseline",
+          "type": "array"
+        },
+        "interventions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/InterventionOutcome"
+          },
+          "title": "Interventions",
+          "type": "array"
+        },
+        "model_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        }
+      },
+      "required": [
+        "request_id",
+        "status",
+        "responded_at"
+      ],
+      "title": "AvoidedLossResponse",
+      "type": "object"
+    },
+    "ExposurePortfolio": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "currency": {
+          "description": "ISO 4217.",
+          "maxLength": 3,
+          "minLength": 3,
+          "title": "Currency",
+          "type": "string"
+        },
+        "valuation_date": {
+          "format": "date-time",
+          "title": "Valuation Date",
+          "type": "string"
+        },
+        "assets": {
+          "items": {
+            "$ref": "#/$defs/Asset"
+          },
+          "minItems": 1,
+          "title": "Assets",
+          "type": "array"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "id",
+        "currency",
+        "valuation_date",
+        "assets",
+        "provenance"
+      ],
+      "title": "ExposurePortfolio",
+      "type": "object"
+    },
+    "Interval": {
+      "additionalProperties": false,
+      "description": "A central interval on a quantity.",
+      "properties": {
+        "lower": {
+          "title": "Lower",
+          "type": "number"
+        },
+        "upper": {
+          "title": "Upper",
+          "type": "number"
+        },
+        "level": {
+          "default": 0.9,
+          "description": "Coverage, e.g. 0.9.",
+          "exclusiveMaximum": 1.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Level",
+          "type": "number"
+        }
+      },
+      "required": [
+        "lower",
+        "upper"
+      ],
+      "title": "Interval",
+      "type": "object"
+    },
+    "Intervention": {
+      "additionalProperties": false,
+      "description": "Something a risk owner could do; its effect is what avoided loss measures.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "description": {
+          "title": "Description",
+          "type": "string"
+        },
+        "cost": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Cost"
+        },
+        "applies_to_asset_ids": {
+          "default": [],
+          "description": "Empty means the whole portfolio.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Applies To Asset Ids",
+          "type": "array"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "description"
+      ],
+      "title": "Intervention",
+      "type": "object"
+    },
+    "InterventionOutcome": {
+      "additionalProperties": false,
+      "properties": {
+        "intervention_id": {
+          "title": "Intervention Id",
+          "type": "string"
+        },
+        "losses": {
+          "items": {
+            "$ref": "#/$defs/LossResult"
+          },
+          "title": "Losses",
+          "type": "array"
+        },
+        "avoided_expected": {
+          "title": "Avoided Expected",
+          "type": "number"
+        },
+        "avoided_interval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Interval"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        }
+      },
+      "required": [
+        "intervention_id",
+        "losses",
+        "avoided_expected"
+      ],
+      "title": "InterventionOutcome",
+      "type": "object"
+    },
+    "LossResult": {
+      "additionalProperties": false,
+      "properties": {
+        "portfolio_id": {
+          "title": "Portfolio Id",
+          "type": "string"
+        },
+        "trigger_kind": {
+          "$ref": "#/$defs/TriggerKind"
+        },
+        "trigger_id": {
+          "title": "Trigger Id",
+          "type": "string"
+        },
+        "loss_type": {
+          "$ref": "#/$defs/LossType"
+        },
+        "expected_loss": {
+          "minimum": 0.0,
+          "title": "Expected Loss",
+          "type": "number"
+        },
+        "interval": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Interval"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "currency": {
+          "anyOf": [
+            {
+              "maxLength": 3,
+              "minLength": 3,
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Currency"
+        },
+        "method": {
+          "description": "e.g. 'openquake.scenario_risk', 'openquake.event_based_risk'.",
+          "title": "Method",
+          "type": "string"
+        },
+        "method_version": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Method Version"
+        },
+        "computed_at": {
+          "format": "date-time",
+          "title": "Computed At",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "portfolio_id",
+        "trigger_kind",
+        "trigger_id",
+        "loss_type",
+        "expected_loss",
+        "method",
+        "computed_at"
+      ],
+      "title": "LossResult",
+      "type": "object"
+    },
+    "LossType": {
+      "enum": [
+        "structural",
+        "nonstructural",
+        "contents",
+        "business_interruption",
+        "fatalities",
+        "injuries",
+        "displaced"
+      ],
+      "title": "LossType",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Where a record came from. Required on every ingested row and every derived product.\n\n``licence`` is the upstream licence identifier (SPDX where one exists, otherwise the\nprovider's own terms label). ``sha256`` is the digest of the raw payload the record was\nparsed from, so a re-fetch can be compared byte-for-byte. Unknowns are ``None``, never guessed.",
+      "properties": {
+        "source": {
+          "description": "Provider/catalogue identifier, e.g. 'usgs-comcat', 'isc', 'gcmt'.",
+          "title": "Source",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Exact URL or file path the payload came from.",
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "description": "When the payload was fetched (UTC).",
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Digest of the raw payload, hex.",
+          "title": "Sha256"
+        },
+        "licence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upstream licence (SPDX id or provider terms label).",
+          "title": "Licence"
+        },
+        "adapter_version": {
+          "description": "Version of the rupture adapter that parsed the payload.",
+          "title": "Adapter Version",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "source",
+        "retrieved_at",
+        "adapter_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ResponseStatus": {
+      "enum": [
+        "ok",
+        "not_implemented",
+        "error"
+      ],
+      "title": "ResponseStatus",
+      "type": "string"
+    },
+    "TriggerKind": {
+      "enum": [
+        "scenario",
+        "forecast",
+        "hazard"
+      ],
+      "title": "TriggerKind",
+      "type": "string"
+    }
+  },
+  "description": "rupture's public avoided-loss contract: expected loss to a portfolio with and without interventions, with intervals. Shared by file with the sibling serac repository.",
+  "properties": {
+    "request": {
+      "$ref": "#/$defs/AvoidedLossRequest"
+    },
+    "response": {
+      "$ref": "#/$defs/AvoidedLossResponse"
+    }
+  },
+  "required": [
+    "request",
+    "response"
+  ],
+  "title": "AvoidedLoss",
+  "type": "object"
+}
