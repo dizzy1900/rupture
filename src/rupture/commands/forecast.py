@@ -26,14 +26,20 @@ app = typer.Typer(help="Fit models and issue forecasts.", no_args_is_help=True)
 MODELS = {"etas": MODEL_ID, MODEL_ID: MODEL_ID}
 
 
-def _model(name: str, *, auxiliary_years: float) -> MizrahiETAS:
+def _model(
+    name: str, *, auxiliary_years: float, max_iterations: int = 200, max_seconds: float = 1800.0
+) -> MizrahiETAS:
     if name not in MODELS:
         typer.echo(
             f"rupture forecast: model {name!r} is not available; Prompt 1 ships {MODEL_ID} only",
             err=True,
         )
         raise typer.Exit(EXIT_NOT_IMPLEMENTED)
-    return MizrahiETAS(auxiliary_years=auxiliary_years)
+    return MizrahiETAS(
+        auxiliary_years=auxiliary_years,
+        max_iterations=max_iterations,
+        max_seconds=max_seconds,
+    )
 
 
 def _catalog_path(catalog: Path | None, data_dir: Path, region_id: str) -> Path:
@@ -62,9 +68,30 @@ def fit(  # noqa: PLR0917 - typer options
     auxiliary_years: Annotated[
         float, typer.Option("--auxiliary-years", help="Auxiliary window length in years.")
     ] = 2.0,
+    max_iterations: Annotated[
+        int,
+        typer.Option(
+            "--max-iterations",
+            help="EM iteration cap; the fit stops and is "
+            "persisted with converged=false when it is hit.",
+        ),
+    ] = 200,
+    max_seconds: Annotated[
+        float,
+        typer.Option(
+            "--max-seconds",
+            help="EM wall-clock cap in seconds; large "
+            "catalogues (California at its Mc) need hours, not the 1800 s default.",
+        ),
+    ] = 1800.0,
 ) -> None:
     """Fit on events with origin_time < cutoff; persist FitResult + diagnostics under baselines/."""
-    m = _model(model, auxiliary_years=auxiliary_years)
+    m = _model(
+        model,
+        auxiliary_years=auxiliary_years,
+        max_iterations=max_iterations,
+        max_seconds=max_seconds,
+    )
     cut = io.parse_utc(cutoff)
     region_obj = io.load_region(data_dir / "regions" / region)
     cat = io.load_catalog(_catalog_path(catalog, data_dir, region))
