@@ -27,6 +27,21 @@ def _fit(cutoff: datetime, mu: float) -> FitResult:
     )
 
 
+def test_refit_does_not_replace_the_declared_baseline(tmp_path: Path) -> None:
+    """A schedule refit is archived only; the fit_etas DVC stage output stays put."""
+    declared = _fit(datetime(2022, 1, 1, tzinfo=UTC), -7.0)
+    refit = _fit(datetime(2023, 1, 1, tzinfo=UTC), -6.5)
+    save_fit(declared, tmp_path)
+    save_fit(refit, tmp_path, canonical=False)
+
+    still = load_fit(tmp_path, "r")
+    assert still.fit_cutoff == declared.fit_cutoff, "a refit replaced the declared baseline"
+    assert still.parameters["log10_mu"] == -7.0
+    kept = archive_dir(tmp_path, "r", refit.fit_cutoff) / "fit_result.json"
+    assert kept.exists(), "the refit must still be archived"
+    assert json.loads(kept.read_text())["parameters"]["log10_mu"] == -6.5
+
+
 def test_refit_archives_rather_than_destroys(tmp_path: Path) -> None:
     first = _fit(datetime(2022, 1, 1, tzinfo=UTC), -7.0)
     later = _fit(datetime(2026, 1, 1, tzinfo=UTC), -6.0)

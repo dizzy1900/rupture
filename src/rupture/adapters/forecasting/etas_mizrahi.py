@@ -765,17 +765,26 @@ def archive_dir(baselines_dir: Path, region_id: str, cutoff: datetime) -> Path:
     return fit_dir(baselines_dir, region_id) / "fits" / f"{cutoff:%Y%m%dT%H%M%SZ}"
 
 
-def save_fit(fit: FitResult, baselines_dir: Path) -> Path:
+def save_fit(fit: FitResult, baselines_dir: Path, *, canonical: bool = True) -> Path:
     """Write ``fit_result.json``, ``parameters.json`` and ``diagnostics.json``; return the dir.
 
-    The three files are written twice: at the top of ``baselines/etas/<region>/``, which always
-    holds the most recent fit and is what :func:`load_fit` reads, and under
-    ``fits/<cutoff>/``, which keeps every fit ever made for the region. Without the archive a
-    schedule's refits would overwrite the fit that the `fit_etas` DVC stage declares as its
-    output, and the published baseline could no longer be reproduced from its own stage command.
+    Every fit is archived under ``fits/<cutoff>/``. A **canonical** fit is additionally written at
+    the top of ``baselines/etas/<region>/``, which is what :func:`load_fit` reads and what the
+    ``fit_etas`` DVC stage declares as its output.
+
+    A schedule's refits pass ``canonical=False``: they are schedule state, not the declared
+    baseline. Writing them at the top level would replace the artefact that the DVC stage
+    command produces, so the published baseline could no longer be reproduced from its own
+    stage, and a published parameter table would silently stop matching the file it cites.
+    The schedule uses the returned :class:`FitResult` directly, so nothing depends on a refit
+    being at the top level.
     """
     out = fit_dir(baselines_dir, fit.region_id)
     out.mkdir(parents=True, exist_ok=True)
+    previous: dict[str, str | None] = {
+        name: (out / name).read_text(encoding="utf-8") if (out / name).exists() else None
+        for name in (FIT_RESULT_FILE, PARAMETERS_FILE, DIAGNOSTICS_FILE)
+    }
     (out / FIT_RESULT_FILE).write_text(
         json.dumps(fit.model_dump(mode="json"), indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
@@ -802,6 +811,14 @@ def save_fit(fit: FitResult, baselines_dir: Path) -> Path:
     archive.mkdir(parents=True, exist_ok=True)
     for name in (FIT_RESULT_FILE, PARAMETERS_FILE, DIAGNOSTICS_FILE):
         (archive / name).write_text((out / name).read_text(encoding="utf-8"), encoding="utf-8")
+    if not canonical:
+        # restore the declared baseline: only the archive keeps this refit
+        for name in (FIT_RESULT_FILE, PARAMETERS_FILE, DIAGNOSTICS_FILE):
+            kept = previous[name]
+            if kept is None:
+                (out / name).unlink(missing_ok=True)
+            else:
+                (out / name).write_text(kept, encoding="utf-8")
     return out
 
 

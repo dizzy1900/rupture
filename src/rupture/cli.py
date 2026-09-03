@@ -115,9 +115,31 @@ def schema_export(
 
 # ------------------------------------------------------------------ release
 @app.command()
-def promote() -> None:
-    """Print the promotion record. Reached by `make promote` only when the gates are green."""
-    print(f"promote: rupture {__version__} — validate-rupture green; see RELEASE_STATUS.md")
+def promote(
+    root: Annotated[Path, typer.Option(help="Repository root.")] = REPO_ROOT,
+) -> None:
+    """Re-run every gate and print the promotion record, naming each skip and its reason.
+
+    `make promote` already refuses unless `validate-rupture` is green, but this command does not
+    take that on trust: it runs the gates itself, so the record it prints reports the state it
+    actually observed rather than asserting one. A gate that is SKIPPED does not block promotion
+    (that is the rule in CLAUDE.md) but its reason is always printed, so a promotion record can
+    never hide that, say, the OpenQuake container never ran.
+    """
+    results = [run_gate(name, root) for name in GATES]
+    for result in results:
+        print(result.render())
+    blocking = [r for r in results if not r.ok]
+    skipped = [r for r in results if r.status == GateStatus.SKIPPED]
+    if blocking:
+        names = ", ".join(r.name for r in blocking)
+        print(f"promote: REFUSED — not green: {names}")
+        raise typer.Exit(EXIT_FAIL)
+    passed = sum(1 for r in results if r.status == GateStatus.PASSED)
+    summary = f"{passed}/{len(results)} gates passed"
+    if skipped:
+        summary += f", {len(skipped)} skipped ({', '.join(r.name for r in skipped)})"
+    print(f"promote: rupture {__version__} — {summary}; see RELEASE_STATUS.md")
 
 
 @app.command("underwriting-check")

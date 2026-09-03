@@ -1,0 +1,2793 @@
+{
+  "catalog_event_hash": "80649982ef4a9e43343e44f1a9c99bf4062266b0b1570e581b090e529e334cd5",
+  "catalog_id": "turkiye-eaf/1976-01-01T00:00:00+00:00/2026-08-01T00:00:00+00:00",
+  "catalogue_end": "2026-08-01T00:00:00+00:00",
+  "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
+  "generated_at": "2026-09-03T18:14:25.331236+00:00",
+  "leakage_checks": {
+    "snapshot_constant_between_refits": "asserted over the schedule",
+    "target_inside_window": "asserted per window",
+    "training_before_cutoff": "asserted per fit"
+  },
+  "model_id": "etas-mizrahi",
+  "model_version": "etas-3.0.0+097f08b",
+  "n_issued": 55,
+  "n_scored": 55,
+  "not_scored": [],
+  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes.",
+  "pass_rates": {
+    "CL": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 25,
+      "rate": 0.8620689655172413,
+      "scored": 29
+    },
+    "L": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 26,
+      "rate": 0.896551724137931,
+      "scored": 29
+    },
+    "M": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 27,
+      "rate": 0.9310344827586207,
+      "scored": 29
+    },
+    "N": {
+      "denominator_rule": "all evaluated windows",
+      "passed": 50,
+      "rate": 0.9090909090909091,
+      "scored": 55
+    },
+    "S": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 20,
+      "rate": 0.6896551724137931,
+      "scored": 29
+    }
+  },
+  "pycsep_version": "0.8.0",
+  "refits": [
+    {
+      "boundary": "2023-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "run_id": "refit-turkiye-eaf-20230101T000000Z",
+      "training_catalog_hash": "03835f9edd65c18c7de00da49676fe731d60bd497917a9f7b15f87409c68b79b"
+    },
+    {
+      "boundary": "2024-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "run_id": "refit-turkiye-eaf-20240101T000000Z",
+      "training_catalog_hash": "d33f4398f2bd72c7ff48c37c59807f8ee455aee0b417d7d956c48d5b4a95032e"
+    },
+    {
+      "boundary": "2025-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "run_id": "refit-turkiye-eaf-20250101T000000Z",
+      "training_catalog_hash": "a12b08324af203832dacb6ee2e0dd25f3833de062b3933e34fcee73e64318492"
+    },
+    {
+      "boundary": "2026-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "7b7892acbd121f9e945f7b0efbed9fc7657c334e21060d63a44eaf3bfd2bd413",
+      "run_id": "refit-turkiye-eaf-20260101T000000Z",
+      "training_catalog_hash": "1eba9ce4234db5d36e8d11aac1987dd17ee96da2a4fdb35e536b09e6aefb1322"
+    }
+  ],
+  "region_id": "turkiye-eaf",
+  "schedule": {
+    "alpha": 0.05,
+    "end": "2026-08-01T00:00:00+00:00",
+    "eval_simulations": 1000,
+    "horizon": "30d",
+    "n_simulations": 1000,
+    "refit_policy": "yearly",
+    "seed": 20220101,
+    "start": "2022-01-01T00:00:00+00:00",
+    "step": "30d",
+    "tests": [
+      "N",
+      "M",
+      "S",
+      "L",
+      "CL"
+    ]
+  },
+  "windows": [
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220101T000000Z-30d",
+      "issue_time": "2022-01-01T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6029024967677887,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5059997922318114,
+      "window_end": "2022-01-31T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220131T000000Z-30d",
+      "issue_time": "2022-01-31T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.237,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.682132605021344
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.015,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.682132605021344
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.908,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.577215763851214
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.06549708787672348,
+          "quantile_low": 0.9912702297657173,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.074,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -15.156680787013826
+        }
+      },
+      "total_expected": 0.4145568079840778,
+      "window_end": "2022-03-02T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220302T000000Z-30d",
+      "issue_time": "2022-03-02T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.639054812558271,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.44776504963193897,
+      "window_end": "2022-04-01T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220401T000000Z-30d",
+      "issue_time": "2022-04-01T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.627,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.767583248145701
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.342,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.767583248145701
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.299,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.9220087415837988
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4513696885670041,
+          "quantile_low": 0.8779897929961371,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.725,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.734969030966643
+        }
+      },
+      "total_expected": 0.6003304496663155,
+      "window_end": "2022-05-01T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220501T000000Z-30d",
+      "issue_time": "2022-05-01T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6314117956817422,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4597970212434828,
+      "window_end": "2022-05-31T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220531T000000Z-30d",
+      "issue_time": "2022-05-31T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6686297323828163,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4025248363725339,
+      "window_end": "2022-06-30T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220630T000000Z-30d",
+      "issue_time": "2022-06-30T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.647413218229262,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4347705202914715,
+      "window_end": "2022-07-30T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220730T000000Z-30d",
+      "issue_time": "2022-07-30T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.125,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.526757324822343
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.087,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.526757324822343
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.668337169452801
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.34820984445887015,
+          "quantile_low": 0.9307776010236394,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.026,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.581831658925742
+        }
+      },
+      "total_expected": 0.42803261618900695,
+      "window_end": "2022-08-29T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220829T000000Z-30d",
+      "issue_time": "2022-08-29T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.405,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.965181221198467
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.18,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.965181221198467
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.548,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.295172955518305
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3643194471012956,
+          "quantile_low": 0.9236814229787057,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.331,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.425216487940524
+        }
+      },
+      "total_expected": 0.4530591171410182,
+      "window_end": "2022-09-28T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20220928T000000Z-30d",
+      "issue_time": "2022-09-28T00:00:00+00:00",
+      "n_excluded_no_mw": 6,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.205,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.593378146926446
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.163,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.593378146926446
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.459,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5041182175401353
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.42042758284501813,
+          "quantile_low": 0.8957086881124311,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.175,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.937678008242163
+        }
+      },
+      "total_expected": 0.5454646591176753,
+      "window_end": "2022-10-28T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20221028T000000Z-30d",
+      "issue_time": "2022-10-28T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5997191241782739,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5112938597408907,
+      "window_end": "2022-11-27T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20221127T000000Z-30d",
+      "issue_time": "2022-11-27T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.115,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.752478000149818
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.089,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.752478000149818
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.086227693496463
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.34127193735639016,
+          "quantile_low": 0.9337104569865495,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.036,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.375202102717255
+        }
+      },
+      "total_expected": 0.4174444811708483,
+      "window_end": "2022-12-27T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20221227T000000Z-30d",
+      "issue_time": "2022-12-27T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f0b0865d96031a8530a1ac4c5f2fe83de3b031f9646041783d9e4d3c9349503b",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.929,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.593322731208083
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.424,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.593322731208083
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0862276934964634
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.43175186176074587,
+          "quantile_low": 0.8894203338250589,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.916,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.371317172876504
+        }
+      },
+      "total_expected": 0.5651970925606074,
+      "window_end": "2023-01-26T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230126T000000Z-30d",
+      "issue_time": "2023-01-26T00:00:00+00:00",
+      "n_excluded_no_mw": 682,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 160,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1932.2521805956314
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1932.2521805956314
+        },
+        "M": {
+          "passed": false,
+          "quantile": 0.011,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -58.38905409311377
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 160.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -835.0275969425446
+        }
+      },
+      "total_expected": 0.45359556937427653,
+      "window_end": "2023-02-25T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230225T000000Z-30d",
+      "issue_time": "2023-02-25T00:00:00+00:00",
+      "n_excluded_no_mw": 131,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 12,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": false,
+          "quantile": 0.046,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -94.76998123195435
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.989,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -94.76998123195435
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.898,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.986096454259322
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.9987108799596861,
+          "quantile_low": 0.0028790122256857386,
+          "statistic": 12.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.002,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -65.73850544670944
+        }
+      },
+      "total_expected": 25.159884828361335,
+      "window_end": "2023-03-27T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230327T000000Z-30d",
+      "issue_time": "2023-03-27T00:00:00+00:00",
+      "n_excluded_no_mw": 61,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.106,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.984010961366444
+        },
+        "L": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.984010961366444
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.834,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.642266460556194
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.9999543909818631,
+          "quantile_low": 0.000311952155900924,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.014,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.724725050777636
+        }
+      },
+      "total_expected": 12.605909300605951,
+      "window_end": "2023-04-26T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230426T000000Z-30d",
+      "issue_time": "2023-04-26T00:00:00+00:00",
+      "n_excluded_no_mw": 62,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 7,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.774,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -48.260313788086634
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.789,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -48.260313788086634
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.981,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.353437744050124
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7977034584811143,
+          "quantile_low": 0.3181155822265412,
+          "statistic": 7.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.337,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -34.51847566828282
+        }
+      },
+      "total_expected": 9.049639047073285,
+      "window_end": "2023-05-26T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230526T000000Z-30d",
+      "issue_time": "2023-05-26T00:00:00+00:00",
+      "n_excluded_no_mw": 38,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.799,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.433049871271987
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.998,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.433049871271987
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.827,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.87679861841664
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.9993987712594595,
+          "quantile_low": 0.005060262795445053,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.636,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.143428136830631
+        }
+      },
+      "total_expected": 7.416535095937967,
+      "window_end": "2023-06-25T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230625T000000Z-30d",
+      "issue_time": "2023-06-25T00:00:00+00:00",
+      "n_excluded_no_mw": 23,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.0019575093706895837,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 6.236082343040744,
+      "window_end": "2023-07-25T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230725T000000Z-30d",
+      "issue_time": "2023-07-25T00:00:00+00:00",
+      "n_excluded_no_mw": 33,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 5,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": false,
+          "quantile": 0.006,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -48.579054525485354
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.294,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -48.579054525485354
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.788,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.84590510421539
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6165315607403584,
+          "quantile_low": 0.557038255258995,
+          "statistic": 5.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -37.36823385742629
+        }
+      },
+      "total_expected": 5.33703336375594,
+      "window_end": "2023-08-24T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230824T000000Z-30d",
+      "issue_time": "2023-08-24T00:00:00+00:00",
+      "n_excluded_no_mw": 20,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.899,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.183857792732995
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.992,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.183857792732995
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0858904162751903
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9940359888873335,
+          "quantile_low": 0.036511747711944716,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.875,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.60950269194526
+        }
+      },
+      "total_expected": 5.122012018790553,
+      "window_end": "2023-09-23T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20230923T000000Z-30d",
+      "issue_time": "2023-09-23T00:00:00+00:00",
+      "n_excluded_no_mw": 17,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.877,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.260899520219384
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.967,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.260899520219384
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.667706820558072
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9809613009974363,
+          "quantile_low": 0.0944563467000124,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.733,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.008478722649462
+        }
+      },
+      "total_expected": 3.9612815816507827,
+      "window_end": "2023-10-23T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20231023T000000Z-30d",
+      "issue_time": "2023-10-23T00:00:00+00:00",
+      "n_excluded_no_mw": 17,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.286,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.11979430145951
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.937,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.11979430145951
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0858904162751877
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9872958881566296,
+          "quantile_low": 0.06816809899894627,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.162,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.141882536261065
+        }
+      },
+      "total_expected": 4.365829570724363,
+      "window_end": "2023-11-22T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20231122T000000Z-30d",
+      "issue_time": "2023-11-22T00:00:00+00:00",
+      "n_excluded_no_mw": 16,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 3,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.708,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.24211063874898
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.613,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.24211063874898
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.839,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.170926180679821
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6581982314782886,
+          "quantile_low": 0.5606901851185337,
+          "statistic": 3.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.416,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.44522418358036
+        }
+      },
+      "total_expected": 3.389334424684688,
+      "window_end": "2023-12-22T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20231222T000000Z-30d",
+      "issue_time": "2023-12-22T00:00:00+00:00",
+      "n_excluded_no_mw": 9,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "e68da57d652ffac7c702f1e3de64f19026d635fe4dc48b3faa27a97f222d9e21",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.977,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.542591368357126
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.967,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.542591368357126
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.667706820558072
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9741225438228571,
+          "quantile_low": 0.12044359488771506,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.896,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.5164287390496
+        }
+      },
+      "total_expected": 3.6543831071811708,
+      "window_end": "2024-01-21T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240121T000000Z-30d",
+      "issue_time": "2024-01-21T00:00:00+00:00",
+      "n_excluded_no_mw": 18,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.569,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.492734665113048
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.736,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.492734665113048
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.334,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.7292209790748614
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.8474145249930168,
+          "quantile_low": 0.43945079869974535,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.711,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.514771257254972
+        }
+      },
+      "total_expected": 1.880030348102489,
+      "window_end": "2024-02-20T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240220T000000Z-30d",
+      "issue_time": "2024-02-20T00:00:00+00:00",
+      "n_excluded_no_mw": 4,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.15970817943713353,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.8344070075578176,
+      "window_end": "2024-03-21T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240321T000000Z-30d",
+      "issue_time": "2024-03-21T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.195,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.986835268814133
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.524,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.986835268814133
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.666,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.048048627168824
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7946010431643689,
+          "quantile_low": 0.5305046434785494,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.094,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.815181681800725
+        }
+      },
+      "total_expected": 1.5828010601976006,
+      "window_end": "2024-04-20T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240420T000000Z-30d",
+      "issue_time": "2024-04-20T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.23372496580834648,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.453610214694868,
+      "window_end": "2024-05-20T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240520T000000Z-30d",
+      "issue_time": "2024-05-20T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.30318210157007286,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.1934216587173365,
+      "window_end": "2024-06-19T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240619T000000Z-30d",
+      "issue_time": "2024-06-19T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.2664383206918135,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.322612504220069,
+      "window_end": "2024-07-19T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240719T000000Z-30d",
+      "issue_time": "2024-07-19T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.214,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -19.9280400740173
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.175,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -19.9280400740173
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.028630541311728
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.35936326220374837,
+          "quantile_low": 0.8659570838048077,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.029,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.329735861700726
+        }
+      },
+      "total_expected": 1.2611790951698187,
+      "window_end": "2024-08-18T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240818T000000Z-30d",
+      "issue_time": "2024-08-18T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.843,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.414109463191725
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.649,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.414109463191725
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.426,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5021635284395236
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7116447816169309,
+          "quantile_low": 0.6469428570907374,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.927,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.8863637453700175
+        }
+      },
+      "total_expected": 1.2435621616921733,
+      "window_end": "2024-09-17T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20240917T000000Z-30d",
+      "issue_time": "2024-09-17T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": false,
+          "quantile": 0.031,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.81532449715671
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.303,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.81532449715671
+        },
+        "M": {
+          "passed": false,
+          "quantile": 0.044,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.772738034792982
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6661976070461193,
+          "quantile_low": 0.7000524143485891,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.231,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.038147402128454
+        }
+      },
+      "total_expected": 1.0972060989548118,
+      "window_end": "2024-10-17T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20241017T000000Z-30d",
+      "issue_time": "2024-10-17T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 3,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.085,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -28.770686780378934
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.212,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -28.770686780378934
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.339,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.676743449238835
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4356990748895804,
+          "quantile_low": 0.7743779765421706,
+          "statistic": 3.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.054,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -21.426895344938945
+        }
+      },
+      "total_expected": 2.4207346909932967,
+      "window_end": "2024-11-16T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20241116T000000Z-30d",
+      "issue_time": "2024-11-16T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.20829543287491842,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.5687978566640874,
+      "window_end": "2024-12-16T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20241216T000000Z-30d",
+      "issue_time": "2024-12-16T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "2b537cbcb916ed0cff1acca1510a1eb971cde1316fb509aaa1c0aafa98defb60",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.3057953932760908,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.1848390501000219,
+      "window_end": "2025-01-15T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250115T000000Z-30d",
+      "issue_time": "2025-01-15T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.28562973404449477,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.2530589431358097,
+      "window_end": "2025-02-14T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250214T000000Z-30d",
+      "issue_time": "2025-02-14T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.149,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.076507916200015
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.308,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.076507916200015
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.811,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.820907916499617
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5993861199768336,
+          "quantile_low": 0.7670783145053129,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.032,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.251746196359779
+        }
+      },
+      "total_expected": 0.9147572082648626,
+      "window_end": "2025-03-16T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250316T000000Z-30d",
+      "issue_time": "2025-03-16T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.3888477080631695,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.9445675079998194,
+      "window_end": "2025-04-15T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250415T000000Z-30d",
+      "issue_time": "2025-04-15T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.814,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.528179749705245
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.579,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.528179749705245
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.666,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.047993853511345
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6328297901657458,
+          "quantile_low": 0.7350489669056979,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.781,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.480184036615575
+        }
+      },
+      "total_expected": 1.0019297514292056,
+      "window_end": "2025-05-15T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250515T000000Z-30d",
+      "issue_time": "2025-05-15T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4053462021697256,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.9030137568541221,
+      "window_end": "2025-06-14T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250614T000000Z-30d",
+      "issue_time": "2025-06-14T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4151666874762636,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8790751828245358,
+      "window_end": "2025-07-14T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250714T000000Z-30d",
+      "issue_time": "2025-07-14T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4412694599972574,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8180995697303064,
+      "window_end": "2025-08-13T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250813T000000Z-30d",
+      "issue_time": "2025-08-13T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4374987970954731,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.826681322684309,
+      "window_end": "2025-09-12T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20250912T000000Z-30d",
+      "issue_time": "2025-09-12T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.410876079118091,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8894636206109601,
+      "window_end": "2025-10-12T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20251012T000000Z-30d",
+      "issue_time": "2025-10-12T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.2613125258001105,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.3420381711325746,
+      "window_end": "2025-11-11T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20251111T000000Z-30d",
+      "issue_time": "2025-11-11T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.47220177822177134,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7503488885144959,
+      "window_end": "2025-12-11T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20251211T000000Z-30d",
+      "issue_time": "2025-12-11T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "c347bf3ea2e84eadf00d5a52ed36744fe408a27f4cb8ae8b1e4a04b852d24e6e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.43947932256240707,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.822164610603255,
+      "window_end": "2026-01-10T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20260110T000000Z-30d",
+      "issue_time": "2026-01-10T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "7b7892acbd121f9e945f7b0efbed9fc7657c334e21060d63a44eaf3bfd2bd413",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.45122519702954533,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7957887358771579,
+      "window_end": "2026-02-09T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20260209T000000Z-30d",
+      "issue_time": "2026-02-09T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "7b7892acbd121f9e945f7b0efbed9fc7657c334e21060d63a44eaf3bfd2bd413",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.509,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.560877051033627
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.319,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.560877051033627
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.665,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0466352299094974
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.50354966397778,
+          "quantile_low": 0.8441005206637411,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.398,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.457683299800126
+        }
+      },
+      "total_expected": 0.7002718286526879,
+      "window_end": "2026-03-11T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20260311T000000Z-30d",
+      "issue_time": "2026-03-11T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "7b7892acbd121f9e945f7b0efbed9fc7657c334e21060d63a44eaf3bfd2bd413",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.45695365925361187,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7831732953003411,
+      "window_end": "2026-04-10T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20260410T000000Z-30d",
+      "issue_time": "2026-04-10T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "7b7892acbd121f9e945f7b0efbed9fc7657c334e21060d63a44eaf3bfd2bd413",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.49869214666843253,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6957663141609677,
+      "window_end": "2026-05-10T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20260510T000000Z-30d",
+      "issue_time": "2026-05-10T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "7b7892acbd121f9e945f7b0efbed9fc7657c334e21060d63a44eaf3bfd2bd413",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.07,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.11059272223902
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.043,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.11059272223902
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.266,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.301542106409506
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.1926099676264802,
+          "quantile_low": 0.952015195912777,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.045,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -15.79599911146212
+        }
+      },
+      "total_expected": 0.8038986619622543,
+      "window_end": "2026-06-09T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-turkiye-eaf-20260609T000000Z-30d",
+      "issue_time": "2026-06-09T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "7b7892acbd121f9e945f7b0efbed9fc7657c334e21060d63a44eaf3bfd2bd413",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.261,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.45556575106339
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.305,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.45556575106339
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.591044941992241
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5767393270625206,
+          "quantile_low": 0.7871662495597818,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.069,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.8536599591907
+        }
+      },
+      "total_expected": 0.859767041659586,
+      "window_end": "2026-07-09T00:00:00+00:00"
+    }
+  ]
+}

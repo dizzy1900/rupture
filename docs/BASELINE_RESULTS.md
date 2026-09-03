@@ -64,8 +64,8 @@ events given the history, and the history held no such sequence. A model that ha
 window would be evidence of leakage, not of skill.
 
 What the model does do is visible in the windows that follow it: 12 observed against 25.2
-expected, then 7 against 9.1, then 5 against 5.3 — the aftershock decay tracked to within a factor
-of two, which is what the ETAS baseline is for and what any challenger in Prompt 2 has to beat.
+expected, then 7 against 9.1, then 5 against 5.3 — the aftershock decay tracked to
+ratios of 2.1, 1.3 and 1.1 against observation, which is what the ETAS baseline is for and what any challenger in Prompt 2 has to beat.
 
 Nepal's busiest window (2024-12-16, 22 targets against 0.6 expected) is the same story on a
 smaller sequence.

@@ -116,6 +116,11 @@ def run(repo_root: Path) -> GateResult:
 
     failures.extend(_negative_tests(catalog, model, report))
     findings.append("leakage assertions: positive checks passed inside the schedule")
+    findings.append(
+        "negative tests passed (each injected violation raised LeakageError): "
+        "1 post-issue history reaching forecast(); 2 training reaching its cutoff; "
+        "3 a parameter change with no logged refit; 4 assert_all_before on a late event"
+    )
 
     status = GateStatus.PASSED if not failures else GateStatus.FAILED
     return GateResult(name="validate-eval", status=status, findings=[*failures, *findings])

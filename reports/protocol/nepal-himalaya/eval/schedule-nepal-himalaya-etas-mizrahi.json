@@ -1,0 +1,2793 @@
+{
+  "catalog_event_hash": "98ed19af7dca58aec01b4951fe770c2e53537d9567557d2e4fac4e0b0823b9a0",
+  "catalog_id": "nepal-himalaya/1976-01-01T00:00:00+00:00/2026-08-01T00:00:00+00:00",
+  "catalogue_end": "2026-08-01T00:00:00+00:00",
+  "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
+  "generated_at": "2026-09-03T18:53:00.750579+00:00",
+  "leakage_checks": {
+    "snapshot_constant_between_refits": "asserted over the schedule",
+    "target_inside_window": "asserted per window",
+    "training_before_cutoff": "asserted per fit"
+  },
+  "model_id": "etas-mizrahi",
+  "model_version": "etas-3.0.0+097f08b",
+  "n_issued": 55,
+  "n_scored": 55,
+  "not_scored": [],
+  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes.",
+  "pass_rates": {
+    "CL": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 19,
+      "rate": 0.8636363636363636,
+      "scored": 22
+    },
+    "L": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 17,
+      "rate": 0.7727272727272727,
+      "scored": 22
+    },
+    "M": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 21,
+      "rate": 0.9545454545454546,
+      "scored": 22
+    },
+    "N": {
+      "denominator_rule": "all evaluated windows",
+      "passed": 51,
+      "rate": 0.9272727272727272,
+      "scored": 55
+    },
+    "S": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 16,
+      "rate": 0.7272727272727273,
+      "scored": 22
+    }
+  },
+  "pycsep_version": "0.8.0",
+  "refits": [
+    {
+      "boundary": "2023-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "run_id": "refit-nepal-himalaya-20230101T000000Z",
+      "training_catalog_hash": "78803a134499f7eb876b2ec6d8e2f333f4cbc897d1a66205d7018a45450490ff"
+    },
+    {
+      "boundary": "2024-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "run_id": "refit-nepal-himalaya-20240101T000000Z",
+      "training_catalog_hash": "81fff8967b4b824d3fdf6913e616b362928f2dff6894dde87ba5afbf59e7d445"
+    },
+    {
+      "boundary": "2025-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "run_id": "refit-nepal-himalaya-20250101T000000Z",
+      "training_catalog_hash": "3f3db44f25f27b7c9d5976dd664747f1f818dc7b46ad4392b7f845dd9755307b"
+    },
+    {
+      "boundary": "2026-01-01T00:00:00+00:00",
+      "parameter_snapshot_hash": "8c5d9677d42da86cfe8be47e0fd93bb90b4ec933c2ab4a87885f6f2c5736707e",
+      "run_id": "refit-nepal-himalaya-20260101T000000Z",
+      "training_catalog_hash": "8b8fce65ae8d88b8271c7f471f80b9e8a3c514350448b4dfb408ace5be68b10c"
+    }
+  ],
+  "region_id": "nepal-himalaya",
+  "schedule": {
+    "alpha": 0.05,
+    "end": "2026-08-01T00:00:00+00:00",
+    "eval_simulations": 1000,
+    "horizon": "30d",
+    "n_simulations": 1000,
+    "refit_policy": "yearly",
+    "seed": 20220101,
+    "start": "2022-01-01T00:00:00+00:00",
+    "step": "30d",
+    "tests": [
+      "N",
+      "M",
+      "S",
+      "L",
+      "CL"
+    ]
+  },
+  "windows": [
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220101T000000Z-30d",
+      "issue_time": "2022-01-01T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.191,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.569257499520056
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.151,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.569257499520056
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.56152778142122
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.41879390520341975,
+          "quantile_low": 0.8965975012151008,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.034,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.853788866662267
+        }
+      },
+      "total_expected": 0.5426498607673861,
+      "window_end": "2022-01-31T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220131T000000Z-30d",
+      "issue_time": "2022-01-31T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5753727237885824,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5527372329010775,
+      "window_end": "2022-03-02T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220302T000000Z-30d",
+      "issue_time": "2022-03-02T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5835047841724026,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5387026281933329,
+      "window_end": "2022-04-01T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220401T000000Z-30d",
+      "issue_time": "2022-04-01T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5868411729064741,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5330010700308118,
+      "window_end": "2022-05-01T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220501T000000Z-30d",
+      "issue_time": "2022-05-01T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5673539965048153,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.566771837608822,
+      "window_end": "2022-05-31T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220531T000000Z-30d",
+      "issue_time": "2022-05-31T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.833,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.126192854019763
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.413,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.126192854019763
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.65,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.03250484321079
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.46078843958463467,
+          "quantile_low": 0.8722541138749023,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.785,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.9942030018098444
+        }
+      },
+      "total_expected": 0.6176472796743958,
+      "window_end": "2022-06-30T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220630T000000Z-30d",
+      "issue_time": "2022-06-30T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5589565118920704,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5816836051108005,
+      "window_end": "2022-07-30T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220730T000000Z-30d",
+      "issue_time": "2022-07-30T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 4,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.544,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -38.98116886514126
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.001,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -38.98116886514126
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.100546454449607
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0028127990770384637,
+          "quantile_low": 0.9996853488600402,
+          "statistic": 4.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.126,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -27.669262885817357
+        }
+      },
+      "total_expected": 0.570719070182875,
+      "window_end": "2022-08-29T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220829T000000Z-30d",
+      "issue_time": "2022-08-29T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.48790047518715274,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7176438382170756,
+      "window_end": "2022-09-28T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20220928T000000Z-30d",
+      "issue_time": "2022-09-28T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.174,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.541017041153102
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.176,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.541017041153102
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.804,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.7970163123159972
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.428650707254036,
+          "quantile_low": 0.8911646505752255,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.05,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.603989272332706
+        }
+      },
+      "total_expected": 0.5597545352549497,
+      "window_end": "2022-10-28T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20221028T000000Z-30d",
+      "issue_time": "2022-10-28T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 4,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.298,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -40.54490367449667
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.001,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -40.54490367449667
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.476,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.468750175521858
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.003888898882433711,
+          "quantile_low": 0.9995241665862926,
+          "statistic": 4.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.295,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.48370801328627
+        }
+      },
+      "total_expected": 0.6255417448225021,
+      "window_end": "2022-11-27T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20221127T000000Z-30d",
+      "issue_time": "2022-11-27T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.47169881268393155,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7514146057950859,
+      "window_end": "2022-12-27T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20221227T000000Z-30d",
+      "issue_time": "2022-12-27T00:00:00+00:00",
+      "n_excluded_no_mw": 5,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.095,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.0803828698045
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.188,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.0803828698045
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.156,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.445436028579499
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5305713683545996,
+          "quantile_low": 0.8244288711584068,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.144,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.599310026402579
+        }
+      },
+      "total_expected": 0.7562390011633731,
+      "window_end": "2023-01-26T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230126T000000Z-30d",
+      "issue_time": "2023-01-26T00:00:00+00:00",
+      "n_excluded_no_mw": 4,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4196230515353818,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.868398467040036,
+      "window_end": "2023-02-25T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230225T000000Z-30d",
+      "issue_time": "2023-02-25T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5022020237691134,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6887528024596965,
+      "window_end": "2023-03-27T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230327T000000Z-30d",
+      "issue_time": "2023-03-27T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.358,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.494830068062093
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.255,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.494830068062093
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.4,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5035467986938515
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.48757321423273614,
+          "quantile_low": 0.8550340204662605,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.395,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.9201126930963515
+        }
+      },
+      "total_expected": 0.6685974352140975,
+      "window_end": "2023-04-26T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230426T000000Z-30d",
+      "issue_time": "2023-04-26T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.71,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.31427055748554
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.368,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.31427055748554
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.65,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.032020639254272
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4805654538572506,
+          "quantile_low": 0.8596716902561664,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.677,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.204137496417854
+        }
+      },
+      "total_expected": 0.6550144703311938,
+      "window_end": "2023-05-26T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230526T000000Z-30d",
+      "issue_time": "2023-05-26T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5513283730963092,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5954246889094226,
+      "window_end": "2023-06-25T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230625T000000Z-30d",
+      "issue_time": "2023-06-25T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5662628443286046,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5686969193011282,
+      "window_end": "2023-07-25T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230725T000000Z-30d",
+      "issue_time": "2023-07-25T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.806,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.032718014128744
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.47,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.032718014128744
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.804,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.7962575595344683
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5330286576467899,
+          "quantile_low": 0.8225641303959954,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.71,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.202491397951696
+        }
+      },
+      "total_expected": 0.7614873886068585,
+      "window_end": "2023-08-24T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230824T000000Z-30d",
+      "issue_time": "2023-08-24T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5645287083710973,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5717640404037194,
+      "window_end": "2023-09-23T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20230923T000000Z-30d",
+      "issue_time": "2023-09-23T00:00:00+00:00",
+      "n_excluded_no_mw": 10,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 7,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.673,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -67.01306673043192
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -67.01306673043192
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.473,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.75216369781869
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 2.9160050206700205e-06,
+          "quantile_low": 0.9999997871983815,
+          "statistic": 7.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.405,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -41.305768202334775
+        }
+      },
+      "total_expected": 0.5888522865467273,
+      "window_end": "2023-10-23T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20231023T000000Z-30d",
+      "issue_time": "2023-10-23T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": false,
+          "quantile": 0.022,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.8909516616384
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.077,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.8909516616384
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.128,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.035377714586593
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.2971863499665983,
+          "quantile_low": 0.9024879120280662,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.007,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.858211655713674
+        }
+      },
+      "total_expected": 1.0896693465841127,
+      "window_end": "2023-11-22T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20231122T000000Z-30d",
+      "issue_time": "2023-11-22T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.35046925574417775,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.0484822917778884,
+      "window_end": "2023-12-22T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2023-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20231222T000000Z-30d",
+      "issue_time": "2023-12-22T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "85ee8b9c5718353c13da03bebe400ff43e9f7f32bd9879091ea232ae1bf9b2e8",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.574,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -18.57955080958582
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.122,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -18.57955080958582
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.429,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.385036156548039
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.18870638508716875,
+          "quantile_low": 0.953573641269743,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.602,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.165114964702825
+        }
+      },
+      "total_expected": 0.7930349199477961,
+      "window_end": "2024-01-21T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240121T000000Z-30d",
+      "issue_time": "2024-01-21T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.42014374045044,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8671583870874748,
+      "window_end": "2024-02-20T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240220T000000Z-30d",
+      "issue_time": "2024-02-20T00:00:00+00:00",
+      "n_excluded_no_mw": 4,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.49246746280497566,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7083268859230138,
+      "window_end": "2024-03-21T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240321T000000Z-30d",
+      "issue_time": "2024-03-21T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5180261303476839,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6577295933082964,
+      "window_end": "2024-04-20T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240420T000000Z-30d",
+      "issue_time": "2024-04-20T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5490022709744107,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5996527009157511,
+      "window_end": "2024-05-20T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240520T000000Z-30d",
+      "issue_time": "2024-05-20T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5597339279713489,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5802937367849026,
+      "window_end": "2024-06-19T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240619T000000Z-30d",
+      "issue_time": "2024-06-19T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5123593704497817,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6687290047462784,
+      "window_end": "2024-07-19T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240719T000000Z-30d",
+      "issue_time": "2024-07-19T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5482781047806031,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6009726302883088,
+      "window_end": "2024-08-18T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240818T000000Z-30d",
+      "issue_time": "2024-08-18T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.191,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.422586288131797
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.195,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.422586288131797
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.564952437642025
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4734718404327225,
+          "quantile_low": 0.8642698920308979,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.042,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.772160069776309
+        }
+      },
+      "total_expected": 0.6414504643800829,
+      "window_end": "2024-09-17T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20240917T000000Z-30d",
+      "issue_time": "2024-09-17T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5389504120936904,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6181317121315608,
+      "window_end": "2024-10-17T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20241017T000000Z-30d",
+      "issue_time": "2024-10-17T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.685,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.391634161015928
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.387,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.391634161015928
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.564952437642024
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5012087306587666,
+          "quantile_low": 0.8457342998232341,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.457,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.768087033574758
+        }
+      },
+      "total_expected": 0.6955675686549546,
+      "window_end": "2024-11-16T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20241116T000000Z-30d",
+      "issue_time": "2024-11-16T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5230647010234757,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6480501112428722,
+      "window_end": "2024-12-16T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2024-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20241216T000000Z-30d",
+      "issue_time": "2024-12-16T00:00:00+00:00",
+      "n_excluded_no_mw": 17,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 22,
+      "parameter_snapshot_hash": "def209b281b746d10b7aab19da482b05b2f7623352f7d5907a148786c6a438de",
+      "tests": {
+        "CL": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -239.18963832331073
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -239.18963832331073
+        },
+        "M": {
+          "passed": false,
+          "quantile": 0.038,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -27.399887259651127
+        },
+        "N": {
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 22.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -125.54964853319984
+        }
+      },
+      "total_expected": 0.6110920888112523,
+      "window_end": "2025-01-15T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250115T000000Z-30d",
+      "issue_time": "2025-01-15T00:00:00+00:00",
+      "n_excluded_no_mw": 8,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 4,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.994,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.43297714935462
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.841,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.43297714935462
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.949,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.551114779837619
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7376072426208184,
+          "quantile_low": 0.4371956479910602,
+          "statistic": 4.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.922,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.611759392809503
+        }
+      },
+      "total_expected": 5.0188290350237885,
+      "window_end": "2025-02-14T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250214T000000Z-30d",
+      "issue_time": "2025-02-14T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 6,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.78,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -40.615840954066805
+        },
+        "L": {
+          "passed": false,
+          "quantile": 0.037,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -40.615840954066805
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.845,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.994455951835716
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.033515783128519105,
+          "quantile_low": 0.9892620869457224,
+          "statistic": 6.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.61,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.709316227584296
+        }
+      },
+      "total_expected": 2.3634505791380445,
+      "window_end": "2025-03-16T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250316T000000Z-30d",
+      "issue_time": "2025-03-16T00:00:00+00:00",
+      "n_excluded_no_mw": 2,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": false,
+          "quantile": 0.023,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.00031738917349
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.271,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.00031738917349
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.697,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.897883813936198
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6019064396284288,
+          "quantile_low": 0.6687060186495231,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.003,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -19.409071689272444
+        }
+      },
+      "total_expected": 2.02944896986656,
+      "window_end": "2025-04-15T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250415T000000Z-30d",
+      "issue_time": "2025-04-15T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.19477433381619869,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.63591365304472,
+      "window_end": "2025-05-15T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250515T000000Z-30d",
+      "issue_time": "2025-05-15T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.105,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.016054107610007
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.41,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.016054107610007
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.65,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0315475601455883
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7348080615282802,
+          "quantile_low": 0.6171815747264013,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": false,
+          "quantile": 0.047,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.940353001188651
+        }
+      },
+      "total_expected": 1.3273014190520644,
+      "window_end": "2025-06-14T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250614T000000Z-30d",
+      "issue_time": "2025-06-14T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.3006923030147056,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.2016677862068272,
+      "window_end": "2025-07-14T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250714T000000Z-30d",
+      "issue_time": "2025-07-14T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.3279173408441975,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.114993711979103,
+      "window_end": "2025-08-13T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250813T000000Z-30d",
+      "issue_time": "2025-08-13T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4021206085671444,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.9110032140492057,
+      "window_end": "2025-09-12T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20250912T000000Z-30d",
+      "issue_time": "2025-09-12T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.39152502965907715,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.937705832876939,
+      "window_end": "2025-10-12T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20251012T000000Z-30d",
+      "issue_time": "2025-10-12T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.976,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.874622002818791
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.586,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.874622002818791
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.803,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.7955154972480742
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5977033254677242,
+          "quantile_low": 0.7686141335282943,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.951,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.074851558344293
+        }
+      },
+      "total_expected": 0.9105654661995706,
+      "window_end": "2025-11-11T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20251111T000000Z-30d",
+      "issue_time": "2025-11-11T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.439,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.0102203976074
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.373,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.0102203976074
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.803,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.7955154972480742
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5784118740001708,
+          "quantile_low": 0.7857249398671444,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.311,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.204479280668245
+        }
+      },
+      "total_expected": 0.8637264462886286,
+      "window_end": "2025-12-11T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2025-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20251211T000000Z-30d",
+      "issue_time": "2025-12-11T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "bf8e12a49a01feeead7133c4a86b4fa89cd5d1dc0f2202f65b0beb49c6f787c1",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.41901233674685945,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8698549161835182,
+      "window_end": "2026-01-10T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20260110T000000Z-30d",
+      "issue_time": "2026-01-10T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8c5d9677d42da86cfe8be47e0fd93bb90b4ec933c2ab4a87885f6f2c5736707e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4532902723708231,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7912225808490416,
+      "window_end": "2026-02-09T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20260209T000000Z-30d",
+      "issue_time": "2026-02-09T00:00:00+00:00",
+      "n_excluded_no_mw": 3,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8c5d9677d42da86cfe8be47e0fd93bb90b4ec933c2ab4a87885f6f2c5736707e",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.319550512087072
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.614,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.319550512087072
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.5494489110789984
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.608000508553753,
+          "quantile_low": 0.7591049519055534,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.767995487000792
+        }
+      },
+      "total_expected": 0.9364947365235187,
+      "window_end": "2026-03-11T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20260311T000000Z-30d",
+      "issue_time": "2026-03-11T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8c5d9677d42da86cfe8be47e0fd93bb90b4ec933c2ab4a87885f6f2c5736707e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4756430372745306,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.743087627774812,
+      "window_end": "2026-04-10T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20260410T000000Z-30d",
+      "issue_time": "2026-04-10T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8c5d9677d42da86cfe8be47e0fd93bb90b4ec933c2ab4a87885f6f2c5736707e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.46162179192416597,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7730093553614952,
+      "window_end": "2026-05-10T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20260510T000000Z-30d",
+      "issue_time": "2026-05-10T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8c5d9677d42da86cfe8be47e0fd93bb90b4ec933c2ab4a87885f6f2c5736707e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4841753955010193,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7253080505131595,
+      "window_end": "2026-06-09T00:00:00+00:00"
+    },
+    {
+      "fit_cutoff": "2026-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-nepal-himalaya-20260609T000000Z-30d",
+      "issue_time": "2026-06-09T00:00:00+00:00",
+      "n_excluded_no_mw": 0,
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8c5d9677d42da86cfe8be47e0fd93bb90b4ec933c2ab4a87885f6f2c5736707e",
+      "tests": {
+        "CL": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5218960194313068,
+          "statistic": 0.0
+        },
+        "S": {
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6502869074335041,
+      "window_end": "2026-07-09T00:00:00+00:00"
+    }
+  ]
+}

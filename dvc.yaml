@@ -23,7 +23,11 @@ stages:
   fit_etas:
     foreach: ${regions}
     do:
-      cmd: uv run rupture forecast fit --model etas --region ${item} --cutoff ${cutoff}
+      # --max-seconds: California has 55k events above its Mc and needs ~94 min of EM; the
+      # 1800 s default would stop it early and persist converged=false (a different artefact).
+      cmd: >-
+        uv run rupture forecast fit --model etas --region ${item} --cutoff ${cutoff}
+        --max-seconds 21600
       deps:
         - src/rupture/adapters/forecasting
         - src/rupture/pipelines/fit_etas.py
@@ -31,6 +35,11 @@ stages:
       outs:
         - baselines/etas/${item}
 
+  # NOTE (2026-09-03): this stage has never been run through `dvc repro`; the published schedules
+  # in reports/protocol/ were produced by the CLI directly with --reports. The stage also gains
+  # archive entries under its own `baselines/etas/<region>/fits/` dep when refits happen, so
+  # `dvc repro` will see that dep change after a run; the declared baseline itself is not
+  # replaced (refits are archive-only, see save_fit).
   evaluate_schedule:
     foreach: ${regions}
     do:

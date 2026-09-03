@@ -124,14 +124,14 @@ below for Phase-2 verbs are the planned ones; the implementing module is authori
 | `rupture catalog inspect <dir> [--json]` | summarise a built catalogue directory (counts by type, Mw coverage, bounds, Mc estimates, log size) | catalog-engineer |
 | `rupture catalog refresh-fixtures` | re-cut the committed ComCat/ISC/GCMT fixtures from the live services and rewrite each `provenance.json` (network) | catalog-engineer |
 | `rupture region list` / `rupture region show <r>` / `rupture region init [--force]` | list the test regions; print one `Region` record (polygon, thresholds, fitted Mc); write the three default region files (refuses to overwrite a fitted `mc` without `--force`) | catalog-engineer |
-| `rupture forecast fit --model etas --region <r> --cutoff <utc>` | fit the baseline on events with `origin_time < cutoff`; persist the `FitResult` + diagnostics to `baselines/etas/<region>/` | forecast-engineer |
+| `rupture forecast fit --model etas --region <r> --cutoff <utc> [--mc M] [--auxiliary-years 2.0] [--max-iterations 200] [--max-seconds 1800]` | fit the baseline on events with `origin_time < cutoff`; persist the `FitResult` + diagnostics to `baselines/etas/<region>/` and archive them under `fits/<cutoff>/`. The EM caps stop a runaway fit and persist it with `converged=false`; California needs `--max-seconds 21600` | forecast-engineer |
 | `rupture forecast issue --model etas --region <r> --horizon 30d --issue <utc>` | issue a `ForecastGrid` at `issue_time` from the persisted fit | forecast-engineer |
 | `rupture evaluate run --forecast <id>` | N/M/S/L(CL) tests + plot bundle → `reports/eval/<forecast_id>/` | forecast-engineer |
 | `rupture evaluate schedule --region <r> --model etas --from <utc> --to <utc> --step 30d` | rolling pseudo-prospective issue-and-evaluate; aggregates to `reports/eval/schedule-<region>-<model>.json` | forecast-engineer |
 | `rupture hazard demo` / `rupture hazard classical` | run the OpenQuake bundled demo / a classical PSHA job in the pinned image; skip with reason if Docker is absent | hazard-engineer |
 | `rupture schema export [--out DIR] [--check]` | write (or drift-check) JSON Schema for every domain contract into `contracts/` | architect |
 | `rupture validate <gate>` | run one gate (`language`, `schema`, `catalog`, `etas`, `eval`, `hazard`); `rupture validate gate <name>` is the same by argument | gate owner |
-| `rupture promote` | print the promotion record (reached via `make promote` only when green) | architect |
+| `rupture promote` | re-run every gate and print the promotion record, naming each skipped gate and its reason; refuses if any gate blocks | architect |
 | `rupture underwriting-check` | round-trip the example `AvoidedLossRequest` through `contracts/avoided-loss.v0.json`; exit 2 "not implemented: Prompt 2" | architect |
 
 ## Subagent roles and the worktree rule

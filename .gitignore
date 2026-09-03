@@ -16,7 +16,13 @@ htmlcov/
 .env
 
 # generated reports and scratch
-reports/
+/reports/
+# ...but the schedule aggregates are the published evidence behind docs/BASELINE_RESULTS.md,
+# and reports/ is otherwise untracked while the DVC remote is a local placeholder.
+!/reports/protocol/
+!/reports/protocol/*/
+!/reports/protocol/*/eval/
+!/reports/protocol/*/eval/schedule-*.json
 .scratch/
 
 # DVC-managed directories (contents tracked by .dvc files / dvc.yaml outs)

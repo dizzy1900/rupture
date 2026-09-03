@@ -29,7 +29,7 @@ def fit_etas(
     """
     model = model or MizrahiETAS()
     result = model.fit(catalog, region, cutoff, mc=mc)
-    out = save_fit(result, baselines_dir)
+    out = save_fit(result, baselines_dir, canonical=kind != "refit")
     if tracker is not None:
         tracker.log(
             RunRecord(

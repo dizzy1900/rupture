@@ -14,7 +14,7 @@ recorded, whatever it was).
 
 | Component | Maturity | What was actually run |
 |---|---|---|
-| Repository, CI, tooling | validated | `uv`, ruff, `mypy --strict`, 233 offline tests, import-linter; CI green on every push to `main` |
+| Repository, CI, tooling | validated | `uv`, ruff, `mypy --strict`, 234 offline tests, import-linter; CI green on every push to `main`. The CI `offline` job runs lint, typecheck, tests, `validate-language` and `schema-check`; the catalogue, ETAS and evaluation gates are run locally and on a fresh clone, not in CI |
 | Governance docs (CLAUDE, ARCHITECTURE, EVALUATION_PROTOCOL, GLOSSARY, DATA_SOURCES, CREDENTIALS, HAZARD, DEPLOYMENT, CATALOG_BUILD, ETAS_BASELINE, SCHEDULER, BASELINE_RESULTS, 20 ADRs) | validated | the evaluation protocol was written and committed before any model in this repository was fitted |
 | Language gate | validated | `make validate-language` passes over the whole tree; a seeded violation fails it (test) |
 | Domain models and `contracts/*.v0.json` (11 schemas) | validated | drift-checked in CI; example payloads round-trip; `rupture underwriting-check` validates an `AvoidedLossRequest` then exits 2 "not implemented: Prompt 2" |
@@ -23,11 +23,11 @@ recorded, whatever it was).
 | Test regions, Mc estimation | validated | Mc by maximum curvature and b-value stability published per region in `data/regions/*/region.json` (`mc_estimates`) |
 | GEM Global Active Faults; ESHM20 source model | working | GAF fetched (13,696 faults, GeoParquet, DVC pointer committed); ESHM20 fetched for Türkiye (55 files, 40.2 MB, manifest committed). Neither has been used in a hazard calculation |
 | ETAS baseline (`etas` at a pinned commit, behind `ForecastModel`) | validated | converged fits for all three regions at cutoff 2022-01-01; parameters and diagnostics published in `docs/ETAS_BASELINE.md` |
-| CSEP harness (`pycsep` 0.8.0) | validated | N, M, S, L, CL and paired T/W implemented; 111 scored windows across two regions |
+| CSEP harness (`pycsep` 0.8.0) | validated | N, M, S, L, CL and paired T/W implemented; 110 scored windows across two regions, plus one California window |
 | Pseudo-prospective schedule + leakage assertions | validated | 55 windows per region, 2022-01-01 → 2026-08-01, 4 logged refits each; all three leakage rules held in every window; a seeded post-cutoff event fails the negative test |
-| OpenQuake adapter (`openquake/engine:3.26.2`) | validated (CI only) | the bundled demo ran through the adapter in the pinned container in CI (run 33744626791, gate 86 s, integration test 85 s, with `RUPTURE_HAZARD_REQUIRE=1` so a skip would have failed). Never run on this machine — see Known gaps |
+| OpenQuake adapter (`openquake/engine:3.26.2`) | validated (CI only) | the bundled demo ran through the adapter in the pinned container in CI (run 33744626791, gate 86 s, integration test 85 s, with `RUPTURE_HAZARD_REQUIRE=1` so a skip would have failed). never completed on this machine — see Known gaps |
 | Docker image, `infra/jobs/*.yaml` | scaffold | manifests validate against their schema; **the rupture image has never been built or run anywhere**, and neither has `compose.yml` |
-| `make promote` | validated | refused to promote while `validate-hazard` was failing; passes now |
+| `make promote` | validated | refused to promote while `validate-hazard` was failing; passes now that the gate reports the arm64 container limitation as a skip rather than a failure. `rupture promote` re-runs every gate itself and prints each skip and its reason |
 
 ## Results
 
@@ -50,7 +50,7 @@ for it is fixed in `docs/EVALUATION_PROTOCOL.md`.
   Mc 2.70, 94 minutes of EM) and its first window scored 4 target events against 5.66 expected,
   passing all five tests. The full 55-window schedule costs roughly 11 hours and was still running
   when this was written; `docs/BASELINE_RESULTS.md` covers Nepal and Türkiye only.
-- **The OpenQuake container has never run on this machine.** `openquake/engine` publishes a
+- **The OpenQuake container has never completed a run on this machine.** It starts and initialises, then exceeds the timeout: `openquake/engine` publishes a
   single-platform `linux/amd64` image and this host is arm64, so the demo can only run under
   emulation, where it exceeds the adapter's timeout. `validate-hazard` skips with that reason
   printed; CI (amd64) runs it for real on every push to `main`. See ADR-0011 addendum.
