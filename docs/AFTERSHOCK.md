@@ -311,10 +311,12 @@ sub-critical, issues and scores both sequences at all three issue times over a 7
 checks that every probability is in [0, 1] and non-increasing with magnitude, and requires a
 `LeakageError` when a post-issue event is injected. Reports go to `reports/validate-aftershock/`.
 
-To stay inside its budget the gate uses a coarser 0.2° cell and 5 continuations, where the
-published numbers above use 0.1° and 100. **The gate's expected counts are noisier and are not
-the numbers to quote.** The gate does not fail when a forecast scores badly; a gate that did would
-be a gate against reporting the truth.
+To stay inside its budget the gate uses a coarser 0.2° cell and **5** stochastic continuations,
+where the published numbers above use 0.1° and 100. Five continuations is far too few for a
+stable mean: the gate's Gorkha +7 d / 7 d expected count came out at 0.51 against the published
+2.65, a factor of five. **The gate proves the pipeline runs, refuses leakage and produces
+well-formed probabilities; its expected counts are not the numbers to quote.** It also does not
+fail when a forecast scores badly — a gate that did would be a gate against reporting the truth.
 
 ---
 

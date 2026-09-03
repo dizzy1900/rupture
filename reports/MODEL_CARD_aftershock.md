@@ -156,8 +156,10 @@ attributes. The realistic harms are misuse:
 - **Over-reading a high count as a specific event.** The zone-wide expected count says nothing
   about any one earthquake.
 - **Use for evacuation or all-clear decisions.** Out of scope, stated in `docs/AFTERSHOCK.md` § 6.
-- **Quoting the gate's numbers.** The gate runs at coarser resolution with fewer continuations;
-  its expected counts are noisier and are not the published ones.
+- **Quoting the gate's numbers.** `make validate-aftershock` runs at 0.2 degrees with 5
+  stochastic continuations to fit its time budget; its expected counts can differ from the
+  published ones by a factor of several and are not the numbers to cite. The published validation
+  is `reports/aftershock/`.
 
 ## Maintenance and reproducibility
 
