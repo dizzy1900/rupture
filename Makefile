@@ -71,6 +71,7 @@ promote: ## refuse unless validate-rupture is green; then print the promotion re
 underwriting-check: ## AvoidedLossRequest round-trip; exits non-zero: not implemented (Prompt 2)
 	$(RUN) rupture underwriting-check
 
-clean: ## remove caches
-	rm -rf .mypy_cache .ruff_cache .pytest_cache .import_linter_cache reports
+clean: ## remove caches (never tracked files: reports/ holds committed model cards and evidence)
+	rm -rf .mypy_cache .ruff_cache .pytest_cache .import_linter_cache
+	git clean -fdX reports 2>/dev/null || true
 	find . -name __pycache__ -type d -prune -exec rm -rf {} +
