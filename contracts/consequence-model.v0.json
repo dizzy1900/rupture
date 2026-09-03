@@ -1,0 +1,126 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/consequence-model.v0.json",
+  "$defs": {
+    "ConfidenceTier": {
+      "description": "Qualitative confidence. ``unqualified`` is the only tier a stub may claim.",
+      "enum": [
+        "unqualified",
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "ConfidenceTier",
+      "type": "string"
+    },
+    "DamageState": {
+      "description": "GEM's standard damage scale, plus the hydropower-specific states in ADR-0024.",
+      "enum": [
+        "none",
+        "slight",
+        "moderate",
+        "extensive",
+        "complete"
+      ],
+      "title": "DamageState",
+      "type": "string"
+    },
+    "HydropowerComponent": {
+      "description": "Where the concentrated, insurable value in a run-of-river corridor actually sits.",
+      "enum": [
+        "intake",
+        "penstock",
+        "powerhouse",
+        "headrace_tunnel",
+        "switchyard",
+        "access_road"
+      ],
+      "title": "HydropowerComponent",
+      "type": "string"
+    },
+    "ModelProvenance": {
+      "description": "How a number was produced. A published figure and a fitted model are not the same claim.",
+      "enum": [
+        "published",
+        "fitted",
+        "assumed",
+        "stub"
+      ],
+      "title": "ModelProvenance",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Loss ratio per damage state: the fraction of replacement value lost.",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "taxonomy": {
+      "title": "Taxonomy",
+      "type": "string"
+    },
+    "component": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HydropowerComponent"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "loss_ratios": {
+      "additionalProperties": {
+        "type": "number"
+      },
+      "propertyNames": {
+        "$ref": "#/$defs/DamageState"
+      },
+      "title": "Loss Ratios",
+      "type": "object"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ModelProvenance"
+    },
+    "confidence": {
+      "$ref": "#/$defs/ConfidenceTier",
+      "default": "unqualified"
+    },
+    "source_refs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Refs",
+      "type": "array"
+    },
+    "assumption": {
+      "default": false,
+      "title": "Assumption",
+      "type": "boolean"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "taxonomy",
+    "loss_ratios",
+    "provenance"
+  ],
+  "title": "ConsequenceModel",
+  "type": "object"
+}

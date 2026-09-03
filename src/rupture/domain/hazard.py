@@ -48,3 +48,33 @@ class HazardCurveSet(RuptureModel):
     computed_at: UTCDatetime
     provenance: Provenance
     notes: str | None = None
+
+
+class ScenarioRupture(RuptureModel):
+    """A finite or point rupture used as the source of a scenario ground-motion field.
+
+    Kept deliberately small: the parameters every GSIM needs (magnitude, geometry, mechanism,
+    distance metrics can be derived) plus a citation for where the rupture model came from. A
+    published rupture model (Gorkha 2015) and a hypothetical one (an MHT M8+) are distinguished
+    by ``provenance``, never by tone.
+    """
+
+    id: str
+    magnitude: float = Field(ge=0.0, le=10.0)
+    hypocentre_longitude: float = Field(ge=-180.0, le=180.0)
+    hypocentre_latitude: float = Field(ge=-90.0, le=90.0)
+    hypocentre_depth_km: float = Field(ge=0.0, le=700.0)
+    strike: float = Field(ge=0.0, le=360.0)
+    dip: float = Field(gt=0.0, le=90.0)
+    rake: float = Field(ge=-180.0, le=180.0)
+    tectonic_region: str = Field(
+        default="Active Shallow Crust", description="OpenQuake tectonic region type."
+    )
+    corners: tuple[tuple[float, float, float], ...] = Field(
+        default=(), description="Optional finite-fault surface corners (lon, lat, depth_km)."
+    )
+    source_refs: tuple[str, ...] = ()
+    hypothetical: bool = Field(
+        default=False, description="True for a what-if rupture, false for a published one."
+    )
+    notes: str | None = None

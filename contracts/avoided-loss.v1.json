@@ -1,0 +1,773 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/avoided-loss.v1.json",
+  "$defs": {
+    "Asset": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "taxonomy": {
+          "description": "GEM taxonomy string or a consumer-defined class.",
+          "title": "Taxonomy",
+          "type": "string"
+        },
+        "value": {
+          "description": "Replacement value in the portfolio currency.",
+          "minimum": 0.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "occupants": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occupants"
+        },
+        "attributes": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Attributes",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "longitude",
+        "latitude",
+        "taxonomy",
+        "value"
+      ],
+      "title": "Asset",
+      "type": "object"
+    },
+    "AssetLoss": {
+      "additionalProperties": false,
+      "description": "Loss attributable to one asset, decomposed by hazard component.",
+      "properties": {
+        "asset_id": {
+          "title": "Asset Id",
+          "type": "string"
+        },
+        "loss_type": {
+          "$ref": "#/$defs/LossType"
+        },
+        "expected_loss": {
+          "$ref": "#/$defs/MoneyRange"
+        },
+        "by_component": {
+          "additionalProperties": {
+            "type": "number"
+          },
+          "description": "Component shares of the best estimate, same currency.",
+          "propertyNames": {
+            "$ref": "#/$defs/HazardComponent"
+          },
+          "title": "By Component",
+          "type": "object"
+        }
+      },
+      "required": [
+        "asset_id",
+        "loss_type",
+        "expected_loss"
+      ],
+      "title": "AssetLoss",
+      "type": "object"
+    },
+    "AvoidedLossRequestV1": {
+      "additionalProperties": false,
+      "description": "Ask rupture for expected loss with and without a set of interventions.",
+      "properties": {
+        "contract_version": {
+          "default": "1.0.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "hazard_kind": {
+          "$ref": "#/$defs/HazardKind",
+          "default": "seismic"
+        },
+        "request_id": {
+          "pattern": "^[a-z0-9][a-z0-9-]{0,63}$",
+          "title": "Request Id",
+          "type": "string"
+        },
+        "requested_at": {
+          "description": "Accepts serac's `requested_utc` on input.",
+          "format": "date-time",
+          "title": "Requested At",
+          "type": "string"
+        },
+        "portfolio": {
+          "$ref": "#/$defs/ExposurePortfolio",
+          "description": "Accepts serac's `exposure` on input."
+        },
+        "trigger_kind": {
+          "$ref": "#/$defs/TriggerKind"
+        },
+        "trigger_id": {
+          "title": "Trigger Id",
+          "type": "string"
+        },
+        "horizon": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "e.g. '30d'; null for a scenario.",
+          "title": "Horizon"
+        },
+        "loss_types": {
+          "default": [
+            "structural"
+          ],
+          "items": {
+            "$ref": "#/$defs/LossType"
+          },
+          "title": "Loss Types",
+          "type": "array"
+        },
+        "interventions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/Intervention"
+          },
+          "title": "Interventions",
+          "type": "array"
+        },
+        "interval_level": {
+          "default": 0.9,
+          "exclusiveMaximum": 1.0,
+          "exclusiveMinimum": 0.0,
+          "title": "Interval Level",
+          "type": "number"
+        },
+        "consumer": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Accepts serac's `requester`.",
+          "title": "Consumer"
+        }
+      },
+      "required": [
+        "request_id",
+        "requested_at",
+        "portfolio",
+        "trigger_kind",
+        "trigger_id"
+      ],
+      "title": "AvoidedLossRequestV1",
+      "type": "object"
+    },
+    "AvoidedLossResponseV1": {
+      "additionalProperties": false,
+      "description": "Expected loss with and without interventions, with intervals and provenance.",
+      "properties": {
+        "contract_version": {
+          "default": "1.0.0",
+          "title": "Contract Version",
+          "type": "string"
+        },
+        "hazard_kind": {
+          "$ref": "#/$defs/HazardKind",
+          "default": "seismic"
+        },
+        "request_id": {
+          "title": "Request Id",
+          "type": "string"
+        },
+        "status": {
+          "$ref": "#/$defs/ResponseStatus"
+        },
+        "computed_at": {
+          "format": "date-time",
+          "title": "Computed At",
+          "type": "string"
+        },
+        "baseline": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AssetLoss"
+          },
+          "title": "Baseline",
+          "type": "array"
+        },
+        "baseline_total": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MoneyRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "interventions": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/InterventionOutcome"
+          },
+          "title": "Interventions",
+          "type": "array"
+        },
+        "model_ids": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Model Ids",
+          "type": "array"
+        },
+        "provenance_kind": {
+          "$ref": "#/$defs/ModelProvenance",
+          "default": "stub"
+        },
+        "confidence": {
+          "$ref": "#/$defs/ConfidenceTier",
+          "default": "unqualified"
+        },
+        "n_realisations": {
+          "anyOf": [
+            {
+              "minimum": 1,
+              "type": "integer"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "N Realisations"
+        },
+        "provenance": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/Provenance"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "message": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Message"
+        }
+      },
+      "required": [
+        "request_id",
+        "status",
+        "computed_at"
+      ],
+      "title": "AvoidedLossResponseV1",
+      "type": "object"
+    },
+    "ConfidenceTier": {
+      "description": "Qualitative confidence. ``unqualified`` is the only tier a stub may claim.",
+      "enum": [
+        "unqualified",
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "ConfidenceTier",
+      "type": "string"
+    },
+    "ExposurePortfolio": {
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "name": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Name"
+        },
+        "currency": {
+          "description": "ISO 4217.",
+          "maxLength": 3,
+          "minLength": 3,
+          "title": "Currency",
+          "type": "string"
+        },
+        "valuation_date": {
+          "format": "date-time",
+          "title": "Valuation Date",
+          "type": "string"
+        },
+        "assets": {
+          "items": {
+            "$ref": "#/$defs/Asset"
+          },
+          "minItems": 1,
+          "title": "Assets",
+          "type": "array"
+        },
+        "provenance": {
+          "$ref": "#/$defs/Provenance"
+        }
+      },
+      "required": [
+        "id",
+        "currency",
+        "valuation_date",
+        "assets",
+        "provenance"
+      ],
+      "title": "ExposurePortfolio",
+      "type": "object"
+    },
+    "HazardComponent": {
+      "description": "Avoided loss is decomposed by component so a reader can see what drove it.",
+      "enum": [
+        "ground_shaking",
+        "landslide",
+        "liquefaction",
+        "ice_rock_avalanche"
+      ],
+      "title": "HazardComponent",
+      "type": "string"
+    },
+    "HazardKind": {
+      "description": "Which sibling's question this is. The discriminator a shared reader dispatches on.",
+      "enum": [
+        "seismic",
+        "cascade"
+      ],
+      "title": "HazardKind",
+      "type": "string"
+    },
+    "Intervention": {
+      "additionalProperties": false,
+      "description": "Something a risk owner could do. Its effect is what avoided loss measures.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "kind": {
+          "$ref": "#/$defs/InterventionKind"
+        },
+        "description": {
+          "minLength": 1,
+          "title": "Description",
+          "type": "string"
+        },
+        "cost": {
+          "anyOf": [
+            {
+              "$ref": "#/$defs/MoneyRange"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null
+        },
+        "applies_to_asset_ids": {
+          "default": [],
+          "description": "Empty means the whole portfolio.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Applies To Asset Ids",
+          "type": "array"
+        },
+        "lead_time_minutes": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "For warning-based interventions (serac's semantics).",
+          "title": "Lead Time Minutes"
+        },
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        },
+        "parameters": {
+          "additionalProperties": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "number"
+              },
+              {
+                "type": "integer"
+              },
+              {
+                "type": "boolean"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "title": "Parameters",
+          "type": "object"
+        }
+      },
+      "required": [
+        "id",
+        "kind",
+        "description"
+      ],
+      "title": "Intervention",
+      "type": "object"
+    },
+    "InterventionKind": {
+      "description": "Superset of rupture's structural measures and serac's warning-based ones.\n\nThe first four are serac's enum verbatim; the rest are the measures a seismic-risk owner has.",
+      "enum": [
+        "none",
+        "warning",
+        "evacuation",
+        "combined",
+        "structural_retrofit",
+        "automated_shutdown",
+        "land_use_exclusion",
+        "insurance_layer"
+      ],
+      "title": "InterventionKind",
+      "type": "string"
+    },
+    "InterventionOutcome": {
+      "additionalProperties": false,
+      "description": "What one intervention changes.",
+      "properties": {
+        "intervention_id": {
+          "title": "Intervention Id",
+          "type": "string"
+        },
+        "expected_loss": {
+          "$ref": "#/$defs/MoneyRange"
+        },
+        "avoided_vs_baseline": {
+          "$ref": "#/$defs/MoneyRange"
+        },
+        "by_asset": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/AssetLoss"
+          },
+          "title": "By Asset",
+          "type": "array"
+        },
+        "assumptions": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Assumptions",
+          "type": "array"
+        }
+      },
+      "required": [
+        "intervention_id",
+        "expected_loss",
+        "avoided_vs_baseline"
+      ],
+      "title": "InterventionOutcome",
+      "type": "object"
+    },
+    "LossType": {
+      "enum": [
+        "structural",
+        "nonstructural",
+        "contents",
+        "business_interruption",
+        "fatalities",
+        "injuries",
+        "displaced"
+      ],
+      "title": "LossType",
+      "type": "string"
+    },
+    "ModelProvenance": {
+      "description": "How a number was produced. A published figure and a fitted model are not the same claim.",
+      "enum": [
+        "published",
+        "fitted",
+        "assumed",
+        "stub"
+      ],
+      "title": "ModelProvenance",
+      "type": "string"
+    },
+    "MoneyRange": {
+      "additionalProperties": false,
+      "description": "A monetary interval in a stated currency and price year.",
+      "properties": {
+        "low": {
+          "minimum": 0,
+          "title": "Low",
+          "type": "number"
+        },
+        "high": {
+          "minimum": 0,
+          "title": "High",
+          "type": "number"
+        },
+        "best": {
+          "anyOf": [
+            {
+              "minimum": 0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Best"
+        },
+        "currency": {
+          "description": "ISO 4217",
+          "pattern": "^[A-Z]{3}$",
+          "title": "Currency",
+          "type": "string"
+        },
+        "price_year": {
+          "maximum": 2100,
+          "minimum": 1900,
+          "title": "Price Year",
+          "type": "integer"
+        },
+        "basis": {
+          "description": "How the figure was derived",
+          "minLength": 1,
+          "title": "Basis",
+          "type": "string"
+        },
+        "confidence": {
+          "$ref": "#/$defs/ConfidenceTier",
+          "default": "unqualified"
+        },
+        "provenance": {
+          "$ref": "#/$defs/ModelProvenance",
+          "default": "stub"
+        },
+        "source_refs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "low",
+        "high",
+        "currency",
+        "price_year",
+        "basis"
+      ],
+      "title": "MoneyRange",
+      "type": "object"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Where a record came from. Required on every ingested row and every derived product.\n\n``licence`` is the upstream licence identifier (SPDX where one exists, otherwise the\nprovider's own terms label). ``sha256`` is the digest of the raw payload the record was\nparsed from, so a re-fetch can be compared byte-for-byte. Unknowns are ``None``, never guessed.",
+      "properties": {
+        "source": {
+          "description": "Provider/catalogue identifier, e.g. 'usgs-comcat', 'isc', 'gcmt'.",
+          "title": "Source",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Exact URL or file path the payload came from.",
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "description": "When the payload was fetched (UTC).",
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Digest of the raw payload, hex.",
+          "title": "Sha256"
+        },
+        "licence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upstream licence (SPDX id or provider terms label).",
+          "title": "Licence"
+        },
+        "adapter_version": {
+          "description": "Version of the rupture adapter that parsed the payload.",
+          "title": "Adapter Version",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "source",
+        "retrieved_at",
+        "adapter_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "ResponseStatus": {
+      "enum": [
+        "ok",
+        "partial",
+        "not_implemented",
+        "error"
+      ],
+      "title": "ResponseStatus",
+      "type": "string"
+    },
+    "TriggerKind": {
+      "enum": [
+        "scenario",
+        "forecast",
+        "hazard"
+      ],
+      "title": "TriggerKind",
+      "type": "string"
+    }
+  },
+  "description": "rupture's avoided-loss contract, version 1: the value vocabulary (MoneyRange, ConfidenceTier, ModelProvenance, AttributedEstimate) is shared verbatim with the sibling serac repository, serac's field names are accepted as aliases, and hazard_kind discriminates a seismic request from a cascade one. See ADR-0021.",
+  "properties": {
+    "request": {
+      "$ref": "#/$defs/AvoidedLossRequestV1"
+    },
+    "response": {
+      "$ref": "#/$defs/AvoidedLossResponseV1"
+    }
+  },
+  "required": [
+    "request",
+    "response"
+  ],
+  "title": "AvoidedLoss.v1",
+  "type": "object"
+}

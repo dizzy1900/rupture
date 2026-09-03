@@ -1,0 +1,282 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/ground-motion-field.v0.json",
+  "$defs": {
+    "GroundMotionEngineId": {
+      "enum": [
+        "openquake.engine",
+        "rupture.native_gsim"
+      ],
+      "title": "GroundMotionEngineId",
+      "type": "string"
+    },
+    "Provenance": {
+      "additionalProperties": false,
+      "description": "Where a record came from. Required on every ingested row and every derived product.\n\n``licence`` is the upstream licence identifier (SPDX where one exists, otherwise the\nprovider's own terms label). ``sha256`` is the digest of the raw payload the record was\nparsed from, so a re-fetch can be compared byte-for-byte. Unknowns are ``None``, never guessed.",
+      "properties": {
+        "source": {
+          "description": "Provider/catalogue identifier, e.g. 'usgs-comcat', 'isc', 'gcmt'.",
+          "title": "Source",
+          "type": "string"
+        },
+        "source_url": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Exact URL or file path the payload came from.",
+          "title": "Source Url"
+        },
+        "retrieved_at": {
+          "description": "When the payload was fetched (UTC).",
+          "format": "date-time",
+          "title": "Retrieved At",
+          "type": "string"
+        },
+        "sha256": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Digest of the raw payload, hex.",
+          "title": "Sha256"
+        },
+        "licence": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upstream licence (SPDX id or provider terms label).",
+          "title": "Licence"
+        },
+        "adapter_version": {
+          "description": "Version of the rupture adapter that parsed the payload.",
+          "title": "Adapter Version",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "source",
+        "retrieved_at",
+        "adapter_version"
+      ],
+      "title": "Provenance",
+      "type": "object"
+    },
+    "Site": {
+      "additionalProperties": false,
+      "description": "One site at which ground motion is evaluated.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "vs30": {
+          "description": "Time-averaged shear-wave velocity to 30 m, m/s.",
+          "exclusiveMinimum": 0.0,
+          "title": "Vs30",
+          "type": "number"
+        },
+        "vs30_measured": {
+          "default": false,
+          "title": "Vs30 Measured",
+          "type": "boolean"
+        },
+        "z1pt0": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Depth to Vs=1.0 km/s, m.",
+          "title": "Z1Pt0"
+        },
+        "z2pt5": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Depth to Vs=2.5 km/s, km.",
+          "title": "Z2Pt5"
+        }
+      },
+      "required": [
+        "id",
+        "longitude",
+        "latitude",
+        "vs30"
+      ],
+      "title": "Site",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Intensity measure values per site per realisation, for one intensity measure type.\n\n``values[r][s]`` is realisation ``r`` at site ``s``, in g for PGA and SA, cm/s for PGV.\nA single-realisation field is a median ground-motion field; many realisations carry the\nGSIM's aleatory variability and are what loss intervals are computed from.",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "imt": {
+      "description": "OpenQuake spelling: 'PGA', 'PGV', 'SA(0.3)'.",
+      "title": "Imt",
+      "type": "string"
+    },
+    "sites": {
+      "items": {
+        "$ref": "#/$defs/Site"
+      },
+      "minItems": 1,
+      "title": "Sites",
+      "type": "array"
+    },
+    "values": {
+      "items": {
+        "items": {
+          "type": "number"
+        },
+        "type": "array"
+      },
+      "minItems": 1,
+      "title": "Values",
+      "type": "array"
+    },
+    "engine": {
+      "$ref": "#/$defs/GroundMotionEngineId"
+    },
+    "engine_version": {
+      "title": "Engine Version",
+      "type": "string"
+    },
+    "gsim": {
+      "description": "GSIM/GMPE identifier, e.g. 'BooreEtAl2014'.",
+      "title": "Gsim",
+      "type": "string"
+    },
+    "rupture_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Rupture Id"
+    },
+    "truncation_level": {
+      "anyOf": [
+        {
+          "minimum": 0.0,
+          "type": "number"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Truncation Level"
+    },
+    "random_seed": {
+      "anyOf": [
+        {
+          "type": "integer"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Random Seed"
+    },
+    "computed_at": {
+      "format": "date-time",
+      "title": "Computed At",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/Provenance"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "scenario_id",
+    "imt",
+    "sites",
+    "values",
+    "engine",
+    "engine_version",
+    "gsim",
+    "computed_at",
+    "provenance"
+  ],
+  "title": "GroundMotionField",
+  "type": "object"
+}

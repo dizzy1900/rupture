@@ -1,0 +1,149 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/aftershock-forecast.v0.json",
+  "$defs": {
+    "MagnitudeProbability": {
+      "additionalProperties": false,
+      "description": "Probability of at least one event with magnitude >= threshold in the window.",
+      "properties": {
+        "magnitude": {
+          "maximum": 10.0,
+          "minimum": 0.0,
+          "title": "Magnitude",
+          "type": "number"
+        },
+        "probability": {
+          "maximum": 1.0,
+          "minimum": 0.0,
+          "title": "Probability",
+          "type": "number"
+        },
+        "expected_count": {
+          "minimum": 0.0,
+          "title": "Expected Count",
+          "type": "number"
+        }
+      },
+      "required": [
+        "magnitude",
+        "probability",
+        "expected_count"
+      ],
+      "title": "MagnitudeProbability",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A gridded, magnitude-binned aftershock rate forecast for one mainshock sequence.\n\n``elapsed`` is the time from the mainshock to ``issue_time``; the sequence catalogue the model\nsaw ends strictly before ``issue_time`` (the leakage rule applies here exactly as it does to\nthe scheduled forecasts).",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "mainshock_event_id": {
+      "title": "Mainshock Event Id",
+      "type": "string"
+    },
+    "mainshock_time": {
+      "format": "date-time",
+      "title": "Mainshock Time",
+      "type": "string"
+    },
+    "mainshock_magnitude": {
+      "title": "Mainshock Magnitude",
+      "type": "number"
+    },
+    "region_id": {
+      "title": "Region Id",
+      "type": "string"
+    },
+    "issue_time": {
+      "format": "date-time",
+      "title": "Issue Time",
+      "type": "string"
+    },
+    "horizon": {
+      "format": "duration",
+      "title": "Horizon",
+      "type": "string"
+    },
+    "elapsed": {
+      "format": "duration",
+      "title": "Elapsed",
+      "type": "string"
+    },
+    "model_id": {
+      "title": "Model Id",
+      "type": "string"
+    },
+    "model_version": {
+      "title": "Model Version",
+      "type": "string"
+    },
+    "parameter_snapshot_hash": {
+      "title": "Parameter Snapshot Hash",
+      "type": "string"
+    },
+    "n_sequence_events": {
+      "minimum": 0,
+      "title": "N Sequence Events",
+      "type": "integer"
+    },
+    "probabilities": {
+      "items": {
+        "$ref": "#/$defs/MagnitudeProbability"
+      },
+      "minItems": 1,
+      "title": "Probabilities",
+      "type": "array"
+    },
+    "forecast_grid_id": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "The gridded ForecastGrid this summarises, when one was written.",
+      "title": "Forecast Grid Id"
+    },
+    "created_at": {
+      "format": "date-time",
+      "title": "Created At",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "mainshock_event_id",
+    "mainshock_time",
+    "mainshock_magnitude",
+    "region_id",
+    "issue_time",
+    "horizon",
+    "elapsed",
+    "model_id",
+    "model_version",
+    "parameter_snapshot_hash",
+    "n_sequence_events",
+    "probabilities",
+    "created_at"
+  ],
+  "title": "AftershockForecast",
+  "type": "object"
+}

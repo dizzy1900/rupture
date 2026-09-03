@@ -1,0 +1,238 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/cascade-exposure.v0.json",
+  "$defs": {
+    "CascadeKind": {
+      "enum": [
+        "landslide",
+        "liquefaction",
+        "ice_rock_avalanche"
+      ],
+      "title": "CascadeKind",
+      "type": "string"
+    },
+    "ConfidenceTier": {
+      "description": "Qualitative confidence. ``unqualified`` is the only tier a stub may claim.",
+      "enum": [
+        "unqualified",
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "ConfidenceTier",
+      "type": "string"
+    },
+    "ExposedSlopeUnit": {
+      "additionalProperties": false,
+      "description": "A slope unit flagged as shaken above a threshold. Fields mirror serac's `slope-unit.v0`.",
+      "properties": {
+        "id": {
+          "title": "Id",
+          "type": "string"
+        },
+        "aoi_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Aoi Id"
+        },
+        "mean_slope_deg": {
+          "anyOf": [
+            {
+              "maximum": 90.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Mean Slope Deg"
+        },
+        "glacier_cover": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Glacier Cover"
+        },
+        "permafrost_index": {
+          "anyOf": [
+            {
+              "maximum": 1.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Permafrost Index"
+        },
+        "elevation_band_m": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Elevation Band M"
+        },
+        "area_m2": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Area M2"
+        },
+        "pga_g": {
+          "description": "Ground motion received at the unit.",
+          "minimum": 0.0,
+          "title": "Pga G",
+          "type": "number"
+        },
+        "exceeds_threshold": {
+          "title": "Exceeds Threshold",
+          "type": "boolean"
+        },
+        "settlements_below": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Settlements Below",
+          "type": "array"
+        },
+        "source_refs": {
+          "default": [],
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        }
+      },
+      "required": [
+        "id",
+        "pga_g",
+        "exceeds_threshold"
+      ],
+      "title": "ExposedSlopeUnit",
+      "type": "object"
+    },
+    "ModelProvenance": {
+      "description": "How a number was produced. A published figure and a fitted model are not the same claim.",
+      "enum": [
+        "published",
+        "fitted",
+        "assumed",
+        "stub"
+      ],
+      "title": "ModelProvenance",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "Slope units exposed to a scenario's shaking, above a stated threshold.\n\nSusceptibility and exposure only: this flags where a co-seismic ice or rock avalanche\nmechanism is *possible* given shaking and terrain, in the manner of Langtang 2015. It does not\nstate that a slope will fail, and no consumer may read it as such.",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "scenario_id": {
+      "title": "Scenario Id",
+      "type": "string"
+    },
+    "aoi_id": {
+      "title": "Aoi Id",
+      "type": "string"
+    },
+    "kind": {
+      "$ref": "#/$defs/CascadeKind",
+      "default": "ice_rock_avalanche"
+    },
+    "pga_threshold_g": {
+      "exclusiveMinimum": 0.0,
+      "title": "Pga Threshold G",
+      "type": "number"
+    },
+    "units": {
+      "items": {
+        "$ref": "#/$defs/ExposedSlopeUnit"
+      },
+      "title": "Units",
+      "type": "array"
+    },
+    "slope_unit_source": {
+      "description": "Where the inventory came from, e.g. serac export.",
+      "title": "Slope Unit Source",
+      "type": "string"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ModelProvenance",
+      "default": "assumed"
+    },
+    "confidence": {
+      "$ref": "#/$defs/ConfidenceTier",
+      "default": "unqualified"
+    },
+    "computed_at": {
+      "format": "date-time",
+      "title": "Computed At",
+      "type": "string"
+    },
+    "label": {
+      "default": "susceptibility and exposure, not a forecast of individual slope failure",
+      "description": "Carried in the payload so a downstream reader cannot lose the caveat.",
+      "title": "Label",
+      "type": "string"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "scenario_id",
+    "aoi_id",
+    "pga_threshold_g",
+    "units",
+    "slope_unit_source",
+    "computed_at"
+  ],
+  "title": "CascadeExposure",
+  "type": "object"
+}

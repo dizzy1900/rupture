@@ -1,0 +1,159 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/fragility-model.v0.json",
+  "$defs": {
+    "ConfidenceTier": {
+      "description": "Qualitative confidence. ``unqualified`` is the only tier a stub may claim.",
+      "enum": [
+        "unqualified",
+        "low",
+        "medium",
+        "high"
+      ],
+      "title": "ConfidenceTier",
+      "type": "string"
+    },
+    "DamageState": {
+      "description": "GEM's standard damage scale, plus the hydropower-specific states in ADR-0024.",
+      "enum": [
+        "none",
+        "slight",
+        "moderate",
+        "extensive",
+        "complete"
+      ],
+      "title": "DamageState",
+      "type": "string"
+    },
+    "FragilityFunction": {
+      "additionalProperties": false,
+      "description": "Lognormal fragility: P(reaching this damage state | IM) = Phi((ln IM - ln theta)/beta).",
+      "properties": {
+        "damage_state": {
+          "$ref": "#/$defs/DamageState"
+        },
+        "median": {
+          "description": "theta: IM level at 50 % probability.",
+          "exclusiveMinimum": 0.0,
+          "title": "Median",
+          "type": "number"
+        },
+        "beta": {
+          "description": "Lognormal standard deviation of ln(IM).",
+          "exclusiveMinimum": 0.0,
+          "title": "Beta",
+          "type": "number"
+        }
+      },
+      "required": [
+        "damage_state",
+        "median",
+        "beta"
+      ],
+      "title": "FragilityFunction",
+      "type": "object"
+    },
+    "HydropowerComponent": {
+      "description": "Where the concentrated, insurable value in a run-of-river corridor actually sits.",
+      "enum": [
+        "intake",
+        "penstock",
+        "powerhouse",
+        "headrace_tunnel",
+        "switchyard",
+        "access_road"
+      ],
+      "title": "HydropowerComponent",
+      "type": "string"
+    },
+    "ModelProvenance": {
+      "description": "How a number was produced. A published figure and a fitted model are not the same claim.",
+      "enum": [
+        "published",
+        "fitted",
+        "assumed",
+        "stub"
+      ],
+      "title": "ModelProvenance",
+      "type": "string"
+    }
+  },
+  "additionalProperties": false,
+  "description": "An ordered set of fragility functions for one asset class and one intensity measure.",
+  "properties": {
+    "id": {
+      "title": "Id",
+      "type": "string"
+    },
+    "taxonomy": {
+      "description": "GEM taxonomy string or a documented asset class.",
+      "title": "Taxonomy",
+      "type": "string"
+    },
+    "imt": {
+      "title": "Imt",
+      "type": "string"
+    },
+    "component": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/HydropowerComponent"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null
+    },
+    "functions": {
+      "items": {
+        "$ref": "#/$defs/FragilityFunction"
+      },
+      "minItems": 1,
+      "title": "Functions",
+      "type": "array"
+    },
+    "provenance": {
+      "$ref": "#/$defs/ModelProvenance"
+    },
+    "confidence": {
+      "$ref": "#/$defs/ConfidenceTier",
+      "default": "unqualified"
+    },
+    "source_refs": {
+      "default": [],
+      "items": {
+        "type": "string"
+      },
+      "title": "Source Refs",
+      "type": "array"
+    },
+    "assumption": {
+      "default": false,
+      "description": "True when no published function exists for this class.",
+      "title": "Assumption",
+      "type": "boolean"
+    },
+    "notes": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Notes"
+    }
+  },
+  "required": [
+    "id",
+    "taxonomy",
+    "imt",
+    "functions",
+    "provenance"
+  ],
+  "title": "FragilityModel",
+  "type": "object"
+}

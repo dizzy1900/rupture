@@ -13,10 +13,14 @@ from typing import Any
 
 from pydantic import BaseModel
 
+from rupture.domain.aftershock import AftershockForecast
+from rupture.domain.avoided_loss_v1 import AvoidedLossRequestV1, AvoidedLossResponseV1
+from rupture.domain.cascade import CascadeExposure, GroundFailureField
 from rupture.domain.catalog import Catalog
 from rupture.domain.evaluation import EvaluationResult
 from rupture.domain.event import Event
 from rupture.domain.forecast import FitResult, ForecastGrid
+from rupture.domain.groundmotion import GroundMotionField
 from rupture.domain.hazard import HazardCurveSet
 from rupture.domain.loss import (
     AvoidedLossRequest,
@@ -26,6 +30,7 @@ from rupture.domain.loss import (
 )
 from rupture.domain.region import Region
 from rupture.domain.source_type import SourceTypeAssessment
+from rupture.domain.vulnerability import ConsequenceModel, FragilityModel
 
 SCHEMA_DIALECT = "https://json-schema.org/draft/2020-12/schema"
 ID_BASE = "https://github.com/dizzy1900/rupture/contracts/"
@@ -36,6 +41,13 @@ class _AvoidedLoss(BaseModel):
 
     request: AvoidedLossRequest
     response: AvoidedLossResponse
+
+
+class _AvoidedLossV1(BaseModel):
+    """v1: the envelope reconciled with serac (ADR-0021)."""
+
+    request: AvoidedLossRequestV1
+    response: AvoidedLossResponseV1
 
 
 CONTRACTS: dict[str, type[BaseModel]] = {
@@ -49,6 +61,13 @@ CONTRACTS: dict[str, type[BaseModel]] = {
     "exposure-portfolio.v0.json": ExposurePortfolio,
     "loss-result.v0.json": LossResult,
     "avoided-loss.v0.json": _AvoidedLoss,
+    "avoided-loss.v1.json": _AvoidedLossV1,
+    "ground-motion-field.v0.json": GroundMotionField,
+    "fragility-model.v0.json": FragilityModel,
+    "consequence-model.v0.json": ConsequenceModel,
+    "ground-failure-field.v0.json": GroundFailureField,
+    "cascade-exposure.v0.json": CascadeExposure,
+    "aftershock-forecast.v0.json": AftershockForecast,
     "source-type-assessment.v0.json": SourceTypeAssessment,
 }
 
@@ -58,6 +77,14 @@ def schema_for(name: str) -> dict[str, Any]:
     model = CONTRACTS[name]
     schema = model.model_json_schema(mode="serialization")
     schema = {"$schema": SCHEMA_DIALECT, "$id": ID_BASE + name, **schema}
+    if name == "avoided-loss.v1.json":
+        schema["title"] = "AvoidedLoss.v1"
+        schema["description"] = (
+            "rupture's avoided-loss contract, version 1: the value vocabulary (MoneyRange, "
+            "ConfidenceTier, ModelProvenance, AttributedEstimate) is shared verbatim with the "
+            "sibling serac repository, serac's field names are accepted as aliases, and "
+            "hazard_kind discriminates a seismic request from a cascade one. See ADR-0021."
+        )
     if name == "avoided-loss.v0.json":
         schema["title"] = "AvoidedLoss"
         schema["description"] = (
