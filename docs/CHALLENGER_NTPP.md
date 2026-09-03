@@ -4,7 +4,22 @@
 against the ETAS baseline under `EVALUATION_PROTOCOL.md`. It is a record of rate forecasts and
 their test outcomes, not a claim about any future event.
 
-**Headline: the challenger is not promoted.** <!-- HEADLINE -->
+**Headline: the challenger is not promoted, in either region it was run on.** On
+`nepal-himalaya` it is worse than ETAS on every axis that matters — lower S-, L- and CL-test pass
+rates, and a mean information gain of **−0.35 nats per target event**. On `turkiye-eaf` it is
+mixed: it passes the N- and S-tests slightly *more* often than ETAS and the L-test clearly less,
+and its mean information gain is **+0.39 nats per event** but carried by one window out of the ten
+where the paired test is defined, with the W-test losing all 29. Neither region satisfies protocol
+§ 10, and `california` could not be fitted at all (see § 3), so condition 3 is unreachable.
+
+The result matches the published prior: EarthquakeNPP benchmarks five neural point processes
+against this same ETAS implementation and finds none of them ahead, with the gap concentrated in
+the spatial component. That is where this model loses too.
+
+**The number the ablation exists to produce:** fitting the parameters on the whole catalogue —
+target windows included — buys **+0.68 nats per target event** of apparent information gain over
+ETAS on `turkiye-eaf`, nearly tripling the honest figure, while barely moving the consistency pass
+rates that a casual reader would check. § 7.
 
 ---
 
@@ -156,15 +171,153 @@ ADR-0022 decision 4, with the frozen record as the evidence.
   trial's score, **before** any test window is scored, and `load_frozen` refuses a record whose
   stored hash does not match its stored configuration.
 
-<!-- SELECTION -->
+Both regions independently chose the same configuration — `hidden = 16`, `weight_decay = 10⁻³`,
+config hash `1ef984d705c3` — which is mild evidence that the choice is not fold noise.
+
+| Region | Fold 0 train / validate | Fold 1 train / validate | Validation events | Best mean NLL | Spread across the 4 candidates |
+|---|---|---|---|---|---|
+| `turkiye-eaf` | 1976-01 → 1991-05 / 1991-05 → 2006-09 | 1976-01 → 2006-09 / 2006-09 → 2022-01 | 303 | 13.553 | 13.553 – 13.638 |
+| `nepal-himalaya` | 1976-05 → 1991-11 / 1991-11 → 2006-10 | 1976-05 → 2006-10 / 2006-10 → 2022-01 | 649 | 12.725 | 12.725 – 12.828 |
+
+Every fold converged and every validation window ends at or before `2022-01-01`. The spread across
+candidates is under 0.1 nats per event, i.e. the model is insensitive to the hyperparameters in
+this grid — which is worth knowing before reading anything into the choice.
 
 ## 5. The fit
 
-<!-- FIT -->
+Fitted by maximum likelihood on events with `origin_time < 2022-01-01T00:00:00Z`, with a two-year
+auxiliary window, on one CPU core.
+
+| | `turkiye-eaf` | `nepal-himalaya` |
+|---|---|---|
+| Training events / scored | 405 / 389 | 772 / 761 |
+| Epochs, runtime | 554, 35 s | 978, 77 s |
+| Converged | yes | yes |
+| `log mu` (events/day over the region) | −4.329 | −3.953 |
+| `k0` (productivity at Mc) | 0.204 | 0.430 |
+| `alpha` (magnitude sensitivity) | 1.685 | 1.272 |
+| `beta` / `b` | 2.129 / 0.924 | 2.349 / 1.020 |
+| **Branching ratio** | **0.978** (pressing the 0.98 ceiling) | **0.936** |
+| Training NLL per event | 13.301 (`tll` −3.772, `sll` −9.530, mark −0.270) | 12.473 (`tll` −1.893, `sll` −10.580, mark −0.149) |
+| Parameter snapshot | `8d8a21fbe1e3` | `d7b92e66fd6d` |
+| **ETAS on the same events**: `a` / `beta` / `b` / branching | 2.266 / 2.090 / 0.907 / **1.044** | 2.458 / 2.355 / 1.023 / 0.689 |
+
+Three things are worth saying out loud.
+
+**The b-values agree with ETAS to two decimal places** in both regions (0.924 vs 0.907; 1.020 vs
+1.023), fitted independently from the same events by different estimators. That is a sanity check
+passing, not a result, but it is the first thing that would break if the mark likelihood were
+wrong.
+
+**The magnitude sensitivity does not agree.** `alpha` comes out at 1.69 and 1.27 against ETAS's
+2.27 and 2.46 — the challenger treats a large event as a substantially weaker trigger than ETAS
+does. In Türkiye that is partly the subcriticality ceiling biting: `alpha` and the branching ratio
+trade against each other, and the fit is pressed against the constraint.
+
+**The Türkiye fit sits at 0.978 against a ceiling of 0.98**, and the fit record says so in its
+`notes`. The likelihood wants a near-critical process on this catalogue, and so did ETAS's: the
+baseline's own fit is at **1.044**, over the line. Neither model's productivity law is well
+identified by 405 events, and this is the honest reading of both.
 
 ## 6. Results against ETAS
 
-<!-- RESULTS -->
+55 issue times every 30 days from `2022-01-01T00:00:00Z`, horizon 30 days, all 55 scored;
+1 000 pycsep simulations per test, α = 0.05, seed 20220101; 100 Monte Carlo continuations per
+forecast for **both** models; **no refits for either model** (see § 8). The catalogue build hash
+matches the published baseline run exactly in both regions (`80649982ef4a`, `98ed19af7dca`), so
+challenger and baseline scored the same events.
+
+### Pass rates (passed / scored)
+
+| Region | Model | N | M | S | L | CL |
+|---|---|---|---|---|---|---|
+| `turkiye-eaf` | **NTPP** | **53/55** (0.96) | 28/29 (0.97) | **18/29** (0.62) | 23/29 (0.79) | 23/29 (0.79) |
+| | ETAS, this run | 50/55 (0.91) | 28/29 (0.97) | 16/29 (0.55) | **27/29** (0.93) | 23/29 (0.79) |
+| | *ETAS, published* | *50/55 (0.91)* | *27/29 (0.93)* | *20/29 (0.69)* | *26/29 (0.90)* | *25/29 (0.86)* |
+| `nepal-himalaya` | **NTPP** | 50/55 (0.91) | 21/22 (0.95) | 12/22 (0.55) | 15/22 (0.68) | 17/22 (0.77) |
+| | ETAS, this run | 50/55 (0.91) | 21/22 (0.95) | **15/22** (0.68) | **16/22** (0.73) | **19/22** (0.86) |
+| | *ETAS, published* | *51/55 (0.93)* | *21/22 (0.95)* | *16/22 (0.73)* | *17/22 (0.77)* | *19/22 (0.86)* |
+
+The italic rows are `docs/BASELINE_RESULTS.md`: the same schedule with **yearly refits and 1 000
+continuations** instead of none and 100. The gap between the two ETAS rows — up to four windows on
+the Türkiye S-test — is the size of that methodological difference, and it is a useful scale
+against which to read the challenger-versus-baseline gaps in the same column. A pass means *not
+rejected at α*; it is not evidence of skill.
+
+Denominators: 26 of 55 Türkiye windows and 33 of 55 Nepal windows hold no target event and are
+recorded as N-test only (protocol § 5), never as passes.
+
+### The paired comparison against ETAS
+
+| | `turkiye-eaf` | `nepal-himalaya` |
+|---|---|---|
+| Windows where the T-test is defined | 10 | 9 |
+| T-test won by the challenger | **1** | **1** |
+| Windows with positive information gain | 5 of 10 | 4 of 9 |
+| Mean information gain per event | **+0.394 nats** | **−0.346 nats** |
+| W-test windows / won | 29 / **0** | 22 / **0** |
+
+The T-test is undefined in most windows because pycsep's paired t statistic needs more than one
+target event, and most windows hold zero or one. Those windows are recorded as undefined, never as
+a pass.
+
+The Türkiye mean gain is positive and the challenger still loses this condition, which is the
+point of reading the counts rather than the mean: **one win in ten windows**, and the W-test — the
+signed-rank companion the protocol requires alongside — loses all 29 windows in which it is
+defined. The T-test follows the mean per-event log-rate difference and the W-test its median, so
+the pair says the challenger placed a minority of events much better than ETAS and the majority
+worse. A summary quoting only "+0.39 nats information gain over ETAS" would be true and
+thoroughly misleading; it is the number this document exists to not let stand alone.
+
+### The busiest windows
+
+`turkiye-eaf` (expected counts are for the whole grid over 30 days):
+
+| Issue | Targets | NTPP | ETAS | NTPP N/S/L | ETAS N/S/L | T | W |
+|---|---|---|---|---|---|---|---|
+| 2023-01-26 | 160 | 0.28 | 0.43 | ✗ ✗ ✗ | ✗ ✗ ✗ | −0.05 | −0.81 |
+| 2023-02-25 | 12 | 12.76 | 21.25 | ✓ ✗ ✓ | ✗ ✗ ✓ | −0.05 | −0.55 |
+| 2023-04-26 | 7 | 3.94 | 8.40 | ✓ ✗ ✓ | ✓ ✓ ✓ | −0.56 | −0.51 |
+| 2023-07-25 | 5 | 1.98 | 5.19 | ✓ ✗ ✗ | ✓ ✗ ✓ | +3.15 | −1.75 |
+| 2023-11-22 | 3 | 1.31 | 3.89 | ✓ ✗ ✓ | ✓ ✗ ✓ | +0.34 | −1.60 |
+
+`nepal-himalaya`:
+
+| Issue | Targets | NTPP | ETAS | NTPP N/S/L | ETAS N/S/L | T | W |
+|---|---|---|---|---|---|---|---|
+| 2024-12-16 | 22 | 0.52 | 0.43 | ✗ ✗ ✗ | ✗ ✗ ✗ | +0.06 | −0.60 |
+| 2023-09-23 | 7 | 0.47 | 0.52 | ✗ ✗ ✗ | ✗ ✗ ✗ | −0.02 | −1.18 |
+| 2025-02-14 | 6 | 1.99 | 2.06 | ✗ ✓ ✗ | ✗ ✓ ✗ | +0.57 | −1.58 |
+| 2022-07-30 | 4 | 0.50 | 0.65 | ✗ ✗ ✗ | ✗ ✗ ✗ | −0.23 | −0.37 |
+| 2022-10-28 | 4 | 0.42 | 0.64 | ✗ ✓ ✗ | ✗ ✗ ✗ | +0.28 | −1.83 |
+
+The 2023-01-26 Türkiye window is the Kahramanmaraş doublet: 160 target events against 0.28
+expected, and every test rejects — for both models. That is the correct result. No time-dependent
+seismicity model anticipates a mainshock; a model that passed that window would be evidence of
+leakage, not of skill.
+
+What the models do is visible in the windows after it, and the pattern is consistent: **the
+challenger forecasts fewer aftershocks than ETAS in every decaying window** (12.8 against 21.2
+observed 12; 3.9 against 8.4 observed 7; 2.0 against 5.2 observed 5). Against the observed counts
+the challenger's N-test is the better calibrated of the two — which is why it passes N more often —
+while ETAS's higher rates place probability better where events actually fall, which is why ETAS
+wins L. Lower `alpha` is the mechanism: the challenger under-weights the M7.8 as a trigger.
+
+### Promotion verdict
+
+**Not promoted in either region**, applied mechanically by `promotion_verdict`:
+
+| Condition | `turkiye-eaf` | `nepal-himalaya` |
+|---|---|---|
+| 1 — N/M/S/L pass rates at or above ETAS over ≥ 12 consecutive windows | **fails**: L 0.79 vs 0.93 | **fails**: S 0.55 vs 0.68, L 0.68 vs 0.73 |
+| 2 — beats ETAS in the paired T-test with positive information gain | **fails**: won 1 of 10 windows | **fails**: won 1 of 9, mean gain −0.346 |
+| 3 — holds in ≥ 2 of 3 regions | unreachable: `california` was not fitted | unreachable |
+
+Condition 2 is read as *positive mean gain **and** wins in more than half the windows where the
+test is defined*. The looser reading — any win plus a positive mean — passes Türkiye on one window
+out of ten, and it is exactly the reading a challenger's author wants to believe. The rule was
+tightened after seeing that, in the direction that makes promotion harder, and the raw win counts
+are in the verdict so the reading can be checked.
 
 ## 7. The leaky ablation
 

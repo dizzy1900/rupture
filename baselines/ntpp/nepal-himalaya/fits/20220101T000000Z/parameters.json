@@ -1,0 +1,26 @@
+{
+  "fit_cutoff": "2022-01-01T00:00:00+00:00",
+  "model_id": "ntpp-neural-hawkes",
+  "model_version": "ntpp-0.1.0+torch-2.14.0",
+  "parameter_snapshot_hash": "d7b92e66fd6dec62a7953dfcc80817d96e68cd3d8ff3a49d5448e80e0a449c98",
+  "parameters": {
+    "alpha": 1.2715348301515685,
+    "alpha_raw": 0.2807210341240318,
+    "beta": 2.3493131721807545,
+    "branch_raw": 3.067626071222447,
+    "branching_ratio": 0.9364266750186834,
+    "k0": 0.4295980634615401,
+    "log_beta": 0.8541230182805727,
+    "log_mu": -3.9530856601191786,
+    "snapshot_0": 3079387849.0,
+    "snapshot_1": 3414279143.0,
+    "snapshot_2": 2671337237.0,
+    "snapshot_3": 3504369828.0,
+    "snapshot_4": 1178122864.0,
+    "snapshot_5": 2573445143.0,
+    "snapshot_6": 2824247497.0,
+    "snapshot_7": 2180061760.0
+  },
+  "region_id": "nepal-himalaya",
+  "snapshot_digest": "b78bbac9cb81c3e79f395f15d0e070a44638ba709963a817a85698c981f11a40"
+}
