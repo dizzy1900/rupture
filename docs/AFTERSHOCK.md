@@ -248,8 +248,8 @@ M ≥ 4.6) while the M ≥ 4.8 rung is flagged as a gross over-forecast (16.1 ex
 observed). The cause is magnitude quantisation, not the model. Most ComCat entries in these boxes
 are teleseismic `mb`, reported to 0.1, and Scordilis (2006) maps them with `Mw = 0.85 mb + 1.03`,
 so the homogenised Mw values land on a lattice with 0.085 spacing: 4.60, 4.68, 4.77, 4.86, …
-Fourteen of the seventeen observed events sit in [4.60, 4.77) and so fall below a 4.8 threshold,
-while the model's continuous Gutenberg–Richter distribution puts 62 % of M ≥ 4.6 events above 4.8.
+Fourteen of the seventeen observed events fall below 4.8 on that lattice, while the model's
+continuous Gutenberg–Richter distribution puts 62 % of M ≥ 4.6 events above 4.8 (16.1 of 25.8).
 The ladder thresholds are on the 0.1 magnitude-bin grid; the observations are on the Scordilis
 lattice; the two do not line up. **Read the M-3 rung of the ladder with this in mind for any
 catalogue dominated by converted `mb`.**
@@ -284,6 +284,9 @@ committed slice, and `--grid-out <path>` to write the `ForecastGrid` behind the 
   Body: `mainshock_id` **or** an explicit `mainshock` object (`origin_time`, `latitude`,
   `longitude`, `magnitude`, optional `depth_km`), plus `sequence`, `issue_time`, `horizon`
   (`1d` / `7d` / `30d`), optional `n_simulations`. Returns an `AftershockForecast`.
+  An issue time whose scheduled fit cutoff has no persisted fit is refused with **503** naming
+  the cutoff: an EM fit takes minutes and is not run inside a request. `create_app(allow_refit=
+  True)` turns that off where a slow request is acceptable.
 
 ```json
 {
@@ -293,7 +296,9 @@ committed slice, and `--grid-out <path>` to write the `ForecastGrid` behind the 
 }
 ```
 
-The application is self-contained and mounts nothing. The avoided-loss service
+The response body is the published contract `contracts/aftershock-forecast.v0.json` (exported
+from the domain model by the architect in Prompt 2 Wave 1); a unit test validates a real response
+against it. The application is self-contained and mounts nothing. The avoided-loss service
 (`src/rupture/risk/service.py`) is a separate application; whoever assembles the deployment can
 mount both.
 

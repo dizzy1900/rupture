@@ -6,9 +6,11 @@ socket is opened and the offline suite's ``--disable-socket`` is satisfied.
 
 from __future__ import annotations
 
+import json
 from datetime import timedelta
 from pathlib import Path
 
+import jsonschema
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -51,6 +53,8 @@ def test_healthz_needs_no_key_and_reports_what_is_loaded(client: TestClient) -> 
     assert body["model_id"] == "etas-mizrahi"
     assert body["sequences"] == ["gorkha", "kahramanmaras"]
     assert body["api_key_configured"] is True
+    assert body["allow_refit"] is False
+    assert len(body["fits_loaded"]["gorkha"]) == 3
     assert "Poisson" in body["poisson_assumption"]
 
 
@@ -167,6 +171,31 @@ def test_a_real_forecast_round_trips_through_the_domain_model(
     assert [round(p.magnitude, 2) for p in forecast.probabilities] == [4.8, 5.8, 6.8, 7.8]
     assert all(0.0 <= p.probability <= 1.0 for p in forecast.probabilities)
     assert "Poisson" in (forecast.notes or "")
+
+
+def test_the_response_validates_against_the_published_contract(
+    client: TestClient, gorkha: SequenceSpec, repo_root: Path
+) -> None:
+    """The wire format is contracts/aftershock-forecast.v0.json, not just the pydantic model."""
+    schema = json.loads(
+        (repo_root / "contracts" / "aftershock-forecast.v0.json").read_text(encoding="utf-8")
+    )
+    response = client.post(
+        "/aftershock/forecast", json=_body(gorkha), headers={API_KEY_HEADER: KEY}
+    )
+    assert response.status_code == 200, response.text
+    jsonschema.Draft202012Validator(schema).validate(response.json())
+
+
+def test_an_unscheduled_issue_time_is_refused_rather_than_refitting_in_a_request(
+    client: TestClient, gorkha: SequenceSpec
+) -> None:
+    """An EM fit takes minutes; the service says so instead of blocking the request."""
+    issue = gorkha.mainshock.origin_time + timedelta(days=3)
+    body = _body(gorkha) | {"issue_time": issue.isoformat()}
+    response = client.post("/aftershock/forecast", json=body, headers={API_KEY_HEADER: KEY})
+    assert response.status_code == 503
+    assert "no persisted fit" in response.json()["detail"]
 
 
 def test_an_explicit_mainshock_is_accepted(client: TestClient, gorkha: SequenceSpec) -> None:

@@ -133,8 +133,14 @@ def create_app(
     forecaster: AftershockForecaster | None = None,
     sequences: dict[str, LoadedSequence] | None = None,
     loader: Callable[[Path], dict[str, LoadedSequence]] = load_default_sequences,
+    allow_refit: bool = False,
 ) -> FastAPI:
-    """Build the application. ``sequences`` (or ``loader``) decides which catalogues it serves."""
+    """Build the application. ``sequences`` (or ``loader``) decides which catalogues it serves.
+
+    ``allow_refit`` is off by default: an EM fit takes minutes, which is not something to do
+    inside an HTTP request, so a request whose scheduled fit cutoff has no persisted fit is
+    refused with 503 naming the cutoff. Turn it on only where a slow request is acceptable.
+    """
     root = Path(repo_root) if repo_root is not None else Path(__file__).resolve().parents[4]
     key = api_key if api_key is not None else os.environ.get(API_KEY_ENV)
     loaded = sequences if sequences is not None else loader(root)
@@ -171,6 +177,8 @@ def create_app(
             "service": "aftershock",
             "model_id": "etas-mizrahi",
             "sequences": sorted(loaded),
+            "fits_loaded": {name: sorted(entry.fits) for name, entry in sorted(loaded.items())},
+            "allow_refit": allow_refit,
             "api_key_configured": key is not None,
             "poisson_assumption": POISSON_NOTE,
         }
@@ -197,6 +205,16 @@ def create_app(
         region = engine.zone(mainshock, entry.parent_region)
         cutoff = scheduled_fit_cutoff(mainshock.origin_time, request.issue_time)
         fit = entry.fits.get(cutoff.isoformat())
+        if fit is None and not allow_refit:
+            raise HTTPException(
+                status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+                detail=(
+                    f"no persisted fit for region {region.id} at cutoff {cutoff.isoformat()}; "
+                    "fitting takes minutes and is not done inside a request. Run "
+                    "`rupture aftershock forecast` offline, or start the service with "
+                    "allow_refit=True."
+                ),
+            )
         try:
             issuance = engine.forecast(
                 catalog=entry.catalog,
