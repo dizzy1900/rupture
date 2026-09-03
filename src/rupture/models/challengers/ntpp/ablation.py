@@ -38,19 +38,22 @@ from rupture.models.challengers.ntpp.train import Trial, candidate_configs, scor
 from rupture.ports import Tracker
 
 LEAKY_MODEL_ID = "ntpp-LEAKY-ABLATION"
+TUNING_LEAK_MODEL_ID = f"{LEAKY_MODEL_ID}-tuning"
+FIT_LEAK_MODEL_ID = f"{LEAKY_MODEL_ID}-fit"
 LEAKY_BANNER = (
     "LEAKY ABLATION - NOT A RESULT: this forecast was produced by a model that was allowed to "
     "see data from inside its own target window, to quantify what the leakage rules are worth."
 )
 
 
-class LeakyFitForecaster(NeuralTPPForecaster):
-    """The ``fit_leak`` variant: parameters fitted past the issue time, guard deliberately lifted.
+class _LeakyForecaster(NeuralTPPForecaster):
+    """Shared labelling for the ablations. Each variant gets its own model id, and it matters.
 
-    The honest adapter refuses this through ``assert_issue_after_fit``. Rather than weaken that
-    guard, this subclass hands ``forecast`` a copy of the fit whose recorded cutoff is the issue
-    time — so the assertion still runs and still passes on what it is shown, and the lie is
-    confined to one clearly named class that stamps every grid it produces.
+    A distinct id is not cosmetic. ``ForecastGrid.make_id`` is built from the model id, the
+    evaluation bundle is keyed by the forecast id, and ``evaluate_forecast`` skips a window whose
+    results file already exists. A leaky variant sharing the honest model's id would therefore
+    silently *reuse the honest results* and report them as the ablation's — the exact failure the
+    ablation exists to measure, committed by the measuring apparatus.
     """
 
     model_id: str = LEAKY_MODEL_ID
@@ -63,6 +66,48 @@ class LeakyFitForecaster(NeuralTPPForecaster):
         into every forecast id and run-log record from the moment the fit is loaded.
         """
         super().load_fit(fit.model_copy(update={"model_id": self.model_id}), region, weights)
+
+    @staticmethod
+    def _stamp(grid: ForecastGrid, detail: str) -> ForecastGrid:
+        return grid.model_copy(update={"notes": f"{LEAKY_BANNER} {detail} {grid.notes}"})
+
+
+class LeakyTunedForecaster(_LeakyForecaster):
+    """The ``tuning_leak`` variant: an honest fit of a configuration chosen on the test window.
+
+    Nothing about the forecasting path is altered — the leak happened before the fit, when the
+    configuration was selected. The class exists to carry the label.
+    """
+
+    model_id: str = TUNING_LEAK_MODEL_ID
+
+    def forecast(
+        self,
+        history: Catalog,
+        issue_time: datetime,
+        horizon: timedelta,
+        *,
+        n_simulations: int = 200,
+        seed: int | None = None,
+    ) -> ForecastGrid:
+        grid = super().forecast(
+            history, issue_time, horizon, n_simulations=n_simulations, seed=seed
+        )
+        return self._stamp(
+            grid, "the hyperparameters were chosen by scoring candidates on the test window."
+        )
+
+
+class LeakyFitForecaster(_LeakyForecaster):
+    """The ``fit_leak`` variant: parameters fitted past the issue time, guard deliberately lifted.
+
+    The honest adapter refuses this through ``assert_issue_after_fit``. Rather than weaken that
+    guard, this subclass hands ``forecast`` a copy of the fit whose recorded cutoff is the issue
+    time — so the assertion still runs and still passes on what it is shown, and the lie is
+    confined to one clearly named class that stamps every grid it produces.
+    """
+
+    model_id: str = FIT_LEAK_MODEL_ID
 
     def forecast(
         self,
@@ -79,17 +124,15 @@ class LeakyFitForecaster(NeuralTPPForecaster):
             raise RuntimeError(msg)
         self._fit = real.model_copy(update={"fit_cutoff": issue_time})
         try:
-            grid = super().forecast(
+            grid = super(_LeakyForecaster, self).forecast(
                 history, issue_time, horizon, n_simulations=n_simulations, seed=seed
             )
         finally:
             self._fit = real
-        return grid.model_copy(
-            update={
-                "fit_cutoff": real.fit_cutoff,
-                "notes": f"{LEAKY_BANNER} true fit cutoff {real.fit_cutoff.isoformat()}. "
-                f"{grid.notes}",
-            }
+        return self._stamp(
+            grid.model_copy(update={"fit_cutoff": real.fit_cutoff}),
+            f"the parameters were fitted on data up to {real.fit_cutoff.isoformat()}, "
+            "which is inside this window.",
         )
 
 
@@ -180,7 +223,7 @@ def run_ablations(
         candidates=candidates,
         auxiliary_years=auxiliary_years,
     )
-    tuning_model = NeuralTPPForecaster(tuned_config, auxiliary_years=auxiliary_years)
+    tuning_model = LeakyTunedForecaster(tuned_config, auxiliary_years=auxiliary_years)
     tuning_model.fit(catalog, region, cutoff, mc=mc)
     tuning_report = run_ntpp_schedule(
         catalog,

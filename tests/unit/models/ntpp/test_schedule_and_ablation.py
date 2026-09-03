@@ -18,9 +18,12 @@ from rupture.domain import Catalog, Region
 from rupture.domain import TestName as CsepTest
 from rupture.models.challengers.ntpp import NeuralTPPForecaster
 from rupture.models.challengers.ntpp.ablation import (
+    FIT_LEAK_MODEL_ID,
     LEAKY_BANNER,
     LEAKY_MODEL_ID,
+    TUNING_LEAK_MODEL_ID,
     LeakyFitForecaster,
+    LeakyTunedForecaster,
 )
 from rupture.models.challengers.ntpp.schedule import (
     MIN_PROMOTION_WINDOWS,
@@ -138,16 +141,36 @@ def test_the_honest_model_refuses_what_the_leaky_one_is_built_to_do(
     leaky = LeakyFitForecaster()
     leaky.load_fit(load_ntpp_fit(), region, load_ntpp_weights())
     grid = leaky.forecast(history, earlier, HORIZON, n_simulations=FEW, seed=1)
-    assert grid.model_id == LEAKY_MODEL_ID
-    assert grid.id.startswith(LEAKY_MODEL_ID)
+    assert grid.model_id == FIT_LEAK_MODEL_ID
+    assert grid.id.startswith(FIT_LEAK_MODEL_ID)
     assert LEAKY_BANNER in (grid.notes or "")
     assert grid.fit_cutoff == FIT_CUTOFF  # the record keeps the true cutoff, not the pretended one
 
 
 def test_the_leaky_model_id_is_impossible_to_mistake() -> None:
-    assert "LEAKY" in LEAKY_MODEL_ID
-    assert "ABLATION" in LEAKY_MODEL_ID
+    for model_id in (LEAKY_MODEL_ID, TUNING_LEAK_MODEL_ID, FIT_LEAK_MODEL_ID):
+        assert "LEAKY" in model_id
+        assert "ABLATION" in model_id
     assert "NOT A RESULT" in LEAKY_BANNER
+
+
+def test_each_ablation_has_its_own_id_so_it_cannot_reuse_honest_results(
+    region: Region, fixture_catalog: Catalog
+) -> None:
+    """Evaluation bundles are keyed by forecast id, and forecast ids are keyed by model id.
+
+    A leaky variant sharing the honest id would find the honest results file already on disk and
+    silently report it as its own — the ablation measuring nothing while appearing to work.
+    """
+    ids = {NeuralTPPForecaster.model_id, TUNING_LEAK_MODEL_ID, FIT_LEAK_MODEL_ID}
+    assert len(ids) == 3
+
+    history = fixture_catalog.earthquakes().before(FIT_CUTOFF).at_least(MC)
+    tuned = LeakyTunedForecaster()
+    tuned.load_fit(load_ntpp_fit(), region, load_ntpp_weights())
+    grid = tuned.forecast(history, FIT_CUTOFF, HORIZON, n_simulations=FEW, seed=1)
+    assert grid.id.startswith(TUNING_LEAK_MODEL_ID)
+    assert LEAKY_BANNER in (grid.notes or "")
 
 
 def test_selection_refuses_a_validation_window_past_the_cutoff(

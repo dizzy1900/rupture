@@ -29,4 +29,5 @@ Consequences / Alternatives considered. All dates UTC.
 | [0021](0021-avoided-loss-v1-serac-reconciliation.md) | Avoided loss v1: shared value vocabulary and field aliases reconciled with the sibling `serac`, envelopes kept distinct | accepted |
 | [0022](0022-leakage-engineering-for-learned-models.md) | Leakage engineering for learned models: causal features, blocked time-forward CV only, a labelled leaky ablation | accepted |
 | [0023](0023-tracker-adapters.md) | Local-filesystem tracking is the default; Weights & Biases is optional and never required | accepted |
+| [0029](0029-neural-point-process-challenger-and-shared-dataset-layer.md) | Challenger C1a is a neural-kernel Hawkes process, built on a shared `models/data` layer that implements the ADR-0022 leakage rules once | accepted |
 | [0030](0030-openquake-runner-design.md) | OpenQuake runner: docker CLI via subprocess, demo-first validation, skip semantics | accepted |

@@ -3,7 +3,7 @@
   "command": "uv run python -m tests.fixtures.models.make_ntpp_fixture",
   "config_hash": "88da7548124f87be60b01f7347dc14a01cf743c625e16c3cf6deda38fc60753d",
   "converged": true,
-  "created_at": "2026-09-03T20:47:31.621305+00:00",
+  "created_at": "2026-09-03T21:02:58.862169+00:00",
   "derived_from": "comcat-california-2018-2019-m3.geojson",
   "fit_cutoff": "2019-07-01T00:00:00+00:00",
   "licence": "public-domain (USGS)",

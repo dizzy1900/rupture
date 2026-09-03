@@ -32,8 +32,9 @@ negative result is interpretable — it says the extra flexibility did not pay, 
 optimiser failed.
 
 **What it is not.** It does not model magnitude dependence in the mark distribution, aftershock
-anisotropy, finite-fault geometry, or time-varying completeness. rupture does not predict
-earthquakes: this produces expected counts per cell and magnitude bin over a horizon, nothing more.
+anisotropy, finite-fault geometry, or time-varying completeness.
+rupture does not predict earthquakes: this produces expected counts per cell and magnitude bin
+over a horizon, and nothing more.
 
 Conventions follow the EarthquakeNPP benchmark (Stockman, Lawson & Werner, TMLR 2026;
 ``ss15859/EarthquakeNPP``, MIT) where they apply — time in float days, locations in projected

@@ -8,9 +8,9 @@ baseline's helpers rather than reimplementing them is deliberate; a challenger s
 private harness is not scored against the baseline at all.
 
 Nothing here decides whether the challenger is any good. :func:`promotion_verdict` applies § 10 of
-the protocol mechanically and reports which conditions failed. rupture does not predict
-earthquakes, and a challenger that scores well is a rate forecast that was not rejected, not a
-claim about any future event.
+the protocol mechanically and reports which conditions failed.
+rupture does not predict earthquakes: a challenger that scores well has issued a rate forecast
+that was not rejected, which is not a claim about any future event.
 """
 
 from __future__ import annotations

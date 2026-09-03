@@ -323,7 +323,7 @@ class NeuralTPPForecaster:
             ),
             converged=converged,
             fitted_at=utc_now(),
-            notes=None if converged else f"not converged ({reason}): fit is not usable",
+            notes=_fit_notes(converged, reason, _branching_ratio(net)),
         )
         self._fit = result
         return result
@@ -473,6 +473,13 @@ class NeuralTPPForecaster:
             "log_likelihood": ll.to_dict(),
             "b_value": float(np.exp(float(net.log_beta.item()))) / float(np.log(10.0)),
             "productivity_by_magnitude": _productivity_curve(net, mc_value),
+            "branching_ratio": _branching_ratio(net),
+            "branching_ratio_note": (
+                "expected offspring per event, k0 * beta / (beta - alpha), in closed form for "
+                "this productivity law and mark distribution; comparable to the ETAS adapter's "
+                "branching_ratio. At or above 1 the process is critical and its cascades do not "
+                "terminate on their own"
+            ),
             "epochs_run": len(loss_history),
             "converged_reason": converged_reason,
             "convergence_tol": self.convergence_tol,
@@ -676,6 +683,37 @@ def _identity_standardiser() -> Standardiser:
         scale=np.ones(2),
         n_rows_fitted=0,
     )
+
+
+def _fit_notes(converged: bool, reason: str, branching: float | None) -> str | None:
+    """The one sentence a reader of the fit record most needs, if there is one."""
+    if not converged:
+        return f"not converged ({reason}): fit is not usable"
+    if branching is None or branching >= 1.0:
+        return (
+            f"branching ratio {branching if branching is None else round(branching, 4)}: the "
+            "fitted process is critical or supercritical, so its cascades do not die out on "
+            "their own and its forecasts are unstable. The fit converged and is reported, but it "
+            "is not a usable model of the process"
+        )
+    return None
+
+
+def _branching_ratio(net: NeuralKernelHawkes) -> float | None:
+    """Expected direct offspring per event, integrated over the Gutenberg-Richter mark law.
+
+    With productivity ``k0 exp(alpha (m - mc))`` and marks ``beta exp(-beta (m - mc))`` the
+    integral is ``k0 beta / (beta - alpha)`` for ``alpha < beta``, and diverges otherwise. A value
+    at or above 1 means a supercritical process: every event triggers at least one on average, the
+    cascade does not die out, and any forecast from it should be distrusted.
+    """
+    with torch.no_grad():
+        k0 = float(torch.exp(net.log_k0).item())
+        alpha = float(net.alpha.item())
+        beta = float(torch.exp(net.log_beta).item())
+    if alpha >= beta:
+        return None
+    return k0 * beta / (beta - alpha)
 
 
 def _productivity_curve(net: NeuralKernelHawkes, mc: float) -> dict[str, float]:

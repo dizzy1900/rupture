@@ -3,6 +3,8 @@
   "auxiliary_years": 0.25,
   "b_value": 0.9666814928723422,
   "benchmark_conventions": "EarthquakeNPP (Stockman, Lawson & Werner, TMLR 2026)",
+  "branching_ratio": 1.0024075717153633,
+  "branching_ratio_note": "expected offspring per event, k0 * beta / (beta - alpha), in closed form for this productivity law and mark distribution; comparable to the ETAS adapter's branching_ratio. At or above 1 the process is critical and its cascades do not terminate on their own",
   "config": {
     "background_sigma_km": 15.0,
     "epochs": 8000,
@@ -295,7 +297,7 @@
     "lon0": -118.0,
     "radius_km": 6378.1
   },
-  "runtime_s": 19.47,
+  "runtime_s": 36.815,
   "snapshot_digest": "41a8cb14f1af31e7d4d15676c01f64103ff529e0ebec4851f7e6191122106410",
   "timewindow_end": "2019-07-01T00:00:00+00:00",
   "timewindow_start": "2018-04-02T09:05:34.240000+00:00",
