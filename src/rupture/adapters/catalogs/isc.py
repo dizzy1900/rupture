@@ -78,8 +78,17 @@ def _opt_float(text: str) -> float | None:
     return float(text) if text else None
 
 
-def parse_isc_text(payload: bytes | str, *, provenance: Provenance) -> list[Event]:
-    """Pure parser for the ISC FDSN text format. Rows without a magnitude are skipped and logged."""
+def parse_isc_text(
+    payload: bytes | str,
+    *,
+    provenance: Provenance,
+    skipped: list[tuple[str, str]] | None = None,
+) -> list[Event]:
+    """Pure parser for the ISC FDSN text format.
+
+    Rows without a magnitude and stray non-data lines are skipped, logged and, when ``skipped``
+    is given, appended to it as ``(row id or text, reason)`` so the caller can record a count.
+    """
     text = payload.decode("utf-8") if isinstance(payload, bytes) else payload
     lines = text.splitlines()
     header: list[str] | None = None
@@ -99,6 +108,8 @@ def parse_isc_text(payload: bytes | str, *, provenance: Provenance) -> list[Even
             # the service occasionally emits a stray non-data line (seen: a lone "?"); it is
             # not an event row, so it is reported and skipped rather than treated as data
             log.warning("isc: skipped non-data line %r", line[:80])
+            if skipped is not None:
+                skipped.append((line[:40], "non-data line"))
             continue
         cols = [c.strip() for c in line.split("|")]
         if len(cols) < 12:
@@ -109,6 +120,8 @@ def parse_isc_text(payload: bytes | str, *, provenance: Provenance) -> list[Even
         mag_text = row.get("Magnitude", "")
         if not mag_text:
             log.warning("isc: skipped event %s: no magnitude", eid)
+            if skipped is not None:
+                skipped.append((eid, "no magnitude"))
             continue
         mag_value = float(mag_text)
         raw_type = row.get("MagType") or None
@@ -183,6 +196,7 @@ class IscSource:
     ) -> None:
         self.offline_fixtures = offline_fixtures
         self.cache_dir = cache_dir
+        self.last_skipped: list[tuple[str, str]] = []
 
     def fetch(
         self,
@@ -195,6 +209,7 @@ class IscSource:
         if end <= start:
             msg = "end must be after start"
             raise ValueError(msg)
+        self.last_skipped = []
         if self.offline_fixtures is not None:
             events = self._from_fixtures(region, start, end, min_magnitude=min_magnitude)
             note = f"offline fixtures from {self.offline_fixtures}"
@@ -203,6 +218,8 @@ class IscSource:
             for ws, we in year_windows(start, end):
                 events.extend(self._fetch_window(region, ws, we, min_magnitude=min_magnitude))
             note = "online ISC FDSN text, paged by calendar year"
+        if self.last_skipped:
+            note += f"; skipped {len(self.last_skipped)} source rows"
         events.sort(key=lambda e: (e.origin_time, e.source_event_id))
         return Catalog(
             id=f"{SOURCE_ID}/{region.id}/{start.isoformat()}/{end.isoformat()}",
@@ -218,12 +235,9 @@ class IscSource:
         self, region: Region, start: datetime, end: datetime, *, min_magnitude: float | None
     ) -> list[Event]:
         url = query_url(region, start, end, min_magnitude=min_magnitude)
-        try:
-            payload = fetch_bytes(
-                url, cache_dir=self.cache_dir, ok_statuses=frozenset({200, 204, 404, 413})
-            )
-        except FetchError:
-            raise
+        payload = fetch_bytes(
+            url, cache_dir=self.cache_dir, ok_statuses=frozenset({200, 204, 404, 413})
+        )
         if payload.status_code == 413:
             if (end - start).days <= MIN_WINDOW_DAYS:
                 msg = f"ISC returned 413 for a {MIN_WINDOW_DAYS}-day window at {start}"
@@ -244,7 +258,7 @@ class IscSource:
             licence=LICENCE,
             adapter_version=ADAPTER_VERSION,
         )
-        events = parse_isc_text(payload.content, provenance=prov)
+        events = parse_isc_text(payload.content, provenance=prov, skipped=self.last_skipped)
         return filter_events(events, region, start, end, min_magnitude=min_magnitude)
 
     def _from_fixtures(
@@ -255,7 +269,7 @@ class IscSource:
         events: list[Event] = []
         seen: set[str] = set()
         for f in files:
-            for e in parse_isc_text(f.content, provenance=f.provenance):
+            for e in parse_isc_text(f.content, provenance=f.provenance, skipped=self.last_skipped):
                 if e.id not in seen:
                     seen.add(e.id)
                     events.append(e)

@@ -136,7 +136,7 @@ TURKIYE_EAF_POLYGON: tuple[tuple[float, float], ...] = (
 
 def default_regions() -> list[Region]:
     """The three Prompt-1 test regions with ``mc=None`` (filled by ``rupture catalog build``)."""
-    from rupture.domain import TectonicSetting  # noqa: PLC0415
+    from rupture.domain import MagnitudePolicy, TectonicSetting  # noqa: PLC0415
 
     return [
         Region(
@@ -147,10 +147,11 @@ def default_regions() -> list[Region]:
             depth_max_km=30.0,
             tectonic_setting=TectonicSetting.TRANSFORM,
             target_min_magnitude=3.95,
+            magnitude_policy=MagnitudePolicy.NETWORK_PREFERRED_AS_MW,
             description=(
                 "Outer boundary of the pycsep RELM California region (union of the 7682 0.1-degree "
                 "cells, simplified to 158 vertices with the area preserved). RELM conventions: "
-                "M >= 3.95, depth <= 30 km."
+                "M >= 3.95, depth <= 30 km. Magnitude policy network-preferred-as-mw (ADR-0019)."
             ),
             references=(
                 "Schorlemmer & Gerstenberger 2007, SRL 78(1) (RELM testing region)",
@@ -164,7 +165,7 @@ def default_regions() -> list[Region]:
             depth_min_km=0.0,
             depth_max_km=70.0,
             tectonic_setting=TectonicSetting.CONTINENTAL_COLLISION,
-            target_min_magnitude=4.5,
+            target_min_magnitude=4.7,
             description=(
                 "Corridor defined by rupture, not an official region: an octagon following the "
                 "Himalayan arc between about 80 and 89 E; the southern edge runs just south of "
@@ -181,7 +182,7 @@ def default_regions() -> list[Region]:
             depth_min_km=0.0,
             depth_max_km=50.0,
             tectonic_setting=TectonicSetting.TRANSFORM,
-            target_min_magnitude=4.0,
+            target_min_magnitude=4.6,
             description=(
                 "Corridor defined by rupture, not an official region: an octagon along the "
                 "left-lateral East Anatolian Fault from the Amanos/Hatay segment near 36 E, 36 N "

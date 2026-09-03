@@ -126,8 +126,16 @@ def _opt(text: str | None) -> float | None:
         return None
 
 
-def parse_isc_gem_csv(payload: bytes | str, *, provenance: Provenance) -> list[Event]:
-    """Pure parser for the ISC-GEM main catalogue CSV -> events (Mw is native: identity)."""
+def parse_isc_gem_csv(
+    payload: bytes | str,
+    *,
+    provenance: Provenance,
+    skipped: list[tuple[str, str]] | None = None,
+) -> list[Event]:
+    """Pure parser for the ISC-GEM main catalogue CSV -> events (Mw is native: identity).
+
+    Rows without Mw are skipped, logged and, when ``skipped`` is given, appended to it.
+    """
     text = payload.decode("utf-8") if isinstance(payload, bytes) else payload
     lines = text.splitlines()
     header = _header_from_comments(lines) or list(DOCUMENTED_COLUMNS)
@@ -145,6 +153,8 @@ def parse_isc_gem_csv(payload: bytes | str, *, provenance: Provenance) -> list[E
         mw = _opt(row.get("mw"))
         if mw is None:
             log.warning("isc-gem: skipped event %s: no Mw", eid)
+            if skipped is not None:
+                skipped.append((eid, "no Mw"))
             continue
         smaj = _opt(row.get("smajax"))
         events.append(
@@ -202,6 +212,7 @@ class IscGemSource:
     ) -> None:
         self.offline_fixtures = offline_fixtures
         self.csv_path = csv_path
+        self.last_skipped: list[tuple[str, str]] = []
 
     def fetch(
         self,
@@ -214,6 +225,7 @@ class IscGemSource:
         if end <= start:
             msg = "end must be after start"
             raise ValueError(msg)
+        self.last_skipped = []
         if self.offline_fixtures is not None:
             fixture_dir = self.offline_fixtures / "isc_gem"
             if not (fixture_dir / "provenance.json").exists():
@@ -225,7 +237,9 @@ class IscGemSource:
             files = load_fixture_dir(fixture_dir, adapter_version=ADAPTER_VERSION)
             events: list[Event] = []
             for f in files:
-                events.extend(parse_isc_gem_csv(f.content, provenance=f.provenance))
+                events.extend(
+                    parse_isc_gem_csv(f.content, provenance=f.provenance, skipped=self.last_skipped)
+                )
             note = f"offline fixtures from {fixture_dir}"
         else:
             path = self.csv_path or configured_path()
@@ -240,8 +254,10 @@ class IscGemSource:
                 adapter_version=ADAPTER_VERSION,
                 notes="retrieved_at is the local file mtime (manual download, ADR-0005)",
             )
-            events = parse_isc_gem_csv(content, provenance=prov)
+            events = parse_isc_gem_csv(content, provenance=prov, skipped=self.last_skipped)
             note = f"local ISC-GEM CSV {path}"
+        if self.last_skipped:
+            note += f"; skipped {len(self.last_skipped)} source rows"
         events = filter_events(events, region, start, end, min_magnitude=min_magnitude)
         events.sort(key=lambda e: (e.origin_time, e.source_event_id))
         return Catalog(

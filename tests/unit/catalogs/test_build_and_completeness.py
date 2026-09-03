@@ -11,15 +11,28 @@ import pytest
 
 from rupture.adapters.sources.regions import contains, region_polygon
 from rupture.adapters.storage.geoparquet import parquet_metadata, read_catalog, write_catalog
-from rupture.domain import Catalog, EventType, HomogenisationStep, McMethod, Region
+from rupture.commands.catalog import region_mc_decision
+from rupture.domain import (
+    Catalog,
+    CompletenessEstimate,
+    EventType,
+    HomogenisationStep,
+    MagnitudePolicy,
+    MagnitudeType,
+    McMethod,
+    Region,
+)
 from rupture.pipelines import completeness as cp
+from rupture.pipelines import magnitudes as mg
 from rupture.pipelines.build_catalog import (
     MergeConfig,
     association_keys,
     build_catalog,
     contributing_lanes,
+    depth_in_range,
     haversine_km,
     lane_of,
+    mw_coverage_at,
     rupture_event_id,
 )
 
@@ -261,3 +274,181 @@ def test_completeness_needs_two_magnitudes() -> None:
         cp.estimate_completeness(
             [5.0], window_start=GORKHA_START, window_end=GORKHA_END, with_etas_cross_check=False
         )
+
+
+# ------------------------------------------------------------ magnitude policy (ADR-0019)
+
+RIDGECREST_START = datetime(2019, 7, 4, tzinfo=UTC)
+RIDGECREST_END = datetime(2019, 8, 3, tzinfo=UTC)
+
+
+def _ridgecrest(fixtures_root: Path, region: Region) -> Catalog:
+    return build_catalog(
+        region,
+        RIDGECREST_START,
+        RIDGECREST_END,
+        ["comcat", "isc", "gcmt"],
+        offline_fixtures=fixtures_root,
+        estimate_mc=False,
+    )
+
+
+def test_strict_policy_leaves_ml_events_without_mw(fixtures_root: Path, california: Region) -> None:
+    strict = california.model_copy(update={"magnitude_policy": MagnitudePolicy.STRICT})
+    cat = _ridgecrest(fixtures_root, strict)
+    ml_only = [
+        e
+        for e in cat.events
+        if e.magnitude.type in {MagnitudeType.ML, MagnitudeType.MD}
+        and not any(m.type in mg.MOMENT_TYPES for m in e.other_magnitudes)
+    ]
+    assert len(ml_only) > 50
+    assert all(e.mw is None and e.mw_conversion is None for e in ml_only)
+    assert not any((e.mw_conversion or "").startswith("assumed-equivalent") for e in cat.events)
+    assert cat.notes is not None
+    assert "magnitude_policy=strict" in cat.notes
+
+
+def test_network_preferred_policy_assumes_ml_as_mw(fixtures_root: Path, california: Region) -> None:
+    assert california.magnitude_policy is MagnitudePolicy.NETWORK_PREFERRED_AS_MW
+    cat = _ridgecrest(fixtures_root, california)
+    assumed = [e for e in cat.events if (e.mw_conversion or "").startswith("assumed-equivalent")]
+    assert len(assumed) > 50
+    for e in assumed:
+        assert e.magnitude.type in {MagnitudeType.ML, MagnitudeType.MD, MagnitudeType.MLV}
+        assert e.mw == e.magnitude.value
+        assert e.mw_conversion == f"assumed-equivalent:{e.magnitude.type.value}"
+        assert not any(m.type in mg.MOMENT_TYPES for m in e.other_magnitudes)
+    log = {
+        x.event_id: x
+        for x in cat.homogenisation_log
+        if x.step is HomogenisationStep.MAGNITUDE_CONVERTED
+    }
+    assert all("assumed Mw-equivalent (ADR-0019)" in log[e.id].detail for e in assumed)
+    # moment magnitudes and Scordilis conversions keep precedence
+    main = max(cat.events, key=lambda e: e.mw or 0)
+    assert main.mw_conversion == "identity:mwc"
+    assert main.mw >= 7.0
+    strict_cat = _ridgecrest(
+        fixtures_root, california.model_copy(update={"magnitude_policy": MagnitudePolicy.STRICT})
+    )
+    strict_by_id = {e.id: e for e in strict_cat.events}
+    for e in cat.events:
+        if not (e.mw_conversion or "").startswith("assumed-equivalent"):
+            assert (e.mw, e.mw_conversion) == (
+                strict_by_id[e.id].mw,
+                strict_by_id[e.id].mw_conversion,
+            )
+    assert "magnitude_policy=network-preferred-as-mw" in (cat.notes or "")
+
+
+# ------------------------------------------------------------ QA follow-ups (B1, M5, minors)
+
+
+def test_negative_depth_shallow_event_is_kept(fixtures_root: Path, california: Region) -> None:
+    """ComCat ``ci38462175`` (Ridgecrest, -0.13 km) must survive the default depth_min_km = 0."""
+    cat = build_catalog(
+        california,
+        RIDGECREST_START,
+        RIDGECREST_END,
+        ["comcat"],  # ComCat-only build forces the ComCat solution to be preferred
+        offline_fixtures=fixtures_root,
+        estimate_mc=False,
+    )
+    hits = [e for e in cat.events if e.source_event_id == "ci38462175"]
+    assert len(hits) == 1
+    assert hits[0].source_catalog == "usgs-comcat"
+    assert hits[0].depth_km is not None
+    assert hits[0].depth_km < 0
+    dropped = {
+        x.event_id for x in cat.homogenisation_log if x.step is HomogenisationStep.DEPTH_FILTERED
+    }
+    assert hits[0].id not in dropped
+    assert not any(e.depth_km is not None and e.depth_km > 30.0 for e in cat.events)
+
+
+def test_depth_lower_bound_only_when_explicit(california: Region) -> None:
+    assert depth_in_range(-0.13, california)
+    assert depth_in_range(0.0, california)
+    assert not depth_in_range(30.1, california)
+    deep_only = california.model_copy(update={"depth_min_km": 5.0})
+    assert not depth_in_range(-0.13, deep_only)
+    assert not depth_in_range(4.9, deep_only)
+    assert depth_in_range(5.0, deep_only)
+
+
+def test_mw_coverage_and_notes(gorkha: Catalog, nepal: Region) -> None:
+    with_mw, total = mw_coverage_at(gorkha, nepal.target_min_magnitude)
+    assert 0 < with_mw <= total
+    assert with_mw / total > 0.8  # Nepal M >= 4.7 is dominated by convertible mb / Mw
+    assert gorkha.notes is not None
+    assert "etas cross-check not run" in gorkha.notes
+    assert "magnitude_policy=strict" in gorkha.notes
+
+
+def _estimate(method: McMethod, mc: float, b: float | None) -> CompletenessEstimate:
+    return CompletenessEstimate(
+        mc=mc,
+        method=method,
+        b_value=b,
+        b_value_uncertainty=0.05 if b else None,
+        n_events=100,
+        window_start=GORKHA_START,
+        window_end=GORKHA_END,
+        computed_at=GORKHA_END,
+        correction=0.2 if method is McMethod.MAXIMUM_CURVATURE else 0.0,
+        notes="test",
+    )
+
+
+def test_region_mc_decision_publishes_only_when_b_and_coverage_pass(
+    gorkha: Catalog, nepal: Region
+) -> None:
+    good = gorkha.model_copy(
+        update={
+            "completeness": (
+                _estimate(McMethod.MAXIMUM_CURVATURE, 4.4, 1.1),
+                _estimate(McMethod.B_VALUE_STABILITY, 4.7, 1.2),
+            )
+        }
+    )
+    updated, reason = region_mc_decision(good, nepal)
+    assert updated.mc is not None
+    assert updated.mc.mc == 4.4
+    assert len(updated.mc_estimates) == 2
+    assert all("Mw coverage at M>=4.7" in (c.notes or "") for c in updated.mc_estimates)
+    assert "b=1.10" in (updated.mc.notes or "")
+    assert reason.startswith("mc=4.40 published")
+
+    low_b = good.model_copy(
+        update={
+            "completeness": (
+                _estimate(McMethod.MAXIMUM_CURVATURE, 3.7, 0.59),
+                _estimate(McMethod.B_VALUE_STABILITY, 4.9, 0.95),
+            )
+        }
+    )
+    refused, reason = region_mc_decision(low_b, nepal)
+    assert refused.mc is None
+    assert len(refused.mc_estimates) == 2
+    assert "b 0.59 < 0.7" in reason
+    forced, reason = region_mc_decision(low_b, nepal, force=True)
+    assert forced.mc is not None
+    assert "--force-mc" in (forced.mc.notes or "")
+    assert "[forced]" in reason
+
+    # low Mw coverage: strip mw from every target-size event
+    stripped = tuple(
+        e.model_copy(update={"mw": None, "mw_conversion": None})
+        if e.magnitude.value >= nepal.target_min_magnitude
+        else e
+        for e in good.events
+    )
+    low_cov = good.model_copy(update={"events": stripped})
+    refused, reason = region_mc_decision(low_cov, nepal)
+    assert refused.mc is None
+    assert "coverage 0% < 80%" in reason
+
+
+def test_b_value_stability_uses_six_cutoffs() -> None:
+    assert cp.STABILITY_BINS == 6

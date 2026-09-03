@@ -39,21 +39,60 @@
   "depth_max_km": 50.0,
   "tectonic_setting": "transform",
   "cell_size_deg": 0.1,
-  "target_min_magnitude": 4.0,
+  "target_min_magnitude": 4.6,
   "magnitude_bin_width": 0.1,
   "magnitude_max": 8.95,
   "mc": {
     "mc": 4.3,
     "method": "maximum_curvature",
-    "b_value": 1.025151435496416,
-    "b_value_uncertainty": 0.031246769964284188,
-    "n_events": 915,
+    "b_value": 1.0255402361529682,
+    "b_value_uncertainty": 0.03120989634950273,
+    "n_events": 917,
     "window_start": "1976-01-01T00:00:00Z",
     "window_end": "2026-08-01T00:00:00Z",
-    "computed_at": "2026-09-03T10:36:41.758679Z",
+    "computed_at": "2026-09-03T11:00:26.312111Z",
     "correction": 0.2,
-    "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE"
+    "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE; Mw coverage at M>=4.6: 282/288 (98%); maximum-curvature b=1.03"
   },
+  "mc_estimates": [
+    {
+      "mc": 4.3,
+      "method": "maximum_curvature",
+      "b_value": 1.0255402361529682,
+      "b_value_uncertainty": 0.03120989634950273,
+      "n_events": 917,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T11:00:26.312111Z",
+      "correction": 0.2,
+      "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE; Mw coverage at M>=4.6: 282/288 (98%); maximum-curvature b=1.03"
+    },
+    {
+      "mc": 4.6,
+      "method": "b_value_stability",
+      "b_value": 1.1585867342608978,
+      "b_value_uncertainty": 0.05335955758677594,
+      "n_events": 495,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T11:00:26.312111Z",
+      "correction": 0.0,
+      "notes": "Cao & Gao 2002: mean b over next 6 bins within sigma_b; min 30 events per cut-off; Mw coverage at M>=4.6: 282/288 (98%); maximum-curvature b=1.03"
+    },
+    {
+      "mc": 4.7,
+      "method": "mc_ks",
+      "b_value": 1.1992621373768417,
+      "b_value_uncertainty": null,
+      "n_events": 388,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T11:00:26.312111Z",
+      "correction": 0.0,
+      "notes": "etas.mc_b_est.estimate_mc (Mizrahi et al. 2021) KS test, p >= 0.1; Mw coverage at M>=4.6: 282/288 (98%); maximum-curvature b=1.03"
+    }
+  ],
+  "magnitude_policy": "strict",
   "description": "Corridor defined by rupture, not an official region: an octagon along the left-lateral East Anatolian Fault from the Amanos/Hatay segment near 36 E, 36 N to the Karliova junction near 41 E, 39.3 N, about 150 km wide. Includes the 2023 Kahramanmaras doublet.",
   "references": [
     "Duman & Emre 2013, Geol. Soc. London Spec. Publ. 372 (EAF segmentation)"

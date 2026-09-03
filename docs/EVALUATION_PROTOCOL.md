@@ -15,9 +15,9 @@ Zechar, Gerstenberger & Rhoades 2010; Werner et al. 2011; Rhoades et al. 2011; S
 
 | Region id | Polygon | Cell size | Target magnitude | Depth | Notes |
 |---|---|---|---|---|---|
-| `california` | the pycsep RELM California region (`csep.core.regions.california_relm_region`) | 0.1° | M ≥ 3.95 | ≤ 30 km | the CSEP reference region; thresholds are the RELM conventions |
-| `nepal-himalaya` | Main Himalayan Thrust corridor polygon, approx. 80–89°E, 26.5–30.5°N (exact polygon in `data/regions/nepal-himalaya/region.geojson`) | 0.1° | M ≥ 4.5 | ≤ 70 km | includes the 2015 Gorkha sequence; sparse pre-2000 catalogue |
-| `turkiye-eaf` | East Anatolian Fault polygon, approx. 35.5–41.5°E, 36–39.5°N (exact polygon in `data/regions/turkiye-eaf/region.geojson`) | 0.1° | M ≥ 4.0 | ≤ 50 km | includes the 2023 Kahramanmaraş doublet |
+| `california` | the pycsep RELM California region (`csep.core.regions.california_relm_region`) | 0.1° | M ≥ 3.95 | ≤ 30 km | the CSEP reference region; thresholds are the RELM conventions; magnitude policy `network-preferred-as-mw` (ADR-0019 decision 2) |
+| `nepal-himalaya` | Main Himalayan Thrust corridor polygon, approx. 80–89°E, 26.5–30.5°N (exact polygon in `data/regions/nepal-himalaya/region.geojson`) | 0.1° | M ≥ 4.7 | ≤ 70 km | includes the 2015 Gorkha sequence; sparse pre-2000 catalogue; threshold raised from the provisional 4.5 to the published b-value-stability Mc (ADR-0019 decision 1) |
+| `turkiye-eaf` | East Anatolian Fault polygon, approx. 35.5–41.5°E, 36–39.5°N (exact polygon in `data/regions/turkiye-eaf/region.geojson`) | 0.1° | M ≥ 4.6 | ≤ 50 km | includes the 2023 Kahramanmaraş doublet; threshold raised from the provisional 4.0 to the published b-value-stability Mc (ADR-0019 decision 1) |
 
 Rules:
 

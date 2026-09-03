@@ -6,23 +6,23 @@ stages:
     deps:
     - path: data/regions/nepal-himalaya
       hash: md5
-      md5: 2e3fa6cbced7078b39abb96ca3066972.dir
-      size: 3340
+      md5: 4173926e38ffceb77ac8b5c4f629e13a.dir
+      size: 6596
       nfiles: 2
     - path: src/rupture/adapters/catalogs
       hash: md5
-      md5: 98e9fac1bf30186a3ac4976478b24065.dir
-      size: 158605
-      nfiles: 18
+      md5: d5765a49d7c3aa7684a5b124d9e7e25d.dir
+      size: 70729
+      nfiles: 9
     - path: src/rupture/pipelines/build_catalog.py
       hash: md5
-      md5: 9c180f721701f1b9a96e6aa612f7be06
-      size: 16718
+      md5: eea875a062c1a573879ef96f19812efd
+      size: 18656
     outs:
     - path: data/catalogs/nepal-himalaya
       hash: md5
-      md5: be2f918adb698bd8735eeee11836e711.dir
-      size: 2915971
+      md5: 9d3d58bc8856e17c9d0fd4323ad9175b.dir
+      size: 2820767
       nfiles: 3
   build_catalog@turkiye-eaf:
     cmd: uv run rupture catalog build --region turkiye-eaf --from 1976-01-01 
@@ -30,23 +30,23 @@ stages:
     deps:
     - path: data/regions/turkiye-eaf
       hash: md5
-      md5: b73c160986f5fb76d576f66b882246df.dir
-      size: 3084
+      md5: c91f21fd2ce7f31a86ed970746c7a1b4.dir
+      size: 6338
       nfiles: 2
     - path: src/rupture/adapters/catalogs
       hash: md5
-      md5: 98e9fac1bf30186a3ac4976478b24065.dir
-      size: 158605
-      nfiles: 18
+      md5: d5765a49d7c3aa7684a5b124d9e7e25d.dir
+      size: 70729
+      nfiles: 9
     - path: src/rupture/pipelines/build_catalog.py
       hash: md5
-      md5: 9c180f721701f1b9a96e6aa612f7be06
-      size: 16718
+      md5: eea875a062c1a573879ef96f19812efd
+      size: 18656
     outs:
     - path: data/catalogs/turkiye-eaf
       hash: md5
-      md5: 326bab9c0c386d98dc3ed64942d2a1f7.dir
-      size: 17332960
+      md5: 66c3699855f8b18172836d0128e68848.dir
+      size: 4892857
       nfiles: 3
   build_catalog@california:
     cmd: uv run rupture catalog build --region california --from 1976-01-01 --to
@@ -54,21 +54,21 @@ stages:
     deps:
     - path: data/regions/california
       hash: md5
-      md5: 3fc05c9257d1f2103f4b621b52955cfb.dir
-      size: 16920
+      md5: cf62c732af33af88647a957ab071512c.dir
+      size: 19292
       nfiles: 2
     - path: src/rupture/adapters/catalogs
       hash: md5
-      md5: 98e9fac1bf30186a3ac4976478b24065.dir
-      size: 158605
-      nfiles: 18
+      md5: d5765a49d7c3aa7684a5b124d9e7e25d.dir
+      size: 70729
+      nfiles: 9
     - path: src/rupture/pipelines/build_catalog.py
       hash: md5
-      md5: 9c180f721701f1b9a96e6aa612f7be06
-      size: 16718
+      md5: eea875a062c1a573879ef96f19812efd
+      size: 18656
     outs:
     - path: data/catalogs/california
       hash: md5
-      md5: 698631b88668beeada4bb2b63efead8d.dir
-      size: 85742489
+      md5: 3c26cbea112e313492cf060833f9357d.dir
+      size: 84011172
       nfiles: 3

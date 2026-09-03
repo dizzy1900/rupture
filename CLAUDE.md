@@ -120,8 +120,10 @@ below for Phase-2 verbs are the planned ones; the implementing module is authori
 
 | Verb | Purpose | Owner |
 |---|---|---|
-| `rupture catalog build --region <r> --from <utc> --to <utc> [--offline-fixtures]` | merge sources, homogenise magnitudes, estimate Mc, write GeoParquet + homogenisation log | catalog-engineer |
-| `rupture region list` / `rupture region show <r>` | list the test regions; print one `Region` record (polygon, thresholds, fitted Mc) | catalog-engineer |
+| `rupture catalog build --region <r> --from <utc> --to <utc> [--sources comcat,isc,gcmt,isc-gem] [--offline-fixtures] [--out DIR] [--min-magnitude M] [--time-window-s 16] [--distance-km 100] [--update-region-mc [--force-mc]] [--no-etas-cross-check]` | merge sources, homogenise magnitudes, estimate Mc, write GeoParquet + homogenisation log; `--update-region-mc` writes every estimate to `Region.mc_estimates` and sets `Region.mc` only when maximum-curvature b ≥ 0.7 and Mw coverage at the target ≥ 80 % (else leaves it null and prints why; `--force-mc` overrides) | catalog-engineer |
+| `rupture catalog inspect <dir> [--json]` | summarise a built catalogue directory (counts by type, Mw coverage, bounds, Mc estimates, log size) | catalog-engineer |
+| `rupture catalog refresh-fixtures` | re-cut the committed ComCat/ISC/GCMT fixtures from the live services and rewrite each `provenance.json` (network) | catalog-engineer |
+| `rupture region list` / `rupture region show <r>` / `rupture region init [--force]` | list the test regions; print one `Region` record (polygon, thresholds, fitted Mc); write the three default region files (refuses to overwrite a fitted `mc` without `--force`) | catalog-engineer |
 | `rupture forecast fit --model etas --region <r> --cutoff <utc>` | fit the baseline on events with `origin_time < cutoff`; persist the `FitResult` + diagnostics to `baselines/etas/<region>/` | forecast-engineer |
 | `rupture forecast issue --model etas --region <r> --horizon 30d --issue <utc>` | issue a `ForecastGrid` at `issue_time` from the persisted fit | forecast-engineer |
 | `rupture evaluate run --forecast <id>` | N/M/S/L(CL) tests + plot bundle → `reports/eval/<forecast_id>/` | forecast-engineer |

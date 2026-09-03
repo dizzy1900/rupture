@@ -1,0 +1,457 @@
+{
+  "source": "eshm20",
+  "repository": "https://gitlab.seismo.ethz.ch/efehr/eshm20",
+  "ref": "master",
+  "commit": "fbd334de68f85d72669f73fc5a314a113db67317",
+  "directory": "oq_computational/oq_configuration_eshm20_v12e_region_main",
+  "source_model_logic_tree": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_model_logic_tree_eshm20_model_v12e.xml",
+  "gsim_logic_tree": "oq_computational/oq_configuration_eshm20_v12e_region_main/gmpe_complete_logic_tree_5br.xml",
+  "licence": "CC-BY-4.0",
+  "licence_file": "LICENSE",
+  "licence_text": "This repository contains the European Seismic Hazard Model (ESHM20).  The findings, comments, statements or recommendations expressed herein are exclusively\nof the author(s) and do not necessarily reflect the views and policies of the institutions listed here: i.e. Swiss Seismological Service, ETH Zurich, Istituto\nNazionale di Geofisica e Vulcanologia (INGV), German Research Centre for Geociences (GFZ), Institut des Sciences de la Terre (ISTerre), Instituto Superior\nTecnico (IST), Bogazici University, Kandilli Observatory and Earthquake Research Institute, Department of Earthquake Engineering, the EFEHR Consortium\nor the European Union. The authors of ESHM20 have tried to make the information in this product as accurate as possible. However, they do not guarantee that\nthe information herein is totally accurate or complete. Therefore, you should not solely rely on this information when making a commercial decision. Users of\ninformation provided herein assume all liability arising from such use. While undertaking to provide practical and accurate information, the authors assume no\nliability for, nor express or imply any warranty with regard to the information contained hereafter.\n\n\n## The use of any of these files without proper citation violates the CC-BY 4.0 license and is strictly prohibited!\n\n\nLicence: creativecommons cc-by 4.0\nhttps://creativecommons.org/licenses/by/4.0/\n\n\nCC-BY 4.4\nYou are free to:\n\nShare — copy and redistribute the material in any medium or format for any purpose, even commercially.\n\nAdapt — remix, transform, and build upon the material for any purpose, even commercially.\nThe licensor cannot revoke these freedoms as long as you follow the license terms.\n\nUnder the following terms:\n\n<strong><span style=\"color: red;\">Attribution — You must give appropriate credit, provide a link to the license, and indicate if changes were made. You may do so in any reasonable manner, but not in any way that suggests the licensor endorses you or your use.</span></strong>\n\nNo additional restrictions — You may not apply legal terms or technological measures that legally restrict others from doing anything the license permits.\nNotices:\n\nYou do not have to comply with the license for elements of the material in the public domain or where your use is permitted by an applicable exception or limitation .\n\nNo warranties are given. The license may not give you all of the permissions necessary for your intended use. For example, other rights such as publicity, privacy, or moral rights may limit how you use the material.\n\n\nFor more please refer to:\nhttps://creativecommons.org/licenses/by/4.0/deed.en#ref-indicate-changes\n\n\n\n\n",
+  "citation": "Danciu, L., Nandan, S., Reyes, C., Wiemer, S., & Giardini, D. (2021). OpenQuake Input Files for the 2020 Update of the European Seismic Hazard Model (ESHM20) [Data set]. EFEHR. https://doi.org/10.12686/ESHM20-OQ-INPUT",
+  "adapter_version": "0.1.0",
+  "total_bytes": 40216697,
+  "files": [
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/config_eshm20_v12e_main_region.ini",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/config_eshm20_v12e_main_region.ini",
+      "size": 2719,
+      "sha256": "f1f4dabc48e1b8a478dbdb96b01c8f58cc68c98abd6f9004671c5fba9eb7e714",
+      "blob_id": "b677619044bdb6d9deab81ef3264ec4803780eea",
+      "retrieved_at": "2026-09-03T10:19:17.563485+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/eshm20_site_model_v06d.csv",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/eshm20_site_model_v06d.csv",
+      "size": 3873324,
+      "sha256": "d4d95f3e482a0361a90d1b0796545eaf075d0e212d66d025f975973497b29529",
+      "blob_id": "c31445326067cfbc18a07227a54cd7d764b52060",
+      "retrieved_at": "2026-09-03T10:19:18.889249+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/gmpe_complete_logic_tree_5br.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/gmpe_complete_logic_tree_5br.xml",
+      "size": 33760,
+      "sha256": "e2c53f11174b8cd4de1f65af4dafc5af2e7a6848563e8a4c0ada44a54f22ff62",
+      "blob_id": "8d707312e636cb20c4678bc38b12c81fd9c0bc88",
+      "retrieved_at": "2026-09-03T10:19:19.450727+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_model_logic_tree_eshm20_model_v12e.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_model_logic_tree_eshm20_model_v12e.xml",
+      "size": 17579,
+      "sha256": "97a37911f9eae73766f386686b112e5a4e111965da3e4e1543627c28d4201867",
+      "blob_id": "e9955f8826eb5dd2fec1fa707810e63f0edd283d",
+      "retrieved_at": "2026-09-03T10:19:20.010620+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_hi_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_hi_abgrs_maxmag_low.xml",
+      "size": 346312,
+      "sha256": "e5d1e5a4fc181c6c6847614fe4cb98bb741d30485c0bd2fe73f9fe3fe96a7763",
+      "blob_id": "05aae66d3e445e8c6fde178ad24041f3dcb7be68",
+      "retrieved_at": "2026-09-03T10:19:20.751928+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_hi_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_hi_abgrs_maxmag_mid.xml",
+      "size": 346312,
+      "sha256": "1abeeb0c6b7c6c5d41dc2141ec35a25cf4709b0d3279631c05acf180f1fd5d0e",
+      "blob_id": "b5974e59476e20f76939bc33cc4bdfd19b5bddf5",
+      "retrieved_at": "2026-09-03T10:19:21.482535+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_hi_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_hi_abgrs_maxmag_upp.xml",
+      "size": 346312,
+      "sha256": "e881982b0fda67c6a7cb348a8c7e643d435fb3d16da38ffc86d8851235e69fb3",
+      "blob_id": "6e58bb394d678abac7843c5e8c1c3f7de44dceab",
+      "retrieved_at": "2026-09-03T10:19:22.211293+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml",
+      "size": 346312,
+      "sha256": "772216e07783051cb31a70bf9dc3ce26d186d771d49a9686402efc54f24a22ca",
+      "blob_id": "bdf043a48d6a1bf7cd6aa684f5d217b378022f32",
+      "retrieved_at": "2026-09-03T10:19:22.923819+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml",
+      "size": 346312,
+      "sha256": "777b1685eb55f4da2c60a2b124496379bc51254537a8627573c0ad1a9725c5c3",
+      "blob_id": "ceeeb4faa3230c9570ef4c3c0e389607404214b4",
+      "retrieved_at": "2026-09-03T10:19:23.673883+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_upp.xml",
+      "size": 346312,
+      "sha256": "0380a12fb997eeb14ae4f8bcd7c594cd57c0960661050fa38580e176ec81ab54",
+      "blob_id": "7968e8b6ad614ae413b1985e3f0e4287c1eff9ef",
+      "retrieved_at": "2026-09-03T10:19:24.411366+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_mid_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_mid_abgrs_maxmag_low.xml",
+      "size": 347062,
+      "sha256": "2bca1d1ddf35ce5ac7a2dc7760b947bdf0b0c2c7065c29d563c52ef347fc514c",
+      "blob_id": "d9394c28b9bdd167c3ac193e4cac3010fe1615b4",
+      "retrieved_at": "2026-09-03T10:19:25.147054+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_mid_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_mid_abgrs_maxmag_mid.xml",
+      "size": 347062,
+      "sha256": "f11652029964e55bc235cfa70ad37d24d90db5b175ddc58fe2910adeb792d963",
+      "blob_id": "cabee5b5a6a5f207a640eac1f85524e614900b6c",
+      "retrieved_at": "2026-09-03T10:19:25.900051+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_mid_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_mid_abgrs_maxmag_upp.xml",
+      "size": 347062,
+      "sha256": "522fc48f88b96a5716be7df02cc26dceedfa002694de801a501a4fcb970cc197",
+      "blob_id": "30700ed99242694f21ac1df7a5954ebc38b4c110",
+      "retrieved_at": "2026-09-03T10:19:26.660984+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_pareto_abgrs_cornermag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_pareto_abgrs_cornermag_low.xml",
+      "size": 531888,
+      "sha256": "4da9026e0573b72f6f9dcaf2c27cafeffde3f070e483d975f447b618d80a97d4",
+      "blob_id": "e149a98c7310dee67267e092397dd6dff4d0404c",
+      "retrieved_at": "2026-09-03T10:19:27.689869+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_pareto_abgrs_cornermag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_pareto_abgrs_cornermag_mid.xml",
+      "size": 546694,
+      "sha256": "1db0c4945947d2fe0ee79b251ff7d744e91728870a5c5138d8fa315c3626dd8c",
+      "blob_id": "274e11f82bcbdea3537a3cba994894f8c059f978",
+      "retrieved_at": "2026-09-03T10:19:28.749207+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_pareto_abgrs_cornermag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_pareto_abgrs_cornermag_upp.xml",
+      "size": 561295,
+      "sha256": "b0583a18d59f48f83cbad6a3fb82b4b7ba002e0b88368a3de1e74e2d1270c6e5",
+      "blob_id": "8b502823c9bb0804088b8a063d7867fb8a94aedb",
+      "retrieved_at": "2026-09-03T10:19:29.811247+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_twingr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/asm_v12e/asm_ver12e_winGT_fs017_twingr.xml",
+      "size": 6742,
+      "sha256": "1913ca0033c8f57c2a1e97ca7360e0882e01f0866e2af9b77928d454594177f0",
+      "blob_id": "551e6d70d320478ef0a9501ba51f673845591fd6",
+      "retrieved_at": "2026-09-03T10:19:30.378238+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_hi_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_hi_abgrs_maxmag_low.xml",
+      "size": 17738,
+      "sha256": "d517f2a7d323768133e6a95d6fd9e99cb99a2cbcad963d571e397481ea9a9fff",
+      "blob_id": "a92462c5ebbe460ac3ff5319fbf6da59530d1ad5",
+      "retrieved_at": "2026-09-03T10:19:30.950418+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_hi_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_hi_abgrs_maxmag_mid.xml",
+      "size": 17738,
+      "sha256": "4659dd9dac74874306ab3e81ffd22509be94ae141eb0a7d64f53864b7ee09994",
+      "blob_id": "85aef627c3c2d6b471dcd06196e75dafb10084ba",
+      "retrieved_at": "2026-09-03T10:19:31.534214+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_hi_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_hi_abgrs_maxmag_upp.xml",
+      "size": 17738,
+      "sha256": "c8295ddfeb7630b811103c66d50f9bd61756b20de33c750ec0bad1e22c4abf61",
+      "blob_id": "2369bea643be19f6dd2c8087f229a78f088bba6c",
+      "retrieved_at": "2026-09-03T10:19:32.142218+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml",
+      "size": 17738,
+      "sha256": "1c4a9a19bb7cb434a223fcee2aae313e1390a958d277e591866c87405b2f0837",
+      "blob_id": "e4a80a5cf9ca7aeb1ec4caf94471bbfe3a0a277b",
+      "retrieved_at": "2026-09-03T10:19:32.721026+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml",
+      "size": 17738,
+      "sha256": "7f2e38505db37f829204c872af0ccd5b4ac209c66f0ded3ec548313eb117002f",
+      "blob_id": "c5b3d58bb287de81f7b4a5a5e77e4069a07d2069",
+      "retrieved_at": "2026-09-03T10:19:33.292449+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_upp.xml",
+      "size": 17738,
+      "sha256": "fa1398bf618404a25f9a37a32165b3db5d5a5b07d5d4197be65affd4b6cfcb60",
+      "blob_id": "c73029c58116a5bcabb785d04bc4ff084f69279a",
+      "retrieved_at": "2026-09-03T10:19:33.845672+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_mid_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_mid_abgrs_maxmag_low.xml",
+      "size": 17758,
+      "sha256": "f05f023c72cbb129f85ee0f722693a826a04ab5daaffbbc09ec868a2c3786d05",
+      "blob_id": "47c37952f9ac41636916df5b4b701f8592207984",
+      "retrieved_at": "2026-09-03T10:19:34.409926+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_mid_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_mid_abgrs_maxmag_mid.xml",
+      "size": 17758,
+      "sha256": "582ac292677c3a73872e61728314572514d8b145f7798ba179243d1e54734de8",
+      "blob_id": "9c301006b09e3ac266699891f8a2819c27238e45",
+      "retrieved_at": "2026-09-03T10:19:34.984969+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_mid_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_mid_abgrs_maxmag_upp.xml",
+      "size": 17758,
+      "sha256": "d6c0b86c0d35dad35efff46bbf833dcc9ef1b4c27f29fea44af35d777f061833",
+      "blob_id": "613008d9fc14f6ad1616b2f99a0eed295087bb69",
+      "retrieved_at": "2026-09-03T10:19:35.557510+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_pareto_abgrs_cornermag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_pareto_abgrs_cornermag_low.xml",
+      "size": 20781,
+      "sha256": "a1df12d96dbd1fae93804f0d15edb58d72b2b3b71cd378595ff0a3c8127a72c1",
+      "blob_id": "969fa4c165740e7f5b8853051decf63ddf4ddf41",
+      "retrieved_at": "2026-09-03T10:19:36.121121+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_pareto_abgrs_cornermag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_pareto_abgrs_cornermag_mid.xml",
+      "size": 20935,
+      "sha256": "ade557748c8917bbcdd61a9e9e194718650bdb4324df08fea05ceca9b25fed65",
+      "blob_id": "ff615dcf940019149b513bed06c6e6d81dd9e722",
+      "retrieved_at": "2026-09-03T10:19:36.669518+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_pareto_abgrs_cornermag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_pareto_abgrs_cornermag_upp.xml",
+      "size": 21158,
+      "sha256": "771cb07acb600577a0b154fa26c2f8f392805e9fe793d723e3b83cf5f30ef4bf",
+      "blob_id": "a92a857a93cff94254da3300c2acc7d5b05acffa",
+      "retrieved_at": "2026-09-03T10:19:37.252168+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRA_MA_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRA_MA_fMthr.xml",
+      "size": 1040980,
+      "sha256": "6324eeb1b7a49ed36b8ca63bf8bc0419fadf96a6e67dcaf3319d5a09b1d4f331",
+      "blob_id": "cc5b4ec2fbc9b085f8ac690607d64045e16188cd",
+      "retrieved_at": "2026-09-03T10:19:38.336830+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRA_ML_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRA_ML_fMthr.xml",
+      "size": 1041004,
+      "sha256": "eed5a738106a0a52793367c3f5247b8e09c6241037ee95ed4d3921e13580f488",
+      "blob_id": "95b32a51b437e3741e5049cfc16a5e68e6469e33",
+      "retrieved_at": "2026-09-03T10:19:39.420468+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRA_MU_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRA_MU_fMthr.xml",
+      "size": 1040990,
+      "sha256": "5a55553066bbc14e5f238300b6e531cd7dc3914c5c00d75dcecee469895199ab",
+      "blob_id": "1686d82bb3e23c5f0a5abbf7e7aeaa60ab3ff20b",
+      "retrieved_at": "2026-09-03T10:19:40.492488+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRL_MA_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRL_MA_fMthr.xml",
+      "size": 1040969,
+      "sha256": "7e8eacd1846a4a9734efe3350ecce0abe4ec4f72e4f937cf86ba6604467f2f9e",
+      "blob_id": "3d4db0f308d6197ed91e3e278672571a4d12bfc9",
+      "retrieved_at": "2026-09-03T10:19:41.571074+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRL_ML_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRL_ML_fMthr.xml",
+      "size": 1040966,
+      "sha256": "60a35d12f78b54b91c34168953a7ba2369ca8604e284e28755731152355c78b8",
+      "blob_id": "7cc66d18dd358f118db2687de8b2ce6e3290ca79",
+      "retrieved_at": "2026-09-03T10:19:42.664543+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRL_MU_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRL_MU_fMthr.xml",
+      "size": 1040977,
+      "sha256": "2d3d8a56c33c06cd1c37de98599d523866a0941947b8c68f271c6fd05c9f73c0",
+      "blob_id": "b75e168e2b717f4f5cd3e62d0d83af2516a7950b",
+      "retrieved_at": "2026-09-03T10:19:43.758381+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRU_MA_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRU_MA_fMthr.xml",
+      "size": 1040968,
+      "sha256": "cbc7694b90145357f89a8c2d4b1e7d23db4dac95296b3ebe535fbd39db5d6438",
+      "blob_id": "35e3c03416bb911f946e15749e9c92c9e21ae7e0",
+      "retrieved_at": "2026-09-03T10:19:44.834379+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRU_ML_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRU_ML_fMthr.xml",
+      "size": 1040987,
+      "sha256": "595e0727708f45e9cd25857a0672a7a4a7fed9d78cdb239897bdfbe385bd9702",
+      "blob_id": "b0f0130892878176940d5e33692d287ce7b7a74b",
+      "retrieved_at": "2026-09-03T10:19:45.943052+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRU_MU_fMthr.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/fsm_v09/fs_ver09e_model_aGR_SRU_MU_fMthr.xml",
+      "size": 1040971,
+      "sha256": "ffd41efca2843430e828688a969219b46852cdfe93e8b763881d96a3f0532ab0",
+      "blob_id": "4ed4b4a0c122f2c5ad1ed676c803bad356ef8363",
+      "retrieved_at": "2026-09-03T10:19:47.021263+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/CaA_IF2222222_M40.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/CaA_IF2222222_M40.xml",
+      "size": 10835,
+      "sha256": "fb8ef4e4b9e98cda11529a7800c28378d079e86e9417a90158d723c351f8e5ac",
+      "blob_id": "94add4d19a0620302fad51572df267228f57d254",
+      "retrieved_at": "2026-09-03T10:19:47.583166+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/CyA_IF2222222_M40.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/CyA_IF2222222_M40.xml",
+      "size": 13646,
+      "sha256": "daadde2163dca38d5d52f195fabe5a6d6cb6e2a45d8040cef5716f609066c498",
+      "blob_id": "77b2ab5633efab2b988c9b61c5189b4bea5bdfd0",
+      "retrieved_at": "2026-09-03T10:19:48.153363+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/GiA_IF2222222_M40.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/GiA_IF2222222_M40.xml",
+      "size": 12001,
+      "sha256": "0a8f21fdeb55431df512a446d2c6a0f94aed6cae2def40e6c1f999e3417faed8",
+      "blob_id": "f8bd60a2b6cf6b6cbef1ced9ad1119f13fc04c71",
+      "retrieved_at": "2026-09-03T10:19:48.736229+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/HeA_IF2222222_M40.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/interface_v12b/HeA_IF2222222_M40.xml",
+      "size": 41208,
+      "sha256": "37a54374f6d35bee25af38bc212f1bb6aaf9e68fbf2256ed8cfd5671921e74ea",
+      "blob_id": "af54b61850b66df550598a205a69508e857cd73d",
+      "retrieved_at": "2026-09-03T10:19:49.462620+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/ssm_v09/seis_ver12b_fMthr_asm_ver12e_winGT_fs017_agbrs_point.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/ssm_v09/seis_ver12b_fMthr_asm_ver12e_winGT_fs017_agbrs_point.xml",
+      "size": 21820451,
+      "sha256": "78818fcf6da94ae11b0104663334f79def9a1953cb127312c9c52bffb02fbe93",
+      "blob_id": "28f191a39f7ddb2a8299461cd2eae2ea1378427f",
+      "retrieved_at": "2026-09-03T10:19:53.118820+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_hi_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_hi_abgrs_maxmag_low.xml",
+      "size": 2664,
+      "sha256": "f550bd0771684aae881c221af62a806b0f78dacfe3ba8006ba15a4b50f05810b",
+      "blob_id": "9fdbd2033df51d1b48943490dedf1688fb5c5e4d",
+      "retrieved_at": "2026-09-03T10:19:53.698470+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_hi_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_hi_abgrs_maxmag_mid.xml",
+      "size": 2664,
+      "sha256": "30e1fa0fdbb9b2fded76abbc9f3a75075537f80f7de3dc77956954d9ae499ebf",
+      "blob_id": "c02949d2b45757fbd86b532325b4c0800e979634",
+      "retrieved_at": "2026-09-03T10:19:54.287717+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_hi_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_hi_abgrs_maxmag_upp.xml",
+      "size": 2664,
+      "sha256": "85df1e33c3a39751fc2c0d83eee566101a167e1659f5b8ad961215cef7137cc1",
+      "blob_id": "231acf530cb1bbb9b2255d3b69fcbd21a08f4a3f",
+      "retrieved_at": "2026-09-03T10:19:54.859400+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml",
+      "size": 2664,
+      "sha256": "d97d09bf7ddb7529e67c6e89c7c5dd0638218b38c77d39c665ad45e8106c1de1",
+      "blob_id": "ca693b6ed0334f155a4439fcb57612a904b210cf",
+      "retrieved_at": "2026-09-03T10:19:55.471342+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml",
+      "size": 2664,
+      "sha256": "5b017b44829b5f2f38e74855c9b44da143468f120c9ba1aa403715cd9a6e5d85",
+      "blob_id": "e59e2865ed0716371fe1ec12fb9f7765b4b62b13",
+      "retrieved_at": "2026-09-03T10:19:56.095842+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_upp.xml",
+      "size": 2664,
+      "sha256": "8ac210518b84189b5a024cab4fd2bda80ed8bb9ee12e01743db22ae8e65e253a",
+      "blob_id": "b406611443f6363550d9ab9f55bff8bf972b691e",
+      "retrieved_at": "2026-09-03T10:19:56.687928+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_mid_abgrs_maxmag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_mid_abgrs_maxmag_low.xml",
+      "size": 2670,
+      "sha256": "5dd8166292ae3a652230238a34d7603d53c96dbc873050a2123f9a6ec32ecf7e",
+      "blob_id": "80f871111f79139264b4bf93f8a908c16c3c60a2",
+      "retrieved_at": "2026-09-03T10:19:57.247044+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_mid_abgrs_maxmag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_mid_abgrs_maxmag_mid.xml",
+      "size": 2670,
+      "sha256": "64c53d85dbb0c63744761279b63789308e8ba4adf041c9665f87df159777ca1e",
+      "blob_id": "cfdfa8c50d39f162233cd62838d1eb2f35ee4ba2",
+      "retrieved_at": "2026-09-03T10:19:57.806231+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_mid_abgrs_maxmag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_mid_abgrs_maxmag_upp.xml",
+      "size": 2670,
+      "sha256": "ac7c7d5253b4d8e22e18aeaa4f7d1ae13e39495f1864b245b281e6d0d2a0ecb6",
+      "blob_id": "dafba50b011f3492a96abc7b1a79957cd09690dd",
+      "retrieved_at": "2026-09-03T10:19:58.405931+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_pareto_abgrs_cornermag_low.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_pareto_abgrs_cornermag_low.xml",
+      "size": 3301,
+      "sha256": "4406ce87ae109579b665e3a0a30cded57bc18b94e2d4136c4064e894b9707d63",
+      "blob_id": "9b2f0a4b0b4bf1c6297130e6655a00142ff114c4",
+      "retrieved_at": "2026-09-03T10:19:58.985837+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_pareto_abgrs_cornermag_mid.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_pareto_abgrs_cornermag_mid.xml",
+      "size": 3375,
+      "sha256": "e7d2ba86a4b65c93f5975b6ff24d46ca804f85d8540b22482abdfc5cb803a8b8",
+      "blob_id": "04defe4c37e8e94fd7bd8fc181dc10e625e69255",
+      "retrieved_at": "2026-09-03T10:19:59.538849+00:00"
+    },
+    {
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_pareto_abgrs_cornermag_upp.xml",
+      "local_path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_pareto_abgrs_cornermag_upp.xml",
+      "size": 3439,
+      "sha256": "bb877b3800b51bd9aa57ba6df15bb50a5e8c4424eb2863407295b80fad5098e8",
+      "blob_id": "088556c912e39847034dc698e030ad16f81efcb6",
+      "retrieved_at": "2026-09-03T10:20:00.083287+00:00"
+    }
+  ]
+}

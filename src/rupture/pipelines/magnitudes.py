@@ -7,8 +7,10 @@ Precedence for the homogenised ``mw`` of a merged event, highest first:
 3. any moment magnitude reported by ISC or ComCat (``mww``, ``mwc``, ``mwb``, ``mwr``, ``mw``;
    ``identity:<type>``), the largest-network-first order being ISC then ComCat;
 4. ``mb`` or ``Ms`` converted with Scordilis (2006), inside the published validity ranges;
-5. nothing else: ``ML``, ``Md`` and unknown scales are **not** converted (no regional relation
-   is cited for the three test regions), so ``mw = None`` and the pipeline logs
+5. under ``MagnitudePolicy.NETWORK_PREFERRED_AS_MW`` only (ADR-0019; California): a preferred
+   ``ml``/``md``/``mlv`` magnitude is assumed Mw-equivalent (``assumed-equivalent:<type>``);
+6. nothing else: ``ML``, ``Md`` and unknown scales are **not** converted under ``STRICT`` (no
+   regional relation is cited for the test regions), so ``mw = None`` and the pipeline logs
    ``MAGNITUDE_UNCONVERTIBLE``.
 
 Scordilis, E. M. (2006), "Empirical global relations converting MS and mb to moment magnitude",
@@ -30,9 +32,15 @@ from __future__ import annotations
 from collections.abc import Iterable, Sequence
 from dataclasses import dataclass
 
-from rupture.domain import MagnitudeRecord, MagnitudeType
+from rupture.domain import MagnitudePolicy, MagnitudeRecord, MagnitudeType
 
 SCORDILIS_2006 = "scordilis2006"
+ASSUMED_EQUIVALENT = "assumed-equivalent"
+
+# Scales the NETWORK_PREFERRED_AS_MW policy (ADR-0019) may take as Mw-equivalent.
+NETWORK_PREFERRED_TYPES: frozenset[MagnitudeType] = frozenset(
+    {MagnitudeType.ML, MagnitudeType.MD, MagnitudeType.MLV}
+)
 
 # (from_type, lower, upper, slope, intercept)
 SCORDILIS_TABLE: tuple[tuple[MagnitudeType, float, float, float, float], ...] = (
@@ -85,8 +93,20 @@ def _rank(source: str) -> int:
         return len(MW_SOURCE_PRECEDENCE)
 
 
-def preferred_mw(magnitudes: Iterable[SourcedMagnitude]) -> MwResult:
-    """Pick the homogenised Mw for one merged event from every magnitude any source reported."""
+def preferred_mw(
+    magnitudes: Iterable[SourcedMagnitude],
+    *,
+    policy: MagnitudePolicy = MagnitudePolicy.STRICT,
+    preferred: MagnitudeRecord | None = None,
+) -> MwResult:
+    """Pick the homogenised Mw for one merged event from every magnitude any source reported.
+
+    ``preferred`` is the as-reported magnitude of the preferred solution; under
+    ``MagnitudePolicy.NETWORK_PREFERRED_AS_MW`` (ADR-0019) an ``ml``/``md``/``mlv`` preferred
+    magnitude with no moment magnitude from any source and no Scordilis route is *assumed*
+    Mw-equivalent (``assumed-equivalent:<type>``). Moment magnitudes and cited conversions keep
+    precedence; under ``STRICT`` such events get ``mw=None``.
+    """
     mags: Sequence[SourcedMagnitude] = tuple(magnitudes)
     # 1-3: reported moment magnitudes, by source precedence then by type order
     moment = [m for m in mags if m.record.type in MOMENT_TYPES]
@@ -114,6 +134,19 @@ def preferred_mw(magnitudes: Iterable[SourcedMagnitude]) -> MwResult:
             detail=(
                 f"{m.record.type.value} {m.record.value:.2f} from {m.source} -> Mw {mw:.2f} "
                 f"(Scordilis 2006)"
+            ),
+        )
+    if (
+        policy is MagnitudePolicy.NETWORK_PREFERRED_AS_MW
+        and preferred is not None
+        and preferred.type in NETWORK_PREFERRED_TYPES
+    ):
+        return MwResult(
+            mw=preferred.value,
+            conversion=f"{ASSUMED_EQUIVALENT}:{preferred.type.value}",
+            detail=(
+                f"{preferred.raw_type or preferred.type.value} {preferred.value:.2f} assumed "
+                f"Mw-equivalent (ADR-0019)"
             ),
         )
     kinds = sorted({f"{m.source}:{m.record.raw_type or m.record.type.value}" for m in mags})

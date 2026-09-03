@@ -186,7 +186,7 @@ def reference_hypocentre(event: Event) -> tuple[datetime, float, float] | None:
     """``(time, lat, lon)`` of the reference hypocentre a GCMT record was built from.
 
     The NDK line-1 hypocentre (PDE/ISC) is what other catalogues report; the centroid time lags
-    it by the half-duration (30 s for Gorkha 2015), so duplicate association uses this key. It is
+    it by the half-duration (32.3 s for Gorkha 2015), so duplicate association uses this key. It is
     encoded by :func:`parse_ndk_record` in ``provenance.notes`` and decoded here only.
     """
     if event.source_catalog != SOURCE_ID or not event.provenance.notes:
