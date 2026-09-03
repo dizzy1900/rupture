@@ -17,9 +17,11 @@ against this same ETAS implementation and finds none of them ahead, with the gap
 the spatial component. That is where this model loses too.
 
 **The number the ablation exists to produce:** fitting the parameters on the whole catalogue —
-target windows included — buys **+0.68 nats per target event** of apparent information gain over
-ETAS on `turkiye-eaf`, nearly tripling the honest figure, while barely moving the consistency pass
-rates that a casual reader would check. § 7.
+target windows included — buys **+0.68 nats per target event** on `turkiye-eaf` and **+0.77** on
+`nepal-himalaya`. On Nepal that **flips the sign**: a challenger that honestly loses to ETAS by
+0.35 nats per event appears to beat it by 0.43, and its S-test pass rate rises from below the
+baseline's to well above it. That is what the leakage rules of ADR-0022 are worth here, and it is
+enough to have turned this negative result into a positive one. § 7.
 
 ---
 
@@ -339,7 +341,68 @@ Two variants, leaking in different places:
 Both are compared against the **identical** ETAS grids the honest run produced (the benchmark grid
 cache), so a reported difference carries the leak and not the benchmark's Monte Carlo noise.
 
-<!-- ABLATION -->
+### What the leaks bought
+
+`turkiye-eaf` (55 windows, 219 target events):
+
+| | honest | `tuning_leak` | `fit_leak` |
+|---|---|---|---|
+| Training events | 405 (< 2022-01-01) | 405 (< 2022-01-01) | **871** (whole catalogue) |
+| Configuration | `1ef984d705c3` (validation) | `e3f156486823` (**test window**) | `1ef984d705c3` |
+| **Mean information gain per event vs ETAS** | **+0.394** | **+0.430** (+0.037) | **+1.074** (**+0.681**) |
+| Windows with positive gain (of 10) | 5 | 6 | 8 |
+| T-test wins (of 10) / W-test wins (of 29) | 1 / 0 | 2 / 0 | 2 / 0 |
+| N | 53/55 | 54/55 (+0.02) | 54/55 (+0.02) |
+| M | 28/29 | 28/29 (0.00) | 27/29 (−0.03) |
+| S | 18/29 | 18/29 (0.00) | 16/29 (−0.07) |
+| L | 23/29 | 21/29 (−0.07) | 25/29 (+0.07) |
+| CL | 23/29 | 20/29 (−0.10) | 22/29 (−0.03) |
+
+`nepal-himalaya` (55 windows, 66 target events):
+
+| | honest | `tuning_leak` | `fit_leak` |
+|---|---|---|---|
+| Training events | 772 (< 2022-01-01) | 772 (< 2022-01-01) | **942** (whole catalogue) |
+| Configuration | `1ef984d705c3` (validation) | `9c03e31f2015` (**test window**) | `1ef984d705c3` |
+| **Mean information gain per event vs ETAS** | **−0.346** | **−0.195** (+0.151) | **+0.429** (**+0.774**) |
+| Windows with positive gain (of 9) | 4 | 5 | 7 |
+| T-test wins (of 9) / W-test wins (of 22) | 1 / 0 | 1 / 0 | 3 / 0 |
+| N | 50/55 | 50/55 (0.00) | 50/55 (0.00) |
+| M | 21/22 | 21/22 (0.00) | 21/22 (0.00) |
+| S | 12/22 | 15/22 (+0.14) | **18/22** (+0.27) |
+| L | 15/22 | 15/22 (0.00) | 16/22 (+0.05) |
+| CL | 17/22 | 18/22 (+0.05) | 19/22 (+0.09) |
+
+**The headline is +0.68 and +0.77 nats per target event**, and on Nepal it flips the sign of the
+result. The honest challenger loses to ETAS there by 0.35 nats per event; having seen the target
+windows it appears to beat ETAS by 0.43, wins three T-test windows instead of one, and lifts its
+S-test pass rate from 12/22 — clearly below the baseline's 15/22 — to **18/22, clearly above it**.
+Condition 1 of the promotion rule would have been satisfied on S, L and CL, and only the W-test
+would still have dissented. This is not a subtle degradation of a negative result; it is a
+different conclusion.
+
+Three further things are worth more than the numbers themselves.
+
+**On the busier region the leak hides in the likelihood, not in the pass rates.** On Türkiye the
+gross leak moves N up by one window, L by two, and S, M and CL each down by one — nothing a
+reviewer checking "does it pass the CSEP tests more often?" would notice — while nearly tripling
+the information gain. On Nepal it shows up in both. Where the leak becomes visible depends on the
+region, so neither view is a sufficient check on its own.
+
+**The subtle leak is not negligible, and its size depends on how much there is to exploit.** On
+Türkiye it bought +0.037 nats and made three pass rates worse; on Nepal it bought +0.151 nats and
+three percentage points of S-test pass rate. Both used the same four-point grid over a model whose
+validation candidates differ by under 0.1 nats per event (§ 4), which is about as little room to
+overfit as a tuning leak can have. On a wider search over a more flexible model it would buy more.
+The honest reading of the Türkiye row is "the discipline cost little here because the search was
+small", not "tuning leaks do not matter".
+
+**The gross leak still does not clear the promotion bar on Türkiye.** Even having seen every
+target event the leaky variant wins 2 of 10 T-test windows, loses all 29 W-test windows, and its
+S-test pass rate falls. On Nepal it would have cleared condition 1 and half of condition 2. The
+difference between "the leak was not enough" and "the leak was decisive" turned on the region, not
+on anything about the model — which is the argument for running the ablation per region rather
+than once.
 
 ## 8. Limitations
 
@@ -369,7 +432,25 @@ cache), so a reported difference carries the leak and not the benchmark's Monte 
 - **Depth is a feature, not a dimension.** The model forecasts on a map.
 - **The likelihood is O(targets × sources).** Fine to a few thousand events, hopeless at 10⁵.
 
-## 9. Reproducing this
+## 9. The evidence, as files
+
+Committed under `reports/protocol/<region>/eval/` alongside the baseline's own schedule report:
+
+| File | What it is |
+|---|---|
+| `schedule-<region>-ntpp.json` | the honest run: every window's tests, the benchmark's tests on the same slices, the paired comparison, the pass rates, the leakage checks, the catalogue build hash |
+| `schedule-<region>-ntpp-ABLATION-tuning-leak.json` | the tuning ablation, **not a result** |
+| `schedule-<region>-ntpp-ABLATION-fit-leak.json` | the fit ablation, **not a result** |
+| `ablations-<region>-ntpp.json` | the two ablations' deltas against the honest run |
+| `promotion-<region>-ntpp.json` | § 10 applied mechanically, with the reasons |
+| `schedule-<region>-etas-mizrahi.json` | the published ETAS baseline (yearly refits, 1 000 continuations) — the forecast-engineer's file, unmodified |
+
+The fit itself is written to `baselines/ntpp/<region>/` (`fit_result.json`, `parameters.json`,
+`diagnostics.json`, `weights.json` as plain lists, plus `hyperparameters.json` — the frozen
+selection record) and archived per cutoff under `fits/<cutoff>/`, mirroring the ETAS layout.
+`baselines/` is DVC-tracked, not git-tracked.
+
+## 10. Reproducing this
 
 ```
 uv run python -m rupture.commands.challenger ntpp select --region <r> \
@@ -401,7 +482,7 @@ reproduces `parameter_snapshot_hash`. The committed fixture fit under
 used so unit tests never train) is regenerated, never hand-edited, by
 `uv run python -m tests.fixtures.models.make_ntpp_fixture`.
 
-## References
+## 11. References
 
 - Stockman, S., Lawson, D. J. & Werner, M. J. (2026). *EarthquakeNPP: A Benchmark for Earthquake
   Forecasting with Neural Point Processes.* Transactions on Machine Learning Research, March 2026.

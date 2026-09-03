@@ -1,0 +1,4122 @@
+{
+  "benchmark_model_id": "etas-mizrahi",
+  "benchmark_pass_rates": null,
+  "catalog_event_hash": "98ed19af7dca58aec01b4951fe770c2e53537d9567557d2e4fac4e0b0823b9a0",
+  "catalog_id": "nepal-himalaya/1976-01-01T00:00:00+00:00/2026-08-01T00:00:00+00:00",
+  "catalogue_end": "2026-08-01T00:00:00+00:00",
+  "comparison_summary": {
+    "mean_information_gain_per_event": -0.19492271507857548,
+    "note": "information gain is the challenger's mean per-event log-rate advantage over ETAS; a positive value in a single window is not a skill claim",
+    "t_test_wins": 1,
+    "t_w_disagreements": 1,
+    "w_test_windows": 22,
+    "w_test_wins": 0,
+    "windows_compared": 9,
+    "windows_with_positive_gain": 5
+  },
+  "config": {
+    "background_sigma_km": 10.0,
+    "epochs": 8000,
+    "feature_clip": 3.0,
+    "hidden": 8,
+    "learning_rate": 0.05,
+    "max_alpha_fraction": 0.95,
+    "max_branching_ratio": 0.98,
+    "n_space_basis": 5,
+    "n_time_basis": 6,
+    "omori_p": 1.15,
+    "seed": 20220101,
+    "space_scale_max_km": 50.0,
+    "space_scale_min_km": 0.5,
+    "spatial_s": 1.5,
+    "time_scale_max_days": 100.0,
+    "time_scale_min_days": 0.001,
+    "weight_decay": 0.001
+  },
+  "config_hash": "9c03e31f201532fde576247c59935c318355fc6dc2a28d32ed2765a56325bd2a",
+  "generated_at": "2026-09-03T22:51:54.346809+00:00",
+  "label": "ntpp-ABLATION-tuning-leak",
+  "leakage_checks": {
+    "history_before_issue_time": "asserted per window by the adapter",
+    "snapshot_constant_between_refits": "asserted over the schedule",
+    "target_inside_window": "asserted per window",
+    "training_before_cutoff": "asserted per fit"
+  },
+  "model_id": "ntpp-LEAKY-ABLATION-tuning",
+  "model_version": "ntpp-0.1.0+torch-2.14.0",
+  "n_issued": 55,
+  "n_scored": 55,
+  "not_scored": [],
+  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes.",
+  "pass_rates": {
+    "CL": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 18,
+      "rate": 0.8181818181818182,
+      "scored": 22
+    },
+    "L": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 15,
+      "rate": 0.6818181818181818,
+      "scored": 22
+    },
+    "M": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 21,
+      "rate": 0.9545454545454546,
+      "scored": 22
+    },
+    "N": {
+      "denominator_rule": "all evaluated windows",
+      "passed": 50,
+      "rate": 0.9090909090909091,
+      "scored": 55
+    },
+    "S": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 15,
+      "rate": 0.6818181818181818,
+      "scored": 22
+    }
+  },
+  "pycsep_version": "0.8.0",
+  "refits": [],
+  "region_id": "nepal-himalaya",
+  "schedule": {
+    "alpha": 0.05,
+    "benchmark_simulations": 200,
+    "end": "2026-08-01T00:00:00+00:00",
+    "eval_simulations": 1000,
+    "horizon": "30d",
+    "n_simulations": 100,
+    "refit_policy": "none",
+    "seed": 20220101,
+    "start": "2022-01-01T00:00:00+00:00",
+    "step": "30d",
+    "tests": [
+      "N",
+      "M",
+      "S",
+      "L",
+      "CL"
+    ]
+  },
+  "windows": [
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6527337914437572,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.6611642305784036
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220101T000000Z-30d",
+      "issue_time": "2022-01-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.085,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.34050566077483
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.097,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.34050566077483
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.5650000023797244
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3854056039963416,
+          "quantile_low": 0.9137744905997969,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.018,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.568796094543934
+        }
+      },
+      "total_expected": 0.48679274744698087,
+      "window_end": "2022-01-31T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4948444884816313,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220131T000000Z-30d",
+      "issue_time": "2022-01-31T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5933371966317856,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5219924132081469,
+      "window_end": "2022-03-02T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4992303024528015,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220302T000000Z-30d",
+      "issue_time": "2022-03-02T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6065351346471959,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4999926221074182,
+      "window_end": "2022-04-01T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5781749539338643,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220401T000000Z-30d",
+      "issue_time": "2022-04-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6394204092644497,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4471931234656691,
+      "window_end": "2022-05-01T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5606316980491837,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220501T000000Z-30d",
+      "issue_time": "2022-05-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.611896146783915,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4911927056671267,
+      "window_end": "2022-05-31T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.47291541862578046,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.6199758869167558
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220531T000000Z-30d",
+      "issue_time": "2022-05-31T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.178,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.528585460600754
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.112,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.528585460600754
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.652,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.034137172400487
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3577599690898612,
+          "quantile_low": 0.9266195270442219,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.107,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.237002609379749
+        }
+      },
+      "total_expected": 0.4427931652455233,
+      "window_end": "2022-06-30T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5869465818762047,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220630T000000Z-30d",
+      "issue_time": "2022-06-30T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5881387852199336,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5307923296484385,
+      "window_end": "2022-07-30T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.648347977472587,
+      "comparison": {
+        "T": {
+          "p_value": 0.7359871901146632,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.20888969357199955
+        },
+        "W": {
+          "p_value": 0.7150006546880893,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.3651483716701107
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220730T000000Z-30d",
+      "issue_time": "2022-07-30T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 4,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.006,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -46.98483804588864
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -46.98483804588864
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.111675500630416
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0014885457101360133,
+          "quantile_low": 0.9998600589052136,
+          "statistic": 4.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -35.045323827863925
+        }
+      },
+      "total_expected": 0.4779928310066893,
+      "window_end": "2022-08-29T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6571196054149273,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220829T000000Z-30d",
+      "issue_time": "2022-08-29T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5881387852199336,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5307923296484385,
+      "window_end": "2022-09-28T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6439621635014168,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.242599908002261
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20220928T000000Z-30d",
+      "issue_time": "2022-09-28T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.365,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.382624761397308
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.148,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.382624761397308
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.805,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.799568587390096
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.33475075197157733,
+          "quantile_low": 0.9364005170616644,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.272,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.277977748490173
+        }
+      },
+      "total_expected": 0.40759349948435725,
+      "window_end": "2022-10-28T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6395763495302467,
+      "comparison": {
+        "T": {
+          "p_value": 0.0013057169895164897,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.2907915697268973
+        },
+        "W": {
+          "p_value": 0.06788915486182899,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.8257418583505538
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20221028T000000Z-30d",
+      "issue_time": "2022-10-28T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 4,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.127,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -40.82339098524019
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -40.82339098524019
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.48,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.467919925205395
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0014394637329707693,
+          "quantile_low": 0.9998658972237084,
+          "statistic": 4.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.107,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -25.801894320127197
+        }
+      },
+      "total_expected": 0.47359287278654355,
+      "window_end": "2022-11-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6834344892419483,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20221127T000000Z-30d",
+      "issue_time": "2022-11-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.526875350410946,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6407912851520825,
+      "window_end": "2022-12-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.9421975135409879,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.8991246556133367
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20221227T000000Z-30d",
+      "issue_time": "2022-12-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.171,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.36721672656878
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.184,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.36721672656878
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.156,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.441548682462766
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4566445545938794,
+          "quantile_low": 0.8747976907529615,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.26,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.82136633738987
+        }
+      },
+      "total_expected": 0.6099915776110622,
+      "window_end": "2023-01-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.139559142243645,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230126T000000Z-30d",
+      "issue_time": "2023-01-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5154107742976162,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6627910762528113,
+      "window_end": "2023-02-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5737891399626942,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230225T000000Z-30d",
+      "issue_time": "2023-02-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6282651700409532,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.46479295634625206,
+      "window_end": "2023-03-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.7141351870401395,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.8633664529119507
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230327T000000Z-30d",
+      "issue_time": "2023-03-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.072,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.51136270068297
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.137,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.51136270068297
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.403,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5032743424212356
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.44210908485863376,
+          "quantile_low": 0.8834714942952021,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.042,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.885943065295638
+        }
+      },
+      "total_expected": 0.5835918282901876,
+      "window_end": "2023-04-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6834344892419483,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.8704232905796567
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230426T000000Z-30d",
+      "issue_time": "2023-04-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.365,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.91854724911423
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.225,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.91854724911423
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.652,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0341371724004866
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.43220338434270067,
+          "quantile_low": 0.8891649551399944,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.311,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.749242738039322
+        }
+      },
+      "total_expected": 0.5659919954096045,
+      "window_end": "2023-05-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4992303024528014,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230526T000000Z-30d",
+      "issue_time": "2023-05-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6038722679428292,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.504392580327564,
+      "window_end": "2023-06-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5737891399626942,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230625T000000Z-30d",
+      "issue_time": "2023-06-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6366131665827648,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4515930816858148,
+      "window_end": "2023-07-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5343168142221628,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.3192292672811746
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230725T000000Z-30d",
+      "issue_time": "2023-07-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.222,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.06101260338942
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.137,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.06101260338942
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.805,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.7995685873900964
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3633868334172352,
+          "quantile_low": 0.9241032683216406,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.125,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.014877167927564
+        }
+      },
+      "total_expected": 0.4515930816858148,
+      "window_end": "2023-08-24T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6308047215879063,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230824T000000Z-30d",
+      "issue_time": "2023-08-24T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6740886659793209,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.39439362482391993,
+      "window_end": "2023-09-23T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5167735583374822,
+      "comparison": {
+        "T": {
+          "p_value": 0.9858010813748286,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.008894416739972726
+        },
+        "W": {
+          "p_value": 0.23672357063785732,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.1832159566199232
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20230923T000000Z-30d",
+      "issue_time": "2023-09-23T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 7,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.19,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -71.2962112754654
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -71.2962112754654
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.474,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.755034482748055
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 1.796182730329221e-07,
+          "quantile_low": 0.999999991390274,
+          "statistic": 7.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.055,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -42.82556270633592
+        }
+      },
+      "total_expected": 0.3855937083836284,
+      "window_end": "2023-10-23T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.0869293745896031,
+      "comparison": {
+        "T": {
+          "p_value": 0.0196930031646582,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.11891917536300722
+        },
+        "W": {
+          "p_value": 0.17971249487899976,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.3416407864998738
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20231023T000000Z-30d",
+      "issue_time": "2023-10-23T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.007,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -24.15030783121948
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.033,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -24.15030783121948
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.139,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.027665833784874
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.22605025204234575,
+          "quantile_low": 0.9378019218361179,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.011,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.927556999880775
+        }
+      },
+      "total_expected": 0.8959888619205365,
+      "window_end": "2023-11-22T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.1088584444454541,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20231122T000000Z-30d",
+      "issue_time": "2023-11-22T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5315322696671303,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6319913687117911,
+      "window_end": "2023-12-22T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.7974656524923724,
+      "comparison": {
+        "T": {
+          "p_value": 0.6310475087392401,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.2350469555831265
+        },
+        "W": {
+          "p_value": 0.6547208460185769,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.4472135954999579
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20231222T000000Z-30d",
+      "issue_time": "2023-12-22T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.071,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.13685486150534
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.021,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.13685486150534
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.449,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.385685738712222
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.12084606583488555,
+          "quantile_low": 0.9772004610333944,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.06,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.349414432099003
+        }
+      },
+      "total_expected": 0.5967917029506249,
+      "window_end": "2024-01-21T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.9027251878004563,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240121T000000Z-30d",
+      "issue_time": "2024-01-21T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5578909151413662,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5835918282901876,
+      "window_end": "2024-02-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6001040237897152,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240220T000000Z-30d",
+      "issue_time": "2024-02-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6038722679428292,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.504392580327564,
+      "window_end": "2024-03-21T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5737891399626942,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240321T000000Z-30d",
+      "issue_time": "2024-03-21T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6338182485178107,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4559930399059605,
+      "window_end": "2024-04-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5781749539338643,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240420T000000Z-30d",
+      "issue_time": "2024-04-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6338182485178107,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4559930399059605,
+      "window_end": "2024-05-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.486072860539291,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240520T000000Z-30d",
+      "issue_time": "2024-05-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6507737167051058,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.429593290585086,
+      "window_end": "2024-06-19T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6264189076167361,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240619T000000Z-30d",
+      "issue_time": "2024-06-19T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5338761421354177,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6275914104916451,
+      "window_end": "2024-07-19T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6965919311554587,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240719T000000Z-30d",
+      "issue_time": "2024-07-19T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.659420792805476,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.41639341592464874,
+      "window_end": "2024-08-18T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4992303024528014,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.6242419758370334
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240818T000000Z-30d",
+      "issue_time": "2024-08-18T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.13,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.925407457505505
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.11,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.925407457505505
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.565000002379725
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.34347425741177195,
+          "quantile_low": 0.9327874250248454,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.027,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.074000717444756
+        }
+      },
+      "total_expected": 0.4207933741447945,
+      "window_end": "2024-09-17T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5869465818762047,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20240917T000000Z-30d",
+      "issue_time": "2024-09-17T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5505752143755341,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5967917029506249,
+      "window_end": "2024-10-17T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.5518600701068433,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.2546420017730502
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20241017T000000Z-30d",
+      "issue_time": "2024-10-17T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.426,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.78766979052
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.193,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.78766979052
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.565000002379725
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3633868334172352,
+          "quantile_low": 0.9241032683216406,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.3,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.976102940068516
+        }
+      },
+      "total_expected": 0.4515930816858148,
+      "window_end": "2024-11-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.47291541862578046,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20241116T000000Z-30d",
+      "issue_time": "2024-11-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5881387852199336,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5307923296484385,
+      "window_end": "2024-12-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.42905727891407885,
+      "comparison": {
+        "T": {
+          "p_value": 0.24422354862691173,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.18861909449595904
+        },
+        "W": {
+          "p_value": 0.24910310970315597,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.1525305834198285
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20241216T000000Z-30d",
+      "issue_time": "2024-12-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 22,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -245.9782635006844
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -245.9782635006844
+        },
+        "M": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.038,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -27.399537887329156
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 22.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -129.84684247704683
+        }
+      },
+      "total_expected": 0.5439922043088758,
+      "window_end": "2025-01-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 4.630667063295094,
+      "comparison": {
+        "T": {
+          "p_value": 0.5772960488311406,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.13056595220340306
+        },
+        "W": {
+          "p_value": 0.7150006546880893,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.3651483716701107
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250115T000000Z-30d",
+      "issue_time": "2025-01-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 4,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.966,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.700112364794375
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.614,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.700112364794375
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.948,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.57025409617997
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4795813999742422,
+          "quantile_low": 0.7111047882589608,
+          "statistic": 4.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.842,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.946725375450068
+        }
+      },
+      "total_expected": 3.575563417989304,
+      "window_end": "2025-02-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.064965890160549,
+      "comparison": {
+        "T": {
+          "p_value": 0.4025108604694862,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.27486766031280724
+        },
+        "W": {
+          "p_value": 0.24756078730477016,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.1562943287008007
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250214T000000Z-30d",
+      "issue_time": "2025-02-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 6,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.651,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -41.81686704654393
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.018,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -41.81686704654393
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.845,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.011457103252237
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.011026469309458942,
+          "quantile_low": 0.9972346938241702,
+          "statistic": 6.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.401,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.879117107639765
+        }
+      },
+      "total_expected": 1.8243800463712918,
+      "window_end": "2025-03-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.8588326335155516,
+      "comparison": {
+        "T": {
+          "p_value": 0.4502501407512743,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.0851873046680853
+        },
+        "W": {
+          "p_value": 0.17971249487899976,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.3416407864998738
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250316T000000Z-30d",
+      "issue_time": "2025-03-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.009,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.733910610285733
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.113,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.733910610285733
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.699,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.905989994220247
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4239358718540045,
+          "quantile_low": 0.8222788670701768,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.002,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.040075053576608
+        }
+      },
+      "total_expected": 1.4459836394387564,
+      "window_end": "2025-04-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.5912979812741719,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250415T000000Z-30d",
+      "issue_time": "2025-04-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.3190566766438671,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.142386522248699,
+      "window_end": "2025-05-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.27113356137875,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.04428511599848284
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250515T000000Z-30d",
+      "issue_time": "2025-05-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.094,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.924726988212091
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.224,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.924726988212091
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.652,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.034137172400487
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5581521177553708,
+          "quantile_low": 0.8027446434113413,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.062,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.871426474114616
+        }
+      },
+      "total_expected": 0.8167896139579128,
+      "window_end": "2025-06-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.051842862820242,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250614T000000Z-30d",
+      "issue_time": "2025-06-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.44184788224462923,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8167896139579128,
+      "window_end": "2025-07-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.1220158863589644,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250714T000000Z-30d",
+      "issue_time": "2025-07-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.45767774859757704,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7815899481967468,
+      "window_end": "2025-08-13T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.9860556532526895,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250813T000000Z-30d",
+      "issue_time": "2025-08-13T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5245622134666583,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6451912433722282,
+      "window_end": "2025-09-12T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.8544812341175846,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20250912T000000Z-30d",
+      "issue_time": "2025-09-12T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5176835565775918,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6583911180326656,
+      "window_end": "2025-10-12T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6702770473284377,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.38394885535014167
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20251012T000000Z-30d",
+      "issue_time": "2025-10-12T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.951,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.8019549421002505
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.492,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.8019549421002505
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.805,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.799568587390098
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5002217524282595,
+          "quantile_low": 0.8464198340281315,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.942,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.942922429817761
+        }
+      },
+      "total_expected": 0.6935907837938315,
+      "window_end": "2025-11-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.9728982113391791,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.4046919698038286
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20251111T000000Z-30d",
+      "issue_time": "2025-11-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.23,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.829998989661213
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.151,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.829998989661213
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.805,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.799568587390098
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.40926772726317084,
+          "quantile_low": 0.9016892346619931,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.141,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.862329639799256
+        }
+      },
+      "total_expected": 0.5263923714282926,
+      "window_end": "2025-12-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.8369379782329041,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20251211T000000Z-30d",
+      "issue_time": "2025-12-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.529198687484762,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6363913269319367,
+      "window_end": "2026-01-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.2579417048920365,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20260110T000000Z-30d",
+      "issue_time": "2026-01-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5245622134666583,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6451912433722282,
+      "window_end": "2026-02-09T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.297448445205771,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.6644366706952785
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20260209T000000Z-30d",
+      "issue_time": "2026-02-09T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.534248109740342
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.532,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.534248109740342
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.5650000023797253
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5280065830604086,
+          "quantile_low": 0.8263614680315862,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.9318288937567605
+        }
+      },
+      "total_expected": 0.7507902406557265,
+      "window_end": "2026-03-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.8237805363193935,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20260311T000000Z-30d",
+      "issue_time": "2026-03-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5728152277274761,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.557192078969313,
+      "window_end": "2026-04-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.7711507686653515,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20260410T000000Z-30d",
+      "issue_time": "2026-04-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5530030596077797,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5923917447304792,
+      "window_end": "2026-05-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6351905355590766,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20260510T000000Z-30d",
+      "issue_time": "2026-05-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5855566838720536,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5351922878685842,
+      "window_end": "2026-06-09T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6395763495302467,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-nepal-himalaya-20260609T000000Z-30d",
+      "issue_time": "2026-06-09T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "1d5ab29afff7b4ee3fb97834c7f2cce7b58dd10a16ea71cf2ec7b5609f652dd0",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5778781980527327,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5483921625290216,
+      "window_end": "2026-07-09T00:00:00+00:00"
+    }
+  ]
+}

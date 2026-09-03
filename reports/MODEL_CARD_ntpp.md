@@ -10,7 +10,7 @@ of any individual future earthquake, and no such statement can be derived from i
 | Version | `ntpp-0.1.0+torch-2.14.0` |
 | Type | marked spatio-temporal Hawkes process with neural kernel shapes |
 | Role | **challenger** to the ETAS baseline (`etas-mizrahi`), not an operational model |
-| Status | **not promoted.** See `docs/CHALLENGER_NTPP.md` for the evidence |
+| Status | **not promoted**, in either region it was run on (`turkiye-eaf`, `nepal-himalaya`). Evidence in `docs/CHALLENGER_NTPP.md` and `reports/protocol/<region>/eval/` |
 | Licence | Apache-2.0 (this repository) |
 | Owner | rupture contributors |
 | Written | 2026-09-03 (UTC) |
@@ -98,8 +98,11 @@ Every one is an assertion that raises, not a filter that hides:
   snapshot-constancy check catches a silent retrain.
 
 A deliberately leaky ablation is run and reported separately, so that the value of these controls
-is a number rather than an assertion. **Ablation figures are never results** and are labelled
-`ntpp-LEAKY-ABLATION` in every artefact they touch.
+is a number rather than an assertion. On the two regions run, fitting the parameters on the whole
+catalogue — target windows included — buys **+0.68 and +0.77 nats per target event** of apparent
+information gain over ETAS, which on `nepal-himalaya` flips a clearly losing model into an
+apparently winning one. **Ablation figures are never results** and are labelled
+`ntpp-LEAKY-ABLATION-tuning` / `-fit` in every artefact they touch.
 
 ## Known limitations
 

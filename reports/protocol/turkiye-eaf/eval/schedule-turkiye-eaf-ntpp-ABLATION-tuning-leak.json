@@ -1,0 +1,4122 @@
+{
+  "benchmark_model_id": "etas-mizrahi",
+  "benchmark_pass_rates": null,
+  "catalog_event_hash": "80649982ef4a9e43343e44f1a9c99bf4062266b0b1570e581b090e529e334cd5",
+  "catalog_id": "turkiye-eaf/1976-01-01T00:00:00+00:00/2026-08-01T00:00:00+00:00",
+  "catalogue_end": "2026-08-01T00:00:00+00:00",
+  "comparison_summary": {
+    "mean_information_gain_per_event": 0.4304687620092632,
+    "note": "information gain is the challenger's mean per-event log-rate advantage over ETAS; a positive value in a single window is not a skill claim",
+    "t_test_wins": 2,
+    "t_w_disagreements": 2,
+    "w_test_windows": 29,
+    "w_test_wins": 0,
+    "windows_compared": 10,
+    "windows_with_positive_gain": 6
+  },
+  "config": {
+    "background_sigma_km": 10.0,
+    "epochs": 8000,
+    "feature_clip": 3.0,
+    "hidden": 8,
+    "learning_rate": 0.05,
+    "max_alpha_fraction": 0.95,
+    "max_branching_ratio": 0.98,
+    "n_space_basis": 5,
+    "n_time_basis": 6,
+    "omori_p": 1.15,
+    "seed": 20220101,
+    "space_scale_max_km": 50.0,
+    "space_scale_min_km": 0.5,
+    "spatial_s": 1.5,
+    "time_scale_max_days": 100.0,
+    "time_scale_min_days": 0.001,
+    "weight_decay": 0.0
+  },
+  "config_hash": "e3f156486823af0b9147719b91d6c8940685c962c2805f2a80d11f1674374f9c",
+  "generated_at": "2026-09-03T22:27:49.960834+00:00",
+  "label": "ntpp-ABLATION-tuning-leak",
+  "leakage_checks": {
+    "history_before_issue_time": "asserted per window by the adapter",
+    "snapshot_constant_between_refits": "asserted over the schedule",
+    "target_inside_window": "asserted per window",
+    "training_before_cutoff": "asserted per fit"
+  },
+  "model_id": "ntpp-LEAKY-ABLATION-tuning",
+  "model_version": "ntpp-0.1.0+torch-2.14.0",
+  "n_issued": 55,
+  "n_scored": 55,
+  "not_scored": [],
+  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes.",
+  "pass_rates": {
+    "CL": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 20,
+      "rate": 0.6896551724137931,
+      "scored": 29
+    },
+    "L": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 21,
+      "rate": 0.7241379310344828,
+      "scored": 29
+    },
+    "M": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 28,
+      "rate": 0.9655172413793104,
+      "scored": 29
+    },
+    "N": {
+      "denominator_rule": "all evaluated windows",
+      "passed": 54,
+      "rate": 0.9818181818181818,
+      "scored": 55
+    },
+    "S": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 18,
+      "rate": 0.6206896551724138,
+      "scored": 29
+    }
+  },
+  "pycsep_version": "0.8.0",
+  "refits": [],
+  "region_id": "turkiye-eaf",
+  "schedule": {
+    "alpha": 0.05,
+    "benchmark_simulations": 200,
+    "end": "2026-08-01T00:00:00+00:00",
+    "eval_simulations": 1000,
+    "horizon": "30d",
+    "n_simulations": 100,
+    "refit_policy": "none",
+    "seed": 20220101,
+    "start": "2022-01-01T00:00:00+00:00",
+    "step": "30d",
+    "tests": [
+      "N",
+      "M",
+      "S",
+      "L",
+      "CL"
+    ]
+  },
+  "windows": [
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.3832736817940637,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220101T000000Z-30d",
+      "issue_time": "2022-01-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7611373856157041,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.27294140441101944,
+      "window_end": "2022-01-31T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6527898458926469,
+      "comparison": {
+        "T": {
+          "p_value": 0.041400631334817424,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.0160124308925722
+        },
+        "W": {
+          "p_value": 0.17971249487899976,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.3416407864998738
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220131T000000Z-30d",
+      "issue_time": "2022-01-31T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.301,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.6288633155048
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.006,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.6288633155048
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.904,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.550256748567639
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.03111670740461392,
+          "quantile_low": 0.9972345224012238,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.132,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -14.436080154902717
+        }
+      },
+      "total_expected": 0.27294140441101944,
+      "window_end": "2022-03-02T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4410271455294744,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220302T000000Z-30d",
+      "issue_time": "2022-03-02T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7867653068780622,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.23982528739204076,
+      "window_end": "2022-04-01T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.46509108875256217,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.0893505057022688
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220401T000000Z-30d",
+      "issue_time": "2022-04-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.535,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.982585513982608
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.114,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.982585513982608
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.287,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.9306007594916257
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.19820458081375159,
+          "quantile_low": 0.9789134640638962,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.684,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.321045906002918
+        }
+      },
+      "total_expected": 0.22090179195262438,
+      "window_end": "2022-05-01T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.46027830010794457,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220501T000000Z-30d",
+      "issue_time": "2022-05-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7720169425951091,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.2587487828314572,
+      "window_end": "2022-05-31T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.34958416128174075,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220531T000000Z-30d",
+      "issue_time": "2022-05-31T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7123587454819709,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.33917363844897686,
+      "window_end": "2022-06-30T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.37364810450482855,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220630T000000Z-30d",
+      "issue_time": "2022-06-30T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7867653068780622,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.2398252873920408,
+      "window_end": "2022-07-30T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4554655114633269,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.5401554422768396
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220730T000000Z-30d",
+      "issue_time": "2022-07-30T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.237,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.014034777819823
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.079,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.014034777819823
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6475004866278082
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.2424549551899936,
+          "quantile_low": 0.9678943032952119,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.057,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.807548297092609
+        }
+      },
+      "total_expected": 0.2776722782708736,
+      "window_end": "2022-08-29T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.6479770572480293,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.6199536896561941
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220829T000000Z-30d",
+      "issue_time": "2022-08-29T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.544,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.606268104762346
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.129,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.606268104762346
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.545,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.2890506230597234
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.2279830574048909,
+          "quantile_low": 0.9717753868168566,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.542,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.706571060424529
+        }
+      },
+      "total_expected": 0.2587487828314572,
+      "window_end": "2022-09-28T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4506527228187095,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.6821234950845055
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20220928T000000Z-30d",
+      "issue_time": "2022-09-28T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.529,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.816442715542975
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.131,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.816442715542975
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.45,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5029006685370243
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.22432208967158596,
+          "quantile_low": 0.9727139911455004,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.558,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.6891736313474075
+        }
+      },
+      "total_expected": 0.25401790897160303,
+      "window_end": "2022-10-28T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4795294546864147,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20221028T000000Z-30d",
+      "issue_time": "2022-10-28T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7225410696033634,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.3249810168694145,
+      "window_end": "2022-11-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.38808647043868116,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.4986012153167251
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20221127T000000Z-30d",
+      "issue_time": "2022-11-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.083,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.221721204734376
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.048,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.221721204734376
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0752005775824127
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.2424549551899936,
+          "quantile_low": 0.9678943032952119,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.017,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.587534633052558
+        }
+      },
+      "total_expected": 0.2776722782708736,
+      "window_end": "2022-12-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.45065272281870944,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.7627082529748843
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20221227T000000Z-30d",
+      "issue_time": "2022-12-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.635,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.590428312741492
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.188,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.590428312741492
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.075200577582411
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.27403258131559993,
+          "quantile_low": 0.9584585883383607,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.558,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.056324700500132
+        }
+      },
+      "total_expected": 0.32025014300956045,
+      "window_end": "2023-01-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.4265887795956217,
+      "comparison": {
+        "T": {
+          "p_value": 0.46750023567584703,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.05227460304662683
+        },
+        "W": {
+          "p_value": 0.5262369138992273,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.6337608388114122
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230126T000000Z-30d",
+      "issue_time": "2023-01-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 160,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2008.3591140300946
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2008.3591140300946
+        },
+        "M": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.009,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -57.63508767363635
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 160.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -841.5038336716344
+        }
+      },
+      "total_expected": 0.29186489985043584,
+      "window_end": "2023-02-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 21.246712456211178,
+      "comparison": {
+        "T": {
+          "p_value": 0.8272216034104911,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.05151181013658087
+        },
+        "W": {
+          "p_value": 0.6378701798979456,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.47067872433164165
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230225T000000Z-30d",
+      "issue_time": "2023-02-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 12,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.042,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -86.65156238665021
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.222,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -86.65156238665021
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.892,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.867334885183455
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.43854091231692194,
+          "quantile_low": 0.6722622481633953,
+          "statistic": 12.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.001,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -61.982937262587306
+        }
+      },
+      "total_expected": 11.149220408215594,
+      "window_end": "2023-03-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 13.767638902475491,
+      "comparison": {
+        "T": {
+          "p_value": 0.6871154848935023,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.574978111680542
+        },
+        "W": {
+          "p_value": 0.6547208460185769,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.4472135954999579
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230327T000000Z-30d",
+      "issue_time": "2023-03-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.02,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.817060544448317
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.887,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.817060544448317
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.825,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.601853792695671
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9795537554691952,
+          "quantile_low": 0.07110128845560439,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.846195921292384
+        }
+      },
+      "total_expected": 5.808063820440315,
+      "window_end": "2023-04-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 8.401379563726914,
+      "comparison": {
+        "T": {
+          "p_value": 0.2227263588693477,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.9464252418775996
+        },
+        "W": {
+          "p_value": 0.39802471950693774,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.8451542547285166
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230426T000000Z-30d",
+      "issue_time": "2023-04-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 7,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.007,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -61.106820917900265
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.009,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -61.106820917900265
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.98,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.269092377963185
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.048545412537735144,
+          "quantile_low": 0.9813574873936467,
+          "statistic": 7.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -46.095254648399255
+        }
+      },
+      "total_expected": 3.2628536838388102,
+      "window_end": "2023-05-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 6.688026806243064,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.1748086114148233
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230526T000000Z-30d",
+      "issue_time": "2023-05-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.477,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.647481105179294
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.892,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.647481105179294
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.82,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.86135053210512
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9560919823817348,
+          "quantile_low": 0.1811494791632219,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.254,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.800117161580788
+        }
+      },
+      "total_expected": 3.1256583419030415,
+      "window_end": "2023-06-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 6.432949008078333,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230625T000000Z-30d",
+      "issue_time": "2023-06-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.06980618215099649,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 2.6620327036373395,
+      "window_end": "2023-07-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 5.191249537767004,
+      "comparison": {
+        "T": {
+          "p_value": 0.2037954969310572,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.3070969279701665
+        },
+        "W": {
+          "p_value": 0.043114446783075355,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.0225995873897262
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230725T000000Z-30d",
+      "issue_time": "2023-07-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 5,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.008,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -48.74938337412965
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.006,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -48.74938337412965
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.776,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.82576364408269
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.05010295922131924,
+          "quantile_low": 0.9844491379575776,
+          "statistic": 5.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -35.94459249826069
+        }
+      },
+      "total_expected": 1.9713251200986406,
+      "window_end": "2023-08-24T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 4.349011524958931,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.655559388488711
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230824T000000Z-30d",
+      "issue_time": "2023-08-24T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.747,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.506339091302422
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.68,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.506339091302422
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.075200577582412
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7689501098477036,
+          "quantile_low": 0.5695660788416785,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.704,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.347955150730629
+        }
+      },
+      "total_expected": 1.4651216170942525,
+      "window_end": "2023-09-23T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 3.3335131209446263,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.675398645915836
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20230923T000000Z-30d",
+      "issue_time": "2023-09-23T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.001,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.403928258428756
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.226,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.403928258428756
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6475004866278082
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7221343447408174,
+          "quantile_low": 0.6337052861918113,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.001,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -14.723152647268192
+        }
+      },
+      "total_expected": 1.2806175365599426,
+      "window_end": "2023-10-23T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 3.453832837060065,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.6249093899562883
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20231023T000000Z-30d",
+      "issue_time": "2023-10-23T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.02,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.27219780232734
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.371,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.27219780232734
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0752005775824114
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7362245613587859,
+          "quantile_low": 0.615297662681876,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.007,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.151514881304038
+        }
+      },
+      "total_expected": 1.3326571490183374,
+      "window_end": "2023-11-22T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 3.886983815075645,
+      "comparison": {
+        "T": {
+          "p_value": 0.5604059158488868,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.3461457932322964
+        },
+        "W": {
+          "p_value": 0.28504940740261275,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0690449676496976
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20231122T000000Z-30d",
+      "issue_time": "2023-11-22T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 3,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.051,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -29.0478926057984
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.044,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -29.0478926057984
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.84,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.143614912220224
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.15942006416421484,
+          "quantile_low": 0.9495450352705836,
+          "statistic": 3.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.003,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.58078297466161
+        }
+      },
+      "total_expected": 1.3705041398971705,
+      "window_end": "2023-12-22T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 3.088060900069131,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.2633869265277968
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20231222T000000Z-30d",
+      "issue_time": "2023-12-22T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.579,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.219667177985182
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.544,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.219667177985182
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6475004866278082
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7059034164867721,
+          "quantile_low": 0.6540258197320516,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.239,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.550318858444929
+        }
+      },
+      "total_expected": 1.2238470502416932,
+      "window_end": "2024-01-21T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.7559784835905194,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.36651783785375214
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240121T000000Z-30d",
+      "issue_time": "2024-01-21T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.37,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.81944612954159
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.347,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.81944612954159
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.359,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.716750714014315
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5561466324824409,
+          "quantile_low": 0.8043781585160239,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.469,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.082500859278701
+        }
+      },
+      "total_expected": 0.8122610244343867,
+      "window_end": "2024-02-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.313201928285704,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240220T000000Z-30d",
+      "issue_time": "2024-02-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.46756289152462116,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7602214119759916,
+      "window_end": "2024-03-21T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.313201928285704,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.5650312869127436
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240321T000000Z-30d",
+      "issue_time": "2024-03-21T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.296,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.518052093754651
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.301,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.518052093754651
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0752005775824123
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5624015832950173,
+          "quantile_low": 0.7992532236807468,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.213,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.42578642218681
+        }
+      },
+      "total_expected": 0.8264536460139491,
+      "window_end": "2024-04-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.2458228872610584,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240420T000000Z-30d",
+      "issue_time": "2024-04-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.31423479547838895,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.1576148162037359,
+      "window_end": "2024-05-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.1062520165671494,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240520T000000Z-30d",
+      "issue_time": "2024-05-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.48330599545782293,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7271052949570129,
+      "window_end": "2024-06-19T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.1688182689471773,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240619T000000Z-30d",
+      "issue_time": "2024-06-19T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.47649506317647117,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7412979165365753,
+      "window_end": "2024-07-19T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.096626439277914,
+      "comparison": {
+        "T": {
+          "p_value": 0.5938052234412802,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.432468287269423
+        },
+        "W": {
+          "p_value": 0.6547208460185769,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.4472135954999579
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240719T000000Z-30d",
+      "issue_time": "2024-07-19T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.063,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -21.41417909133881
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.031,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -21.41417909133881
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.122556657613037
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.1553601833845233,
+          "quantile_low": 0.9660139536165774,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.011,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.103303429463406
+        }
+      },
+      "total_expected": 0.6987200517978884,
+      "window_end": "2024-08-18T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.8319230638239485,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.08935734078402868
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240818T000000Z-30d",
+      "issue_time": "2024-08-18T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.651,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.557582741030341
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.536,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.557582741030341
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.45,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5029006685370256
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6705418941068437,
+          "quantile_low": 0.6952574431826235,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.679,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.049011717791802
+        }
+      },
+      "total_expected": 1.1103060776051952,
+      "window_end": "2024-09-17T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.2987635623518514,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.6040204293633256
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20240917T000000Z-30d",
+      "issue_time": "2024-09-17T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.049,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.42024383960667
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.207,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.42024383960667
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.053,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.641401123310039
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.564466916937204,
+          "quantile_low": 0.7975414395975033,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.193,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.762754733223847
+        }
+      },
+      "total_expected": 0.8311845198738032,
+      "window_end": "2024-10-17T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.611594824251993,
+      "comparison": {
+        "T": {
+          "p_value": 0.04176519016460724,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.9123056942809287
+        },
+        "W": {
+          "p_value": 0.10880943004054569,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.6035674514745464
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20241017T000000Z-30d",
+      "issue_time": "2024-10-17T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 3,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.004,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -33.32913338899676
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.014,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -33.32913338899676
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.381,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.692162274689373
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.11850905066685802,
+          "quantile_low": 0.96702947961582,
+          "statistic": 3.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -25.071415674117652
+        }
+      },
+      "total_expected": 1.1907309332227147,
+      "window_end": "2024-11-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 2.0484985528317385,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20241116T000000Z-30d",
+      "issue_time": "2024-11-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.45663276844064127,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7838757812752621,
+      "window_end": "2024-12-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.8848637389147418,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20241216T000000Z-30d",
+      "issue_time": "2024-12-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.39248233670781796,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.9352637447905933,
+      "window_end": "2025-01-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.8415486411131838,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250115T000000Z-30d",
+      "issue_time": "2025-01-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.40762128694484556,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8974167539117605,
+      "window_end": "2025-02-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.4950278587007193,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.7918052871795083
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250214T000000Z-30d",
+      "issue_time": "2025-02-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.242,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.246390214953955
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.186,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.246390214953955
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.82,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.86135053210512
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.42423918838499985,
+          "quantile_low": 0.8936170307606962,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.146,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.238883543349019
+        }
+      },
+      "total_expected": 0.5520629621424114,
+      "window_end": "2025-03-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.2495756378252239,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250316T000000Z-30d",
+      "issue_time": "2025-03-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5517607078963971,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5946408268810982,
+      "window_end": "2025-04-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.162945442222108,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 3.515745421925632
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250415T000000Z-30d",
+      "issue_time": "2025-04-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.795,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.620151065762305
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.287,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.620151065762305
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0752005775824114
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3426893190208311,
+          "quantile_low": 0.9331172528518515,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.841,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.2568950026729295
+        }
+      },
+      "total_expected": 0.4195984940664965,
+      "window_end": "2025-05-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.326580256139105,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250515T000000Z-30d",
+      "issue_time": "2025-05-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5951470000021131,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5189468451234327,
+      "window_end": "2025-06-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.3458314107175753,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250614T000000Z-30d",
+      "issue_time": "2025-06-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.49021428194518013,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7129126733774507,
+      "window_end": "2025-07-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.3987720858083683,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250714T000000Z-30d",
+      "issue_time": "2025-07-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.609392648612261,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.49529247582416214,
+      "window_end": "2025-08-13T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.3650825652960457,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250813T000000Z-30d",
+      "issue_time": "2025-08-13T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6957060792648586,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.3628280077482473,
+      "window_end": "2025-09-12T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.9367443759250829,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20250912T000000Z-30d",
+      "issue_time": "2025-09-12T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6698677335971721,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4006749986270801,
+      "window_end": "2025-10-12T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.1436942876436378,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20251012T000000Z-30d",
+      "issue_time": "2025-10-12T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6358995864255907,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.45271461108547517,
+      "window_end": "2025-11-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.2206989059575186,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20251111T000000Z-30d",
+      "issue_time": "2025-11-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6299112397518377,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4621763588051834,
+      "window_end": "2025-12-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.110004767131315,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20251211T000000Z-30d",
+      "issue_time": "2025-12-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6449890174723931,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4385219895059129,
+      "window_end": "2026-01-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.8645525462558193,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20260110T000000Z-30d",
+      "issue_time": "2026-01-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.600804855161613,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5094850974037244,
+      "window_end": "2026-02-09T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.8549269689665842,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.07181135929171989
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20260209T000000Z-30d",
+      "issue_time": "2026-02-09T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.112,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.531628912043585
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.095,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.531628912043585
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.075200577582411
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.34887929667467654,
+          "quantile_low": 0.9304907097260903,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.058,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.181210146506425
+        }
+      },
+      "total_expected": 0.4290602417862047,
+      "window_end": "2026-03-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.9223060099912301,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20260311T000000Z-30d",
+      "issue_time": "2026-03-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6891545272987794,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.3722897554679555,
+      "window_end": "2026-04-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.7731095620080859,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20260410T000000Z-30d",
+      "issue_time": "2026-04-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6891545272987794,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.3722897554679555,
+      "window_end": "2026-05-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 1.162945442222108,
+      "comparison": {
+        "T": {
+          "p_value": 0.360220252001932,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.220096570557787
+        },
+        "W": {
+          "p_value": 0.17971249487899976,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.3416407864998738
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20260510T000000Z-30d",
+      "issue_time": "2026-05-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.284,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.637131519331962
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.077,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.637131519331962
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.292,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.261057112386053
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.1939171859933425,
+          "quantile_low": 0.9514885734044093,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.297,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.368405761312431
+        }
+      },
+      "total_expected": 0.8075301505745327,
+      "window_end": "2026-06-09T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {},
+      "benchmark_total_expected": 0.8741781235450545,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.7057969541714755
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-LEAKY-ABLATION-tuning-turkiye-eaf-20260609T000000Z-30d",
+      "issue_time": "2026-06-09T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "f5a432fd9b4e7eaefa8d3f5b1bf38fb50451f42c3c680ec928fa0577b719ee12",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.246,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.520585540271043
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.156,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.520585540271043
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.64750048662781
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3789657095050156,
+          "quantile_low": 0.916875762242044,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.113,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.65515351709507
+        }
+      },
+      "total_expected": 0.47636898038474573,
+      "window_end": "2026-07-09T00:00:00+00:00"
+    }
+  ]
+}
