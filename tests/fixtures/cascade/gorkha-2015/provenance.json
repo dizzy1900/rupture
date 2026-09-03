@@ -23,13 +23,19 @@
   "files": {
     "shakemap_grid_slice.csv": {
       "source_url": "https://earthquake.usgs.gov/product/shakemap/us20002926/atlas/1594162031303/download/grid.xml",
-      "retrieved_at": "2026-09-03T20:16:15+00:00",
-      "sha256": "a2a1f185153a0652531e9441bc3428e949f7ff72e5939db61edb5c0213d137b3",
-      "size": 585206,
+      "retrieved_at": "2026-09-03T20:30:26+00:00",
+      "sha256": "6eeb30306455223c35ebe212620073f6e9d637cde3bc84fc9bdf8317bb305965",
+      "size": 695148,
       "parent_sha256": "3ffbe2492aed02029ddd3a08c8a0aa4f3206085acdd46c07423bb261cd43291c",
       "parent_size": 14875206,
-      "notes": "Rows of <grid_data> whose LON/LAT fall in the fixture window padded by 0.05 deg, with columns LON, LAT, PGA (%g), PGV (cm/s), SVEL (Vs30, m/s) kept verbatim; MMI and the three PSA columns dropped. ShakeMap Atlas, shakemap_version 1, code_version 4.0.2+335.gcbad862, processed 2020-06-03. This is the same ShakeMap version the ground-failure product below was computed from (info.json: shakemap_version 1). Grid spacing 0.0166667 deg.",
-      "n_rows": 17113
+      "notes": "Rows of <grid_data> whose LON/LAT fall in the fixture window padded by 0.05 deg and extended north to 28.40 deg so the serac AOI lhende-khola-trishuli (the Langtang 2015 mechanism) is inside the sampled grid, with columns LON, LAT, PGA (%g), PGV (cm/s), SVEL (Vs30, m/s) kept verbatim; MMI and the three PSA columns dropped. ShakeMap Atlas, shakemap_version 1, code_version 4.0.2+335.gcbad862, processed 2020-06-03. This is the same ShakeMap version the ground-failure product below was computed from (info.json: shakemap_version 1). Grid spacing 0.0166667 deg.",
+      "n_rows": 20410,
+      "window_4326": {
+        "min_longitude": 83.95,
+        "max_longitude": 86.55,
+        "min_latitude": 26.25,
+        "max_latitude": 28.4
+      }
     },
     "usgs_zhu_2017_general_coverage_slice.csv": {
       "source_url": "https://earthquake.usgs.gov/product/ground-failure/20002926/us/1597450486389/zhu_2017_general_model.tif",
