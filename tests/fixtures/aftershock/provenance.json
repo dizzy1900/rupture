@@ -1,0 +1,44 @@
+{
+  "adapter_version": "rupture.services.aftershock.fixtures",
+  "command": "uv run python -m tests.fixtures.aftershock.make_fixtures",
+  "files": {
+    "comcat-nepal-2005-2015-m3.8.geojson": {
+      "n_events": 565,
+      "notes": "Nepal/Himalaya box: 10 years of pre-mainshock seismicity plus the 2015 Gorkha sequence (mainshock us20002926, 2015-04-25T06:11:26Z) out to +46 days",
+      "query": {
+        "endtime": "2015-06-10T00:00:00",
+        "maxlatitude": 31.0,
+        "maxlongitude": 89.0,
+        "minlatitude": 26.0,
+        "minlongitude": 80.0,
+        "minmagnitude": 3.8,
+        "starttime": "2005-01-01T00:00:00"
+      },
+      "retrieved_at": "2026-09-03T20:09:29.696883+00:00",
+      "sha256": "7fdba62a5bd64559f6429dc4c5118313d0510709d218d85ea83af28a010e4610",
+      "size": 402273,
+      "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2005-01-01T00%3A00%3A00&endtime=2015-06-10T00%3A00%3A00&minmagnitude=3.8&minlongitude=80.0&maxlongitude=89.0&minlatitude=26.0&maxlatitude=31.0&orderby=time-asc"
+    },
+    "comcat-turkiye-2013-2023-m3.8.geojson": {
+      "n_events": 690,
+      "notes": "East Anatolian box: 10 years of pre-mainshock seismicity plus the 2023 Kahramanmaras sequence (mainshock us6000jllz, 2023-02-06T01:17:35Z) out to +42 days",
+      "query": {
+        "endtime": "2023-03-20T00:00:00",
+        "maxlatitude": 40.0,
+        "maxlongitude": 42.0,
+        "minlatitude": 35.5,
+        "minlongitude": 35.0,
+        "minmagnitude": 3.8,
+        "starttime": "2013-01-01T00:00:00"
+      },
+      "retrieved_at": "2026-09-03T20:09:36.829846+00:00",
+      "sha256": "bf01ef853dd87ec0a6913b9fb75a80a904cc3fa3c8e8739829b3cb853d20d8ef",
+      "size": 482464,
+      "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2013-01-01T00%3A00%3A00&endtime=2023-03-20T00%3A00%3A00&minmagnitude=3.8&minlongitude=35.0&maxlongitude=42.0&minlatitude=35.5&maxlatitude=40.0&orderby=time-asc"
+    }
+  },
+  "licence": "public-domain (USGS)",
+  "notes": "byte-exact ComCat FDSN GeoJSON responses; eventtype unrestricted. Magnitudes are homogenised to Mw at load time by rupture.pipelines.magnitudes.preferred_mw under the STRICT policy.",
+  "rule": "never edited by hand; regenerate with this script and re-record",
+  "source": "usgs-comcat"
+}
