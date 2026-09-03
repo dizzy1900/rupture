@@ -1,0 +1,999 @@
+{
+  "catalog_coverage_end": "2015-06-10T00:00:00+00:00",
+  "description": "2015 Gorkha, Nepal (M7.8); M7.3 aftershock us20002ejl on 2015-05-12",
+  "evaluated_at": "2026-09-03T20:43:45.479926+00:00",
+  "mainshock_event_id": "us20002926",
+  "mainshock_magnitude": 7.8,
+  "mainshock_time": "2015-04-25T06:11:25.950000+00:00",
+  "mc": 4.4,
+  "n_catalog_events": 565,
+  "n_cells": 1366,
+  "region_id": "aftershock-us20002926",
+  "sequence_id": "gorkha",
+  "skipped": [],
+  "target_min_magnitude": 4.7,
+  "windows": [
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.3464349546301795,
+      "csep": [
+        {
+          "n_target_events": 43,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 43.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 43,
+          "passed": true,
+          "quantile": 0.671,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -24.384407664168194,
+          "test": "M"
+        },
+        {
+          "n_target_events": 43,
+          "passed": false,
+          "quantile": 0.018,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -123.70160380609636,
+          "test": "S"
+        },
+        {
+          "n_target_events": 43,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -278.71713659495117,
+          "test": "L"
+        },
+        {
+          "n_target_events": 43,
+          "passed": true,
+          "quantile": 0.556,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -278.71713659495117,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1h",
+      "fit_cutoff": "2015-04-25T07:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150425T071125Z-1d",
+      "forecast_id": "aftershock-us20002926-20150425T071125Z-1d",
+      "horizon": "1d",
+      "issue_label": "1h",
+      "issue_time": "2015-04-25T07:11:25.950000+00:00",
+      "largest_observed_event_id": "us200029bt",
+      "largest_observed_magnitude": 6.7,
+      "n_observed_above_target": 43,
+      "n_sequence_events": 21,
+      "n_training_events": 56,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 2.5945443532567927,
+          "magnitude": 4.8,
+          "observed_count": 32,
+          "occurred": true,
+          "poisson_p_at_least_observed": 5.475924964056943e-24,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.9253201040252974
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.18873114376007732,
+          "magnitude": 5.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.17199090781720985,
+          "poisson_p_at_most_observed": 0.9842801951941915,
+          "probability": 0.17199090781720977
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.013691582113267901,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9864017212879816,
+          "probability": 0.013598278712018342
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0009562425530047379,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9990442145012088,
+          "probability": 0.0009557854987911538
+        }
+      ],
+      "total_expected_above_target": 3.3719049914575763,
+      "window_end": "2015-04-26T07:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.3464349546301795,
+      "csep": [
+        {
+          "n_target_events": 57,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 57.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 57,
+          "passed": true,
+          "quantile": 0.567,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -28.013649883081925,
+          "test": "M"
+        },
+        {
+          "n_target_events": 57,
+          "passed": true,
+          "quantile": 0.502,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -136.48199285423203,
+          "test": "S"
+        },
+        {
+          "n_target_events": 57,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -344.0721061853431,
+          "test": "L"
+        },
+        {
+          "n_target_events": 57,
+          "passed": true,
+          "quantile": 0.992,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -344.0721061853431,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1h",
+      "fit_cutoff": "2015-04-25T07:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150425T071125Z-7d",
+      "forecast_id": "aftershock-us20002926-20150425T071125Z-7d",
+      "horizon": "7d",
+      "issue_label": "1h",
+      "issue_time": "2015-04-25T07:11:25.950000+00:00",
+      "largest_observed_event_id": "us200029bt",
+      "largest_observed_magnitude": 6.7,
+      "n_observed_above_target": 57,
+      "n_sequence_events": 21,
+      "n_training_events": 56,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 2.90081983994426,
+          "magnitude": 4.8,
+          "observed_count": 42,
+          "occurred": true,
+          "poisson_p_at_least_observed": 1.1185751953914597e-33,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.9450218716907235
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.21101009337049445,
+          "magnitude": 5.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.19023410642714936,
+          "poisson_p_at_most_observed": 0.9806346703838997,
+          "probability": 0.19023410642714936
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.015307818108616684,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9848087509749074,
+          "probability": 0.015191249025092652
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0010691231260214085,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.99893144818249,
+          "probability": 0.0010685518175099636
+        }
+      ],
+      "total_expected_above_target": 3.7699447632680845,
+      "window_end": "2015-05-02T07:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.3464349546301795,
+      "csep": [
+        {
+          "n_target_events": 107,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 107.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 107,
+          "passed": true,
+          "quantile": 0.054,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -41.811766111129884,
+          "test": "M"
+        },
+        {
+          "n_target_events": 107,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -263.6827114442501,
+          "test": "S"
+        },
+        {
+          "n_target_events": 107,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -702.6665060997881,
+          "test": "L"
+        },
+        {
+          "n_target_events": 107,
+          "passed": false,
+          "quantile": 0.047,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -702.6665060997881,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1h",
+      "fit_cutoff": "2015-04-25T07:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150425T071125Z-30d",
+      "forecast_id": "aftershock-us20002926-20150425T071125Z-30d",
+      "horizon": "30d",
+      "issue_label": "1h",
+      "issue_time": "2015-04-25T07:11:25.950000+00:00",
+      "largest_observed_event_id": "us20002ejl",
+      "largest_observed_magnitude": 7.3,
+      "n_observed_above_target": 107,
+      "n_sequence_events": 21,
+      "n_training_events": 56,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 3.087303538660748,
+          "magnitude": 4.8,
+          "observed_count": 79,
+          "occurred": true,
+          "poisson_p_at_least_observed": 2.520077097581898e-80,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.954375185765517
+        },
+        {
+          "consistent": false,
+          "expected_count": 0.22457520421825994,
+          "magnitude": 5.8,
+          "observed_count": 3,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.0015966184533615895,
+          "poisson_p_at_most_observed": 0.9999113851785271,
+          "probability": 0.20114450286233293
+        },
+        {
+          "consistent": false,
+          "expected_count": 0.016291904917754375,
+          "magnitude": 6.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.016159909625217784,
+          "poisson_p_at_most_observed": 0.9998687195814431,
+          "probability": 0.01615990962521779
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0011378533629628521,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.998862793746713,
+          "probability": 0.0011372062532869604
+        }
+      ],
+      "total_expected_above_target": 4.012301504534926,
+      "window_end": "2015-05-25T07:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.6458047644078118,
+      "csep": [
+        {
+          "n_target_events": 11,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0001542707399621035,
+          "quantile_low": 0.999965013216848,
+          "statistic": 11.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 11,
+          "passed": true,
+          "quantile": 0.436,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -14.331304953687548,
+          "test": "M"
+        },
+        {
+          "n_target_events": 11,
+          "passed": true,
+          "quantile": 0.131,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -43.62195441129771,
+          "test": "S"
+        },
+        {
+          "n_target_events": 11,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -75.674303044813,
+          "test": "L"
+        },
+        {
+          "n_target_events": 11,
+          "passed": true,
+          "quantile": 0.261,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -75.674303044813,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1d",
+      "fit_cutoff": "2015-04-26T06:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150426T061125Z-1d",
+      "forecast_id": "aftershock-us20002926-20150426T061125Z-1d",
+      "horizon": "1d",
+      "issue_label": "1d",
+      "issue_time": "2015-04-26T06:11:25.950000+00:00",
+      "largest_observed_event_id": "us200029bt",
+      "largest_observed_magnitude": 6.7,
+      "n_observed_above_target": 11,
+      "n_sequence_events": 88,
+      "n_training_events": 123,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 2.1394471993075483,
+          "magnitude": 4.8,
+          "observed_count": 8,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.0016667720857817458,
+          "poisson_p_at_most_observed": 0.9996147967720548,
+          "probability": 0.8822800993192254
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.1556266773519459,
+          "magnitude": 5.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.14412135037948898,
+          "poisson_p_at_most_observed": 0.9890762000774215,
+          "probability": 0.14412135037948898
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.011290004339124568,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9887734885900772,
+          "probability": 0.011226511409922856
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0007885124219659868,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.99921179837226,
+          "probability": 0.0007882016277399262
+        }
+      ],
+      "total_expected_above_target": 2.7804545646905963,
+      "window_end": "2015-04-27T06:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.6458047644078118,
+      "csep": [
+        {
+          "n_target_events": 15,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 4.491739909229242e-05,
+          "quantile_low": 0.999988163903253,
+          "statistic": 15.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 15,
+          "passed": true,
+          "quantile": 0.527,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.017463169859226,
+          "test": "M"
+        },
+        {
+          "n_target_events": 15,
+          "passed": true,
+          "quantile": 0.883,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -50.298924724820175,
+          "test": "S"
+        },
+        {
+          "n_target_events": 15,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -91.53961566054431,
+          "test": "L"
+        },
+        {
+          "n_target_events": 15,
+          "passed": true,
+          "quantile": 0.841,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -91.53961566054431,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1d",
+      "fit_cutoff": "2015-04-26T06:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150426T061125Z-7d",
+      "forecast_id": "aftershock-us20002926-20150426T061125Z-7d",
+      "horizon": "7d",
+      "issue_label": "1d",
+      "issue_time": "2015-04-26T06:11:25.950000+00:00",
+      "largest_observed_event_id": "us200029bt",
+      "largest_observed_magnitude": 6.7,
+      "n_observed_above_target": 15,
+      "n_sequence_events": 88,
+      "n_training_events": 123,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 3.3097595587544233,
+          "magnitude": 4.8,
+          "observed_count": 11,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.0006531885546514787,
+          "poisson_p_at_most_observed": 0.9998245550316047,
+          "probability": 0.9634750451963375
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.2407569970081554,
+          "magnitude": 5.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.21396738854129413,
+          "poisson_p_at_most_observed": 0.9752754625439821,
+          "probability": 0.21396738854129416
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.017465820045426093,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9826858232478579,
+          "probability": 0.017314176752142103
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0012198415210448786,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9987809021831922,
+          "probability": 0.0012190978168078194
+        }
+      ],
+      "total_expected_above_target": 4.30140836200379,
+      "window_end": "2015-05-03T06:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.6458047644078118,
+      "csep": [
+        {
+          "n_target_events": 65,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 65.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 65,
+          "passed": true,
+          "quantile": 0.085,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -35.323251153806424,
+          "test": "M"
+        },
+        {
+          "n_target_events": 65,
+          "passed": false,
+          "quantile": 0.003,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -169.23049383141637,
+          "test": "S"
+        },
+        {
+          "n_target_events": 65,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -395.88873993619677,
+          "test": "L"
+        },
+        {
+          "n_target_events": 65,
+          "passed": true,
+          "quantile": 0.576,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -395.88873993619677,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1d",
+      "fit_cutoff": "2015-04-26T06:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150426T061125Z-30d",
+      "forecast_id": "aftershock-us20002926-20150426T061125Z-30d",
+      "horizon": "30d",
+      "issue_label": "1d",
+      "issue_time": "2015-04-26T06:11:25.950000+00:00",
+      "largest_observed_event_id": "us20002ejl",
+      "largest_observed_magnitude": 7.3,
+      "n_observed_above_target": 65,
+      "n_sequence_events": 88,
+      "n_training_events": 123,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 4.0619392809497565,
+          "magnitude": 4.8,
+          "observed_count": 48,
+          "occurred": true,
+          "poisson_p_at_least_observed": 2.504547148367756e-34,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.9827843991646359
+        },
+        {
+          "consistent": false,
+          "expected_count": 0.29547170601086226,
+          "magnitude": 5.8,
+          "observed_count": 3,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.0034504659601390787,
+          "poisson_p_at_most_observed": 0.9997489795444073,
+          "probability": 0.2558195297406162
+        },
+        {
+          "consistent": false,
+          "expected_count": 0.021435122176432345,
+          "magnitude": 6.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.021207022632647392,
+          "poisson_p_at_most_observed": 0.9997735244226558,
+          "probability": 0.02120702263264739
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0014970640926951204,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9985040559487594,
+          "probability": 0.0014959440512406384
+        }
+      ],
+      "total_expected_above_target": 5.278951319232468,
+      "window_end": "2015-05-26T06:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.6807482751517198,
+      "csep": [
+        {
+          "n_target_events": 0,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.28086224690548717,
+          "statistic": 0.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 0,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0,
+          "test": "M"
+        },
+        {
+          "n_target_events": 0,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0,
+          "test": "S"
+        },
+        {
+          "n_target_events": 0,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0,
+          "test": "L"
+        },
+        {
+          "n_target_events": 0,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "7d",
+      "fit_cutoff": "2015-05-02T06:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150502T061125Z-1d",
+      "forecast_id": "aftershock-us20002926-20150502T061125Z-1d",
+      "horizon": "1d",
+      "issue_label": "7d",
+      "issue_time": "2015-05-02T06:11:25.950000+00:00",
+      "largest_observed_event_id": null,
+      "largest_observed_magnitude": null,
+      "n_observed_above_target": 0,
+      "n_sequence_events": 131,
+      "n_training_events": 166,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": true,
+          "expected_count": 0.9771296680346175,
+          "magnitude": 4.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.37638991383328035,
+          "probability": 0.6236100861667196
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.07107791378420347,
+          "magnitude": 5.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9313893212339083,
+          "probability": 0.0686106787660917
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0051563778697453835,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9948568934262185,
+          "probability": 0.005143106573781492
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.00036012988839648387,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.999639934950588,
+          "probability": 0.00036006504941194466
+        }
+      ],
+      "total_expected_above_target": 1.2698909543833563,
+      "window_end": "2015-05-03T06:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.6807482751517198,
+      "csep": [
+        {
+          "n_target_events": 2,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.8578915211016559,
+          "quantile_low": 0.33164237599794566,
+          "statistic": 2.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 2,
+          "passed": true,
+          "quantile": 0.498,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.120741901832771,
+          "test": "M"
+        },
+        {
+          "n_target_events": 2,
+          "passed": true,
+          "quantile": 0.205,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.051194580049199,
+          "test": "S"
+        },
+        {
+          "n_target_events": 2,
+          "passed": true,
+          "quantile": 0.752,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.221418236942963,
+          "test": "L"
+        },
+        {
+          "n_target_events": 2,
+          "passed": true,
+          "quantile": 0.444,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.221418236942963,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "7d",
+      "fit_cutoff": "2015-05-02T06:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150502T061125Z-7d",
+      "forecast_id": "aftershock-us20002926-20150502T061125Z-7d",
+      "horizon": "7d",
+      "issue_label": "7d",
+      "issue_time": "2015-05-02T06:11:25.950000+00:00",
+      "largest_observed_event_id": "us20002dn5",
+      "largest_observed_magnitude": 5.2,
+      "n_observed_above_target": 2,
+      "n_sequence_events": 131,
+      "n_training_events": 166,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": true,
+          "expected_count": 2.648747041025922,
+          "magnitude": 4.8,
+          "observed_count": 2,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.7418883946695645,
+          "poisson_p_at_most_observed": 0.5062618739083993,
+          "probability": 0.929260208387079
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.1926739305714486,
+          "magnitude": 5.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.8247508563400172,
+          "probability": 0.17524914365998287
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.013977613280713291,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9861196199988753,
+          "probability": 0.01388038000112464
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0009762194389142093,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9990242569082631,
+          "probability": 0.0009757430917368196
+        }
+      ],
+      "total_expected_above_target": 3.442347538801097,
+      "window_end": "2015-05-09T06:11:25.950000+00:00"
+    },
+    {
+      "b_value": 1.138125688070699,
+      "b_value_fixed": true,
+      "branching_ratio": 0.6807482751517198,
+      "csep": [
+        {
+          "n_target_events": 53,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 53.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 53,
+          "passed": true,
+          "quantile": 0.18,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -31.324291744068162,
+          "test": "M"
+        },
+        {
+          "n_target_events": 53,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -228.0078467758449,
+          "test": "S"
+        },
+        {
+          "n_target_events": 53,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -407.5022415545507,
+          "test": "L"
+        },
+        {
+          "n_target_events": 53,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -407.5022415545507,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "7d",
+      "fit_cutoff": "2015-05-02T06:11:25.950000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us20002926-20150502T061125Z-30d",
+      "forecast_id": "aftershock-us20002926-20150502T061125Z-30d",
+      "horizon": "30d",
+      "issue_label": "7d",
+      "issue_time": "2015-05-02T06:11:25.950000+00:00",
+      "largest_observed_event_id": "us20002ejl",
+      "largest_observed_magnitude": 7.3,
+      "n_observed_above_target": 53,
+      "n_sequence_events": 131,
+      "n_training_events": 166,
+      "sequence_id": "gorkha",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 3.785632085377076,
+          "magnitude": 4.8,
+          "observed_count": 39,
+          "occurred": true,
+          "poisson_p_at_least_observed": 4.33309377409498e-26,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.9773054866278577
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.2753726959538118,
+          "magnitude": 5.8,
+          "observed_count": 2,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.03162343072355626,
+          "poisson_p_at_most_observed": 0.9971650611856051,
+          "probability": 0.24071091348539114
+        },
+        {
+          "consistent": false,
+          "expected_count": 0.01997703083491357,
+          "magnitude": 6.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.01977881208953017,
+          "poisson_p_at_most_observed": 0.9998030968063929,
+          "probability": 0.019778812089530178
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0013952286017055967,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9986057442772045,
+          "probability": 0.0013942557227955177
+        }
+      ],
+      "total_expected_above_target": 4.919858744554494,
+      "window_end": "2015-06-01T06:11:25.950000+00:00"
+    }
+  ],
+  "zone_radius_km": 217.8
+}

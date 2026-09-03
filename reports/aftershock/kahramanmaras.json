@@ -1,0 +1,999 @@
+{
+  "catalog_coverage_end": "2023-03-20T00:00:00+00:00",
+  "description": "2023 Kahramanmaras, Turkiye (M7.8); M7.5 doublet us6000jlqa about 9 h later",
+  "evaluated_at": "2026-09-03T20:46:58.425565+00:00",
+  "mainshock_event_id": "us6000jllz",
+  "mainshock_magnitude": 7.8,
+  "mainshock_time": "2023-02-06T01:17:34.342000+00:00",
+  "mc": 4.3,
+  "n_catalog_events": 690,
+  "n_cells": 1510,
+  "region_id": "aftershock-us6000jllz",
+  "sequence_id": "kahramanmaras",
+  "skipped": [],
+  "target_min_magnitude": 4.6,
+  "windows": [
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.8467504698496939,
+      "csep": [
+        {
+          "n_target_events": 166,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 166.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 166,
+          "passed": true,
+          "quantile": 0.132,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -49.13107618959492,
+          "test": "M"
+        },
+        {
+          "n_target_events": 166,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -861.9578684504521,
+          "test": "S"
+        },
+        {
+          "n_target_events": 166,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1434.3562793346414,
+          "test": "L"
+        },
+        {
+          "n_target_events": 166,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1434.3562793346414,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1h",
+      "fit_cutoff": "2023-02-06T02:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230206T021734Z-1d",
+      "forecast_id": "aftershock-us6000jllz-20230206T021734Z-1d",
+      "horizon": "1d",
+      "issue_label": "1h",
+      "issue_time": "2023-02-06T02:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jlqa",
+      "largest_observed_magnitude": 7.5,
+      "n_observed_above_target": 166,
+      "n_sequence_events": 22,
+      "n_training_events": 116,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 8.502625371013718,
+          "magnitude": 4.8,
+          "observed_count": 90,
+          "occurred": true,
+          "poisson_p_at_least_observed": 6.882500833564229e-59,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.9997970651103505
+        },
+        {
+          "consistent": false,
+          "expected_count": 0.8013221338002656,
+          "magnitude": 5.8,
+          "observed_count": 5,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.0014214758305660337,
+          "poisson_p_at_most_observed": 0.9998140296240243,
+          "probability": 0.5512647163446922
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.07517606950715235,
+          "magnitude": 6.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.07241984663045002,
+          "poisson_p_at_most_observed": 0.9973119834527143,
+          "probability": 0.07241984663045004
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.006708682826354004,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.993313770148259,
+          "probability": 0.006686229851741088
+        }
+      ],
+      "total_expected_above_target": 13.635439763185705,
+      "window_end": "2023-02-07T02:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.8467504698496939,
+      "csep": [
+        {
+          "n_target_events": 268,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 268.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 268,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -75.3332575374609,
+          "test": "M"
+        },
+        {
+          "n_target_events": 268,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -747.938340823303,
+          "test": "S"
+        },
+        {
+          "n_target_events": 268,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1573.2662157311884,
+          "test": "L"
+        },
+        {
+          "n_target_events": 268,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1573.2662157311884,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1h",
+      "fit_cutoff": "2023-02-06T02:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230206T021734Z-7d",
+      "forecast_id": "aftershock-us6000jllz-20230206T021734Z-7d",
+      "horizon": "7d",
+      "issue_label": "1h",
+      "issue_time": "2023-02-06T02:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jlqa",
+      "largest_observed_magnitude": 7.5,
+      "n_observed_above_target": 268,
+      "n_sequence_events": 22,
+      "n_training_events": 116,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 16.34672381548402,
+          "magnitude": 4.8,
+          "observed_count": 112,
+          "occurred": true,
+          "poisson_p_at_least_observed": 3.7778456473047333e-54,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.999999920437568
+        },
+        {
+          "consistent": false,
+          "expected_count": 1.5405820010749864,
+          "magnitude": 5.8,
+          "observed_count": 5,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.020551098712952142,
+          "poisson_p_at_most_observed": 0.9949433664541049,
+          "probability": 0.7857436323034058
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.14452976488373,
+          "magnitude": 6.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.13457084737836403,
+          "poisson_p_at_most_observed": 0.9905094245735667,
+          "probability": 0.13457084737836406
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.01289777927908576,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9871850406294066,
+          "probability": 0.012814959370593444
+        }
+      ],
+      "total_expected_above_target": 26.214816975393934,
+      "window_end": "2023-02-13T02:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.8467504698496939,
+      "csep": [
+        {
+          "n_target_events": 312,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 312.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 312,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -89.4489994001882,
+          "test": "M"
+        },
+        {
+          "n_target_events": 312,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -925.37961700587,
+          "test": "S"
+        },
+        {
+          "n_target_events": 312,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1787.4862227802814,
+          "test": "L"
+        },
+        {
+          "n_target_events": 312,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1787.4862227802814,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1h",
+      "fit_cutoff": "2023-02-06T02:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230206T021734Z-30d",
+      "forecast_id": "aftershock-us6000jllz-20230206T021734Z-30d",
+      "horizon": "30d",
+      "issue_label": "1h",
+      "issue_time": "2023-02-06T02:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jlqa",
+      "largest_observed_magnitude": 7.5,
+      "n_observed_above_target": 312,
+      "n_sequence_events": 22,
+      "n_training_events": 116,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 26.221518728760312,
+          "magnitude": 4.8,
+          "observed_count": 123,
+          "occurred": true,
+          "poisson_p_at_least_observed": 1.3351820920549588e-42,
+          "poisson_p_at_most_observed": 1.0,
+          "probability": 0.999999999995906
+        },
+        {
+          "consistent": true,
+          "expected_count": 2.4712229955285823,
+          "magnitude": 5.8,
+          "observed_count": 6,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.04012631211400516,
+          "poisson_p_at_most_observed": 0.9865976355420782,
+          "probability": 0.9155185246710092
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.23183788871334976,
+          "magnitude": 6.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.2069253207571202,
+          "poisson_p_at_most_observed": 0.9769394384705662,
+          "probability": 0.20692532075712017
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.020689121853616533,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9795234296693893,
+          "probability": 0.02047657033061066
+        }
+      ],
+      "total_expected_above_target": 42.0507694416542,
+      "window_end": "2023-03-08T02:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.732108349498123,
+      "csep": [
+        {
+          "n_target_events": 42,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 6.172797384351725e-09,
+          "quantile_low": 0.9999999978935357,
+          "statistic": 42.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 42,
+          "passed": true,
+          "quantile": 0.547,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.847849310428963,
+          "test": "M"
+        },
+        {
+          "n_target_events": 42,
+          "passed": true,
+          "quantile": 0.075,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -137.11832503709292,
+          "test": "S"
+        },
+        {
+          "n_target_events": 42,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -229.6392049436978,
+          "test": "L"
+        },
+        {
+          "n_target_events": 42,
+          "passed": true,
+          "quantile": 0.974,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -229.6392049436978,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1d",
+      "fit_cutoff": "2023-02-07T01:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230207T011734Z-1d",
+      "forecast_id": "aftershock-us6000jllz-20230207T011734Z-1d",
+      "horizon": "1d",
+      "issue_label": "1d",
+      "issue_time": "2023-02-07T01:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jm5e",
+      "largest_observed_magnitude": 5.5,
+      "n_observed_above_target": 42,
+      "n_sequence_events": 209,
+      "n_training_events": 303,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": true,
+          "expected_count": 9.254996220677235,
+          "magnitude": 4.8,
+          "observed_count": 13,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.14356150975568277,
+          "poisson_p_at_most_observed": 0.9125713398092048,
+          "probability": 0.9999043673453771
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.872228634834264,
+          "magnitude": 5.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.4180188988856842,
+          "probability": 0.5819811011143158
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.08182816586815157,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9214302782655308,
+          "probability": 0.07856972173446916
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.007302313284940845,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9927242838251944,
+          "probability": 0.007275716174805571
+        }
+      ],
+      "total_expected_above_target": 14.84199737951176,
+      "window_end": "2023-02-08T01:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.732108349498123,
+      "csep": [
+        {
+          "n_target_events": 109,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 109.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 109,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -65.60679434404545,
+          "test": "M"
+        },
+        {
+          "n_target_events": 109,
+          "passed": false,
+          "quantile": 0.006,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -281.6087509910085,
+          "test": "S"
+        },
+        {
+          "n_target_events": 109,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -518.9297688132018,
+          "test": "L"
+        },
+        {
+          "n_target_events": 109,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -518.9297688132018,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1d",
+      "fit_cutoff": "2023-02-07T01:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230207T011734Z-7d",
+      "forecast_id": "aftershock-us6000jllz-20230207T011734Z-7d",
+      "horizon": "7d",
+      "issue_label": "1d",
+      "issue_time": "2023-02-07T01:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jm5e",
+      "largest_observed_magnitude": 5.5,
+      "n_observed_above_target": 109,
+      "n_sequence_events": 209,
+      "n_training_events": 303,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": true,
+          "expected_count": 18.609148936838995,
+          "magnitude": 4.8,
+          "observed_count": 22,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.24455624415135738,
+          "poisson_p_at_most_observed": 0.818738255292792,
+          "probability": 0.9999999917177316
+        },
+        {
+          "consistent": true,
+          "expected_count": 1.7538021826894743,
+          "magnitude": 5.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.1731144776699325,
+          "probability": 0.8268855223300675
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.16453302514232365,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.8482897415922888,
+          "probability": 0.15171025840771127
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.014682862344051665,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9854244052391259,
+          "probability": 0.014575594760874099
+        }
+      ],
+      "total_expected_above_target": 29.84300945887341,
+      "window_end": "2023-02-14T01:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.732108349498123,
+      "csep": [
+        {
+          "n_target_events": 150,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 150.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 150,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -82.23932896620238,
+          "test": "M"
+        },
+        {
+          "n_target_events": 150,
+          "passed": false,
+          "quantile": 0.037,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -355.2016874192985,
+          "test": "S"
+        },
+        {
+          "n_target_events": 150,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -697.7318759904252,
+          "test": "L"
+        },
+        {
+          "n_target_events": 150,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -697.7318759904252,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "1d",
+      "fit_cutoff": "2023-02-07T01:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230207T011734Z-30d",
+      "forecast_id": "aftershock-us6000jllz-20230207T011734Z-30d",
+      "horizon": "30d",
+      "issue_label": "1d",
+      "issue_time": "2023-02-07T01:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jqcn",
+      "largest_observed_magnitude": 6.3,
+      "n_observed_above_target": 150,
+      "n_sequence_events": 209,
+      "n_training_events": 303,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": true,
+          "expected_count": 22.97751234988622,
+          "magnitude": 4.8,
+          "observed_count": 33,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.0286150112365062,
+          "poisson_p_at_most_observed": 0.9815079310817955,
+          "probability": 0.9999999998950474
+        },
+        {
+          "consistent": true,
+          "expected_count": 2.1654945881071535,
+          "magnitude": 5.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.8853068053230682,
+          "poisson_p_at_most_observed": 0.36306068704254796,
+          "probability": 0.8853068053230682
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.20315596538043837,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.816150940206692,
+          "probability": 0.183849059793308
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.018129558314956152,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9820337934725386,
+          "probability": 0.01796620652746142
+        }
+      ],
+      "total_expected_above_target": 36.848440556116785,
+      "window_end": "2023-03-09T01:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.8105355701795419,
+      "csep": [
+        {
+          "n_target_events": 3,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.8087348163198775,
+          "quantile_low": 0.368375932158769,
+          "statistic": 3.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 3,
+          "passed": true,
+          "quantile": 0.741,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.173071802063305,
+          "test": "M"
+        },
+        {
+          "n_target_events": 3,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -25.740463853304604,
+          "test": "S"
+        },
+        {
+          "n_target_events": 3,
+          "passed": true,
+          "quantile": 0.514,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -30.65267049337643,
+          "test": "L"
+        },
+        {
+          "n_target_events": 3,
+          "passed": false,
+          "quantile": 0.008,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -30.65267049337643,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "7d",
+      "fit_cutoff": "2023-02-13T01:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230213T011734Z-1d",
+      "forecast_id": "aftershock-us6000jllz-20230213T011734Z-1d",
+      "horizon": "1d",
+      "issue_label": "7d",
+      "issue_time": "2023-02-13T01:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jnl4",
+      "largest_observed_magnitude": 4.68,
+      "n_observed_above_target": 3,
+      "n_sequence_events": 352,
+      "n_training_events": 446,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": true,
+          "expected_count": 2.712015048365812,
+          "magnitude": 4.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.0664028668243793,
+          "probability": 0.9335971331756207
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.2555913721500146,
+          "magnitude": 5.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.7744583694011871,
+          "probability": 0.22554163059881294
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.023978315271355334,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.976306880478145,
+          "probability": 0.02369311952185509
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.0021398154082867913,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9978624723646091,
+          "probability": 0.002137527635390857
+        }
+      ],
+      "total_expected_above_target": 4.349188187793384,
+      "window_end": "2023-02-14T01:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.8105355701795419,
+      "csep": [
+        {
+          "n_target_events": 17,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.973237306844267,
+          "quantile_low": 0.044068122618467744,
+          "statistic": 17.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 17,
+          "passed": true,
+          "quantile": 0.382,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -19.32553141140112,
+          "test": "M"
+        },
+        {
+          "n_target_events": 17,
+          "passed": true,
+          "quantile": 0.701,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -70.2090223499234,
+          "test": "S"
+        },
+        {
+          "n_target_events": 17,
+          "passed": true,
+          "quantile": 0.995,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -101.73510731781698,
+          "test": "L"
+        },
+        {
+          "n_target_events": 17,
+          "passed": true,
+          "quantile": 0.996,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -101.73510731781698,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "7d",
+      "fit_cutoff": "2023-02-13T01:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230213T011734Z-7d",
+      "forecast_id": "aftershock-us6000jllz-20230213T011734Z-7d",
+      "horizon": "7d",
+      "issue_label": "7d",
+      "issue_time": "2023-02-13T01:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jpff",
+      "largest_observed_magnitude": 5.2,
+      "n_observed_above_target": 17,
+      "n_sequence_events": 352,
+      "n_training_events": 446,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 16.102720785825117,
+          "magnitude": 4.8,
+          "observed_count": 3,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.9999850974751618,
+          "poisson_p_at_most_observed": 8.557068038027367e-05,
+          "probability": 0.9999998984506333
+        },
+        {
+          "consistent": true,
+          "expected_count": 1.5175861592204742,
+          "magnitude": 5.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.21924046031322392,
+          "probability": 0.780759539686776
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.14237240901807846,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.8672982066627895,
+          "probability": 0.13270179333721058
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.012705257691549805,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9873751133565848,
+          "probability": 0.012624886643415212
+        }
+      ],
+      "total_expected_above_target": 25.82351564577271,
+      "window_end": "2023-02-20T01:17:34.342000+00:00"
+    },
+    {
+      "b_value": 1.0255402361529682,
+      "b_value_fixed": true,
+      "branching_ratio": 0.8105355701795419,
+      "csep": [
+        {
+          "n_target_events": 53,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.13136057671407964,
+          "quantile_low": 0.8963511927708555,
+          "statistic": 53.0,
+          "test": "N"
+        },
+        {
+          "n_target_events": 53,
+          "passed": false,
+          "quantile": 0.004,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -42.83508200003254,
+          "test": "M"
+        },
+        {
+          "n_target_events": 53,
+          "passed": false,
+          "quantile": 0.033,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -189.40761313830035,
+          "test": "S"
+        },
+        {
+          "n_target_events": 53,
+          "passed": true,
+          "quantile": 0.257,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -286.946935880961,
+          "test": "L"
+        },
+        {
+          "n_target_events": 53,
+          "passed": true,
+          "quantile": 0.967,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -286.946935880961,
+          "test": "CL"
+        }
+      ],
+      "elapsed": "7d",
+      "fit_cutoff": "2023-02-13T01:17:34.342000+00:00",
+      "forecast_grid_id": "etas-mizrahi-aftershock-us6000jllz-20230213T011734Z-30d",
+      "forecast_id": "aftershock-us6000jllz-20230213T011734Z-30d",
+      "horizon": "30d",
+      "issue_label": "7d",
+      "issue_time": "2023-02-13T01:17:34.342000+00:00",
+      "largest_observed_event_id": "us6000jqcn",
+      "largest_observed_magnitude": 6.3,
+      "n_observed_above_target": 53,
+      "n_sequence_events": 352,
+      "n_training_events": 446,
+      "sequence_id": "kahramanmaras",
+      "thresholds": [
+        {
+          "consistent": false,
+          "expected_count": 28.033008554512158,
+          "magnitude": 4.8,
+          "observed_count": 12,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.9997755275036116,
+          "poisson_p_at_most_observed": 0.0005534139628009984,
+          "probability": 0.999999999999331
+        },
+        {
+          "consistent": true,
+          "expected_count": 2.6419451935778513,
+          "magnitude": 5.8,
+          "observed_count": 1,
+          "occurred": true,
+          "poisson_p_at_least_observed": 0.9287774070067556,
+          "poisson_p_at_most_observed": 0.25938878022589806,
+          "probability": 0.9287774070067556
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.24785419886579682,
+          "magnitude": 6.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.7804737289376884,
+          "probability": 0.2195262710623115
+        },
+        {
+          "consistent": true,
+          "expected_count": 0.022118411061814048,
+          "magnitude": 7.8,
+          "observed_count": 0,
+          "occurred": false,
+          "poisson_p_at_least_observed": 1.0,
+          "poisson_p_at_most_observed": 0.9781244074440387,
+          "probability": 0.02187559255596128
+        }
+      ],
+      "total_expected_above_target": 44.955808688104966,
+      "window_end": "2023-03-15T01:17:34.342000+00:00"
+    }
+  ],
+  "zone_radius_km": 217.8
+}
