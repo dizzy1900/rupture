@@ -67,5 +67,5 @@ in-house re-implementation is out of scope for Prompt 1. The package is on GitHu
 At the pinned commit, `etas/simulation.py` imports `seismostats.ForecastCatalog` unconditionally,
 although upstream declares `seismostats` only in its optional `hermes` extra. rupture therefore
 declares `seismostats>=1.0` (PyPI) as a runtime dependency so the module imports cleanly. The
-adapter also keeps a defensive shim (`adapters/forecasting/_etas_compat.py`) that is a no-op when
-`seismostats` is importable; see ADR-0018.
+interim import shim that preceded this decision was removed once the dependency was declared; see
+ADR-0018.
