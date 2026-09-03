@@ -312,6 +312,14 @@ uv run python -m rupture.commands.challenger ntpp ablate --region <r> \
 (`rupture challenger ...` once `src/rupture/cli.py` registers the sub-app; see the note at the top
 of `src/rupture/commands/challenger.py`.)
 
+One trap worth knowing: `evaluate_forecast` is idempotent per *target slice hash*, and the
+evaluation bundle is keyed by the forecast id, which is built from the **model id**. Re-running a
+schedule reuses the stored results rather than re-scoring, which is what you want for a rerun and
+emphatically not what you want for a variant. Any variant of this model must therefore carry its
+own model id — which is why the two ablations are `ntpp-LEAKY-ABLATION-tuning` and
+`ntpp-LEAKY-ABLATION-fit` rather than sharing one. A first version of the tuning ablation did
+share the honest id, and silently reported the honest results as its own.
+
 Fits are deterministic — torch and numpy are seeded from the configuration — and a rerun
 reproduces `parameter_snapshot_hash`. The committed fixture fit under
 `tests/fixtures/models/ntpp-fit-2019-07-01/` is regenerated, never hand-edited, by

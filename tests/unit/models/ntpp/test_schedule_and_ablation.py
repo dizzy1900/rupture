@@ -79,6 +79,23 @@ def test_pass_rates_report_their_denominator_and_exclude_undecided_windows() -> 
     assert rates["N"]["denominator_rule"] == "all evaluated windows"
 
 
+def test_benchmark_pass_rates_are_aggregated_from_the_same_windows() -> None:
+    """Scoring the benchmark in the same run is what makes the two rate columns comparable.
+
+    Two separate runs could differ in simulation count, seed or refit policy without anyone
+    noticing; one run over one set of grids cannot.
+    """
+    windows = [_window(0, passed=True), _window(1, passed=False)]
+    windows[0].benchmark_tests = {"N": {"passed": False}, "S": {"passed": False}}
+    windows[1].benchmark_tests = {"N": {"passed": False}, "S": {"passed": None}}
+    mine = pass_rates(windows)
+    theirs = pass_rates(windows, attribute="benchmark_tests")
+    assert mine["N"]["rate"] == pytest.approx(0.5)
+    assert theirs["N"]["rate"] == pytest.approx(0.0)
+    assert theirs["N"]["scored"] == 2
+    assert theirs["S"]["scored"] == 1  # the undecided window is excluded, never counted as a fail
+
+
 def test_comparison_summary_averages_the_information_gain() -> None:
     windows = [_window(0, passed=True, gain=1.0), _window(1, passed=True, gain=-3.0)]
     summary = comparison_summary(windows)

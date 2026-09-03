@@ -191,6 +191,7 @@ def run_ablations(
     forecasts_dir: Path,
     reports_dir: Path,
     benchmark: MizrahiETAS | None = None,
+    benchmark_cache: dict[datetime, ForecastGrid] | None = None,
     evaluator: PyCSEPEvaluator | None = None,
     tracker: Tracker | None = None,
     candidates: Sequence[NTPPConfig] | None = None,
@@ -205,6 +206,10 @@ def run_ablations(
     :func:`~rupture.models.challengers.ntpp.schedule.run_ntpp_schedule`. Every number returned is
     a *difference from* that run, which is the only form in which a leaky score should ever be
     written down.
+
+    ``benchmark_cache`` should be the dictionary the honest run filled, so the ablations are
+    compared against the *identical* ETAS grids rather than against a resimulation of them. The
+    difference would otherwise carry the benchmark's Monte Carlo noise as well as the leak.
     """
     catalogue_end = catalog.bounds.end_time if catalog.bounds else catalog.max_origin_time()
     if catalogue_end is None:
@@ -237,6 +242,7 @@ def run_ablations(
         forecasts_dir=forecasts_dir,
         reports_dir=reports_dir,
         benchmark=benchmark,
+        benchmark_cache=benchmark_cache,
         evaluator=evaluator,
         tracker=tracker,
         n_simulations=n_simulations,
@@ -262,6 +268,7 @@ def run_ablations(
         forecasts_dir=forecasts_dir,
         reports_dir=reports_dir,
         benchmark=benchmark,
+        benchmark_cache=benchmark_cache,
         evaluator=evaluator,
         tracker=tracker,
         n_simulations=n_simulations,

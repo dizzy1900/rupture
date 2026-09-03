@@ -75,6 +75,8 @@ class ChallengerWindow:
     n_only: bool
     tests: dict[str, dict[str, Any]] = field(default_factory=dict)
     comparison: dict[str, dict[str, Any]] = field(default_factory=dict)
+    #: the benchmark's own consistency tests on the same target slice, when asked for
+    benchmark_tests: dict[str, dict[str, Any]] = field(default_factory=dict)
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -90,6 +92,7 @@ class ChallengerWindow:
             "n_only": self.n_only,
             "tests": self.tests,
             "comparison": self.comparison,
+            "benchmark_tests": self.benchmark_tests,
         }
 
 
@@ -122,17 +125,23 @@ def _summary(result: EvaluationResult) -> dict[str, Any]:
 
 
 def pass_rates(
-    windows: Sequence[ChallengerWindow], tests: Sequence[TestName] = CONSISTENCY
+    windows: Sequence[ChallengerWindow],
+    tests: Sequence[TestName] = CONSISTENCY,
+    *,
+    attribute: str = "tests",
 ) -> dict[str, Any]:
-    """Pass rate per test with its denominator. Never a bare percentage (protocol § 5)."""
+    """Pass rate per test with its denominator. Never a bare percentage (protocol § 5).
+
+    ``attribute`` selects which set of results to aggregate: the challenger's (``tests``) or, when
+    the benchmark was scored in the same run, its own (``benchmark_tests``).
+    """
     out: dict[str, Any] = {}
     for test in tests:
+        results = [(w, getattr(w, attribute)) for w in windows]
         scored = [
-            w
-            for w in windows
-            if test.value in w.tests and w.tests[test.value]["passed"] is not None
+            (w, r) for w, r in results if test.value in r and r[test.value]["passed"] is not None
         ]
-        passed = sum(1 for w in scored if w.tests[test.value]["passed"])
+        passed = sum(1 for _, r in scored if r[test.value]["passed"])
         out[test.value] = {
             "passed": passed,
             "scored": len(scored),
@@ -189,6 +198,8 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
     forecasts_dir: Path,
     reports_dir: Path,
     benchmark: MizrahiETAS | None = None,
+    benchmark_cache: dict[datetime, ForecastGrid] | None = None,
+    evaluate_benchmark: bool = False,
     refit: RefitPolicy = "none",
     evaluator: PyCSEPEvaluator | None = None,
     tracker: Tracker | None = None,
@@ -208,6 +219,16 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
     before calling). ``benchmark``, if given, must already hold the ETAS fit for the same cutoff;
     both then see exactly the same history at every issue time, which is the only way the paired
     comparison means anything.
+
+    ``evaluate_benchmark`` additionally scores the benchmark's own consistency tests on the same
+    target slices, so the two models' pass rates come from one run and one set of grids rather
+    than from two runs that might differ in simulation count or refit policy.
+
+    ``benchmark_cache`` maps issue time to the benchmark's grid. When given it is read from and
+    written to, so a later run over the same schedule — an ablation, say — reuses the identical
+    benchmark grids instead of resimulating them. Reuse is only sound because the benchmark is
+    deterministic given its fit and seed; a grid whose issue time is already in the cache is used
+    as-is, and the fit it came from is recorded in the report.
     """
     evaluator = evaluator or PyCSEPEvaluator()
     tracker = tracker or JsonlTracker(JsonlTracker.default_path(forecasts_dir.parent, region.id))
@@ -279,11 +300,29 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
         )
         benchmark_grid: ForecastGrid | None = None
         comparison: list[EvaluationResult] = []
+        benchmark_results: list[EvaluationResult] = []
         if benchmark is not None:
-            benchmark_grid = benchmark.forecast(
+            cached = benchmark_cache.get(issue) if benchmark_cache is not None else None
+            benchmark_grid = cached or benchmark.forecast(
                 history, issue, horizon, n_simulations=benchmark_simulations, seed=seed
             )
+            if benchmark_cache is not None and cached is None:
+                benchmark_cache[issue] = benchmark_grid
             comparison = evaluator.compare(grid, benchmark_grid, target, alpha=alpha)
+            if evaluate_benchmark:
+                benchmark_results = evaluate_forecast(
+                    benchmark_grid,
+                    catalog,
+                    evaluator,
+                    out_dir=reports_dir / "eval" / benchmark_grid.id,
+                    region=region,
+                    tests=tests,
+                    n_simulations=eval_simulations,
+                    alpha=alpha,
+                    seed=seed,
+                    plots=False,
+                    tracker=tracker,
+                )
         by_name = {r.test_name: r for r in results}
         n_target = by_name[tests[0]].n_target_events if results else 0
         windows.append(
@@ -304,6 +343,7 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
                 n_only=n_target == 0,
                 tests={r.test_name.value: _summary(r) for r in results},
                 comparison={r.test_name.value: _summary(r) for r in comparison},
+                benchmark_tests={r.test_name.value: _summary(r) for r in benchmark_results},
             )
         )
 
@@ -341,6 +381,9 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
         "not_scored": skipped,
         "windows": [w.as_dict() for w in windows],
         "pass_rates": pass_rates(windows, tests),
+        "benchmark_pass_rates": (
+            pass_rates(windows, tests, attribute="benchmark_tests") if evaluate_benchmark else None
+        ),
         "comparison_summary": comparison_summary(windows),
         "refits": [
             {
