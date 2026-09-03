@@ -36,7 +36,8 @@ stages:
     do:
       cmd: >-
         uv run rupture evaluate schedule --region ${item} --model etas
-        --from ${cutoff} --to ${schedule_end} --step 30d
+        --from ${cutoff} --to ${schedule_end} --step 30d --horizon 30d
+        --refit yearly --n-simulations 1000 --seed 20220101
       deps:
         - src/rupture/adapters/evaluation
         - src/rupture/pipelines/evaluate.py
@@ -44,4 +45,4 @@ stages:
         - baselines/etas/${item}
       outs:
         - data/forecasts/${item}
-        - reports/eval/schedule-${item}-etas.json
+        - reports/eval/schedule-${item}-etas-mizrahi.json
