@@ -105,12 +105,18 @@ class SeracExposureSource:
 
     # ------------------------------------------------------------------ location
     def resolve(self, path: Path | None = None) -> tuple[Path, bool]:
-        """``(path to the export, used_fallback)``. Explicit path wins; then live; then fixture."""
+        """``(path to the export, used_fallback)``. Explicit path wins; then live; then fixture.
+
+        An explicit path that points into rupture's own committed fixtures still counts as the
+        fallback: the caller asked for a specific file, but the portfolio must still say that the
+        exposure did not come from serac.
+        """
         if path is not None:
             if not path.is_file():
                 msg = f"exposure export not found at {path}"
                 raise SeracExportError(msg)
-            return path, False
+            resolved = path.resolve()
+            return resolved, self._is_committed_fallback(resolved)
         live = export_dir() / AOI_REL / self.aoi / ASSETS_FILE
         if live.is_file():
             return live.resolve(), False
@@ -125,6 +131,11 @@ class SeracExposureSource:
             msg = f"no serac export at {live} and no committed fallback at {fallback}"
             raise SeracExportError(msg)
         return fallback.resolve(), True
+
+    def _is_committed_fallback(self, path: Path) -> bool:
+        if self.repo_root is None:
+            return False
+        return path.is_relative_to((self.repo_root / FALLBACK_REL).resolve())
 
     # ------------------------------------------------------------------ port
     def load(
