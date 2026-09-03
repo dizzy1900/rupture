@@ -12,16 +12,33 @@ to the mixture weights**. So the temporal decay and the spatial spread of an eve
 cloud are learned, smooth functions of that event's magnitude and depth, rather than the single
 fixed exponent pair ETAS gives every event.
 
-Productivity is deliberately *not* neural. ``A_i = exp(k0 + alpha (m_i - mc))`` with ``alpha``
-constrained non-negative, which is the ETAS form. An earlier version let the MLP add a bounded
-offset to it; on a few hundred events that produced a productivity curve oscillating by a factor
-of fifty between neighbouring half-magnitude steps, and it made ``alpha`` non-identifiable because
-the offset was itself a function of magnitude. Bounding the neural part to the *shape* of the
-kernel — a softmax over densities, so any output is still a valid density — keeps the model honest
-where it is extrapolating, which for a catalogue whose test window opens with a mainshock larger
-than anything in training is not a hypothetical concern. Standardised features are additionally
-clipped to ``config.feature_clip``, so an event far outside the training range is treated as the
-most extreme event the model actually saw rather than extrapolated.
+Productivity is deliberately *not* neural, and it is **subcritical by construction**.
+``A_i = k0 exp(alpha (m_i - mc))`` is the ETAS form, but neither ``k0`` nor ``alpha`` is learned
+directly. What is learned is the pair *(branching ratio, magnitude sensitivity)*:
+
+    alpha     = beta * max_alpha_fraction * sigmoid(alpha_raw)      (so alpha < beta always)
+    n         = max_branching_ratio * sigmoid(branch_raw)           (so 0 < n < 1 always)
+    k0        = n * (beta - alpha) / beta
+
+The branching ratio — expected direct offspring per event, integrated over the Gutenberg-Richter
+mark law — is exactly ``n``, so it cannot reach 1. This is not a tuning choice. Fitted without it,
+maximum likelihood drove the model supercritical on every catalogue tried: 1.00 on a two-year
+California fixture, 0.96 on Nepal, **1.83** on Türkiye, where ``alpha`` had climbed to within nine
+percent of ``beta`` and the productivity integral was close to diverging. A supercritical Hawkes
+process has cascades that never die out and forecasts that are not merely wrong but unstable, and
+every operational ETAS implementation constrains its parameters for exactly this reason (the
+``etas`` package has explicit inversion ranges). The constraint was added after seeing the
+*training-set* branching ratio, never a test score.
+
+An earlier version also let the MLP add a bounded offset to productivity; on a few hundred events
+that produced a curve oscillating by a factor of fifty between neighbouring half-magnitude steps,
+and it made ``alpha`` non-identifiable because the offset was itself a function of magnitude.
+Bounding the neural part to the *shape* of the kernel — a softmax over densities, so any output is
+still a valid density — keeps the model honest where it is extrapolating, which for a catalogue
+whose test window opens with a mainshock larger than anything in training is not a hypothetical
+concern. Standardised features are additionally clipped to ``config.feature_clip``, so an event
+far outside the training range is treated as the most extreme event the model actually saw rather
+than extrapolated.
 
 **Why this shape and not a recurrent or attention-based one.** Three reasons, in order of weight.
 (1) The compensator ``int lambda`` stays exact and closed-form, so the likelihood is the real
@@ -89,6 +106,11 @@ class NTPPConfig:
     spatial_s: float = 1.5
     hidden: int = 16
     feature_clip: float = 3.0
+    #: ``alpha`` is capped at this fraction of ``beta``. Above 1 the productivity integral
+    #: diverges; approaching 1 it explodes, which is where unconstrained fitting went.
+    max_alpha_fraction: float = 0.95
+    #: hard ceiling on the branching ratio, so the fitted process is always subcritical.
+    max_branching_ratio: float = 0.98
     background_sigma_km: float = 10.0
     learning_rate: float = 0.05
     # Generous: the whole fit is seconds on a CPU, and the optimiser stops early on its own
@@ -225,9 +247,11 @@ class NeuralKernelHawkes(nn.Module):
             ),
         )
         self.log_mu = nn.Parameter(torch.tensor(-1.0, dtype=torch.float64))
-        self.log_k0 = nn.Parameter(torch.tensor(-1.0, dtype=torch.float64))
-        # softplus(alpha_raw) is the productivity exponent, so it can never go negative.
-        self.alpha_raw = nn.Parameter(torch.tensor(0.5, dtype=torch.float64))
+        # The productivity law is parameterised by (branching ratio, magnitude sensitivity), both
+        # through a sigmoid, so the fitted process is subcritical and ``alpha < beta`` by
+        # construction rather than by hope. ``k0`` is derived, not learned.
+        self.alpha_raw = nn.Parameter(torch.tensor(0.0, dtype=torch.float64))
+        self.branch_raw = nn.Parameter(torch.tensor(0.0, dtype=torch.float64))
         self.log_beta = nn.Parameter(torch.tensor(float(np.log(np.log(10.0))), dtype=torch.float64))
         n_out = config.n_time_basis + config.n_space_basis
         self.head = nn.Sequential(
@@ -278,13 +302,28 @@ class NeuralKernelHawkes(nn.Module):
         return torch.softmax(raw[:, :k], dim=-1), torch.softmax(raw[:, k : k + ell], dim=-1)
 
     @property
+    def beta(self) -> torch.Tensor:
+        """Gutenberg-Richter ``beta`` (= b ln 10)."""
+        return torch.exp(self.log_beta)
+
+    @property
     def alpha(self) -> torch.Tensor:
-        """Productivity exponent, constrained non-negative. Comparable to the ETAS ``a``."""
-        return torch.nn.functional.softplus(self.alpha_raw)
+        """Productivity exponent, in ``[0, max_alpha_fraction * beta)``. The ETAS ``a``."""
+        return self.beta * self.config.max_alpha_fraction * torch.sigmoid(self.alpha_raw)
+
+    @property
+    def branching_ratio(self) -> torch.Tensor:
+        """Expected direct offspring per event, integrated over the mark law. Always below 1."""
+        return self.config.max_branching_ratio * torch.sigmoid(self.branch_raw)
+
+    @property
+    def k0(self) -> torch.Tensor:
+        """Productivity at ``m = mc``, derived so the branching ratio comes out as parameterised."""
+        return self.branching_ratio * (self.beta - self.alpha) / self.beta
 
     def productivity(self, mw: torch.Tensor) -> torch.Tensor:
-        """Expected direct offspring of each event: ``exp(log_k0 + alpha (m - mc))``."""
-        return torch.exp(self.log_k0 + self.alpha * (mw - self.mc_tensor))
+        """Expected direct offspring of each event: ``k0 exp(alpha (m - mc))``."""
+        return self.k0 * torch.exp(self.alpha * (mw - self.mc_tensor))
 
     def set_mc(self, mc: float) -> None:
         self.register_buffer("mc_tensor", torch.tensor(float(mc), dtype=torch.float64))

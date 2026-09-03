@@ -67,7 +67,16 @@ DIAGNOSTICS_FILE = "diagnostics.json"
 WEIGHTS_FILE = "weights.json"
 
 # Scalar learned parameters that are meaningful on their own and worth publishing as numbers.
-SCALAR_KEYS: tuple[str, ...] = ("log_mu", "log_k0", "alpha", "alpha_raw", "log_beta", "beta")
+SCALAR_KEYS: tuple[str, ...] = (
+    "log_mu",
+    "k0",
+    "alpha",
+    "beta",
+    "log_beta",
+    "branching_ratio",
+    "alpha_raw",
+    "branch_raw",
+)
 # The trained weights enter the snapshot as eight exactly-representable 32-bit chunks of a
 # SHA-256 digest. ``FitResult.parameters`` is ``dict[str, float]``, so the digest cannot be stored
 # as text there; splitting it into 8-hex-digit pieces keeps it exact and reversible.
@@ -420,11 +429,13 @@ class NeuralTPPForecaster:
         with torch.no_grad():
             return {
                 "log_mu": float(net.log_mu.item()),
-                "log_k0": float(net.log_k0.item()),
+                "k0": float(net.k0.item()),
                 "alpha": float(net.alpha.item()),
-                "alpha_raw": float(net.alpha_raw.item()),
+                "beta": float(net.beta.item()),
                 "log_beta": float(net.log_beta.item()),
-                "beta": float(torch.exp(net.log_beta).item()),
+                "branching_ratio": float(net.branching_ratio.item()),
+                "alpha_raw": float(net.alpha_raw.item()),
+                "branch_raw": float(net.branch_raw.item()),
             }
 
     def _diagnostics(
@@ -689,12 +700,18 @@ def _fit_notes(converged: bool, reason: str, branching: float | None) -> str | N
     """The one sentence a reader of the fit record most needs, if there is one."""
     if not converged:
         return f"not converged ({reason}): fit is not usable"
-    if branching is None or branching >= 1.0:
+    if branching is None or branching >= 1.0:  # pragma: no cover - the parameterisation prevents it
         return (
             f"branching ratio {branching if branching is None else round(branching, 4)}: the "
             "fitted process is critical or supercritical, so its cascades do not die out on "
-            "their own and its forecasts are unstable. The fit converged and is reported, but it "
-            "is not a usable model of the process"
+            "their own and its forecasts are unstable. The parameterisation is supposed to make "
+            "this impossible; treat it as a bug, not a result"
+        )
+    if branching > 0.95:
+        return (
+            f"branching ratio {round(branching, 4)}: close to the parameterisation's ceiling, so "
+            "the fit is pressing against the subcriticality constraint and the productivity law "
+            "is only weakly identified"
         )
     return None
 
@@ -703,15 +720,15 @@ def _branching_ratio(net: NeuralKernelHawkes) -> float | None:
     """Expected direct offspring per event, integrated over the Gutenberg-Richter mark law.
 
     With productivity ``k0 exp(alpha (m - mc))`` and marks ``beta exp(-beta (m - mc))`` the
-    integral is ``k0 beta / (beta - alpha)`` for ``alpha < beta``, and diverges otherwise. A value
-    at or above 1 means a supercritical process: every event triggers at least one on average, the
-    cascade does not die out, and any forecast from it should be distrusted.
+    integral is ``k0 beta / (beta - alpha)`` for ``alpha < beta``, and diverges otherwise. The
+    model's parameterisation makes it exactly ``net.branching_ratio``; this function recomputes it
+    from the published scalars instead, so the constraint is *checked* rather than asserted.
     """
     with torch.no_grad():
-        k0 = float(torch.exp(net.log_k0).item())
+        k0 = float(net.k0.item())
         alpha = float(net.alpha.item())
-        beta = float(torch.exp(net.log_beta).item())
-    if alpha >= beta:
+        beta = float(net.beta.item())
+    if alpha >= beta:  # pragma: no cover - excluded by the parameterisation
         return None
     return k0 * beta / (beta - alpha)
 
