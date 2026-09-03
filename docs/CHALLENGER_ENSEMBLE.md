@@ -90,14 +90,167 @@ Per-window results are in `reports/challenger/<region>/schedule-<region>-challen
 
 ## 5. Results
 
-<!-- RESULTS:ENSEMBLE -->
+Read this section sceptically. The ensemble is the component of this work most likely to look good,
+and in one of the two regions it does beat the baseline by the protocol's own criteria. What
+follows is the evidence, the mechanism, and the checks that were run to try to make the result go
+away.
+
+**Headline: not promoted.** The ensemble meets both promotion conditions in `turkiye-eaf` and
+neither of them in `nepal-himalaya`. Protocol § 10 needs both conditions in at least two of the
+three test regions; one region is not two, and `california` was not run at all.
+
+### Pass rates, 30-day horizon, 55 windows per region
+
+| Region | Model | N | M | S | L | CL |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | ETAS baseline | 51/55 (0.93) | 21/22 (0.95) | 16/22 (0.73) | 17/22 (0.77) | 19/22 (0.86) |
+| `nepal-himalaya` | gridded (C1b) | 49/55 (0.89) | 21/22 (0.95) | 19/22 (0.86) | 13/22 (0.59) | 21/22 (0.95) |
+| `nepal-himalaya` | **ensemble** | 50/55 (0.91) | 21/22 (0.95) | 19/22 (0.86) | 15/22 (0.68) | 21/22 (0.95) |
+| `turkiye-eaf` | ETAS baseline | 50/55 (0.91) | 27/29 (0.93) | 20/29 (0.69) | 26/29 (0.90) | 25/29 (0.86) |
+| `turkiye-eaf` | gridded (C1b) | 49/55 (0.89) | 28/29 (0.97) | 21/29 (0.72) | 20/29 (0.69) | 23/29 (0.79) |
+| `turkiye-eaf` | **ensemble** | 54/55 (0.98) | 27/29 (0.93) | 25/29 (0.86) | 26/29 (0.90) | 27/29 (0.93) |
+
+### Paired comparison against ETAS, pooled over the schedule
+
+| Region | target events | information gain per event | 95 % interval | t | pooled W-test p | beats ETAS |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 66 | **-0.0789** | [-0.3461, +0.1883] | -0.590 | 0.791 | no |
+| `turkiye-eaf` | 217 | **+0.3354** | [+0.2671, +0.4037] | 9.680 | 2.99e-17 | yes |
+
+Per window, as pycsep computes it, the picture is much less decisive because most windows cannot
+decide the test at all: `nepal-himalaya` 1 win and 8 losses over the 9 decidable windows,
+`turkiye-eaf` 2 wins and 8 losses over 10, with the W-test winning no individual window in either
+region. The pooled test is the one the promotion rule's wording asks for; the per-window counts are
+here so the reader can see how thin each window is.
+
+### Fitted weights
+
+| Region | w_etas | w_gridded | floor_fraction | validation windows | validation target events | validation log-likelihood |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 0.41 | 0.59 | 1e-06 | 24 | **9** | -104.122 |
+| `turkiye-eaf` | 0.79 | 0.21 | 1e-06 | 24 | **27** | -235.704 |
+
+Nine target events decided that the challenger should carry the majority of the weight in
+`nepal-himalaya`. That is not enough evidence for a weight, and the region where the weight was
+fitted on the thinner evidence is the region where the ensemble then failed.
+
+### Promotion decision
+
+Protocol § 10, applied:
+
+- `turkiye-eaf`: condition 1 **met** — N 0.98 ≥ 0.91, M 0.93 = 0.93, S 0.86 ≥ 0.69, L 0.90 = 0.90,
+  over 55 consecutive windows. Condition 2 **met** — pooled information gain +0.335 per event with
+  a 95 % lower bound of +0.267; the pooled W-test agrees. Promotable in this region.
+- `nepal-himalaya`: condition 1 **not met** (N 0.91 < 0.93, L 0.68 < 0.77); condition 2 **not met**
+  (gain -0.079, interval spans zero). Not promotable here.
+- `california`: not run.
+
+**Condition 3 requires both conditions in at least two of the three regions. One of two regions
+passed. The ensemble is recorded as not promoted.**
+
+### What the ensemble is actually doing
+
+The gridded component is, in operation, a near-static smoothed climatology (see
+`CHALLENGER_GRIDDED.md` § 6). With a second component that barely moves, the log-linear pool is
+close to **tempering** the baseline: raising ETAS's rate field to the power `w_etas` and
+renormalising, with the climatology's spatial pattern blended in at weight `1 - w_etas`. Tempering
+flattens the dynamic range of a rate field, and blending in a smoothed-seismicity field broadens
+it spatially.
+
+In `turkiye-eaf`, every window where the ensemble and the baseline disagree on a test, and the
+direction:
+
+| Issue date | Targets | ETAS expected | Ensemble expected | Test flipped |
+|---|---|---|---|---|
+| 2022-07-30 | 1 | 0.43 | 0.43 | S: fail → pass |
+| 2023-02-25 | 12 | 25.16 | 10.79 | N and CL: fail → pass |
+| 2023-03-27 | 2 | 12.61 | 6.26 | N and S: fail → pass |
+| 2023-05-26 | 1 | 7.42 | 4.11 | N: fail → pass |
+| 2023-06-25 | 0 | 6.24 | 3.58 | N: fail → pass |
+| 2024-07-19 | 2 | 1.26 | 1.01 | S: fail → pass |
+| 2024-09-17 | 1 | 1.10 | 0.90 | CL: fail → pass |
+| 2025-02-14 | 1 | 0.92 | 0.78 | S: fail → pass |
+| 2026-05-10 | 2 | 0.80 | 0.70 | S: fail → pass |
+
+There is no Türkiye window in which the ensemble fails a test the baseline passes. The N-test flips
+are all in the months after the 2023 Kahramanmaraş doublet, where this ETAS fit over-forecasts the
+aftershock total by factors of two to six and the geometric shrinkage brings it back toward the
+observed count.
+
+`nepal-himalaya` shows the other side of the same coin: seven windows differ, and three of them go
+against the ensemble. Shrinking toward a low climatology helps when the baseline over-forecasts
+(2023-10-23, 2025-03-16, 2025-05-15: S and CL flip to pass) and hurts when the baseline was closer
+to right (2025-02-14: 6 observed against ETAS 2.36 and ensemble 0.88, N flips to fail; 2023-12-22
+and 2023-10-23: L flips to fail).
+
+So the Türkiye gain is a **calibration correction to this baseline fit on this schedule**, not new
+information about where or when earthquakes occur. It would be a mistake to read it as a deep
+model contributing skill: what is in the pool is a smoothed-seismicity climatology, and hybrids of
+ETAS with smoothed seismicity performing well is a long-standing CSEP finding rather than a
+discovery here.
+
+### Checks run to try to make the result go away
+
+**Is it the zero-rate floor?** No. Across both regions and all 283 target events, **zero** events
+fell in a cell-magnitude bin that either the ETAS floor or the ensemble's own floor had raised. In
+the schedule's dominant window (`turkiye-eaf` 2023-01-26, 160 target events) every one of the 160
+events sat in a cell where both components had a real rate, and the ensemble's rates there were on
+average 1.31 times ETAS's.
+
+**Would any diffuse second component do?** Mostly not. Refitting and rescoring the pool with the
+challenger's spatial field flattened to uniform — total and magnitude distribution unchanged, so
+the ablation is pure tempering — gives:
+
+| Region | w_etas | w_uniform | pooled gain per event | 95 % interval | ensemble's own gain |
+|---|---|---|---|---|---|
+| `nepal-himalaya` | 0.43 | 0.57 | -0.198 | [-0.460, +0.064] | -0.079 |
+| `turkiye-eaf` | 0.99 | 0.01 | +0.032 | [+0.028, +0.036] | +0.335 |
+
+In `turkiye-eaf` the uniform field is worth about a tenth of the real ensemble's gain, and the
+weight fitting on the validation block rejects it outright (`w_uniform = 0.01`). The spatial
+pattern of the smoothed climatology, not the pooling arithmetic, carries most of the gain.
+
+**Is it one sequence?** Partly, and the number is:
+
+| Region | total gain (nats) | largest window | its share | its targets | pooled gain per event without it |
+|---|---|---|---|---|---|
+| `nepal-himalaya` | -5.2 | 2025-02-14 | 1.21x | 6 | +0.019 [-0.236, +0.272] |
+| `turkiye-eaf` | +72.8 | 2023-01-26 | 0.59x | 160 | +0.528 [+0.357, +0.699] |
+
+The Kahramanmaraş window contributes 59 % of the Türkiye total. Removing it entirely *raises* the
+pooled gain per event rather than removing it, because the ensemble also wins in the aftershock
+windows through the count correction. So the Türkiye result is not one window — but it is one
+region, and that region's schedule is dominated by one sequence.
+
+**Are the target events independent?** No, and this is the weakest part of the evidence. The pooled
+Student-t interval treats 217 target events as independent when most of them belong to one
+aftershock sequence. The interval is therefore narrower than the evidence warrants and the p-value
+is not a p-value in any defensible sense; read the pooled test for the sign and rough size of the
+gain and nothing more. pycsep's own per-window paired test has the same problem at smaller scale,
+and it is the test the protocol names.
+
+**Is it the same targets?** Yes. The 55 scored windows have identical issue times and identical
+target counts to the published ETAS schedule in both regions. The baseline used five parameter
+snapshots over the schedule (four yearly refits); the challenger used one.
+
+**How does the honest gain compare with what leakage would buy?** The leaky ablation in
+`CHALLENGER_GRIDDED.md` § 6 buys 2.16 nats per event of apparent skill in `turkiye-eaf` — about six
+and a half times the ensemble's honest +0.335. That is the scale of the thing the leakage
+discipline is protecting against.
 
 ## 6. Limitations
 
-- **The weights rest on very little.** They are fitted on 24 windows containing a handful of
-  target events per region. The number of validation target events is reported next to every
-  fitted weight for that reason. A weight of 0.6 versus 0.4 on that evidence is not a strong
-  statement about which model is better.
+- **The weights rest on very little.** They are fitted on 24 windows containing 27 target events in
+  `turkiye-eaf` and **9** in `nepal-himalaya`. Nine events decided that the challenger should carry
+  0.59 of the weight in Nepal, and Nepal is where the ensemble then failed. A weight fitted on that
+  evidence is not a statement about which model is better.
+- **One region is not a result.** The ensemble met both promotion conditions in `turkiye-eaf` and
+  neither in `nepal-himalaya`, and the Türkiye schedule is dominated by one sequence. Two regions
+  disagreeing is the most likely single explanation of the Türkiye number, and the protocol's
+  two-of-three rule exists precisely so that one region cannot promote a model.
+- **The pooled test overstates its own confidence.** Its Student-t interval assumes independent
+  target events; most of Türkiye's 217 are one aftershock sequence. Read the sign and the rough
+  size, never the p-value.
 - **A geometric pool is intolerant of disagreement by construction.** Where one component says
   "almost nothing here" the pool says almost nothing, whatever the other says. That is the reason
   for the floor, and the floor is a choice, not a derivation.

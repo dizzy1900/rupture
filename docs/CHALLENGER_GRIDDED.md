@@ -140,7 +140,137 @@ Per-window results, pass rates and comparisons are in
 
 ## 6. Results
 
-<!-- RESULTS:GRIDDED -->
+**Headline: not promoted, in either region, on either condition.** The gridded challenger loses
+the N-test and the L-test to the baseline in both regions, and its pooled information gain against
+ETAS is negative in `nepal-himalaya` and indistinguishable from zero in `turkiye-eaf`. That is the
+expected outcome and it is reported here without softening.
+
+### Pass rates, 30-day horizon, 55 windows per region
+
+| Region | Model | N | M | S | L | CL |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | ETAS baseline | 51/55 (0.93) | 21/22 (0.95) | 16/22 (0.73) | 17/22 (0.77) | 19/22 (0.86) |
+| `nepal-himalaya` | **gridded (C1b)** | 49/55 (0.89) | 21/22 (0.95) | 19/22 (0.86) | 13/22 (0.59) | 21/22 (0.95) |
+| `turkiye-eaf` | ETAS baseline | 50/55 (0.91) | 27/29 (0.93) | 20/29 (0.69) | 26/29 (0.90) | 25/29 (0.86) |
+| `turkiye-eaf` | **gridded (C1b)** | 49/55 (0.89) | 28/29 (0.97) | 21/29 (0.72) | 20/29 (0.69) | 23/29 (0.79) |
+
+The N-test denominator is every evaluated window; M, S, L and CL are decided only where the window
+held at least one target event (protocol § 5). The ETAS rows are the published baseline
+(`docs/BASELINE_RESULTS.md`), not a re-run.
+
+The shape is consistent across both regions: the challenger **wins the spatial test** — a smoothed
+historical field is a better guess at where the next month's events fall than a smoothed ETAS
+background — and **loses the likelihood test**, because it has no way to raise the rate where a
+sequence is already running.
+
+### Paired comparison against ETAS
+
+Per window, as pycsep computes it:
+
+| Region | windows the T-test could decide | T-test wins | losses | windows with positive gain | W-test wins |
+|---|---|---|---|---|---|
+| `nepal-himalaya` | 9 | 0 | 9 | 3/22 | 0/22 |
+| `turkiye-eaf` | 10 | 1 | 9 | 5/29 | 0/29 |
+
+A 30-day window with one or two target events cannot decide a paired t-test at all, which is why
+only 9 and 10 of 55 windows are decidable. Pooled over the whole schedule (see
+`§ 5` for how, and read the interval with the caveat there):
+
+| Region | target events | information gain per event | 95 % interval | t | pooled W-test p | beats ETAS |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 66 | **-0.6215** | [-1.1049, -0.1382] | -2.568 | 0.108 | no |
+| `turkiye-eaf` | 217 | **+0.0587** | [-0.3011, +0.4185] | 0.322 | 0.020 | no |
+
+The Türkiye figure is worth taking apart, because a naive reading of "+0.06" is that the challenger
+is level with the baseline. It is not. The whole of that number, and more, comes from the single
+window containing the 2023 Kahramanmaraş doublet, where a diffuse climatology beats a baseline
+that had assigned a very low rate to the cells the sequence started in. Remove that one window and
+the challenger's gain is **-1.19 per event** [-2.07, -0.31]. In the aftershock windows that
+follow, where ETAS is doing the thing ETAS is for, the challenger loses heavily.
+
+| Region | total gain (nats) | largest window | its share | its targets | pooled gain per event without it |
+|---|---|---|---|---|---|
+| `nepal-himalaya` | -41.0 | 2025-01-15 | 0.40x | 4 | -0.395 [-0.822, +0.032] |
+| `turkiye-eaf` | +12.7 | 2023-01-26 | 6.32x | 160 | -1.190 [-2.065, -0.315] |
+
+### Promotion decision
+
+Protocol § 10, applied:
+
+- `nepal-himalaya`: condition 1 **not met** (N 0.89 < 0.93, L 0.59 < 0.77); condition 2 **not met**
+  (gain -0.62, upper bound below zero). Not promotable here.
+- `turkiye-eaf`: condition 1 **not met** (N 0.89 < 0.91, L 0.69 < 0.90); condition 2 **not met**
+  (interval spans zero). Not promotable here.
+- `california`: not run.
+
+**The gridded challenger is recorded as not promoted.** There is no route to promotion that this
+result leaves open.
+
+### What the fit actually produced
+
+| Region | frozen config | weights | trained on | inner validation | Mc | b | GAF trace in region |
+|---|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 6 frames of 30 d, 8 hidden, lr 3e-3, hash `86617c8cd1d4` | 5234, sha256 `8fc20071b7ab`, snapshot `e0bf8c78be79` | 206 windows, 558 target events | 37 windows, 28 events | 4.4 | 1.100 | 51 features, 2313 km |
+| `turkiye-eaf` | same config | 5234, sha256 `c8b4d877ac64`, snapshot `85f622aae6f7` | 206 windows, 175 target events | 37 windows, 71 events | 4.3 | 0.939 | 65 features, 2542 km |
+
+The GEM fault-density channel was available and non-zero in both regions.
+
+### The hyperparameter search, and what it says
+
+| Region | n_frames | frame days | hidden | lr | weights | epochs run | best epoch | validation NLL | untrained NLL | kept the climatology |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 6 | 30 | 8 | 3e-3 | 5234 | 21 | 5 | 7.90464 **(frozen)** | 7.93824 | no |
+| `nepal-himalaya` | 8 | 7.5 | 8 | 3e-3 | 5234 | 16 | 0 | 7.91826 | 7.93824 | no |
+| `nepal-himalaya` | 6 | 30 | 16 | 3e-4 | 16226 | 16 | 0 | 7.93578 | 7.93824 | no |
+| `nepal-himalaya` | 8 | 7.5 | 8 | 3e-4 | 5234 | 16 | 0 | 7.93654 | 7.93824 | no |
+| `turkiye-eaf` | 6 | 30 | 8 | 3e-3 | 5234 | 15 | -1 | 4.00049 **(frozen)** | 4.00049 | yes |
+| `turkiye-eaf` | 8 | 7.5 | 8 | 3e-3 | 5234 | 15 | -1 | 4.00049 | 4.00049 | yes |
+| `turkiye-eaf` | 6 | 30 | 16 | 3e-4 | 16226 | 15 | -1 | 4.00049 | 4.00049 | yes |
+| `turkiye-eaf` | 8 | 7.5 | 8 | 3e-4 | 5234 | 15 | -1 | 4.00049 | 4.00049 | yes |
+
+**This is the most informative table in the document.** In `turkiye-eaf`, every candidate's
+held-out likelihood was best *before any gradient step* and got monotonically worse from the first
+epoch onward, at every learning rate and every frame length tried, so early stopping kept the
+untrained network — whose zero head makes it exactly the smoothed historical rate. All four
+candidates therefore score identically and the tie is broken toward the smallest model with the
+shortest lookback. In `nepal-himalaya` training did help, by 0.4 % of the held-out
+negative log-likelihood, and the improvement did not survive contact with the test period.
+
+The mechanism is visible in the data. The two regions have opposite activity imbalances between
+the training block and the inner validation block that follows it: 0.85 target events per window
+rising to 1.92 in `turkiye-eaf`, and 2.71 falling to 0.76 in `nepal-himalaya` (the training block
+there contains the 2015 Gorkha sequence). A global calibration learned on either training block is
+wrong for the block after it by a factor of two to three before any spatial or temporal structure
+is considered, and a model with a few thousand parameters and a few hundred target events cannot
+pay for that with better structure. What Nepal's model learned on a quiet validation block then
+cost it the L-test over the test period.
+
+In operation the challenger is therefore a smoothed time-independent rate model with a
+Gutenberg-Richter magnitude distribution: its total expected count varies by under 8 % across the
+55 windows in both regions (0.419 to 0.453 in `nepal-himalaya`, 0.425 to 0.448 in `turkiye-eaf`).
+That is a respectable CSEP baseline in its own right — it wins the S-test in both regions — and it
+is not a time-dependent forecast.
+
+### The leaky ablation (ADR-0022 § 6) — not a result
+
+A gridded fit whose cutoff is the schedule end, so its training windows, its static covariates and
+its normalisation statistics all contain the windows it is then scored on, with the `fit_cutoff`
+rewritten so the guard that exists to stop this can be stepped over deliberately:
+
+| Region | target events | leaky log-likelihood | honest | ETAS | apparent gain per event from leaking |
+|---|---|---|---|---|---|
+| `nepal-himalaya` | 66 | -685.96 | -706.66 | -665.64 | **+0.314** |
+| `turkiye-eaf` | 217 | -1991.21 | -2459.99 | -2472.73 | **+2.160** |
+
+In `turkiye-eaf` leakage buys 2.16 nats per event of apparent skill — about six times the largest
+honest gain anything in this work achieved. That is the number to hold in mind when reading any
+challenger result, here or elsewhere, whose leakage discipline is not stated.
+
+### Cross-check
+
+The 55 scored windows have identical issue times and identical target counts to the published ETAS
+schedule in both regions, so the comparison is on exactly the same targets. The baseline used five
+parameter snapshots over the schedule (four yearly refits); the challenger used one.
 
 ## 7. Limitations
 
@@ -151,14 +281,25 @@ Per-window results, pass rates and comparisons are in
   protocol horizon is the trained one; a 1-day or 365-day forecast from this model is an
   extrapolation and is not scored here.
 - **No refits.** See § 4. The baseline refits yearly and the challenger does not.
-- **A static climatology with a small learned correction.** Because the head starts at zero and the
-  training signal is a few hundred target events, the fitted model stays close to the smoothed
-  historical rate. That is the right thing for the data volume and it is also the reason the model
-  cannot track an aftershock sequence the way ETAS does.
+- **The fitted model is a climatology.** This is the finding, not a caveat about it: in
+  `turkiye-eaf` no configuration improved on the untrained network's held-out likelihood, and in
+  `nepal-himalaya` the improvement was 0.4 % and did not survive the test period. The delivered
+  model is a smoothed time-independent rate with a Gutenberg-Richter magnitude distribution and it
+  cannot track an aftershock sequence. Anyone reading this as a deep-learning result should read it
+  as the opposite: on catalogues of this size, under a blocked time-forward protocol, the ConvLSTM
+  bought nothing.
+- **The climatological prior is a long-term average over a period of changing completeness.** It is
+  the count of `mw >= mc` events per cell divided by the number of frames the catalogue spans, from
+  1976 onward, and network coverage in the 1970s and 1980s is not that of the 2020s. The prior is
+  therefore biased low for recent decades, and it shows: summed over the 55 test windows the
+  challenger expects 23.6 events against 66 observed in `nepal-himalaya` and 23.6 against 217 in
+  `turkiye-eaf` (against 57 once the Kahramanmaraş window is set aside). The N-test still passes in
+  49 of 55 windows in both regions because most windows hold no target event at all, which is
+  itself a statement about how little power these windows have.
 - **Two regions, and one of those dominated by one sequence.** `turkiye-eaf`'s schedule contains
   the 2023 Kahramanmaraş doublet and its aftershocks; `nepal-himalaya` contains one moderate
-  sequence. Pass rates over 55 windows with 22 and 29 decided windows respectively are weak
-  evidence, as § 12 of the protocol says.
+  sequence. Pass rates over 55 windows of which only 22 (`nepal-himalaya`) and 29 (`turkiye-eaf`)
+  hold a target event at all are weak evidence, as § 12 of the protocol says.
 - **The fault-density covariate is coarse.** Trace length per cell says nothing about slip rate,
   dip, or which fault is loaded. GAF carries slip-type and quality attributes that this model does
   not use.

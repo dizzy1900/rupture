@@ -62,7 +62,29 @@ Both are argued in ADR-0032 and covered by unit tests.
 See `docs/CHALLENGER_ENSEMBLE.md` § 5 for the full tables, and
 `reports/challenger/<region>/schedule-<region>-challengers.json` for every window.
 
-<!-- CARD:ENSEMBLE -->
+**Not promoted.** Both promotion conditions are met in `turkiye-eaf` and neither in
+`nepal-himalaya`; protocol § 10 requires two of three regions, and `california` was not run.
+
+| Region | N | M | S | L | CL | pooled information gain per event vs ETAS | conditions met |
+|---|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 0.91 (ETAS 0.93) | 0.95 (0.95) | 0.86 (0.73) | 0.68 (0.77) | 0.95 (0.86) | **-0.08** [-0.35, +0.19] | neither |
+| `turkiye-eaf` | 0.98 (0.91) | 0.93 (0.93) | 0.86 (0.69) | 0.90 (0.90) | 0.93 (0.86) | **+0.34** [+0.27, +0.40] | both |
+
+Fitted weights: `nepal-himalaya` 0.41 ETAS / 0.59 gridded on **9** validation target events;
+`turkiye-eaf` 0.79 / 0.21 on **27**. The region whose weight rested on the thinner evidence is the
+region where the ensemble failed.
+
+**What the Türkiye gain is.** With a near-static second component the pool is close to tempering
+the baseline, and the flips are all post-mainshock windows where this ETAS fit over-forecasts the
+aftershock total by factors of two to six. It is a calibration correction to this baseline fit on
+this schedule, not new information about where or when earthquakes occur, and what is in the pool
+is a smoothed-seismicity climatology rather than anything the deep model learned.
+
+**Checks:** the zero-rate floor raised no cell any of the 283 target events fell in; flattening the
+challenger's spatial field to uniform drops the Türkiye gain from +0.335 to +0.032; removing the
+dominant window raises rather than removes the gain; the pooled Student-t interval assumes
+independent target events, which aftershocks are not, so read the sign and size and not the
+p-value.
 
 ## Leakage controls
 

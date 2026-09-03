@@ -63,7 +63,28 @@ is derived in part from the SHA-256 of the trained weights, so it changes whenev
 See `docs/CHALLENGER_GRIDDED.md` § 6 for the full tables, and
 `reports/challenger/<region>/schedule-<region>-challengers.json` for every window.
 
-<!-- CARD:GRIDDED -->
+**Not promoted.** Over 55 pseudo-prospective 30-day windows per region, against the published ETAS
+baseline on identical targets:
+
+| Region | N | M | S | L | CL | pooled information gain per event vs ETAS |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 0.89 (ETAS 0.93) | 0.95 (0.95) | 0.86 (0.73) | 0.59 (0.77) | 0.95 (0.86) | **-0.62** [-1.10, -0.14] |
+| `turkiye-eaf` | 0.89 (0.91) | 0.97 (0.93) | 0.72 (0.69) | 0.69 (0.90) | 0.79 (0.86) | **+0.06** [-0.30, +0.42] |
+
+Neither promotion condition is met in either region. The challenger wins the spatial test in both
+regions and loses the likelihood test in both; the Türkiye information gain is positive only
+because of the single window containing the 2023 Kahramanmaraş doublet, and is **-1.19** per event
+without it.
+
+**The fitted model is close to its climatological initialisation.** In `turkiye-eaf` every
+configuration's held-out likelihood was best before any gradient step, so early stopping kept the
+untrained network; in `nepal-himalaya` training improved the held-out likelihood by 0.4 % and that
+improvement did not survive the test period. The total expected count varies by under 8 % across
+the 55 windows. The ConvLSTM runs, is deterministic, and learned nothing that survived a blocked
+time-forward validation on this data.
+
+**Leaky ablation** (never a result): a fit that sees its own test windows buys +2.16 nats per event
+of apparent skill in `turkiye-eaf`, about six times the largest honest gain anywhere in this work.
 
 ## Leakage controls
 
