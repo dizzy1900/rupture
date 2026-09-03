@@ -11,6 +11,21 @@ from rupture.domain.catalog import CompletenessEstimate
 from rupture.domain.common import RuptureModel
 
 
+class MagnitudePolicy(StrEnum):
+    """How the homogenisation pipeline treats magnitude scales with no cited conversion to Mw.
+
+    ``STRICT``: only moment magnitudes (identity) and scales with a cited relation get an ``mw``;
+    everything else has ``mw=None`` and is excluded from magnitude-based analyses.
+    ``NETWORK_PREFERRED_AS_MW``: the network-preferred local/duration magnitude is *assumed*
+    Mw-equivalent and recorded as ``mw_conversion='assumed-equivalent:<type>'``. This follows CSEP
+    RELM practice for California, where testing used ANSS preferred magnitudes directly. It is an
+    approximation, adopted per region by ADR only (ADR-0019).
+    """
+
+    STRICT = "strict"
+    NETWORK_PREFERRED_AS_MW = "network-preferred-as-mw"
+
+
 class TectonicSetting(StrEnum):
     CONTINENTAL_COLLISION = "continental_collision"
     SUBDUCTION = "subduction"
@@ -44,6 +59,7 @@ class Region(RuptureModel):
     magnitude_bin_width: float = Field(default=0.1, gt=0.0)
     magnitude_max: float = Field(default=8.95)
     mc: CompletenessEstimate | None = None
+    magnitude_policy: MagnitudePolicy = MagnitudePolicy.STRICT
     description: str | None = None
     references: tuple[str, ...] = ()
 

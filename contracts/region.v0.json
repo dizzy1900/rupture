@@ -92,6 +92,15 @@
       "title": "CompletenessEstimate",
       "type": "object"
     },
+    "MagnitudePolicy": {
+      "description": "How the homogenisation pipeline treats magnitude scales with no cited conversion to Mw.\n\n``STRICT``: only moment magnitudes (identity) and scales with a cited relation get an ``mw``;\neverything else has ``mw=None`` and is excluded from magnitude-based analyses.\n``NETWORK_PREFERRED_AS_MW``: the network-preferred local/duration magnitude is *assumed*\nMw-equivalent and recorded as ``mw_conversion='assumed-equivalent:<type>'``. This follows CSEP\nRELM practice for California, where testing used ANSS preferred magnitudes directly. It is an\napproximation, adopted per region by ADR only (ADR-0019).",
+      "enum": [
+        "strict",
+        "network-preferred-as-mw"
+      ],
+      "title": "MagnitudePolicy",
+      "type": "string"
+    },
     "McMethod": {
       "description": "Completeness-magnitude estimators rupture reports.",
       "enum": [
@@ -192,6 +201,10 @@
         }
       ],
       "default": null
+    },
+    "magnitude_policy": {
+      "$ref": "#/$defs/MagnitudePolicy",
+      "default": "strict"
     },
     "description": {
       "anyOf": [

@@ -32,7 +32,7 @@ from rupture.domain.loss import (
     ResponseStatus,
     TriggerKind,
 )
-from rupture.domain.region import Region, TectonicSetting
+from rupture.domain.region import MagnitudePolicy, Region, TectonicSetting
 from rupture.domain.source_type import SourceTypeAssessment
 
 __all__ = [
@@ -57,6 +57,7 @@ __all__ = [
     "InterventionOutcome",
     "LossResult",
     "LossType",
+    "MagnitudePolicy",
     "MagnitudeRecord",
     "MagnitudeType",
     "McMethod",
