@@ -1,0 +1,87 @@
+{
+  "source": "gcmt",
+  "licence": "free for research with citation of Ekström, Nettles & Dziewoński (2012); see globalcmt.org",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with the adapter and re-record provenance",
+  "files": {
+    "apr15.ndk": {
+      "source_url": "https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/NEW_MONTHLY/2015/apr15.ndk",
+      "retrieved_at": "2026-09-03T10:08:26.378094+00:00",
+      "sha256": "e17dd546cfb3e566b543396f60888e673ed2a1aa8d7d8ace615564d29ebbe69c",
+      "size": 63180,
+      "n_events": 156,
+      "query": {
+        "year": 2015,
+        "month": 4,
+        "file": "NEW_MONTHLY/2015/apr15.ndk"
+      },
+      "notes": "whole GCMT monthly (final) NDK file for 2015-04"
+    },
+    "aug19.ndk": {
+      "source_url": "https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/NEW_MONTHLY/2019/aug19.ndk",
+      "retrieved_at": "2026-09-03T10:08:28.084305+00:00",
+      "sha256": "873d00a9e2334ecf9374c300351f2e4273ae4a24ebe585b2beeb7f96c9c5b7a6",
+      "size": 68850,
+      "n_events": 170,
+      "query": {
+        "year": 2019,
+        "month": 8,
+        "file": "NEW_MONTHLY/2019/aug19.ndk"
+      },
+      "notes": "whole GCMT monthly (final) NDK file for 2019-08"
+    },
+    "feb23.ndk": {
+      "source_url": "https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/NEW_MONTHLY/2023/feb23.ndk",
+      "retrieved_at": "2026-09-03T10:08:28.594221+00:00",
+      "sha256": "2ec7588633ebe8d6f198fc86324e3849bd1148b2bfaabc2d7d5fbfc1673c23f1",
+      "size": 75330,
+      "n_events": 186,
+      "query": {
+        "year": 2023,
+        "month": 2,
+        "file": "NEW_MONTHLY/2023/feb23.ndk"
+      },
+      "notes": "whole GCMT monthly (final) NDK file for 2023-02"
+    },
+    "jul19.ndk": {
+      "source_url": "https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/NEW_MONTHLY/2019/jul19.ndk",
+      "retrieved_at": "2026-09-03T10:08:27.601376+00:00",
+      "sha256": "86514f1dba420d69a3f0257757267942b08a6b80f8cdcd6cf7c935620ba5fbba",
+      "size": 83025,
+      "n_events": 205,
+      "query": {
+        "year": 2019,
+        "month": 7,
+        "file": "NEW_MONTHLY/2019/jul19.ndk"
+      },
+      "notes": "whole GCMT monthly (final) NDK file for 2019-07"
+    },
+    "mar23.ndk": {
+      "source_url": "https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/NEW_MONTHLY/2023/mar23.ndk",
+      "retrieved_at": "2026-09-03T10:08:29.087320+00:00",
+      "sha256": "d3fce9a711fbfdd3266dae832151a508ea17a9a3055b61e8fda79c4d094d4d2d",
+      "size": 84645,
+      "n_events": 209,
+      "query": {
+        "year": 2023,
+        "month": 3,
+        "file": "NEW_MONTHLY/2023/mar23.ndk"
+      },
+      "notes": "whole GCMT monthly (final) NDK file for 2023-03"
+    },
+    "may15.ndk": {
+      "source_url": "https://www.ldeo.columbia.edu/~gcmt/projects/CMT/catalog/NEW_MONTHLY/2015/may15.ndk",
+      "retrieved_at": "2026-09-03T10:08:26.956501+00:00",
+      "sha256": "3cc2e136bf1744867418d56ac6cecac50624fcd0fefd72d324f9ea5752f03d4c",
+      "size": 80595,
+      "n_events": 199,
+      "query": {
+        "year": 2015,
+        "month": 5,
+        "file": "NEW_MONTHLY/2015/may15.ndk"
+      },
+      "notes": "whole GCMT monthly (final) NDK file for 2015-05"
+    }
+  },
+  "notes": "whole monthly NDK files as published under NEW_MONTHLY/<yyyy>/"
+}

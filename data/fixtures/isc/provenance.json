@@ -1,0 +1,66 @@
+{
+  "source": "isc",
+  "licence": "ISC data policy: free for research with attribution to the ISC (www.isc.ac.uk)",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with the adapter and re-record provenance",
+  "files": {
+    "gorkha-2015-7d-m4.txt": {
+      "source_url": "https://www.isc.ac.uk/fdsnws/event/1/query?format=text&starttime=2015-04-25T00%3A00%3A00&endtime=2015-05-02T00%3A00%3A00&minmagnitude=4&minlongitude=80&maxlongitude=89&minlatitude=26&maxlatitude=31",
+      "retrieved_at": "2026-09-03T10:08:15.702580+00:00",
+      "sha256": "d65c8285a35fe39787b1a23816e69bcba9fab774557d43e7e88e1211d7ed8153",
+      "size": 19511,
+      "n_events": 168,
+      "query": {
+        "starttime": "2015-04-25T00:00:00",
+        "endtime": "2015-05-02T00:00:00",
+        "minmagnitude": 4.0,
+        "bbox": {
+          "min_longitude": 80.0,
+          "min_latitude": 26.0,
+          "max_longitude": 89.0,
+          "max_latitude": 31.0
+        }
+      },
+      "notes": "2015 Gorkha sequence, first 7 days"
+    },
+    "kahramanmaras-2023-7d-m4.txt": {
+      "source_url": "https://www.isc.ac.uk/fdsnws/event/1/query?format=text&starttime=2023-02-06T00%3A00%3A00&endtime=2023-02-13T00%3A00%3A00&minmagnitude=4&minlongitude=35&maxlongitude=42&minlatitude=35.5&maxlatitude=40",
+      "retrieved_at": "2026-09-03T10:08:22.595084+00:00",
+      "sha256": "887c595038cb49e738ea80b29dfdbd76db572782253eb20ebb912638766fb52b",
+      "size": 43597,
+      "n_events": 379,
+      "query": {
+        "starttime": "2023-02-06T00:00:00",
+        "endtime": "2023-02-13T00:00:00",
+        "minmagnitude": 4.0,
+        "bbox": {
+          "min_longitude": 35.0,
+          "min_latitude": 35.5,
+          "max_longitude": 42.0,
+          "max_latitude": 40.0
+        }
+      },
+      "notes": "2023 Kahramanmaras doublet, first 7 days"
+    },
+    "ridgecrest-2019-7d-m3.5.txt": {
+      "source_url": "https://www.isc.ac.uk/fdsnws/event/1/query?format=text&starttime=2019-07-04T00%3A00%3A00&endtime=2019-07-11T00%3A00%3A00&minmagnitude=3.5&minlongitude=-122&maxlongitude=-114&minlatitude=32&maxlatitude=37.5",
+      "retrieved_at": "2026-09-03T10:08:25.931318+00:00",
+      "sha256": "9f38d32d8d07bfa83de6c8e7bb865750ed90ebfcf3cdbf32f75208967008347d",
+      "size": 30024,
+      "n_events": 232,
+      "query": {
+        "starttime": "2019-07-04T00:00:00",
+        "endtime": "2019-07-11T00:00:00",
+        "minmagnitude": 3.5,
+        "bbox": {
+          "min_longitude": -122.0,
+          "min_latitude": 32.0,
+          "max_longitude": -114.0,
+          "max_latitude": 37.5
+        }
+      },
+      "notes": "2019 Ridgecrest sequence, first 7 days"
+    }
+  },
+  "notes": "byte-exact ISC FDSN text responses (reviewed bulletin)"
+}

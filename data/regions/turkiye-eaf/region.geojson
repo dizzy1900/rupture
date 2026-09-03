@@ -1,0 +1,73 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          35.5,
+          36.6
+        ],
+        [
+          36.3,
+          36.0
+        ],
+        [
+          37.5,
+          36.0
+        ],
+        [
+          39.0,
+          36.6
+        ],
+        [
+          41.5,
+          38.4
+        ],
+        [
+          41.5,
+          39.5
+        ],
+        [
+          38.8,
+          39.5
+        ],
+        [
+          35.5,
+          38.0
+        ],
+        [
+          35.5,
+          36.6
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "id": "turkiye-eaf",
+    "name": "Türkiye, East Anatolian Fault corridor",
+    "depth_min_km": 0.0,
+    "depth_max_km": 50.0,
+    "tectonic_setting": "transform",
+    "cell_size_deg": 0.1,
+    "target_min_magnitude": 4.0,
+    "magnitude_bin_width": 0.1,
+    "magnitude_max": 8.95,
+    "mc": {
+      "mc": 4.3,
+      "method": "maximum_curvature",
+      "b_value": 1.025151435496416,
+      "b_value_uncertainty": 0.031246769964284188,
+      "n_events": 915,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T10:36:41.758679Z",
+      "correction": 0.2,
+      "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE"
+    },
+    "description": "Corridor defined by rupture, not an official region: an octagon along the left-lateral East Anatolian Fault from the Amanos/Hatay segment near 36 E, 36 N to the Karliova junction near 41 E, 39.3 N, about 150 km wide. Includes the 2023 Kahramanmaras doublet.",
+    "references": [
+      "Duman & Emre 2013, Geol. Soc. London Spec. Publ. 372 (EAF segmentation)"
+    ]
+  }
+}

@@ -22,5 +22,6 @@ Consequences / Alternatives considered. All dates UTC.
 | [0014](0014-serac-coordination.md) | Coordination with the sibling `serac` by shared schema files | accepted |
 | [0015](0015-pseudo-prospective-evaluation.md) | Pseudo-prospective evaluation with a hard 2022-01-01 cutoff | accepted |
 | [0016](0016-deployment-docker-image-and-job-manifests.md) | Deployment unit is a plain Docker image; portable job manifests | accepted |
+| [0017](0017-catalogue-homogenisation-rules.md) | Catalogue homogenisation rules: precedence, association windows, magnitude conversions | accepted |
 | [0018](0018-etas-issuance-without-refit.md) | Issuing ETAS forecasts from a stored fit without refitting; expected counts analytic where the model allows | accepted |
 | [0030](0030-openquake-runner-design.md) | OpenQuake runner: docker CLI via subprocess, demo-first validation, skip semantics | accepted |
