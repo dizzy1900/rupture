@@ -32,6 +32,14 @@ jobs:
         run: make validate-language
       - name: Contract drift
         run: make schema-check
+      # The brief's acceptance criterion is that a fresh clone validates offline, so CI runs the
+      # data gates too: they read only committed fixtures, never data/catalogs/ or baselines/.
+      - name: Catalogue gate
+        run: make validate-catalog
+      - name: ETAS gate
+        run: make validate-etas
+      - name: Evaluation gate (incl. the negative leakage tests)
+        run: make validate-eval
 
   hazard-integration:
     name: OpenQuake demo in pinned Docker image

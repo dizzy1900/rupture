@@ -14,7 +14,7 @@ recorded, whatever it was).
 
 | Component | Maturity | What was actually run |
 |---|---|---|
-| Repository, CI, tooling | validated | `uv`, ruff, `mypy --strict`, 234 offline tests, import-linter; CI green on every push to `main`. The CI `offline` job runs lint, typecheck, tests, `validate-language` and `schema-check`; the catalogue, ETAS and evaluation gates are run locally and on a fresh clone, not in CI |
+| Repository, CI, tooling | validated | `uv`, ruff, `mypy --strict`, 234 offline tests, import-linter; CI green on every push to `main`. The CI `offline` job runs lint, typecheck, tests and the catalogue, ETAS, evaluation, language and contract gates on every push; only `validate-hazard` is separate (it needs the container) |
 | Governance docs (CLAUDE, ARCHITECTURE, EVALUATION_PROTOCOL, GLOSSARY, DATA_SOURCES, CREDENTIALS, HAZARD, DEPLOYMENT, CATALOG_BUILD, ETAS_BASELINE, SCHEDULER, BASELINE_RESULTS, 20 ADRs) | validated | the evaluation protocol was written and committed before any model in this repository was fitted |
 | Language gate | validated | `make validate-language` passes over the whole tree; a seeded violation fails it (test) |
 | Domain models and `contracts/*.v0.json` (11 schemas) | validated | drift-checked in CI; example payloads round-trip; `rupture underwriting-check` validates an `AvoidedLossRequest` then exits 2 "not implemented: Prompt 2" |
