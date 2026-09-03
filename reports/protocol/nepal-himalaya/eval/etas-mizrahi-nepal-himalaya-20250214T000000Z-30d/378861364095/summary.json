@@ -1,0 +1,74 @@
+{
+  "evaluator_version": "pycsep-0.8.0",
+  "forecast_id": "etas-mizrahi-nepal-himalaya-20250214T000000Z-30d",
+  "issue_time": "2025-02-14T00:00:00+00:00",
+  "model_id": "etas-mizrahi",
+  "note": "basemap and coastlines omitted: they need network downloads; rupture does not predict earthquakes.",
+  "plots": [
+    "n-test.png",
+    "m-test.png",
+    "m-test-distribution.png",
+    "s-test.png",
+    "s-test-distribution.png",
+    "l-test.png",
+    "l-test-distribution.png",
+    "cl-test.png",
+    "cl-test-distribution.png",
+    "expected-counts-map.png"
+  ],
+  "results": [
+    {
+      "n_target_events": 6,
+      "p_value": null,
+      "passed": true,
+      "quantile": null,
+      "quantile_high": 0.033515783128519105,
+      "quantile_low": 0.9892620869457224,
+      "statistic": 6.0,
+      "test": "N"
+    },
+    {
+      "n_target_events": 6,
+      "p_value": null,
+      "passed": true,
+      "quantile": 0.845,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -8.994455951835716,
+      "test": "M"
+    },
+    {
+      "n_target_events": 6,
+      "p_value": null,
+      "passed": true,
+      "quantile": 0.61,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -26.709316227584296,
+      "test": "S"
+    },
+    {
+      "n_target_events": 6,
+      "p_value": null,
+      "passed": false,
+      "quantile": 0.037,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -40.615840954066805,
+      "test": "L"
+    },
+    {
+      "n_target_events": 6,
+      "p_value": null,
+      "passed": true,
+      "quantile": 0.78,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -40.615840954066805,
+      "test": "CL"
+    }
+  ],
+  "skipped": [],
+  "total_expected": 2.3634505791380445,
+  "window_end": "2025-03-16T00:00:00+00:00"
+}

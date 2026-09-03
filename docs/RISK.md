@@ -99,13 +99,18 @@ stored under `src/rupture/adapters/groundmotion/data/` with a `provenance.json`.
 the architect:** oq-engine is AGPL-3.0-or-later and rupture is Apache-2.0. The extracted values are
 numeric coefficients first published in the journal articles (Boore et al. 2014,
 doi:10.1193/070113EQS184M; Abrahamson et al. 2016, doi:10.1193/051712EQS188MR); the machine-readable
-transcription is upstream's. rupture does not link or ship the engine. This is flagged, not
-resolved.
+transcription is upstream's. rupture does not link or ship the engine. **Resolved in
+ADR-0033**, which records the position, the attribution given, and the re-derivation path if it is
+ever challenged.
 
-**A note on paper titles.** The published titles of both GSIM papers contain a word the
-banned-language gate forbids, so titles are given here and in the code in abbreviated form and the
-DOI is the authoritative identifier. Restoring the verbatim titles would need two allowlist entries,
-which CLAUDE.md says requires an ADR.
+**Paper titles.** Both published titles contain a word the banned-language gate forbids. ADR-0034
+resolved this: quoting somebody else's published title verbatim is a citation, not a claim rupture
+makes, so the allowlist admits exactly those two title strings and the titles appear in full:
+
+- Boore, Stewart, Seyhan & Atkinson (2014), doi:10.1193/070113EQS184M:
+  "NGA-West2 Equations for Predicting PGA, PGV, and 5% Damped PSA for Shallow Crustal Earthquakes"
+- Abrahamson, Gregor & Addo (2016), doi:10.1193/051712EQS188MR:
+  "BC Hydro Ground Motion Prediction Equations for Subduction Earthquakes"
 
 ### Distances
 
@@ -172,11 +177,10 @@ GeoParquet point `geometry` or explicit `longitude`/`latitude`; optional `occupa
 than reduced to a centroid behind the user's back, and validation reports every bad row, not the
 first.
 
-> **For the architect:** the schema is not registered. `contracts/` and `domain/contracts.py` are
-> yours; registering it is one line —
-> `"exposure-import.v0.json": rupture.risk.exposure_schema.ExposureImport` in `CONTRACTS` — after
-> which `schema-check` will police it. Until then `json_schema()` renders it on demand and a test
-> asserts it is still unregistered, so this note cannot go stale silently.
+> **Registered.** The schema now lives in `rupture.domain.exposure_import` (a published contract
+> is domain, and `domain/contracts.py` may not import from `rupture.risk` without breaking the
+> hexagonal rule) and is exported as `contracts/exposure-import.v0.json`, policed by
+> `schema-check`. `rupture.risk.exposure_schema` re-exports it for the adapters.
 
 ---
 

@@ -1,0 +1,74 @@
+{
+  "evaluator_version": "pycsep-0.8.0",
+  "forecast_id": "etas-mizrahi-turkiye-eaf-20241017T000000Z-30d",
+  "issue_time": "2024-10-17T00:00:00+00:00",
+  "model_id": "etas-mizrahi",
+  "note": "basemap and coastlines omitted: they need network downloads; rupture does not predict earthquakes.",
+  "plots": [
+    "n-test.png",
+    "m-test.png",
+    "m-test-distribution.png",
+    "s-test.png",
+    "s-test-distribution.png",
+    "l-test.png",
+    "l-test-distribution.png",
+    "cl-test.png",
+    "cl-test-distribution.png",
+    "expected-counts-map.png"
+  ],
+  "results": [
+    {
+      "n_target_events": 3,
+      "p_value": null,
+      "passed": true,
+      "quantile": null,
+      "quantile_high": 0.4356990748895804,
+      "quantile_low": 0.7743779765421706,
+      "statistic": 3.0,
+      "test": "N"
+    },
+    {
+      "n_target_events": 3,
+      "p_value": null,
+      "passed": true,
+      "quantile": 0.339,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -7.676743449238835,
+      "test": "M"
+    },
+    {
+      "n_target_events": 3,
+      "p_value": null,
+      "passed": true,
+      "quantile": 0.054,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -21.426895344938945,
+      "test": "S"
+    },
+    {
+      "n_target_events": 3,
+      "p_value": null,
+      "passed": true,
+      "quantile": 0.212,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -28.770686780378934,
+      "test": "L"
+    },
+    {
+      "n_target_events": 3,
+      "p_value": null,
+      "passed": true,
+      "quantile": 0.085,
+      "quantile_high": null,
+      "quantile_low": null,
+      "statistic": -28.770686780378934,
+      "test": "CL"
+    }
+  ],
+  "skipped": [],
+  "total_expected": 2.4207346909932967,
+  "window_end": "2024-11-16T00:00:00+00:00"
+}

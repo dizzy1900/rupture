@@ -1,0 +1,8 @@
+{
+  "bundle_dir": "f59df5eb190b",
+  "forecast_id": "etas-mizrahi-nepal-himalaya-20221227T000000Z-30d",
+  "note": "pointer only; earlier results-<hash>.json files are kept (protocol section 9)",
+  "results": "results-f59df5eb190b.json",
+  "target_catalog_hash": "f59df5eb190b40793bb419ec91878fd6b0073e1140487340e3ab4b9b579c3339",
+  "written_at": "2026-09-03T18:20:09.968062+00:00"
+}

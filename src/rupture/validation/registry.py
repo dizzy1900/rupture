@@ -14,7 +14,16 @@ from typing import cast
 
 from rupture.validation.result import GateResult, GateStatus
 
-GATES: tuple[str, ...] = ("language", "schema", "catalog", "etas", "eval", "hazard", "cascade")
+GATES: tuple[str, ...] = (
+    "language",
+    "schema",
+    "catalog",
+    "etas",
+    "eval",
+    "hazard",
+    "cascade",
+    "risk",
+)
 
 PHASE_FOR_GATE: dict[str, str] = {
     "catalog": "Phase 2A (catalog-engineer)",

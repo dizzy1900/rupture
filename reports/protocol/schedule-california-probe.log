@@ -1,0 +1,8 @@
+schedule california: issued 1, scored 1, refits 0
+   N: 1/1 passed (rate 1.00)
+   M: 1/1 passed (rate 1.00)
+   S: 1/1 passed (rate 1.00)
+   L: 1/1 passed (rate 1.00)
+  CL: 1/1 passed (rate 1.00)
+wrote reports/protocol/california/eval/schedule-california-etas-mizrahi.json
+uv run rupture evaluate schedule --region california --model etas --from  --t  437.23s user 38.64s system 65% cpu 12:10.15 total

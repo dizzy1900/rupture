@@ -1,0 +1,122 @@
+{
+  "catalog_event_hash": "b7f7546e0f17dc78029230333d0af30f8bf7af3e24688561278f08f2979242b8",
+  "catalog_id": "california/1976-01-01T00:00:00+00:00/2026-08-01T00:00:00+00:00",
+  "catalogue_end": "2026-08-01T00:00:00+00:00",
+  "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
+  "generated_at": "2026-09-03T19:00:11.196698+00:00",
+  "leakage_checks": {
+    "snapshot_constant_between_refits": "asserted over the schedule",
+    "target_inside_window": "asserted per window",
+    "training_before_cutoff": "asserted per fit"
+  },
+  "model_id": "etas-mizrahi",
+  "model_version": "etas-3.0.0+097f08b",
+  "n_issued": 1,
+  "n_scored": 1,
+  "not_scored": [],
+  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes.",
+  "pass_rates": {
+    "CL": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 1,
+      "rate": 1.0,
+      "scored": 1
+    },
+    "L": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 1,
+      "rate": 1.0,
+      "scored": 1
+    },
+    "M": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 1,
+      "rate": 1.0,
+      "scored": 1
+    },
+    "N": {
+      "denominator_rule": "all evaluated windows",
+      "passed": 1,
+      "rate": 1.0,
+      "scored": 1
+    },
+    "S": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 1,
+      "rate": 1.0,
+      "scored": 1
+    }
+  },
+  "pycsep_version": "0.8.0",
+  "refits": [],
+  "region_id": "california",
+  "schedule": {
+    "alpha": 0.05,
+    "end": "2022-02-01T00:00:00+00:00",
+    "eval_simulations": 1000,
+    "horizon": "30d",
+    "n_simulations": 1000,
+    "refit_policy": "none",
+    "seed": 20220101,
+    "start": "2022-01-01T00:00:00+00:00",
+    "step": "30d",
+    "tests": [
+      "N",
+      "M",
+      "S",
+      "L",
+      "CL"
+    ]
+  },
+  "windows": [
+    {
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "etas-mizrahi-california-20220101T000000Z-30d",
+      "issue_time": "2022-01-01T00:00:00+00:00",
+      "n_excluded_no_mw": 1,
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 4,
+      "parameter_snapshot_hash": "72e2f58edb6005a3018a4cf175247240ec58cfb398b4cdaeceb16abab439c420",
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.352,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -37.67704925737907
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.7,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -37.67704925737907
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.34,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.535225298891634
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.8161176770772917,
+          "quantile_low": 0.33266091571613565,
+          "statistic": 4.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.44,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.324226867307882
+        }
+      },
+      "total_expected": 5.663195287920713,
+      "window_end": "2022-01-31T00:00:00+00:00"
+    }
+  ]
+}

@@ -1,0 +1,186 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/contracts/exposure-import.v0.json",
+  "$defs": {
+    "ExposureImportRow": {
+      "additionalProperties": false,
+      "description": "One asset as a consumer supplies it.",
+      "properties": {
+        "id": {
+          "description": "Unique within the file.",
+          "minLength": 1,
+          "title": "Id",
+          "type": "string"
+        },
+        "longitude": {
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Longitude",
+          "type": "number"
+        },
+        "latitude": {
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Latitude",
+          "type": "number"
+        },
+        "taxonomy": {
+          "description": "GEM taxonomy string or a class rupture's vulnerability model knows (see docs/RISK.md); an unknown class is reported, never silently given a default.",
+          "minLength": 1,
+          "title": "Taxonomy",
+          "type": "string"
+        },
+        "value": {
+          "description": "Replacement value in the portfolio's currency.",
+          "minimum": 0.0,
+          "title": "Value",
+          "type": "number"
+        },
+        "occupants": {
+          "anyOf": [
+            {
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Occupants"
+        },
+        "vs30": {
+          "anyOf": [
+            {
+              "exclusiveMinimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Site Vs30 in m/s. When absent the caller's default is used and recorded.",
+          "title": "Vs30"
+        },
+        "component": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "For a decomposed industrial asset: the HydropowerComponent this row is.",
+          "title": "Component"
+        },
+        "parent_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Set on a component row to name the asset it belongs to.",
+          "title": "Parent Id"
+        },
+        "source_refs": {
+          "default": [],
+          "description": "Where the value and the location came from.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Source Refs",
+          "type": "array"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Notes"
+        }
+      },
+      "required": [
+        "id",
+        "longitude",
+        "latitude",
+        "taxonomy",
+        "value"
+      ],
+      "title": "ExposureImportRow",
+      "type": "object"
+    }
+  },
+  "additionalProperties": false,
+  "description": "A whole imported portfolio, before it becomes an ``ExposurePortfolio``.",
+  "properties": {
+    "schema_version": {
+      "default": "0",
+      "title": "Schema Version",
+      "type": "string"
+    },
+    "portfolio_id": {
+      "minLength": 1,
+      "title": "Portfolio Id",
+      "type": "string"
+    },
+    "name": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "title": "Name"
+    },
+    "currency": {
+      "description": "ISO 4217.",
+      "pattern": "^[A-Z]{3}$",
+      "title": "Currency",
+      "type": "string"
+    },
+    "price_year": {
+      "maximum": 2100,
+      "minimum": 1900,
+      "title": "Price Year",
+      "type": "integer"
+    },
+    "valuation_basis": {
+      "description": "How the values were derived. A blank basis is refused: an unexplained replacement value is not usable in an underwriting figure.",
+      "minLength": 1,
+      "title": "Valuation Basis",
+      "type": "string"
+    },
+    "assets": {
+      "items": {
+        "$ref": "#/$defs/ExposureImportRow"
+      },
+      "minItems": 1,
+      "title": "Assets",
+      "type": "array"
+    }
+  },
+  "required": [
+    "portfolio_id",
+    "currency",
+    "price_year",
+    "valuation_basis",
+    "assets"
+  ],
+  "title": "ExposureImport",
+  "type": "object"
+}

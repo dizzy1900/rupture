@@ -1,0 +1,8 @@
+{
+  "bundle_dir": "279019bf6589",
+  "forecast_id": "etas-mizrahi-turkiye-eaf-20251012T000000Z-30d",
+  "note": "pointer only; earlier results-<hash>.json files are kept (protocol section 9)",
+  "results": "results-279019bf6589.json",
+  "target_catalog_hash": "279019bf6589cfc4fde09644bb6fc82712e638d8d843d442c791938fe9c63e8f",
+  "written_at": "2026-09-03T17:59:26.485912+00:00"
+}

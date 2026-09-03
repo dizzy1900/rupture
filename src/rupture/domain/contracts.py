@@ -19,6 +19,7 @@ from rupture.domain.cascade import CascadeExposure, GroundFailureField
 from rupture.domain.catalog import Catalog
 from rupture.domain.evaluation import EvaluationResult
 from rupture.domain.event import Event
+from rupture.domain.exposure_import import ExposureImport
 from rupture.domain.forecast import FitResult, ForecastGrid
 from rupture.domain.groundmotion import GroundMotionField
 from rupture.domain.hazard import HazardCurveSet
@@ -68,6 +69,7 @@ CONTRACTS: dict[str, type[BaseModel]] = {
     "ground-failure-field.v0.json": GroundFailureField,
     "cascade-exposure.v0.json": CascadeExposure,
     "aftershock-forecast.v0.json": AftershockForecast,
+    "exposure-import.v0.json": ExposureImport,
     "source-type-assessment.v0.json": SourceTypeAssessment,
 }
 

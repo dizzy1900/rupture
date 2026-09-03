@@ -1,0 +1,8 @@
+{
+  "bundle_dir": "48883c08c8f9",
+  "forecast_id": "etas-mizrahi-california-20220101T000000Z-30d",
+  "note": "pointer only; earlier results-<hash>.json files are kept (protocol section 9)",
+  "results": "results-48883c08c8f9.json",
+  "target_catalog_hash": "48883c08c8f90abe50a9626c43e3732a725ecbf54af3a5aae797b39d6a09cf32",
+  "written_at": "2026-09-03T19:00:11.098964+00:00"
+}

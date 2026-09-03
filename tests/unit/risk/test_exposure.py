@@ -199,14 +199,18 @@ def test_duplicate_ids_are_refused() -> None:
         )
 
 
-def test_the_import_schema_is_exportable_json_schema() -> None:
-    """It is not registered in contracts/ yet (the architect's file), but it is renderable."""
+def test_the_import_schema_is_registered_and_exportable() -> None:
+    """Registered in contracts/ and rendered identically from either entry point.
+
+    This started life as the risk engineer's guard that the contract was *not* yet registered, so
+    the note asking the architect to register it could not go stale. It is registered now, so the
+    guard becomes its opposite: the published file and the module must not drift apart.
+    """
     schema = json_schema()
     jsonschema.Draft202012Validator.check_schema(schema)
     assert schema["$id"].endswith("exposure-import.v0.json")
-    assert "exposure-import.v0.json" not in contracts.CONTRACTS, (
-        "the contract is registered now: drop this assertion and the note in docs/RISK.md"
-    )
+    assert "exposure-import.v0.json" in contracts.CONTRACTS
+    assert contracts.drift(Path("contracts")) == [], "run `make schema-export`"
 
 
 def test_a_component_row_needs_a_parent() -> None:

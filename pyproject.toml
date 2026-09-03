@@ -127,16 +127,22 @@ filterwarnings = ["error::DeprecationWarning:rupture.*"]
 root_package = "rupture"
 
 [[tool.importlinter.contracts]]
-name = "domain is pure: imports nothing from adapters, pipelines, cli or validation"
+name = "domain is pure: imports nothing from any outer layer"
 type = "forbidden"
 source_modules = ["rupture.domain"]
-forbidden_modules = ["rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation"]
+forbidden_modules = [
+  "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
+  "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
+]
 
 [[tool.importlinter.contracts]]
 name = "ports import only domain"
 type = "forbidden"
 source_modules = ["rupture.ports"]
-forbidden_modules = ["rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation"]
+forbidden_modules = [
+  "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
+  "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
+]
 
 [[tool.importlinter.contracts]]
 name = "adapters do not import each other across families"

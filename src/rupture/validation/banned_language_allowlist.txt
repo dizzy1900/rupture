@@ -26,3 +26,9 @@ the deterministic phrasings
 Ground-motion prediction equation
 # The brief's first non-negotiable heading, quoted verbatim in CLAUDE.md.
 No prediction claims
+# Published paper titles, quoted verbatim, of works rupture cites (ADR-0034). A citation
+# attributes a statement to its author; it is not a claim in rupture's own voice.
+# Boore, Stewart, Seyhan & Atkinson (2014), Earthquake Spectra 30(3), 1057-1085.
+NGA-West2 Equations for Predicting PGA, PGV, and 5% Damped PSA for Shallow Crustal Earthquakes
+# Abrahamson, Gregor & Addo (2016), Earthquake Spectra 32(1), 23-44.
+BC Hydro Ground Motion Prediction Equations for Subduction Earthquakes
