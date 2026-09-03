@@ -30,3 +30,5 @@ Consequences / Alternatives considered. All dates UTC.
 | [0022](0022-leakage-engineering-for-learned-models.md) | Leakage engineering for learned models: causal features, blocked time-forward CV only, a labelled leaky ablation | accepted |
 | [0023](0023-tracker-adapters.md) | Local-filesystem tracking is the default; Weights & Biases is optional and never required | accepted |
 | [0030](0030-openquake-runner-design.md) | OpenQuake runner: docker CLI via subprocess, demo-first validation, skip semantics | accepted |
+| [0031](0031-gridded-spatio-temporal-challenger.md) | C1b is a small ConvLSTM over rasterised seismicity plus static covariates, added to a climatological log-rate | accepted |
+| [0032](0032-log-linear-ensemble.md) | The ensemble is a log-linear pool, weights fitted on a validation window, rates floored relatively | accepted |

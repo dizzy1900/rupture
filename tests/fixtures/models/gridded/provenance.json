@@ -1,0 +1,6 @@
+{
+  "contains_data": false,
+  "note": "Test-only region and configuration helpers for the gridded challenger. This directory holds no event data: every catalogue used by tests/unit/models comes from the committed real ComCat slice tests/fixtures/forecasting/comcat-california-2018-2019-m3.geojson through tests/fixtures/forecasting/loader.py, whose own provenance.json records the query, retrieval time, checksum and licence.",
+  "region": "gridded-test-box is the committed ComCat slice's own query box (-122 to -114 E, 32 to 37.5 N) on a coarse 0.2 degree lattice, defined by rupture for tests only. It is not one of the protocol regions and no published result uses it.",
+  "adapter_version": "tests.fixtures.models.gridded"
+}
