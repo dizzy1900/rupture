@@ -448,7 +448,14 @@ Committed under `reports/protocol/<region>/eval/` alongside the baseline's own s
 The fit itself is written to `baselines/ntpp/<region>/` (`fit_result.json`, `parameters.json`,
 `diagnostics.json`, `weights.json` as plain lists, plus `hyperparameters.json` — the frozen
 selection record) and archived per cutoff under `fits/<cutoff>/`, mirroring the ETAS layout.
-`baselines/` is DVC-tracked, not git-tracked.
+
+**One inconsistency for the architect to settle.** `.gitignore` excludes `/baselines/etas/`, so
+the ETAS fits are DVC-tracked and not in git. `/baselines/ntpp/` has no such line, so these fits
+*are* committed — 304 KB of JSON, no pickles, and the weights are plain lists. Either treat that
+as the better default and leave it, or add `/baselines/ntpp/` to `.gitignore` and `git rm --cached`
+them; `.gitignore` is a shared root file and was not this agent's to edit. Nothing in this document
+depends on the choice: every parameter it cites is printed here, and a fit is deterministic from
+the committed catalogue build and the frozen configuration.
 
 ## 10. Reproducing this
 
