@@ -72,3 +72,75 @@ stages:
       md5: 3c26cbea112e313492cf060833f9357d.dir
       size: 84011172
       nfiles: 3
+  fit_etas@nepal-himalaya:
+    cmd: uv run rupture forecast fit --model etas --region nepal-himalaya 
+      --cutoff 2022-01-01T00:00:00Z
+    deps:
+    - path: data/catalogs/nepal-himalaya
+      hash: md5
+      md5: 9d3d58bc8856e17c9d0fd4323ad9175b.dir
+      size: 2820767
+      nfiles: 3
+    - path: src/rupture/adapters/forecasting
+      hash: md5
+      md5: 5b5a8ae8f713020c8560c2fc8568f186.dir
+      size: 39766
+      nfiles: 4
+    - path: src/rupture/pipelines/fit_etas.py
+      hash: md5
+      md5: ea8f0c8245ecb118290072569f067891
+      size: 2075
+    outs:
+    - path: baselines/etas/nepal-himalaya
+      hash: md5
+      md5: 798b4f8cfa29f7ec2e55615bd05be513.dir
+      size: 9886
+      nfiles: 6
+  fit_etas@turkiye-eaf:
+    cmd: uv run rupture forecast fit --model etas --region turkiye-eaf --cutoff 
+      2022-01-01T00:00:00Z
+    deps:
+    - path: data/catalogs/turkiye-eaf
+      hash: md5
+      md5: 66c3699855f8b18172836d0128e68848.dir
+      size: 4892857
+      nfiles: 3
+    - path: src/rupture/adapters/forecasting
+      hash: md5
+      md5: 5b5a8ae8f713020c8560c2fc8568f186.dir
+      size: 39766
+      nfiles: 4
+    - path: src/rupture/pipelines/fit_etas.py
+      hash: md5
+      md5: ea8f0c8245ecb118290072569f067891
+      size: 2075
+    outs:
+    - path: baselines/etas/turkiye-eaf
+      hash: md5
+      md5: 726d4da04b53d79b08f26fceb9cf3248.dir
+      size: 9886
+      nfiles: 6
+  fit_etas@california:
+    cmd: uv run rupture forecast fit --model etas --region california --cutoff 
+      2022-01-01T00:00:00Z
+    deps:
+    - path: data/catalogs/california
+      hash: md5
+      md5: 3c26cbea112e313492cf060833f9357d.dir
+      size: 84011172
+      nfiles: 3
+    - path: src/rupture/adapters/forecasting
+      hash: md5
+      md5: 5b5a8ae8f713020c8560c2fc8568f186.dir
+      size: 39766
+      nfiles: 4
+    - path: src/rupture/pipelines/fit_etas.py
+      hash: md5
+      md5: ea8f0c8245ecb118290072569f067891
+      size: 2075
+    outs:
+    - path: baselines/etas/california
+      hash: md5
+      md5: 4b60d7ef2de56309e35773981d09be3c.dir
+      size: 9914
+      nfiles: 6
