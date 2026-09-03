@@ -200,7 +200,17 @@
           "type": "null"
         }
       ],
-      "default": null
+      "default": null,
+      "description": "Mc used for model fits (maximum curvature +0.2 by protocol)."
+    },
+    "mc_estimates": {
+      "default": [],
+      "description": "Every published Mc estimate (all methods) from the real build.",
+      "items": {
+        "$ref": "#/$defs/CompletenessEstimate"
+      },
+      "title": "Mc Estimates",
+      "type": "array"
     },
     "magnitude_policy": {
       "$ref": "#/$defs/MagnitudePolicy",

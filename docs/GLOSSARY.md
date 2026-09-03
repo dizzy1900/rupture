@@ -91,8 +91,8 @@ and its citation.
 | mww, mwc, mwb, mwr | Mw from W-phase, centroid moment tensor, body-wave or regional moment tensor inversion (USGS codes) | accepted as Mw, type retained |
 | mb | Short-period body-wave magnitude (saturates ≈ 6–6.5) | converted to Mw (Scordilis 2006; Di Giacomo et al. 2015 as the ISC-GEM option) |
 | Ms | Surface-wave magnitude (saturates ≈ 8) | converted to Mw (Scordilis 2006; Di Giacomo et al. 2015) |
-| ML | Local (Richter) magnitude | converted with a region-flagged relation; method reference stored on the event |
-| Md | Duration magnitude | converted with a region-flagged relation, or left as `mw_homogenised = null` if no relation is available |
+| ML | Local (Richter) magnitude | **not converted** (no cited relation adopted, ADR-0017): `mw = null`, `magnitude_unconvertible` logged. Exception: regions with `magnitude_policy = network-preferred-as-mw` (California, ADR-0019) record `mw = ML` with `mw_conversion = 'assumed-equivalent:ml'` |
+| Md | Duration magnitude | **not converted** (ADR-0017): `mw = null`, `magnitude_unconvertible` logged; same California exception as ML (ADR-0019) |
 
 `MagnitudeType` also carries `mlv` and `other` for scales outside this table. The conversion
 method reference is stored on every event as `mw_conversion` in the form

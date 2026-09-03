@@ -58,7 +58,14 @@ class Region(RuptureModel):
     target_min_magnitude: float = Field(ge=0.0, le=9.0)
     magnitude_bin_width: float = Field(default=0.1, gt=0.0)
     magnitude_max: float = Field(default=8.95)
-    mc: CompletenessEstimate | None = None
+    mc: CompletenessEstimate | None = Field(
+        default=None,
+        description="Mc used for model fits (maximum curvature +0.2 by protocol).",
+    )
+    mc_estimates: tuple[CompletenessEstimate, ...] = Field(
+        default=(),
+        description="Every published Mc estimate (all methods) from the real build.",
+    )
     magnitude_policy: MagnitudePolicy = MagnitudePolicy.STRICT
     description: str | None = None
     references: tuple[str, ...] = ()
