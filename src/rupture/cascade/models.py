@@ -60,7 +60,7 @@ class Evaluation:
 
     longitudes: FloatArray
     latitudes: FloatArray
-    linear_predictor: FloatArray
+    logit_score: FloatArray
     probability: FloatArray
     coverage: FloatArray
     masked: BoolArray
@@ -149,11 +149,7 @@ class LogisticGroundFailureModel:
         )
         slope = self.covariates.sample(Covariate.SLOPE_DEG, longitudes, latitudes).values
         static = self.covariates.static_term(spec, longitudes, latitudes)
-        linear = (
-            spec.intercept
-            + self.shaking_term(pgv, vs30_m_s, magnitude, slope)
-            + static.values
-        )
+        linear = spec.intercept + self.shaking_term(pgv, vs30_m_s, magnitude, slope) + static.values
         probability = 1.0 / (1.0 + np.exp(-linear))
 
         available: dict[Covariate, FloatArray | None] = {
@@ -177,7 +173,7 @@ class LogisticGroundFailureModel:
         return Evaluation(
             longitudes=np.asarray(longitudes, dtype=np.float64),
             latitudes=np.asarray(latitudes, dtype=np.float64),
-            linear_predictor=linear,
+            logit_score=linear,
             probability=probability,
             coverage=coverage,
             masked=masked,
@@ -314,9 +310,7 @@ class NowickiJessee2018(LogisticGroundFailureModel):
         covariates: CovariateSource | None = None,
         cell_size_deg: float = 1.0 / 60.0,
     ) -> None:
-        super().__init__(
-            NOWICKI_JESSEE_2018, covariates=covariates, cell_size_deg=cell_size_deg
-        )
+        super().__init__(NOWICKI_JESSEE_2018, covariates=covariates, cell_size_deg=cell_size_deg)
 
     def shaking_term(
         self,
@@ -359,7 +353,7 @@ class Zhu2017General(LogisticGroundFailureModel):
 
     def magnitude_scaling(self, magnitude: float) -> float:
         """Near-field saturation factor applied to PGV, exactly as the USGS code writes it."""
-        return 1.0 / (1.0 + ZHU_MAGNITUDE_SCALING_BASE ** (-2.0 * (magnitude - 6.0)))
+        return float(1.0 / (1.0 + ZHU_MAGNITUDE_SCALING_BASE ** (-2.0 * (magnitude - 6.0))))
 
     def shaking_term(
         self,
@@ -398,18 +392,24 @@ KIND_TO_MODEL: dict[CascadeKind, str] = {
 }
 
 
-def build(model_id: str, **kwargs: object) -> LogisticGroundFailureModel:
+ALIASES: dict[str, str] = {
+    "landslide": NOWICKI_JESSEE_2018.model_id,
+    "liquefaction": ZHU_2017_GENERAL.model_id,
+}
+
+
+def build(
+    model_id: str,
+    *,
+    covariates: CovariateSource | None = None,
+    cell_size_deg: float = 1.0 / 60.0,
+) -> LogisticGroundFailureModel:
     """Construct a model by id (``landslide``/``liquefaction`` aliases accepted)."""
-    alias = {"landslide": NOWICKI_JESSEE_2018.model_id, "liquefaction": ZHU_2017_GENERAL.model_id}
-    resolved = alias.get(model_id, model_id)
-    cls = MODEL_CLASSES.get(resolved)
-    if cls is None:
-        known = ", ".join(sorted({*MODEL_CLASSES, *alias}))
-        msg = f"unknown cascade model {model_id!r}; known: {known}"
-        raise KeyError(msg)
-    covariates = kwargs.get("covariates")
-    cell_size = kwargs.get("cell_size_deg", 1.0 / 60.0)
-    if covariates is not None and not isinstance(covariates, CovariateSource):
-        msg = "covariates must implement rupture.cascade.covariates.CovariateSource"
-        raise TypeError(msg)
-    return cls(covariates=covariates, cell_size_deg=float(cell_size))  # type: ignore[arg-type]
+    resolved = ALIASES.get(model_id, model_id)
+    if resolved == NOWICKI_JESSEE_2018.model_id:
+        return NowickiJessee2018(covariates=covariates, cell_size_deg=cell_size_deg)
+    if resolved == ZHU_2017_GENERAL.model_id:
+        return Zhu2017General(covariates=covariates, cell_size_deg=cell_size_deg)
+    known = ", ".join(sorted({*MODEL_CLASSES, *ALIASES}))
+    msg = f"unknown cascade model {model_id!r}; known: {known}"
+    raise KeyError(msg)

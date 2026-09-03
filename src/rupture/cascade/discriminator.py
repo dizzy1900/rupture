@@ -200,21 +200,21 @@ def apply_assessments(
     retag: dict[str, Reclassification] = {}
     for assessment in assessments:
         accounting.n_assessments_read += 1
-        event = by_key.get(assessment.event_id)
-        if event is None:
+        matched = by_key.get(assessment.event_id)
+        if matched is None:
             accounting.n_assessments_unmatched += 1
             accounting.unmatched_event_ids.append(assessment.event_id)
             continue
         accounting.n_assessments_matched += 1
         if abs(assessment.p_mass_movement - threshold) <= BORDERLINE_BAND:
-            accounting.borderline.append(event.id)
+            accounting.borderline.append(matched.id)
         if assessment.p_mass_movement < threshold:
             continue
-        if event.event_type is EventType.LANDSLIDE:
+        if matched.event_type is EventType.LANDSLIDE:
             continue  # already out of the tectonic set; counted under already_tagged
-        retag[event.id] = Reclassification(
-            event_id=event.id,
-            from_type=event.event_type,
+        retag[matched.id] = Reclassification(
+            event_id=matched.id,
+            from_type=matched.event_type,
             to_type=EventType.LANDSLIDE,
             p_mass_movement=assessment.p_mass_movement,
             classifier=f"{assessment.classifier_id}@{assessment.classifier_version}",
@@ -225,9 +225,7 @@ def apply_assessments(
     if not retag:
         return catalog, accounting
     events = tuple(
-        event.model_copy(update={"event_type": EventType.LANDSLIDE})
-        if event.id in retag
-        else event
+        event.model_copy(update={"event_type": EventType.LANDSLIDE}) if event.id in retag else event
         for event in catalog.events
     )
     updated = catalog.model_copy(
@@ -264,9 +262,7 @@ def apply_from_export(
     for candidate in (export_dir / subdirectory, export_dir):
         if candidate.is_dir() and any(candidate.glob("*.json")):
             assessments, paths = read_assessments(candidate)
-            return apply_assessments(
-                catalog, assessments, threshold=threshold, sources=paths
-            )
+            return apply_assessments(catalog, assessments, threshold=threshold, sources=paths)
     accounting = DiscriminatorAccounting(threshold=threshold)
     accounting.n_events = len(catalog.events)
     accounting.already_tagged = [

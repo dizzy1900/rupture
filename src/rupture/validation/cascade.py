@@ -139,8 +139,7 @@ def _parse_dict_literal(text: str, name: str) -> dict[str, float]:
         msg = f"{name} not found in the committed USGS reference implementation"
         raise ValueError(msg)
     return {
-        key: float(value)
-        for key, value in re.findall(rf'"(\w+)"\s*:\s*({_FLOAT})', match.group(1))
+        key: float(value) for key, value in re.findall(rf'"(\w+)"\s*:\s*({_FLOAT})', match.group(1))
     }
 
 
@@ -373,7 +372,9 @@ def run(repo_root: Path) -> GateResult:  # noqa: PLR0912, PLR0915
             ground_failure_field.model_dump(mode="json"),
             contracts.schema_for("ground-failure-field.v0.json"),
         )
-        findings.append("ground-failure field: validates against contracts/ground-failure-field.v0.json")
+        findings.append(
+            "ground-failure field: validates against contracts/ground-failure-field.v0.json"
+        )
         values = np.array([c.probability for c in ground_failure_field.cells], dtype=np.float64)
         if not np.all(np.isfinite(values)) or values.min() < 0.0 or values.max() > 1.0:
             findings.append(

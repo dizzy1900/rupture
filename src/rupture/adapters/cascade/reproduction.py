@@ -4,7 +4,7 @@ Three comparisons are run, and all three numbers are reported. They answer diffe
 and only the first two are evidence of anything.
 
 ``LINK`` — link-function and coverage round trip
-    Invert the published coverage raster to recover the linear predictor ``X``, feed ``X`` back
+    Invert the published coverage raster to recover the logit score ``X``, feed ``X`` back
     through rupture's coverage transform and masks, and compare. This isolates the parts of the
     published model rupture can check exactly: the logistic link, the published coverage
     polynomial (landslide) or saturating curve (liquefaction), the masks and the four-decimal
@@ -288,9 +288,7 @@ def reproduce(
             basis=basis,
         )
 
-    sourced = tuple(
-        c.value for c in (Covariate.PGV_CM_S, Covariate.PGA_G, Covariate.VS30_M_S)
-    )
+    sourced = tuple(c.value for c in (Covariate.PGV_CM_S, Covariate.PGA_G, Covariate.VS30_M_S))
     not_sourced = tuple(Covariate(t).value for t in model.spec.static_terms)
     notes = [
         "PGA, PGV and Vs30 come from the same published ShakeMap the USGS ground-failure "

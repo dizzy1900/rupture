@@ -13,7 +13,7 @@ records the absence, and no consumer can mistake the result for a fully-conditio
 Three sources exist:
 
 :class:`UnsourcedCovariates`
-    Nothing is available. The static part of the linear predictor is zero and is flagged.
+    Nothing is available. The static part of the logit score is zero and is flagged.
 :class:`TabulatedCovariates`
     Per-cell arrays supplied by the caller, with a provenance string. Used by tests and by
     anyone who does have the rasters.
@@ -52,7 +52,7 @@ class CovariateSample:
 
 @dataclass(frozen=True, slots=True)
 class StaticTerm:
-    """The non-shaking part of a logistic model's linear predictor, plus what it is worth.
+    """The non-shaking part of a logistic model's logit score, plus what it is worth.
 
     ``missing`` names every covariate that could not be sourced. When it is non-empty the term
     is a lower bound on the real one at best, and every downstream product says so.
@@ -83,7 +83,7 @@ class CovariateSource(Protocol):
 
     Two methods, because the models need both: ``sample`` for a single covariate the model uses
     on its own (slope, which appears in a mask and in an interaction term) and ``static_term``
-    for the assembled non-shaking part of the linear predictor.
+    for the assembled non-shaking part of the logit score.
     """
 
     source_id: str
@@ -95,7 +95,7 @@ class CovariateSource(Protocol):
     def static_term(
         self, spec: GroundFailureModelSpec, lons: FloatArray, lats: FloatArray
     ) -> StaticTerm:
-        """Assemble the non-shaking part of ``spec``'s linear predictor over these cells."""
+        """Assemble the non-shaking part of ``spec``'s logit score over these cells."""
         ...
 
 
@@ -110,7 +110,9 @@ class UnsourcedCovariates:
 
     source_id = "unsourced"
 
-    def __init__(self, reason: str = "no global covariate rasters are committed to rupture"):
+    def __init__(
+        self, reason: str = "no global covariate rasters are committed to rupture"
+    ) -> None:
         self.reason = reason
 
     def sample(self, covariate: Covariate, lons: FloatArray, lats: FloatArray) -> CovariateSample:
@@ -219,9 +221,7 @@ class PublishedStaticTerm:
     ) -> StaticTerm:
         del lats
         if self._values.shape != lons.shape:
-            msg = (
-                f"recovered static term has shape {self._values.shape}, expected {lons.shape}"
-            )
+            msg = f"recovered static term has shape {self._values.shape}, expected {lons.shape}"
             raise ValueError(msg)
         return StaticTerm(
             values=self._values,

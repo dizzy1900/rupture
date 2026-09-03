@@ -26,8 +26,7 @@ FIXTURE_DIR = Path("tests") / "fixtures" / "cascade" / "gorkha-2015"
 
 SHAKEMAP_VERSION = "1"
 SHAKEMAP_URL = (
-    "https://earthquake.usgs.gov/product/shakemap/us20002926/atlas/1594162031303/"
-    "download/grid.xml"
+    "https://earthquake.usgs.gov/product/shakemap/us20002926/atlas/1594162031303/download/grid.xml"
 )
 
 

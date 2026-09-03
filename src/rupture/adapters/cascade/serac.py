@@ -297,9 +297,7 @@ class SeracSlopeUnitSource:
                 msg = f"slope unit {record.get('id')!r} has no geometry"
                 raise ValueError(msg)
             lon, lat = _representative_point(geometry)
-            nearest = int(
-                np.argmin((site_lons - lon) ** 2 + (site_lats - lat) ** 2)
-            )
+            nearest = int(np.argmin((site_lons - lon) ** 2 + (site_lats - lat) ** 2))
             unit_pga = float(pga[nearest])
             slope = record.get("mean_slope_deg")
             glacier = _glacier_cover(record.get("glacier_cover"))
@@ -342,8 +340,7 @@ class SeracSlopeUnitSource:
             "settlements_below lists the settlements serac maps in this AOI's river corridor; "
             "serac's asset records carry no elevation, so 'below' here is corridor membership, "
             "not a verified elevation relation",
-            f"PGA sampled at each unit's representative point from ground-motion field "
-            f"{field.id}",
+            f"PGA sampled at each unit's representative point from ground-motion field {field.id}",
         ]
         if slope_unknown:
             notes.append(
@@ -363,7 +360,9 @@ class SeracSlopeUnitSource:
             pga_threshold_g=pga_threshold_g,
             units=tuple(units),
             slope_unit_source=inventory.source_id,
-            provenance=ModelProvenance.ASSUMED if inventory.is_fallback else ModelProvenance.PUBLISHED,
+            provenance=ModelProvenance.ASSUMED
+            if inventory.is_fallback
+            else ModelProvenance.PUBLISHED,
             confidence=ConfidenceTier.UNQUALIFIED if inventory.is_fallback else ConfidenceTier.LOW,
             computed_at=utc_now(),
             notes=" | ".join(notes),

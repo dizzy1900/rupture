@@ -57,14 +57,14 @@
       "notes": "Published Nowicki Jessee et al. (2018) output, areal coverage. The product file is named jessee_2017 (preprint year); the paper is 2018. Parent raster is 4455x3824 at 1/480 deg, EPSG:4326. The fixture takes every 8th cell in each direction inside the window (0.0166667 deg effective spacing); values and coordinates are the parent's, unmodified.",
       "n_rows": 15402
     },
-    "usgs_ground_failure_info.json": {
+    "usgs_ground_failure_info_preferred.json": {
       "source_url": "https://earthquake.usgs.gov/product/ground-failure/20002926/us/1597450486389/info.json",
       "retrieved_at": "2026-09-03T20:16:15+00:00",
-      "sha256": "d1124af4c4adaf4e694f58db9d6bd193fee9e8d3f80c96c77c10d94dbdb97969",
-      "size": 5867,
+      "sha256": "6b3eea10a451673eb93149d79fd66dfdc69108302f139860d9cac7f97d2332df",
+      "size": 5446,
       "parent_sha256": "d1124af4c4adaf4e694f58db9d6bd193fee9e8d3f80c96c77c10d94dbdb97969",
       "parent_size": 5867,
-      "notes": "Committed byte-for-byte. Records which models the product ran, their extents, the aggregate-hazard and population-exposure alert values, and the note that the unconsolidated-sediment lithology coefficient was changed to -1.36 from -3.22."
+      "notes": "Slice of the product's info.json: the Summary block and the two entries the product marks preferred (jessee_2017, zhu_2017_general), which are the two models rupture implements. The three non-preferred entries (nowicki_2014_global, godt_2008, zhu_2015) are dropped because rupture does not implement them; the parent sha256 below is of the full file. Records the alert values, extents, and the note that the unconsolidated-sediment lithology coefficient was changed to -1.36 from -3.22."
     }
   }
 }

@@ -122,14 +122,17 @@ def run(
 
 @app.command("exposure")
 def exposure(
+    *,
     aoi: Annotated[str, typer.Option("--aoi", help="serac AOI id, e.g. lhende-khola-trishuli.")],
     scenario: Annotated[str, typer.Option("--scenario", help="Scenario id.")] = gorkha.EVENT_ID,
     pga_threshold: Annotated[
         float, typer.Option("--pga-threshold", help="Screening threshold in g.")
     ] = DEFAULT_PGA_THRESHOLD_G,
     steep_slope_deg: Annotated[
-        float, typer.Option("--steep-slope-deg", help="Steepness screen, applied only where a "
-                            "unit carries a slope.")
+        float,
+        typer.Option(
+            "--steep-slope-deg", help="Steepness screen, applied only where a unit carries a slope."
+        ),
     ] = DEFAULT_STEEP_SLOPE_DEG,
     export_dir: Annotated[
         Path | None, typer.Option("--export-dir", help="serac export dir (else SERAC_EXPORT_DIR).")
@@ -137,7 +140,10 @@ def exposure(
     root: RootOpt = REPO_ROOT,
     out: OutOpt = None,
 ) -> None:
-    """Flag slope units shaken above a screening threshold. A threshold is not a failure criterion."""
+    """Flag slope units shaken above a screening threshold.
+
+    A threshold is a screening device, not a failure criterion.
+    """
     source = SeracSlopeUnitSource(export_dir=export_dir, repo_root=root)
     shakemap = gorkha.load_shakemap(root)
     try:

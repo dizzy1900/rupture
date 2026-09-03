@@ -64,7 +64,7 @@ is shaking. The USGS product takes it from a separate global raster; see ``docs/
 
 @dataclass(frozen=True, slots=True)
 class Clip:
-    """An inclusive clip applied to a covariate before it enters the linear predictor."""
+    """An inclusive clip applied to a covariate before it enters the logit score."""
 
     low: float
     high: float
@@ -87,7 +87,7 @@ class Mask:
 class GroundFailureModelSpec:
     """One published logistic ground-failure model, coefficients and all.
 
-    The linear predictor is ``X = intercept + sum_i coefficient_i * term_i``; the probability is
+    The logit score is ``X = intercept + sum_i coefficient_i * term_i``; the probability is
     ``P = 1 / (1 + exp(-X))``; the reported quantity is ``coverage(P)``, an areal fraction.
     """
 
@@ -240,9 +240,7 @@ ZHU_2017_GENERAL: Final[GroundFailureModelSpec] = GroundFailureModelSpec(
     shaking_terms=("log_pgv_magnitude_scaled", "log_vs30"),
     clips={
         Covariate.PGV_CM_S: Clip(0.0, 150.0, "cm/s", "gfail/models/zhu_2017.py CLIPS"),
-        Covariate.PRECIPITATION_MM: Clip(
-            0.0, 2500.0, "mm", "gfail/models/zhu_2017.py CLIPS"
-        ),
+        Covariate.PRECIPITATION_MM: Clip(0.0, 2500.0, "mm", "gfail/models/zhu_2017.py CLIPS"),
     },
     masks=(
         Mask(

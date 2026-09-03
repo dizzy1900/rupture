@@ -167,8 +167,9 @@ def read_grid_xml(
     names = re.findall(r'<grid_field index="\d+" name="(\w+)"', text)
     body = text.split("<grid_data>", 1)[1].split("</grid_data>", 1)[0].strip()
     table = np.fromstring(body, sep=" ").reshape(nlat * nlon, len(names))
-    event = dict(_ATTR_RE.findall(_EVENT_RE.search(text).group(1))) if _EVENT_RE.search(text) else {}
-    header = dict(_ATTR_RE.findall(text.split(">", 2)[1] if ">" in text else ""))
+    event_match = _EVENT_RE.search(text)
+    event = dict(_ATTR_RE.findall(event_match.group(1))) if event_match else {}
+    version_match = re.search(r'shakemap_version="([^"]*)"', text)
     grid = {name: table[:, i].reshape(nlat, nlon) for i, name in enumerate(names)}
     return ShakeMapGrid(
         longitudes=grid["LON"][0, :],
@@ -176,7 +177,7 @@ def read_grid_xml(
         bands={k: v for k, v in grid.items() if k in {"PGA", "PGV", "SVEL"}},
         event_id=event.get("event_id", path.stem),
         magnitude=float(event["magnitude"]) if "magnitude" in event else None,
-        shakemap_version=header.get("shakemap_version"),
+        shakemap_version=version_match.group(1) if version_match else None,
         source_url=source_url,
         source_sha256=source_sha256,
         notes=f"ShakeMap grid.xml, {nlon}x{nlat} cells",
