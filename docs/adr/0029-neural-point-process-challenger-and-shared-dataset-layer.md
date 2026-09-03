@@ -53,8 +53,8 @@ The conditional intensity is
 
 with the mark drawn from a Gutenberg-Richter law. `h_i` and `g_i` are convex mixtures over fixed
 Omori and power-law bases, and a small MLP maps each event's own magnitude and depth to the mixture
-weights. Productivity `A_i = exp(k0 + alpha (m_i - mc))` keeps the ETAS form with `alpha`
-constrained non-negative; the background `b` is a Gaussian kernel density over the training
+weights. Productivity `A_i = k0 exp(alpha (m_i - mc))` keeps the ETAS form, constrained
+subcritical (decision 3b); the background `b` is a Gaussian kernel density over the training
 epicentres.
 
 Three properties drove this shape over a recurrent or attention-based intensity:
@@ -68,10 +68,10 @@ Three properties drove this shape over a recurrent or attention-based intensity:
 - **It degenerates towards ETAS.** A negative result is then interpretable: it says the extra
   flexibility did not pay, not that the optimiser failed.
 
-An earlier version let the MLP add a bounded offset to productivity as well. On 147 scored training
-events that produced a productivity curve oscillating by a factor of fifty between neighbouring
-half-magnitude steps, and it made `alpha` non-identifiable, because the offset was itself a
-function of magnitude. Restricting the neural part to the kernel *shape* — a softmax over
+An earlier version let the MLP add a bounded offset to productivity as well. On a few hundred
+scored training events that produced a productivity curve oscillating by a factor of fifty between
+neighbouring half-magnitude steps, and it made `alpha` non-identifiable, because the offset was
+itself a function of magnitude. Restricting the neural part to the kernel *shape* — a softmax over
 densities, so any output is still a proper density — costs about 0.25 nats per event on the
 training likelihood and buys a model whose extrapolation to a magnitude larger than anything in
 training is bounded. Standardised features are additionally clipped, for the same reason.
