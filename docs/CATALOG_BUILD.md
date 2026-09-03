@@ -116,7 +116,7 @@ Online (the real builds; ComCat + ISC + GCMT, source magnitude floor = region ta
 for r in nepal-himalaya turkiye-eaf california; do
   uv run rupture catalog build --region $r --from 1976-01-01T00:00:00Z --to 2026-08-01T00:00:00Z \
       --sources comcat,isc,gcmt --update-region-mc
-  uv run dvc add data/catalogs/$r
+  uv run dvc commit -f build_catalog@$r   # dvc add refuses stage outputs; this updates dvc.lock
 done
 ```
 
