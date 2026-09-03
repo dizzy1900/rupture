@@ -470,6 +470,92 @@ def pooled_sensitivity(windows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def uniform_spatial_grid(grid: ForecastGrid) -> ForecastGrid:
+    """The same grid with its spatial field flattened: same total, same magnitude distribution."""
+    counts = grid.counts()
+    per_bin = counts.sum(axis=0)
+    n_cells = counts.shape[0]
+    flat = np.tile(per_bin / n_cells, (n_cells, 1))
+    return grid.model_copy(
+        update={
+            "id": grid.id + "-uniform",
+            "model_id": grid.model_id + "-uniform",
+            "expected_counts": tuple(tuple(float(v) for v in row) for row in flat),
+            "notes": "ABLATION: spatial field flattened to uniform, total and magnitudes kept",
+        }
+    )
+
+
+def uniform_component_ablation(
+    catalog: Catalog,
+    region: Region,
+    *,
+    validation_times: Sequence[datetime],
+    schedule: Sequence[datetime],
+    etas_validation: Any,
+    etas_component: Any,
+    gridded_val: GriddedChallenger,
+    gridded_test: GriddedChallenger,
+    evaluator: PyCSEPEvaluator,
+) -> dict[str, Any]:
+    """Would any diffuse second component do, or does the learned spatial field matter?
+
+    The ensemble's gain could be nothing more than *tempering* the baseline — raising its rate
+    field to a power below one and renormalising, which flattens its dynamic range. Pooling with a
+    spatially uniform field of the same total does exactly that and nothing else. This refits the
+    weights on the same validation block with the uniform field in place of the challenger, scores
+    the same schedule, and reports the pooled paired test, so the two can be read side by side.
+    Consistency tests are not re-run: the question here is the information gain, not a pass rate.
+    """
+    uniform_val = LogLinearEnsemble(
+        {
+            "etas": etas_validation,
+            "gridded": lambda h, t, hz: uniform_spatial_grid(gridded_val.forecast(h, t, hz)),
+        },
+        validation_issue_times=list(validation_times),
+        horizon=HORIZON,
+    )
+    fit = uniform_val.fit(catalog, region, TEST_CUTOFF)
+    weights = uniform_val.weights
+    assert weights is not None
+    uniform_test = LogLinearEnsemble(
+        {
+            "etas": etas_component,
+            "gridded": lambda h, t, hz: uniform_spatial_grid(gridded_test.forecast(h, t, hz)),
+        },
+        validation_issue_times=list(validation_times),
+        horizon=HORIZON,
+    )
+    uniform_test.load_weights(weights, fit)
+    rows: list[dict[str, Any]] = []
+    for t in schedule:
+        history = catalog.before(t)
+        grid = uniform_test.forecast(history, t, HORIZON)
+        benchmark = etas_component(history, t, HORIZON)
+        target = target_slice(catalog, grid, region)
+        rows.append(
+            {
+                "issue_time": t.isoformat(),
+                "n_target_events": int(observed_counts(target, grid).sum()),
+                "total_expected": grid.total_expected(),
+                "pooling": _pooling_terms(evaluator, grid, benchmark, target),
+            }
+        )
+    return {
+        "what": (
+            "the ensemble refitted and rescored with the challenger's spatial field flattened to "
+            "uniform; the total and the magnitude distribution are unchanged, so the only thing "
+            "removed is where the challenger put the rate"
+        ),
+        "weights": fit.parameters,
+        "pooled_paired_test": pooled_paired_test(rows),
+        "reading": (
+            "If this ablation matches the ensemble's own information gain, the gain is tempering "
+            "of the baseline rather than anything the challenger learned about place."
+        ),
+    }
+
+
 def promotion_decision(
     challenger: dict[str, Any],
     etas: dict[str, Any],
@@ -857,6 +943,17 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
             "rupture does not predict earthquakes."
         ),
     }
+    report["uniform_component_ablation"] = uniform_component_ablation(
+        catalog,
+        region,
+        validation_times=val_times,
+        schedule=schedule,
+        etas_validation=ensemble.components["etas"],
+        etas_component=etas_component,
+        gridded_val=gridded_val,
+        gridded_test=gridded_test,
+        evaluator=evaluator,
+    )
     if not skip_ablation:
         report["leaky_ablation"] = leaky_ablation(
             catalog,

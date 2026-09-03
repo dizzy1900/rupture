@@ -80,6 +80,12 @@ promotion decision uses; the per-window counts are reported alongside so the rea
 thin each window is. The W-test is pooled the same way (Wilcoxon signed-rank on the per-event
 log-rate differences, centred on `(N_A - N_B)/N`).
 
+An **ablation** runs alongside: the same pool refitted and rescored with the challenger's spatial
+field flattened to uniform (total and magnitude distribution unchanged). With a near-static second
+component a log-linear pool is close to *tempering* the baseline — raising its rate field to a
+power below one and renormalising — and the ablation is exactly that and nothing else, so the two
+numbers say how much of any gain is pooling arithmetic and how much is the challenger's field.
+
 Per-window results are in `reports/challenger/<region>/schedule-<region>-challengers.json`.
 
 ## 5. Results

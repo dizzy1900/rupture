@@ -55,6 +55,13 @@ by whichever component says "almost nothing here".
    restart. With two components this is exhaustive to 0.01.
 6. **Components must agree on cells and magnitude bins**; a mismatch is an error, never something
    the ensemble reconciles silently.
+7. **One ablation is run alongside every ensemble result: the same pool with the challenger's
+   spatial field flattened to uniform**, keeping its total and its magnitude distribution. With a
+   near-static second component a log-linear pool reduces to *tempering* the baseline — raising its
+   rate field to a power below one and renormalising — and tempering alone can improve a
+   badly-calibrated baseline without any model contributing information about place. The uniform
+   ablation is exactly tempering and nothing else, so the two numbers side by side say how much of
+   any gain is the pooling arithmetic and how much is the challenger.
 
 ## Consequences
 
@@ -72,6 +79,9 @@ by whichever component says "almost nothing here".
 
 ## Alternatives considered
 
+- **Reporting the ensemble's gain without the uniform ablation.** Rejected: a geometric pool with
+  a flat second component is a well-known variance-reduction trick, and a reader has no way to tell
+  it apart from a real contribution unless both are measured.
 - **A linear (arithmetic) pool.** Better behaved around zeros and needs no floor, but the brief
   asks for the log-linear form, and the log-linear form is the one that corresponds to combining
   log-likelihoods, which is what the CSEP tests score. Recorded here as the obvious fallback if
