@@ -418,6 +418,58 @@ def comparison_summary(windows: Sequence[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def pooled_sensitivity(windows: Sequence[dict[str, Any]]) -> dict[str, Any]:
+    """How much of the pooled result rests on one window.
+
+    A schedule dominated by a single sequence gives the pooled paired test the appearance of a
+    large sample when it is really one event and its aftershocks. This reports each window's
+    contribution to the total information gain and re-runs the pooled test with the largest
+    contributor removed. The Student-t interval assumes independent target events, which
+    aftershocks are not; this is the cheapest available check on how much that matters.
+    """
+    contributions: list[dict[str, Any]] = []
+    for w in windows:
+        pooling = w.get("pooling")
+        if not pooling:
+            continue
+        diff = np.asarray(pooling["log_rates"], dtype=np.float64) - np.asarray(
+            pooling["benchmark_log_rates"], dtype=np.float64
+        )
+        contributions.append(
+            {
+                "issue_time": w["issue_time"],
+                "n_target_events": int(w["n_target_events"]),
+                "sum_log_rate_difference": float(diff.sum()),
+                "forecast_difference": float(
+                    pooling["n_forecast"] - pooling["benchmark_n_forecast"]
+                ),
+                "contribution_to_total_gain": float(
+                    diff.sum() - (pooling["n_forecast"] - pooling["benchmark_n_forecast"])
+                ),
+            }
+        )
+    if not contributions:
+        return {"decided": False, "reason": "no compared windows"}
+    ranked = sorted(contributions, key=lambda c: -abs(c["contribution_to_total_gain"]))
+    largest = ranked[0]
+    total = sum(c["contribution_to_total_gain"] for c in contributions)
+    without = pooled_paired_test(windows, exclude=frozenset({largest["issue_time"]}))
+    return {
+        "total_gain": total,
+        "largest_contributor": largest,
+        "largest_contributor_share": (
+            largest["contribution_to_total_gain"] / total if total else None
+        ),
+        "top_windows": ranked[:5],
+        "pooled_test_without_largest_contributor": without,
+        "caveat": (
+            "Target events inside one aftershock sequence are not independent, so the pooled "
+            "Student-t interval is narrower than the evidence warrants. Read the interval as a "
+            "lower bound on the uncertainty, not an upper one."
+        ),
+    }
+
+
 def promotion_decision(
     challenger: dict[str, Any],
     etas: dict[str, Any],
@@ -472,7 +524,9 @@ def promotion_decision(
     }
 
 
-def pooled_paired_test(windows: Sequence[dict[str, Any]], *, alpha: float = 0.05) -> dict[str, Any]:
+def pooled_paired_test(
+    windows: Sequence[dict[str, Any]], *, alpha: float = 0.05, exclude: frozenset[str] = frozenset()
+) -> dict[str, Any]:
     """The paired T-test and W-test over the whole schedule, not one window at a time.
 
     The promotion rule (protocol section 10, condition 2) asks whether the challenger beats ETAS
@@ -491,7 +545,7 @@ def pooled_paired_test(windows: Sequence[dict[str, Any]], *, alpha: float = 0.05
     used = 0
     for w in windows:
         pooling = w.get("pooling")
-        if not pooling:
+        if not pooling or w["issue_time"] in exclude:
             continue
         used += 1
         n_a += float(pooling["n_forecast"])
@@ -501,6 +555,7 @@ def pooled_paired_test(windows: Sequence[dict[str, Any]], *, alpha: float = 0.05
     n_obs = len(log_a)
     base = {
         "windows_pooled": used,
+        "windows_excluded": sorted(exclude),
         "target_events": n_obs,
         "total_forecast": n_a,
         "benchmark_total_forecast": n_b,
@@ -532,7 +587,14 @@ def pooled_paired_test(windows: Sequence[dict[str, Any]], *, alpha: float = 0.05
     half = t_critical * std / float(np.sqrt(n_obs))
     p_value = float(2.0 * stats.t.sf(abs(t_statistic), df=n_obs - 1))
     median_value = (n_a - n_b) / n_obs
-    w_stat = stats.wilcoxon(diff - median_value, alternative="two-sided", zero_method="wilcox")
+    try:
+        w_p: float | None = float(
+            stats.wilcoxon(
+                diff - median_value, alternative="two-sided", zero_method="wilcox"
+            ).pvalue
+        )
+    except ValueError:  # every difference equals the median: the signed-rank test is undefined
+        w_p = None
     return {
         **base,
         "decided": True,
@@ -543,8 +605,10 @@ def pooled_paired_test(windows: Sequence[dict[str, Any]], *, alpha: float = 0.05
         "t_critical": t_critical,
         "p_value": p_value,
         "t_test_beats_benchmark": bool(information_gain - half > 0.0),
-        "w_test_p_value": float(w_stat.pvalue),
-        "w_test_beats_benchmark": bool(w_stat.pvalue < alpha and information_gain > 0.0),
+        "w_test_p_value": w_p,
+        "w_test_beats_benchmark": (
+            bool(w_p < alpha and information_gain > 0.0) if w_p is not None else None
+        ),
     }
 
 
@@ -737,6 +801,8 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
             "parameter_snapshot_hash": test_fit.parameter_snapshot_hash,
             "weights_sha256": test_fit.diagnostics["weights_sha256"],
             "n_weights": test_fit.diagnostics["n_weights"],
+            "n_cells": test_fit.diagnostics["n_cells"],
+            "n_magnitude_bins": test_fit.diagnostics["n_magnitude_bins"],
             "train_windows": test_fit.diagnostics["train_windows"],
             "validation_windows": test_fit.diagnostics["validation_windows"],
             "train_target_events": test_fit.diagnostics["train_target_events"],
@@ -761,6 +827,7 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
                 "comparison_vs_etas": comparison_summary(gridded_windows),
                 "pooled_information_gain": pooled_information_gain(gridded_windows),
                 "pooled_paired_test": pooled_paired_test(gridded_windows),
+                "pooled_sensitivity": pooled_sensitivity(gridded_windows),
                 "promotion": promotion_decision(
                     pass_rates(gridded_windows),
                     etas_published,
@@ -774,6 +841,7 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
                 "comparison_vs_etas": comparison_summary(ensemble_windows),
                 "pooled_information_gain": pooled_information_gain(ensemble_windows),
                 "pooled_paired_test": pooled_paired_test(ensemble_windows),
+                "pooled_sensitivity": pooled_sensitivity(ensemble_windows),
                 "promotion": promotion_decision(
                     pass_rates(ensemble_windows),
                     etas_published,

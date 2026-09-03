@@ -10,7 +10,7 @@ import numpy as np
 import pytest
 
 from rupture.adapters.forecasting.grid import build_lattice
-from rupture.domain import Catalog, Region
+from rupture.domain import Catalog, Region, TectonicSetting
 from rupture.models.challengers.gridded import (
     GriddedChallenger,
     GriddedConfig,
@@ -181,10 +181,7 @@ def test_missing_fault_data_is_recorded_not_invented(fitted: GriddedChallenger) 
 
 def test_fault_density_reads_the_committed_gem_fixture(tmp_path: Path) -> None:
     """The committed GAF subset covers the Nepal bbox, so a Nepal box gets a real density."""
-    from rupture.domain import Region as R
-    from rupture.domain import TectonicSetting
-
-    nepal_box = R(
+    nepal_box = Region(
         id="gaf-fixture-box",
         name="GAF fixture box (tests only)",
         polygon=((80.5, 27.0), (88.5, 27.0), (88.5, 30.0), (80.5, 30.0)),

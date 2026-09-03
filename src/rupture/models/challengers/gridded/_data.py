@@ -3,9 +3,14 @@
 ``rupture.models.data`` (dataset builders that raise on a post-cutoff event, strictly causal
 windows, blocked time-forward splits, train-only normalisation) is built on a sibling branch and
 does not exist in this worktree. The gridded challenger imports the four things it needs from
-here instead: this module binds each of them to the shared implementation **when it is
-importable**, and otherwise to a minimal local one that obeys exactly the same rules
-(ADR-0022 decisions 1, 2, 3 and 5).
+here instead: this module binds each of them to the shared implementation when it is importable
+**and passes a self-check against the convention this model relies on**, and otherwise to a
+minimal local one that obeys exactly the same rules (ADR-0022 decisions 1, 2, 3 and 5).
+
+The self-check matters. Binding on a name alone would be worse than not binding: a shared helper
+with a different signature, or a different window convention, would change the model's inputs
+silently, and a silent change to a leakage guard is the one failure this whole design exists to
+prevent. A rejected candidate leaves the local fallback live and records why in ``SEAM_NOTES``.
 
 Nothing else in ``rupture.models.challengers.gridded`` imports ``rupture.models.data`` directly,
 so the merge is a one-file deletion: point the four names at the shared module and drop the
@@ -21,7 +26,7 @@ from __future__ import annotations
 import importlib
 from collections.abc import Sequence
 from dataclasses import dataclass
-from datetime import datetime
+from datetime import UTC, datetime, timedelta
 from typing import Any
 
 import numpy as np
@@ -30,6 +35,7 @@ import numpy.typing as npt
 from rupture.adapters.forecasting.leakage import LeakageError
 
 __all__ = [
+    "SEAM_NOTES",
     "SEAM_SOURCE",
     "LeakageError",
     "TrainOnlyScaler",
@@ -142,16 +148,84 @@ class _LocalTrainOnlyScaler:
 
 
 # ---------------------------------------------------------------------- binding
-_module = _shared()
-assert_before_cutoff = getattr(_module, "assert_before_cutoff", _local_assert_before_cutoff)
-causal_window = getattr(_module, "causal_window", _local_causal_window)
-blocked_time_forward_split = getattr(
-    _module, "blocked_time_forward_split", _local_blocked_time_forward_split
-)
-TrainOnlyScaler = getattr(_module, "TrainOnlyScaler", _LocalTrainOnlyScaler)
+#
+# A name is taken from the shared module only when it is there *and* behaves the way this model
+# calls it. Binding on the name alone would be worse than not binding at all: a shared helper with
+# a different signature or a different window convention would change the model's inputs silently,
+# and a silent change to a leakage guard is the one failure this whole design exists to prevent.
+# When a check fails the local fallback stays live and ``SEAM_NOTES`` says which name and why.
+SEAM_NOTES: list[str] = []
 
-SEAM_SOURCE: str = (
-    SHARED_MODULE
-    if _module is not None and hasattr(_module, "blocked_time_forward_split")
-    else "gridded._data (pre-merge fallback)"
+
+def _checked(name: str, local: Any, check: Any) -> Any:
+    candidate = getattr(_shared(), name, None) if _shared() is not None else None
+    if candidate is None:
+        return local
+    try:
+        check(candidate)
+    except Exception as exc:
+        SEAM_NOTES.append(f"{name}: shared implementation rejected ({type(exc).__name__}: {exc})")
+        return local
+    return candidate
+
+
+def _check_assert_before_cutoff(fn: Any) -> None:
+    cut = datetime(2020, 1, 1, tzinfo=UTC)
+    fn([cut - timedelta(seconds=1)], cut, what="seam self-check")
+    try:
+        fn([cut], cut, what="seam self-check")
+    except LeakageError:
+        return
+    msg = "did not raise on a record at the cutoff"
+    raise AssertionError(msg)
+
+
+def _check_causal_window(fn: Any) -> None:
+    end = datetime(2020, 1, 1, tzinfo=UTC)
+    start, stop = fn(end, 3, 86400.0, 4)
+    if abs(stop - end.timestamp()) > 1e-6 or abs(start - (end.timestamp() - 86400.0)) > 1e-6:
+        msg = "last frame does not end exactly at the window end"
+        raise AssertionError(msg)
+
+
+def _check_blocked_split(fn: Any) -> None:
+    base = datetime(2020, 1, 1, tzinfo=UTC)
+    times = [base + timedelta(days=30 * k) for k in range(6)]
+    train, val = fn(times, train_end=times[2], validation_end=times[5])
+    if len(train) != 3 or len(val) != 3:
+        msg = f"unexpected blocked split sizes {len(train)}/{len(val)}"
+        raise AssertionError(msg)
+
+
+def _check_scaler(cls: Any) -> None:
+    values = np.arange(12, dtype=np.float64).reshape(4, 3)
+    scaler = cls.fit(values, axis=(0,), fitted_on="seam self-check")
+    round_tripped = cls.from_dict(scaler.as_dict())
+    if not np.allclose(round_tripped.transform(values), scaler.transform(values)):
+        msg = "scaler does not survive its own as_dict/from_dict round trip"
+        raise AssertionError(msg)
+
+
+assert_before_cutoff = _checked(
+    "assert_before_cutoff", _local_assert_before_cutoff, _check_assert_before_cutoff
 )
+causal_window = _checked("causal_window", _local_causal_window, _check_causal_window)
+blocked_time_forward_split = _checked(
+    "blocked_time_forward_split", _local_blocked_time_forward_split, _check_blocked_split
+)
+TrainOnlyScaler = _checked("TrainOnlyScaler", _LocalTrainOnlyScaler, _check_scaler)
+
+_bound = [
+    assert_before_cutoff is not _local_assert_before_cutoff,
+    causal_window is not _local_causal_window,
+    blocked_time_forward_split is not _local_blocked_time_forward_split,
+    TrainOnlyScaler is not _LocalTrainOnlyScaler,
+]
+if all(_bound):
+    SEAM_SOURCE: str = SHARED_MODULE
+elif any(_bound):
+    SEAM_SOURCE = f"mixed: {sum(_bound)}/4 from {SHARED_MODULE}; " + "; ".join(SEAM_NOTES)
+else:
+    SEAM_SOURCE = "gridded._data (pre-merge fallback)" + (
+        "; " + "; ".join(SEAM_NOTES) if SEAM_NOTES else ""
+    )

@@ -6,6 +6,7 @@ Every test here has a negative twin: a case that injects data past the cut and e
 
 from __future__ import annotations
 
+import inspect
 from datetime import UTC, datetime, timedelta
 
 import numpy as np
@@ -49,15 +50,11 @@ def test_assert_before_cutoff_refuses_rather_than_filters() -> None:
 
 
 def test_blocked_split_is_time_forward_and_has_no_shuffle_option() -> None:
-    import inspect
-
     signature = inspect.signature(blocked_time_forward_split)
     assert "shuffle" not in signature.parameters
     base = datetime(2018, 1, 1, tzinfo=UTC)
     times = [base + timedelta(days=30 * k) for k in range(10)]
-    train, val = blocked_time_forward_split(
-        times, train_end=times[5], validation_end=times[9]
-    )
+    train, val = blocked_time_forward_split(times, train_end=times[5], validation_end=times[9])
     assert len(train) == 6
     assert len(val) == 4
     assert max(times[int(i)] for i in train) < min(times[int(i)] for i in val)
@@ -73,9 +70,7 @@ def test_dynamic_frames_exclude_an_event_at_the_issue_time(
     included = feat.dynamic_frames(
         events, raster, when + timedelta(seconds=1), n_frames=2, frame_days=30.0, mc=FIXTURE_MC
     )
-    excluded = feat.dynamic_frames(
-        events, raster, when, n_frames=2, frame_days=30.0, mc=FIXTURE_MC
-    )
+    excluded = feat.dynamic_frames(events, raster, when, n_frames=2, frame_days=30.0, mc=FIXTURE_MC)
     assert included.sum() > 0.0
     # the shifted window still holds the earlier events, so compare the cell of this event only
     iy, ix = int(events.iy[len(events) // 2]), int(events.ix[len(events) // 2])

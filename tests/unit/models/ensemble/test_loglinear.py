@@ -127,8 +127,10 @@ def test_a_zero_rate_cell_does_not_take_the_pool_to_minus_infinity(
     a = etas_component(history, TEST_CUTOFF, HORIZON)
     b = gridded_component(history, TEST_CUTOFF, HORIZON)
     zeroed = b.model_copy(
-        update={"expected_counts": tuple(tuple(0.0 for _ in row) for row in b.expected_counts[:1])
-        + b.expected_counts[1:]}
+        update={
+            "expected_counts": tuple(tuple(0.0 for _ in row) for row in b.expected_counts[:1])
+            + b.expected_counts[1:]
+        }
     )
     pooled = combine([a, zeroed], [0.5, 0.5])
     assert np.all(np.isfinite(pooled))
@@ -156,9 +158,7 @@ def test_weight_fitting_prefers_the_component_that_scored_better(
     assert ll > poisson_log_likelihood(good.counts(), counts)
 
 
-def test_single_component_weight_is_one(
-    catalog: Catalog, etas_component: Provider
-) -> None:
+def test_single_component_weight_is_one(catalog: Catalog, etas_component: Provider) -> None:
     history = catalog.before(TEST_CUTOFF)
     grid = etas_component(history, TEST_CUTOFF, HORIZON)
     counts = observed_counts(catalog.between(TEST_CUTOFF, TEST_CUTOFF + HORIZON), grid)
@@ -174,11 +174,7 @@ def test_observed_counts_keep_only_the_evaluator_s_events(
     target = catalog.between(TEST_CUTOFF, TEST_CUTOFF + HORIZON)
     counts = observed_counts(target, grid)
     threshold = grid.magnitude_bin_edges[0]
-    eligible = [
-        e
-        for e in target.earthquakes().events
-        if e.mw is not None and e.mw >= threshold
-    ]
+    eligible = [e for e in target.earthquakes().events if e.mw is not None and e.mw >= threshold]
     assert 0 < counts.sum() <= len(eligible)
 
 
@@ -271,7 +267,6 @@ def test_components_on_different_lattices_are_refused(
     region: Region,
     other_region: Region,
     etas_component: Provider,
-    gridded_component: Provider,
     validation_times: list[datetime],
 ) -> None:
     """A component whose grid does not match the others is an error, not something to reconcile."""
@@ -283,9 +278,7 @@ def test_components_on_different_lattices_are_refused(
     )
     other.fit(catalog, other_region, WEIGHTS_CUTOFF, mc=ETAS_MC)
 
-    def other_provider(
-        history: Catalog, issue_time: datetime, horizon: timedelta
-    ) -> ForecastGrid:
+    def other_provider(history: Catalog, issue_time: datetime, horizon: timedelta) -> ForecastGrid:
         return other.forecast(history, issue_time, horizon)
 
     model = LogLinearEnsemble(
