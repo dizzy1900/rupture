@@ -40,3 +40,4 @@ Consequences / Alternatives considered. All dates UTC.
 | [0034](0034-cite-published-titles-verbatim.md) | The banned-language allowlist admits published paper titles quoted verbatim, so rupture can cite its sources by name | accepted |
 | [0031](0031-gridded-spatio-temporal-challenger.md) | C1b is a small ConvLSTM over rasterised seismicity plus static covariates, added to a climatological log-rate | accepted |
 | [0032](0032-log-linear-ensemble.md) | The ensemble is a log-linear pool, weights fitted on a validation window, rates floored relatively | accepted |
+| [0035](0035-models-data-seam.md) | The `models/data` seam between the two challengers: a bounded, visible reconciliation debt rather than a claimed merge | accepted |
