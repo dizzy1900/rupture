@@ -44,13 +44,26 @@ form with a non-negative exponent. Magnitudes are marks drawn from a fitted Gute
 
 ## Training data
 
-The full detail, including the caveat that matters most, is in `docs/CHALLENGER_NTPP.md` § Data.
-In short: the DVC-tracked regional catalogues (`data/catalogs/<region>/`) were **not present in
-this worktree**, so the model was fitted on the committed real ComCat fixture slice
-(`tests/fixtures/forecasting/comcat-california-2018-2019-m3.geojson`, USGS ComCat, public domain)
-— 1 433 earthquakes, M ≥ 3.0, 2018-01-01 to 2019-12-28, in a rectangle around southern California.
-Two years of catalogue is a small training set for any learned model, and every score in this
-repository for `ntpp-neural-hawkes` should be read with that in front of it.
+The real homogenised regional catalogues built by `rupture catalog build`, at the protocol's own
+hard cutoff of `2022-01-01T00:00:00Z`. Full detail in `docs/CHALLENGER_NTPP.md` § Data.
+
+| Region | Catalogue events | Training events (M ≥ Mc, before the cutoff) | Mc | Target |
+|---|---|---|---|---|
+| `turkiye-eaf` | 7 038 | 405 | 4.3 | M ≥ 4.6 |
+| `nepal-himalaya` | 2 728 | 772 | 4.4 | M ≥ 4.7 |
+
+`california` was **not fitted**: 55 828 training events at Mc 2.7, and this implementation's
+likelihood is O(targets × sources) per epoch. That is a limitation of the implementation, stated
+rather than worked around, and it means the protocol's two-of-three-regions promotion condition
+cannot be satisfied from this evidence even in principle.
+
+A few hundred training events is a small set for any learned model, and every score for
+`ntpp-neural-hawkes` should be read with that in front of it.
+
+The committed fit under `tests/fixtures/models/ntpp-fit-2019-07-01/` is a separate, smaller fit of
+the committed ComCat California fixture slice (`tests/fixtures/forecasting/`, USGS ComCat, public
+domain); it exists so unit tests can exercise forecasting and persistence without training, and it
+is not a result.
 
 No data was synthesised. No data from after a model's cutoff reached it.
 
@@ -92,6 +105,12 @@ is a number rather than an assertion. **Ablation figures are never results** and
 
 - Small training catalogue (see above); parameter uncertainty is correspondingly wide and is not
   currently propagated into the forecast.
+- **The productivity law presses its subcriticality constraint.** The model is parameterised so
+  its branching ratio is always below 1 — unconstrained, maximum likelihood drove it supercritical
+  on every catalogue tried — but the fitted value sits close to the ceiling, which means the
+  productivity law is only weakly identified by these catalogues. The ETAS baseline's own
+  `turkiye-eaf` fit is itself supercritical (1.044), so this is a property of the data as much as
+  of the model.
 - The triggering kernel is isotropic. Real aftershock clouds follow the ruptured fault, and this
   model has no way to express that; it is the most likely reason for its spatial scores.
 - No finite-fault geometry, no anisotropy, no time-varying completeness, no magnitude dependence

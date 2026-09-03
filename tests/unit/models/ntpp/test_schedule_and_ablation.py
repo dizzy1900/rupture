@@ -128,6 +128,29 @@ def test_a_negative_information_gain_fails_condition_two() -> None:
     assert verdict["promotable_in_this_region"] is False
 
 
+def test_winning_a_minority_of_windows_does_not_beat_the_baseline() -> None:
+    """A positive mean gain driven by one window is not "beats ETAS in the paired T-test"."""
+    windows = [_window(0, passed=True, gain=20.0, t_passed=True)]
+    windows += [_window(i, passed=True, gain=-0.1, t_passed=False) for i in range(1, 14)]
+    report = _report(windows)
+    assert report["comparison_summary"]["mean_information_gain_per_event"] > 0.0
+    verdict = promotion_verdict(report, _baseline_rates(0.0))
+    assert verdict["t_test_wins"] == 1
+    assert verdict["t_test_windows"] == 14
+    assert verdict["condition_2_paired_t"] is False
+    assert any("won 1 of 14" in r for r in verdict["reasons_not_promotable"])
+
+
+def test_a_w_test_disagreement_is_flagged_when_the_t_test_would_pass() -> None:
+    windows = [_window(i, passed=True, gain=0.5, t_passed=True) for i in range(14)]
+    for w in windows:  # the W-test contradicts the T-test in every window
+        w.comparison["W"]["passed"] = False
+    verdict = promotion_verdict(_report(windows), _baseline_rates(0.0))
+    assert verdict["condition_2_paired_t"] is True
+    assert verdict["w_test_disagrees"] is True
+    assert any("W-test disagrees" in r for r in verdict["reasons_not_promotable"])
+
+
 def test_a_missing_baseline_is_reported_rather_than_assumed_favourable() -> None:
     verdict = promotion_verdict(_report([_window(i, passed=True) for i in range(14)]), None)
     assert verdict["condition_1_pass_rates"] is False

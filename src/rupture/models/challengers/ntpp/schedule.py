@@ -516,7 +516,14 @@ def promotion_verdict(
             condition_1 = False
     gain = comparison.get("mean_information_gain_per_event")
     t_wins = int(comparison.get("t_test_wins", 0))
-    condition_2 = bool(t_wins > 0 and gain is not None and gain > 0.0)
+    t_windows = int(comparison.get("windows_compared", 0))
+    w_wins = int(comparison.get("w_test_wins", 0))
+    w_windows = int(comparison.get("w_test_windows", 0))
+    # "Beats ETAS in the paired T-test with positive information gain over those windows" is read
+    # as: positive mean gain per event AND the T-test won in more windows than it lost. Winning a
+    # single window out of ten is not beating a baseline, and the looser reading — any win plus a
+    # positive mean — is exactly the reading a challenger's author wants to believe.
+    condition_2 = bool(gain is not None and gain > 0.0 and t_windows > 0 and t_wins * 2 > t_windows)
     reasons: list[str] = []
     if not enough_windows:
         reasons.append(
@@ -533,13 +540,28 @@ def promotion_verdict(
             )
     if not condition_2:
         reasons.append(
-            f"paired T-test: {t_wins} window(s) won, mean information gain per event {gain}"
+            f"paired T-test: won {t_wins} of {t_windows} window(s) where it is defined, mean "
+            f"information gain per event {gain}"
+        )
+    # Protocol § 10: the W-test is reported alongside the T-test and disagreement is flagged.
+    w_disagrees = bool(w_windows and w_wins * 2 <= w_windows and condition_2)
+    if w_disagrees:
+        reasons.append(
+            f"W-test disagrees with the T-test: won {w_wins} of {w_windows} window(s). The T-test "
+            "follows the mean per-event log-rate difference and the W-test its median, so this "
+            "says a minority of events were placed much better and the majority worse"
         )
     return {
         "region_id": challenger.get("region_id"),
         "promotable_in_this_region": bool(condition_1 and condition_2),
         "condition_1_pass_rates": condition_1,
         "condition_2_paired_t": condition_2,
+        "w_test_disagrees": w_disagrees,
+        "t_test_wins": t_wins,
+        "t_test_windows": t_windows,
+        "w_test_wins": w_wins,
+        "w_test_windows": w_windows,
+        "mean_information_gain_per_event": gain,
         "n_scored_windows": n_scored,
         "min_windows_required": MIN_PROMOTION_WINDOWS,
         "regions_required": MIN_PROMOTION_REGIONS,

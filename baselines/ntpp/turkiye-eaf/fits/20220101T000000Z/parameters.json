@@ -1,0 +1,26 @@
+{
+  "fit_cutoff": "2022-01-01T00:00:00+00:00",
+  "model_id": "ntpp-neural-hawkes",
+  "model_version": "ntpp-0.1.0+torch-2.14.0",
+  "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+  "parameters": {
+    "alpha": 1.6852420858958497,
+    "alpha_raw": 1.610065371537028,
+    "beta": 2.128504300328915,
+    "branch_raw": 6.029553755230248,
+    "branching_ratio": 0.9776472258061552,
+    "k0": 0.20359558314174594,
+    "log_beta": 0.7554195266405782,
+    "log_mu": -4.328930202254601,
+    "snapshot_0": 1515491936.0,
+    "snapshot_1": 3604636627.0,
+    "snapshot_2": 1636018356.0,
+    "snapshot_3": 539192673.0,
+    "snapshot_4": 1033354103.0,
+    "snapshot_5": 490001328.0,
+    "snapshot_6": 169522981.0,
+    "snapshot_7": 1387298443.0
+  },
+  "region_id": "turkiye-eaf",
+  "snapshot_digest": "5a549260d6da63d36183a8b420236d613d97bb771d34d3b00a1ab72552b07e8b"
+}
