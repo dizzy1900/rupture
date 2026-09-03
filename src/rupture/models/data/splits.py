@@ -2,9 +2,10 @@
 
 Random k-fold on an earthquake catalogue leaks: aftershocks of a mainshock in a training fold land
 in the validation fold, so the model is scored on sequences it has effectively already seen. The
-protocol (§ 7 rule 6) forbids it, and this module makes it unavailable rather than discouraged —
-**the API has no shuffle parameter, no random state and no seed.** Nothing in this file imports
-``random`` or ``numpy.random``, and a test asserts that.
+protocol (§ 7 rule 6) forbids it, and this module makes it unavailable rather than discouraged:
+the API offers no way to reorder anything, and nothing here imports a random number generator. A
+test asserts both — that the signature carries no such option, and that the source imports no
+source of randomness.
 
 A split is a pair of half-open time intervals with ``train_end <= val_start``. Because the cut is
 on time and every index is derived from it by ``searchsorted``, every validation index is strictly
@@ -80,7 +81,7 @@ def blocked_splits(
     and the start of validation, which is how you stop an aftershock sequence straddling the cut
     from carrying information across it.
 
-    There is deliberately no ``shuffle`` parameter. If you want one, you want a different
+    There is deliberately no way to reorder the events. If you want one, you want a different
     validation scheme, and ADR-0022 says no.
     """
     if n_folds < 1:

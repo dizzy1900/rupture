@@ -30,7 +30,7 @@ from typing import Any
 
 from rupture.adapters.evaluation.pycsep import PyCSEPEvaluator
 from rupture.adapters.forecasting.etas_mizrahi import MizrahiETAS
-from rupture.domain import Catalog, ForecastGrid, Region
+from rupture.domain import Catalog, FitResult, ForecastGrid, Region
 from rupture.models.challengers.ntpp.adapter import NeuralTPPForecaster
 from rupture.models.challengers.ntpp.model import NTPPConfig
 from rupture.models.challengers.ntpp.schedule import run_ntpp_schedule
@@ -54,6 +54,15 @@ class LeakyFitForecaster(NeuralTPPForecaster):
     """
 
     model_id: str = LEAKY_MODEL_ID
+
+    def load_fit(self, fit: FitResult, region: Region, weights: dict[str, list[float]]) -> None:
+        """Accept an honestly produced fit and relabel it as the ablation's.
+
+        The honest loader refuses a fit whose ``model_id`` is not its own, which is the right
+        default. Relabelling here rather than loosening that check means the leaky id propagates
+        into every forecast id and run-log record from the moment the fit is loaded.
+        """
+        super().load_fit(fit.model_copy(update={"model_id": self.model_id}), region, weights)
 
     def forecast(
         self,
@@ -171,7 +180,7 @@ def run_ablations(
         candidates=candidates,
         auxiliary_years=auxiliary_years,
     )
-    tuning_model = NeuralTPPForecaster(tuned_config, auxiliary_years=auxiliary_years, patience=100)
+    tuning_model = NeuralTPPForecaster(tuned_config, auxiliary_years=auxiliary_years)
     tuning_model.fit(catalog, region, cutoff, mc=mc)
     tuning_report = run_ntpp_schedule(
         catalog,
@@ -195,7 +204,7 @@ def run_ablations(
     )
 
     # ---- fit leak: parameters fitted on the whole catalogue, including every target window.
-    leaky = LeakyFitForecaster(frozen_config, auxiliary_years=auxiliary_years, patience=100)
+    leaky = LeakyFitForecaster(frozen_config, auxiliary_years=auxiliary_years)
     leaky_cutoff = catalogue_end + timedelta(seconds=1)
     leaky_fit = leaky.fit(catalog, region, leaky_cutoff, mc=mc)
     fit_report = run_ntpp_schedule(

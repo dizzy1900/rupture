@@ -1,0 +1,19 @@
+{
+  "auxiliary_years": 0.25,
+  "command": "uv run python -m tests.fixtures.models.make_ntpp_fixture",
+  "config_hash": "88da7548124f87be60b01f7347dc14a01cf743c625e16c3cf6deda38fc60753d",
+  "converged": true,
+  "created_at": "2026-09-03T20:47:31.621305+00:00",
+  "derived_from": "comcat-california-2018-2019-m3.geojson",
+  "fit_cutoff": "2019-07-01T00:00:00+00:00",
+  "licence": "public-domain (USGS)",
+  "magnitudes": "reported ComCat magnitudes used as mw (loader reported_as_mw=True)",
+  "mc": 3.0,
+  "mc_note": "3.0 is the fixture's ComCat query floor, passed explicitly",
+  "model_id": "ntpp-neural-hawkes",
+  "model_version": "ntpp-0.1.0+torch-2.14.0",
+  "n_events": 214,
+  "parameter_snapshot_hash": "d3b1019770dc6709de0bcfd9998e1fb410c08c4239029dc814ce58f9e96601b3",
+  "source_sha256": "153be1f5659e2b308c62cbb83dcf7afacd8eb96e7b5e3cdfce4d1c4c314011f9",
+  "training_catalog_hash": "00b9f3f98265fb4b303cc2131cb673d982e51899f518b27507d61f02c29f78c4"
+}

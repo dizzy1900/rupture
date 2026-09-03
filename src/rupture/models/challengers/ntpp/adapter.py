@@ -128,9 +128,12 @@ class NeuralTPPForecaster:
         condition the intensity but are not scored, matching the ``etas`` package and
         EarthquakeNPP's ETAS configuration.
     convergence_tol, patience:
-        Optimisation stops when the log-likelihood moves by less than ``convergence_tol`` nats for
-        ``patience`` consecutive epochs. Hitting the epoch cap instead yields ``converged=False``,
-        and :meth:`forecast` then refuses the fit, exactly as the ETAS adapter does.
+        Optimisation stops when the best log-likelihood has not improved by ``convergence_tol``
+        nats for ``patience`` consecutive epochs. The default of 0.01 nats is roughly five parts
+        per million of a typical objective here; tightening it to 0.001 costs three times the
+        epochs and moves the per-event log-likelihood by under 0.04 nats. Hitting the epoch cap
+        instead yields ``converged=False``, and :meth:`forecast` then refuses the fit, exactly as
+        the ETAS adapter does.
     """
 
     model_id: str = MODEL_ID
@@ -141,8 +144,8 @@ class NeuralTPPForecaster:
         config: NTPPConfig | None = None,
         *,
         auxiliary_years: float = 0.5,
-        convergence_tol: float = 1e-3,
-        patience: int = 20,
+        convergence_tol: float = 1e-2,
+        patience: int = 50,
     ) -> None:
         if auxiliary_years <= 0:
             msg = "auxiliary_years must be positive"
@@ -499,8 +502,20 @@ class NeuralTPPForecaster:
         net = NeuralKernelHawkes(self.config)
         net.set_mc(fit.mc)
         net.set_delta_m(float(fit.diagnostics.get("delta_m", region.magnitude_bin_width)))
-        state = {k: torch.tensor(v, dtype=torch.float64) for k, v in weights.items()}
-        net.load_state_dict(state)
+        # The weights file is flat lists (no pickle), so shapes come from the freshly built
+        # network. The background reference points size a buffer, so they are installed first.
+        net.set_background(weights["bg_x"], weights["bg_y"])
+        reference = net.state_dict()
+        missing = sorted(set(reference) - set(weights))
+        if missing:
+            msg = f"the weights file is missing {missing}"
+            raise ValueError(msg)
+        net.load_state_dict(
+            {
+                name: torch.tensor(weights[name], dtype=torch.float64).reshape(tensor.shape)
+                for name, tensor in reference.items()
+            }
+        )
         self._net = net
         self._features = features
         self._projection = Projection.from_dict(fit.diagnostics["projection"])

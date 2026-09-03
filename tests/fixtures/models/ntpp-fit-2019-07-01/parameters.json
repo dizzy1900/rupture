@@ -1,0 +1,24 @@
+{
+  "fit_cutoff": "2019-07-01T00:00:00+00:00",
+  "model_id": "ntpp-neural-hawkes",
+  "model_version": "ntpp-0.1.0+torch-2.14.0",
+  "parameter_snapshot_hash": "d3b1019770dc6709de0bcfd9998e1fb410c08c4239029dc814ce58f9e96601b3",
+  "parameters": {
+    "alpha": 0.23796047847925111,
+    "alpha_raw": -1.3143121661195138,
+    "beta": 2.225866395161085,
+    "log_beta": 0.800146230908804,
+    "log_k0": -0.11065977124912503,
+    "log_mu": -1.3857907463758725,
+    "snapshot_0": 1101581076.0,
+    "snapshot_1": 4054790631.0,
+    "snapshot_2": 3570488950.0,
+    "snapshot_3": 3223282704.0,
+    "snapshot_4": 1073031648.0,
+    "snapshot_5": 3958130769.0,
+    "snapshot_6": 4159052049.0,
+    "snapshot_7": 571499536.0
+  },
+  "region_id": "california-fixture",
+  "snapshot_digest": "41a8cb14f1af31e7d4d15676c01f64103ff529e0ebec4851f7e6191122106410"
+}

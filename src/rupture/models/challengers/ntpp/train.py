@@ -183,8 +183,8 @@ def score_config(
     score_start: datetime,
     score_end: datetime,
     auxiliary_years: float = 0.5,
-    convergence_tol: float = 1e-3,
-    patience: int = 100,
+    convergence_tol: float = 1e-2,
+    patience: int = 50,
     fold: int = 0,
 ) -> FoldScore:
     """Fit on ``origin_time < train_cutoff``, then score the log-likelihood on the score window.

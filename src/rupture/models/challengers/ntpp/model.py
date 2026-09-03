@@ -90,7 +90,10 @@ class NTPPConfig:
     feature_clip: float = 3.0
     background_sigma_km: float = 10.0
     learning_rate: float = 0.05
-    epochs: int = 400
+    # Generous: the whole fit is seconds on a CPU, and the optimiser stops early on its own
+    # convergence test. A cap that bites leaves ``converged=False``, and the adapter then refuses
+    # to forecast from the fit, which is the right failure but a wasteful way to discover it.
+    epochs: int = 8000
     weight_decay: float = 0.0
     seed: int = 20220101
 
