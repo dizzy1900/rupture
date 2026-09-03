@@ -1,0 +1,63 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholder: <path> is a
+# ClassicalPSHAJob JSON (example: infra/jobs/examples/turkiye-eaf-classical.json).
+#
+# The command drives the pinned OpenQuake image openquake/engine:3.26.2 through the docker CLI
+# (ADR-0011), so the host needs docker and /var/run/docker.sock: an EC2-backed Batch queue, not
+# Fargate. The rupture image itself carries no docker CLI; the job definition must mount the
+# socket and provide the CLI (see docs/DEPLOYMENT.md). This job has NOT been run anywhere yet.
+manifest_version: "0"
+name: oq-classical
+description: >-
+  Run a classical PSHA job in the pinned OpenQuake engine image and write the parsed
+  HazardCurveSet (contracts/hazard-curve-set.v0.json) next to the raw exports and oq.log.
+image: ${RUPTURE_IMAGE}
+command:
+  - rupture
+  - hazard
+  - classical
+  - --job
+  - <path>
+  - --work-dir
+  - reports/hazard/<job-id>
+inputs:
+  - path: infra/jobs/examples/turkiye-eaf-classical.json
+    remote: ${RUPTURE_DVC_REMOTE_URL}/infra/jobs/examples/turkiye-eaf-classical.json
+    kind: source
+    note: the ClassicalPSHAJob; relative input paths resolve against this file
+  - path: data/raw/oq_sources/eshm20
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/raw/oq_sources/eshm20
+    kind: dvc
+    note: ESHM20 source model + logic trees fetched by adapters/sources/openquake_sources.py (ADR-0008)
+outputs:
+  - path: reports/hazard/<job-id>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/reports/hazard/<job-id>
+    kind: report
+    note: job.ini, staged inputs, out/hazard_curve-*.csv, hazard-curve-set.json, oq.log
+resources:
+  cpu: 8
+  memory_gib: 32
+  timeout_minutes: 480
+  gpu: none
+  docker_socket: true
+schedule: null
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - RUPTURE_OPENQUAKE_IMAGE
+  - AWS_REGION
+aws:
+  service: batch-ec2
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-oq-classical
+    vcpus: 8
+    memory_mib: 32768
+    attempts: 1
+    timeout_seconds: 28800
+    compute_environment_note: >-
+      EC2 queue with docker socket mounted into the job container (or run openquake/engine:3.26.2
+      as the job image directly with the staged /work directory on EFS); ~1 GB image pull
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: reports/hazard/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/oq-classical

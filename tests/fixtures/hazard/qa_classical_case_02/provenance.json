@@ -1,0 +1,25 @@
+{
+  "source": "gem/oq-engine",
+  "source_url": "https://github.com/gem/oq-engine/tree/engine-3.26/openquake/qa_tests_data/classical/case_02/",
+  "branch": "engine-3.26",
+  "retrieved_at": "2026-09-03T09:56:29Z",
+  "retrieved_with": "curl (raw.githubusercontent.com)",
+  "licence": "AGPL-3.0-or-later",
+  "adapter_version": "0.1.0",
+  "description": "OpenQuake engine QA test 'classical/case_02': single site, gsim LanzanoEtAl2019_RJB_OMO; expected PGA hazard curve as shipped in the engine repository (branch engine-3.26). Copied verbatim; not edited.",
+  "edited_by_hand": false,
+  "files": [
+    {
+      "path": "expected/hazard_curve-PGA.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_02/expected/hazard_curve-PGA.csv",
+      "sha256": "d53289fcab7c4070a046ec902390664a6d4502683941dceac43af7ad3371b29f",
+      "bytes": 283
+    },
+    {
+      "path": "job.ini",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_02/job.ini",
+      "sha256": "444a22212e9d28d21287dc9649b07295429f869092f4fdf346f76c7929c17675",
+      "bytes": 758
+    }
+  ]
+}

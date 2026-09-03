@@ -1,0 +1,13 @@
+# Read by BuildKit when building with `-f infra/docker/Dockerfile` (takes precedence over a root
+# .dockerignore). Keep the build context to what the Dockerfile COPYs.
+*
+!pyproject.toml
+!uv.lock
+!README.md
+!LICENSE
+!src/
+!contracts/
+!data/regions/
+**/__pycache__/
+**/*.pyc
+**/.DS_Store

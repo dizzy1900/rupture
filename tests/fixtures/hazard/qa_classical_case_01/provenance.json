@@ -1,0 +1,49 @@
+{
+  "source": "gem/oq-engine",
+  "source_url": "https://github.com/gem/oq-engine/tree/engine-3.26/openquake/qa_tests_data/classical/case_01/",
+  "branch": "engine-3.26",
+  "retrieved_at": "2026-09-03T09:56:29Z",
+  "retrieved_with": "curl (raw.githubusercontent.com)",
+  "licence": "AGPL-3.0-or-later",
+  "adapter_version": "0.1.0",
+  "description": "OpenQuake engine QA test 'classical/case_01': one point source, four sites, investigation_time 1 yr; expected hazard curves for PGA and SA(0.1) as shipped in the engine repository (branch engine-3.26). Copied verbatim; not edited.",
+  "edited_by_hand": false,
+  "files": [
+    {
+      "path": "expected/hazard_curve-PGA.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_01/expected/hazard_curve-PGA.csv",
+      "sha256": "bc7c59c0316e9684bc91e370c634aae7ca1853e7be79d37845e7a3a921b83186",
+      "bytes": 476
+    },
+    {
+      "path": "expected/hazard_curve-SA(0.1).csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_01/expected/hazard_curve-SA(0.1).csv",
+      "sha256": "869e5815c384c86b2c07b677f7039c106d0c79bffa1b54b14580472e70ac54a6",
+      "bytes": 480
+    },
+    {
+      "path": "gsim_logic_tree.xml",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_01/gsim_logic_tree.xml",
+      "sha256": "9778f08a9719aa0401400b309ff7cffa7f0f69c6b5defc68d4683de7480013f7",
+      "bytes": 689
+    },
+    {
+      "path": "job.ini",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_01/job.ini",
+      "sha256": "8a012e0dcd646d689c5556e13c579f503050a4869fa2626cab382da83ca6da12",
+      "bytes": 1044
+    },
+    {
+      "path": "source_model.xml",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_01/source_model.xml",
+      "sha256": "87cd16ee9ee3b01503b5ced344327fae087bcfb6768e3772cf663e536701f617",
+      "bytes": 1531
+    },
+    {
+      "path": "source_model_logic_tree.xml",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/classical/case_01/source_model_logic_tree.xml",
+      "sha256": "42b2674e803b15397e03b0e22fc62819d66c34c0f700d84afca430258f169910",
+      "bytes": 652
+    }
+  ]
+}

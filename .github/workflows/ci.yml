@@ -36,16 +36,34 @@ jobs:
   hazard-integration:
     name: OpenQuake demo in pinned Docker image
     # Docker is available on ubuntu runners; it is not assumed on developer machines.
-    # Manual-dispatch only until the hazard adapter lands (Phase 2C flips this to run on main).
+    # Runs on manual dispatch and on pushes to main (Phase 2C, ADR-0030). Pull requests keep the
+    # offline job only; `make validate-hazard` skips with a printed reason where Docker is absent.
     runs-on: ubuntu-latest
-    timeout-minutes: 45
-    if: github.event_name == 'workflow_dispatch'
+    timeout-minutes: 60
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
     needs: offline
+    env:
+      RUPTURE_HAZARD_WORK_DIR: ${{ github.workspace }}/.hazard-work
     steps:
       - uses: actions/checkout@v4
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
       - run: uv sync --locked
-      - name: validate-hazard
+      - name: Pull the pinned OpenQuake image
+        timeout-minutes: 10
+        run: docker pull openquake/engine:3.26.2
+      - name: validate-hazard (bundled demo through the adapter)
+        timeout-minutes: 20
         run: make validate-hazard
+      - name: Integration tests (Docker)
+        timeout-minutes: 20
+        run: uv run pytest tests/integration/hazard -m integration -ra
+      - name: Upload work directory (job.ini, exports, oq.log)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: hazard-work-${{ github.run_id }}
+          path: ${{ github.workspace }}/.hazard-work
+          if-no-files-found: warn
+          retention-days: 14
