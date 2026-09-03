@@ -95,6 +95,11 @@ def parse_isc_text(payload: bytes | str, *, provenance: Provenance) -> list[Even
         if header is None:
             msg = "ISC text payload has data rows before its #EventID header"
             raise ValueError(msg)
+        if "|" not in line:
+            # the service occasionally emits a stray non-data line (seen: a lone "?"); it is
+            # not an event row, so it is reported and skipped rather than treated as data
+            log.warning("isc: skipped non-data line %r", line[:80])
+            continue
         cols = [c.strip() for c in line.split("|")]
         if len(cols) < 12:
             msg = f"ISC row has {len(cols)} columns, expected >= 12: {line[:120]}"

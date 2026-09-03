@@ -48,6 +48,17 @@ def test_isc_rows_before_header_raise(test_provenance: Provenance) -> None:
         )
 
 
+def test_isc_stray_non_data_line_is_skipped(test_provenance: Provenance) -> None:
+    """The live service emitted a lone '?' line inside a 2020s page (seen 2026-09-03)."""
+    f = fixture_file("isc", "gorkha-2015-7d-m4.txt")
+    text = f.content.decode()
+    head, _, rest = text.partition("\n")
+    patched = head + "\n?\n" + rest
+    assert len(isc.parse_isc_text(patched, provenance=f.provenance)) == len(
+        isc.parse_isc_text(text, provenance=f.provenance)
+    )
+
+
 def test_year_windows_split_at_new_year() -> None:
     w = isc.year_windows(datetime(2014, 6, 1, tzinfo=UTC), datetime(2016, 3, 1, tzinfo=UTC))
     assert [(a.year, b.year) for a, b in w] == [(2014, 2015), (2015, 2016), (2016, 2016)]
