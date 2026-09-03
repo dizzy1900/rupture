@@ -33,6 +33,7 @@ dependencies = [
   "etas @ git+https://github.com/lmizrahi/etas@097f08b69a4f06f9c38d14799dedfbd4543144e3",
   # evaluation
   "pycsep==0.8.0",
+  "pyyaml>=6.0.3",
 ]
 
 [project.optional-dependencies]
@@ -58,6 +59,7 @@ dev = [
   "types-requests>=2.32",
   "types-jsonschema>=4.23",
   "types-shapely>=2.0",
+  "types-pyyaml>=6.0.12.20260815",
 ]
 
 [tool.hatch.metadata]
