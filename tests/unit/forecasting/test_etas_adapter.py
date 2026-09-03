@@ -48,8 +48,8 @@ def test_committed_fit_is_consistent(
 def test_committed_fit_training_hash_matches_fixture_slice(
     committed_fit: FitResult, fixture_catalog: Catalog, region: Region
 ) -> None:
-    training = MizrahiETAS._training_slice(  # proving the recorded hash
-        MizrahiETAS(), fixture_catalog, region, committed_fit.fit_cutoff, committed_fit.mc
+    training = MizrahiETAS.training_slice(
+        fixture_catalog, region, committed_fit.fit_cutoff, committed_fit.mc
     )
     assert training.event_hash() == committed_fit.training_catalog_hash
     assert len(training) == committed_fit.n_events
@@ -169,13 +169,33 @@ def test_fit_runs_on_a_small_real_slice(fixture_catalog: Catalog, region: Region
     assert fit.diagnostics["mc_source"] == "explicit mc kwarg"
     assert fit.diagnostics["iterations"] >= 1
     assert datetime.fromisoformat(fit.diagnostics["training_max_origin_time"]) < FIT_CUTOFF
-    slice_ = MizrahiETAS._training_slice(MizrahiETAS(), fixture_catalog, region, FIT_CUTOFF, 3.5)
+    slice_ = MizrahiETAS.training_slice(fixture_catalog, region, FIT_CUTOFF, 3.5)
     assert fit.training_catalog_hash == slice_.event_hash()
     assert len(slice_) <= len(fixture_catalog.earthquakes().before(FIT_CUTOFF).at_least(3.5))
     assert snapshot_hash(fit.parameters) == fit.parameter_snapshot_hash
     assert set(PARAMETER_KEYS) == set(fit.parameters)
     assert isinstance(fit.diagnostics["at_bound"], list)
     assert fit.diagnostics["branching_ratio"] is None or fit.diagnostics["branching_ratio"] > 0
+
+
+def test_em_iteration_cap_yields_a_persisted_non_converged_fit(
+    fixture_catalog: Catalog, region: Region, tmp_path: Path
+) -> None:
+    fit = MizrahiETAS(auxiliary_years=0.5, max_iterations=2).fit(
+        fixture_catalog, region, FIT_CUTOFF, mc=3.5
+    )
+    assert fit.converged is False
+    assert fit.diagnostics["iterations"] == 2
+    assert "iteration cap 2 hit" in fit.diagnostics["converged_reason"]
+    assert fit.notes is not None
+    assert "not converged" in fit.notes
+    save_fit(fit, tmp_path)  # persisted with converged=False, never silently dropped
+    assert load_fit(tmp_path, region.id).converged is False
+    m = MizrahiETAS()
+    m.load_fit(fit, region)
+    history = fixture_catalog.earthquakes().before(FIT_CUTOFF).at_least(3.5)
+    with pytest.raises(RuntimeError, match="did not converge"):
+        m.forecast(history, FIT_CUTOFF, HORIZON, n_simulations=1)
 
 
 def test_fit_requires_a_magnitude_of_completeness(fixture_catalog: Catalog, region: Region) -> None:

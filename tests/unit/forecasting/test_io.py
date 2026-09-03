@@ -6,10 +6,15 @@ import json
 from datetime import UTC, datetime
 from pathlib import Path
 
+import pandas as pd
 import pytest
 
-from rupture.domain import Catalog, EvaluationResult, Region, TestName
+from rupture.adapters.storage.geoparquet import write_catalog
+from rupture.domain import Catalog, EvaluationResult, EventType, Region, TestName
 from rupture.pipelines import io
+from rupture.pipelines.build_catalog import build_catalog
+
+REPO_ROOT = Path(__file__).resolve().parents[3]
 
 
 def test_catalog_directory_round_trip(tmp_path: Path, fixture_catalog: Catalog) -> None:
@@ -29,12 +34,42 @@ def test_catalog_directory_round_trip(tmp_path: Path, fixture_catalog: Catalog) 
     assert io.load_catalog(out / io.EVENTS_FILE) == fixture_catalog
 
 
-def test_events_frame_has_the_agreed_columns(fixture_catalog: Catalog) -> None:
-    df = io.events_to_frame(fixture_catalog.events[:3])
-    assert list(df.columns) == list(io.EVENT_COLUMNS)
-    assert str(df["origin_time"].dtype).startswith("datetime64[")
-    assert "UTC" in str(df["origin_time"].dtype)
-    assert json.loads(df["contributing_ids"].iloc[0]) == []
+def test_events_parquet_uses_the_geoparquet_writer_layout(
+    tmp_path: Path, fixture_catalog: Catalog
+) -> None:
+    path = io.write_events_parquet(fixture_catalog.events[:3], tmp_path / "target.parquet")
+    columns = set(pd.read_parquet(path).columns)
+    assert {
+        "geometry",
+        "provenance_json",
+        "other_magnitudes_json",
+        "contributing_ids_json",
+    } <= columns
+    assert io.read_events_parquet(path) == list(fixture_catalog.events[:3])
+
+
+def test_nepal_fixture_build_loads_through_io(tmp_path: Path) -> None:
+    """`catalog build --offline-fixtures` output (geoparquet writer) read by `io.load_catalog`."""
+    nepal = io.load_region(REPO_ROOT / "data" / "regions" / "nepal-himalaya")
+    built = build_catalog(
+        nepal,
+        datetime(2015, 4, 1, tzinfo=UTC),
+        datetime(2026, 9, 1, tzinfo=UTC),
+        ["comcat", "isc", "gcmt"],
+        offline_fixtures=REPO_ROOT / "data" / "fixtures",
+        etas_cross_check=False,
+    )
+    write_catalog(built, tmp_path / "nepal")
+    loaded = io.load_catalog(tmp_path / "nepal")
+    assert loaded == built
+    assert len(loaded) == len(built) > 100
+    landslide = [e for e in loaded.events if e.source_event_id == "us7000tbwb"]
+    assert len(landslide) == 1
+    assert landslide[0].event_type is EventType.LANDSLIDE
+    assert landslide[0].mw is None
+    assert loaded.completeness, "Mc estimates survive the round trip"
+    assert loaded.preferred_mc() == built.preferred_mc()
+    assert loaded.homogenisation_log == built.homogenisation_log
 
 
 def test_missing_files_fail_loudly(tmp_path: Path) -> None:

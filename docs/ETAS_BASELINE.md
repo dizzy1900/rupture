@@ -39,8 +39,14 @@ never re-parametrised.
 
 `log_likelihood` is `null`: the package does not expose the full point-process log-likelihood at
 convergence (its optimiser minimises the expected complete-data negative log-likelihood of the
-EM step, which is not the same quantity). The diagnostics say so. `converged` is `true` when the
-EM loop exited on its own tolerance with finite parameters; a non-converged fit is persisted but
+EM step, which is not the same quantity). The diagnostics say so.
+
+`converged` is `true` when the EM loop met the package's tolerance (summed absolute parameter
+change < 0.001) with finite parameters. The package's own `invert()` has no iteration cap and
+would run until that tolerance is met; rupture drives the same EM step sequence itself
+(`MizrahiETAS._invert_capped`, step for step as upstream) under `max_iterations` (default 200)
+and `max_seconds` (default 1800). Hitting a cap returns `converged=false` with
+`diagnostics.converged_reason` naming it; the fit is persisted so the failure is on record, and
 `forecast()` refuses to use it.
 
 ### The snapshot hash
@@ -118,6 +124,5 @@ rupture therefore does not use. Fits are reproducible through the fixed `theta_0
   puts ~1.2 events at M ≥ 3.95 on the 30 days that contain Ridgecrest (123 observed); the N-test
   fails, as it should.
 - **No log-likelihood** (see above).
-- **Optional dependency shim** for `etas.simulation` (`_etas_compat.py`, ADR-0018).
 - **Test fixture magnitudes are reported, not homogenised Mw.** `tests/fixtures/forecasting/`
   labels them `reported-as-mw:<type>`; production goes through `rupture catalog build`.

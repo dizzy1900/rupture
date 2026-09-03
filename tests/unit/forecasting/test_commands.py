@@ -77,12 +77,60 @@ def test_issue_then_evaluate(
     assert res.exit_code == 0, res.output
     assert " N: statistic=" in res.output
     assert "passed=False" in res.output
-    results = io.load_results(out / "results.json")
+    latest = json.loads((out / "latest.json").read_text(encoding="utf-8"))
+    results = io.load_results(out / latest["results"])
     assert [r.test_name.value for r in results] == ["N", "M"]
-    assert (out / "target.parquet").exists()
+    assert latest["results"] == f"results-{results[0].target_catalog_hash[:12]}.json"
+    assert (out / latest["bundle_dir"] / "target.parquet").exists()
     runs = (data / "forecasts" / region.id / "runs.jsonl").read_text(encoding="utf-8")
     assert '"kind":"issue"' in runs
     assert '"kind":"evaluate"' in runs
+
+
+def test_evaluate_run_without_region_requires_explicit_waiver(
+    tmp_path: Path, fixture_catalog: Catalog, region: Region, baselines_with_committed_fit: Path
+) -> None:
+    data = _data_dir(tmp_path, fixture_catalog, region)
+    common = ["--data-dir", str(data)]
+    res = runner.invoke(
+        app,
+        [
+            "forecast",
+            "issue",
+            "--region",
+            region.id,
+            "--issue",
+            "2019-07-01T00:00:00Z",
+            "--n-simulations",
+            "2",
+            "--seed",
+            "1",
+            "--baselines",
+            str(baselines_with_committed_fit),
+            *common,
+        ],
+    )
+    assert res.exit_code == 0, res.output
+    forecast_id = "etas-mizrahi-california-fixture-20190701T000000Z-30d"
+    (data / "regions" / region.id / io.REGION_FILE).unlink()
+    args = [
+        "evaluate",
+        "run",
+        "--forecast",
+        forecast_id,
+        "--tests",
+        "N",
+        "--no-plots",
+        "--out",
+        str(tmp_path / "r"),
+        *common,
+    ]
+    res = runner.invoke(app, args)
+    assert res.exit_code == 1
+    assert "depth filter" in res.output
+    res = runner.invoke(app, [*args, "--no-depth-filter"])
+    assert res.exit_code == 0, res.output
+    assert "waived" in res.output
 
 
 def test_issue_before_cutoff_exits_nonzero(

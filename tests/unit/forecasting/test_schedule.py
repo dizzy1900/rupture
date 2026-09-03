@@ -167,6 +167,34 @@ def test_schedule_on_the_fixture(
     assert "fit" not in kinds
     assert kinds[-1] == "schedule"
     for w in report["windows"]:
-        bundle = tmp_path / "reports" / "eval" / w["forecast_id"]
-        assert (bundle / "results.json").exists()
-        assert (bundle / "target.parquet").exists()
+        out = tmp_path / "reports" / "eval" / w["forecast_id"]
+        latest = json.loads((out / "latest.json").read_text(encoding="utf-8"))
+        assert (out / latest["results"]).exists()
+        assert (out / latest["bundle_dir"] / "target.parquet").exists()
+
+
+def test_persisted_fit_with_a_different_training_slice_is_refused(
+    tmp_path: Path, fixture_catalog: Catalog, region: Region, baselines_with_committed_fit: Path
+) -> None:
+    """m2: same cutoff, but the catalogue in hand lacks one pre-cutoff training event."""
+    pre = [e for e in fixture_catalog.events if e.origin_time < FIT_CUTOFF and e.mw >= 3.0]  # type: ignore[operator]
+    thinned = fixture_catalog.model_copy(
+        update={"events": tuple(e for e in fixture_catalog.events if e.id != pre[0].id)}
+    )
+    with pytest.raises(ValueError, match="different slice"):
+        run_schedule(
+            thinned,
+            region,
+            start=FIT_CUTOFF,
+            end=datetime(2019, 9, 1, tzinfo=UTC),
+            step=30 * DAY,
+            horizon=30 * DAY,
+            baselines_dir=baselines_with_committed_fit,
+            forecasts_dir=tmp_path / "data" / "forecasts",
+            reports_dir=tmp_path / "reports",
+            model=MizrahiETAS(auxiliary_years=0.5),
+            tracker=JsonlTracker(tmp_path / "runs.jsonl"),
+            n_simulations=1,
+            eval_simulations=10,
+            plots=False,
+        )

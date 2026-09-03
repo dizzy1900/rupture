@@ -32,12 +32,22 @@ def _tests(text: str) -> list[TestName]:
         raise typer.Exit(1) from exc
 
 
-def _region_if_present(data_dir: Path, region_id: str) -> Region | None:
+def _region_for_depth_filter(
+    data_dir: Path, region_id: str, *, no_depth_filter: bool
+) -> Region | None:
+    """The region record drives the protocol depth filter; its absence is an error unless waived."""
     path = data_dir / "regions" / region_id / io.REGION_FILE
-    if not path.exists():
-        typer.echo(f"note: no region file at {path}; depth filter not applied", err=True)
+    if path.exists():
+        return io.load_region(path)
+    if no_depth_filter:
+        typer.echo(f"warning: no region file at {path}; depth filter waived", err=True)
         return None
-    return io.load_region(path)
+    typer.echo(
+        f"rupture evaluate run: no region file at {path}; the protocol depth filter cannot be "
+        "applied. Provide the region or pass --no-depth-filter to waive it explicitly.",
+        err=True,
+    )
+    raise typer.Exit(1)
 
 
 @app.command("run")
@@ -53,11 +63,18 @@ def run(  # noqa: PLR0917 - typer options
     seed: Annotated[int | None, typer.Option("--seed")] = None,
     data_dir: Annotated[Path, typer.Option("--data-dir")] = Path("data"),
     no_plots: Annotated[bool, typer.Option("--no-plots", help="Skip the plot bundle.")] = False,
+    no_depth_filter: Annotated[
+        bool,
+        typer.Option("--no-depth-filter", help="Waive the protocol depth filter (no region file)."),
+    ] = False,
+    force: Annotated[
+        bool, typer.Option("--force", help="Re-score even if results for this target hash exist.")
+    ] = False,
 ) -> None:
     """Run the consistency tests on one stored forecast; write results, target.parquet, plots."""
     store = ZarrGridStore(data_dir / "forecasts")
     grid = store.load(forecast)
-    region = _region_if_present(data_dir, grid.region_id)
+    region = _region_for_depth_filter(data_dir, grid.region_id, no_depth_filter=no_depth_filter)
     cat = io.load_catalog(catalog or data_dir / "catalogs" / grid.region_id)
     out_dir = out or Path("reports") / "eval" / grid.id
     tracker = JsonlTracker(JsonlTracker.default_path(data_dir, grid.region_id))
@@ -73,6 +90,7 @@ def run(  # noqa: PLR0917 - typer options
         seed=seed,
         plots=not no_plots,
         tracker=tracker,
+        force=force,
     )
     for r in results:
         q = (
@@ -84,7 +102,7 @@ def run(  # noqa: PLR0917 - typer options
             f"{r.test_name.value:>2}: statistic={r.statistic:.4f} {q} passed={r.passed} "
             f"n_target={r.n_target_events}"
         )
-    typer.echo(f"wrote {out_dir}")
+    typer.echo(f"wrote {out_dir} (results keyed by target hash; see latest.json)")
 
 
 @app.command("schedule")

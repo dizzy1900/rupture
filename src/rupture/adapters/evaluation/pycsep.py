@@ -326,7 +326,7 @@ class PyCSEPEvaluator:
                     ax.get_figure().savefig(path, dpi=120, bbox_inches="tight")
                     plt.close(ax.get_figure())
                 written.append(path)
-            except Exception as exc:
+            except (OSError, RuntimeError, ValueError) as exc:
                 skipped.append({"plot": path.name, "reason": f"{type(exc).__name__}: {exc}"})
             if test in ONE_SIDED:
                 hpath = out_dir / f"{test.value.lower()}-test-distribution.png"
@@ -337,7 +337,7 @@ class PyCSEPEvaluator:
                         ax.get_figure().savefig(hpath, dpi=120, bbox_inches="tight")
                         plt.close(ax.get_figure())
                     written.append(hpath)
-                except Exception as exc:
+                except (OSError, RuntimeError, ValueError) as exc:
                     skipped.append({"plot": hpath.name, "reason": f"{type(exc).__name__}: {exc}"})
 
         map_path = out_dir / "expected-counts-map.png"
@@ -361,7 +361,7 @@ class PyCSEPEvaluator:
                 ax.get_figure().savefig(map_path, dpi=120, bbox_inches="tight")
                 plt.close(ax.get_figure())
             written.append(map_path)
-        except Exception as exc:
+        except (OSError, RuntimeError, ValueError) as exc:
             skipped.append({"plot": map_path.name, "reason": f"{type(exc).__name__}: {exc}"})
 
         summary = {

@@ -85,11 +85,19 @@ def run(repo_root: Path) -> GateResult:
         missing = [t.value for t in TESTS if t.value not in w["tests"]]
         if missing:
             failures.append(f"window {w['issue_time']}: missing tests {missing}")
-        bundle = out_dir / "eval" / w["forecast_id"]
-        needed = ["results.json", "target.parquet", "summary.json", "n-test.png"]
+        eval_dir = out_dir / "eval" / w["forecast_id"]
+        latest_path = eval_dir / "latest.json"
+        if not latest_path.exists():
+            failures.append(f"window {w['issue_time']}: missing latest.json in {eval_dir}")
+            continue
+        latest = json.loads(latest_path.read_text(encoding="utf-8"))
+        bundle = eval_dir / latest["bundle_dir"]
+        needed = ["target.parquet", "summary.json", "n-test.png"]
         absent = [n for n in needed if not (bundle / n).exists()]
+        if not (eval_dir / latest["results"]).exists():
+            absent.append(latest["results"])
         if absent:
-            failures.append(f"window {w['issue_time']}: missing {absent} in {bundle}")
+            failures.append(f"window {w['issue_time']}: missing {absent} in {eval_dir}")
         summary = (
             json.loads((bundle / "summary.json").read_text(encoding="utf-8"))
             if (bundle / "summary.json").exists()

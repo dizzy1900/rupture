@@ -17,8 +17,8 @@ Three further properties of the package at the pinned commit matter here:
    `simulate_background_location`, reseeding numpy's global generator from OS entropy on every
    call. A forecast issued through those entry points cannot be reproduced from a recorded seed.
 2. `etas/simulation.py` imports `seismostats` at module import time although the package
-   declares it only in its optional `hermes` extra, so the module is unimportable in rupture's
-   locked environment as shipped.
+   declares it only in its optional `hermes` extra; rupture therefore declares `seismostats>=1.0`
+   as its own runtime dependency (ADR-0009 addendum) so the module imports.
 3. The inversion assumes a spatially uniform background rate μ (`optimize_parameters` sets
    `mu_hat = n_hat / (area · T)`), while the simulation places new background events by sampling
    past events weighted by their background probability with Gaussian jitter (`gaussian_scale`).
@@ -69,9 +69,11 @@ events are dropped from the count (their expectation is `B_c`) and their aftersh
 The single approximation is that those aftershocks descend from uniformly placed parents rather
 than smoothed-law parents; over horizons of days to a month this is second order.
 
-**Compat shim.** `adapters/forecasting/_etas_compat.py` registers a stand-in `seismostats`
-module (whose `ForecastCatalog` refuses to be instantiated) only when the real package is absent,
-so `etas.simulation` imports. rupture never calls `simulate_to_df`, the sole user of that name.
+**Capped EM.** The package's `invert()` loops until its tolerance is met with no iteration cap.
+`MizrahiETAS._invert_capped` runs the identical step sequence (expectation step, parameter
+optimisation, summed absolute change < 0.001, final expectation step) under `max_iterations`
+and `max_seconds`; hitting a cap yields `converged=False` and a persisted, unusable fit rather
+than a hang.
 
 **Reproducible fits.** The EM starts from a fixed `theta_0` (`DEFAULT_THETA_0`) instead of the
 package's random draw, so a refit on the same data reproduces `parameter_snapshot_hash`.
@@ -86,8 +88,8 @@ package's random draw, so a refit on the same data reproduces `parameter_snapsho
   triggered event have expected count 0 (floating-point underflow of the Gaussian tail); the
   evaluator records an observed event there as a rejection with the most negative finite
   statistic, and the fixture window that contains Ridgecrest is such a case.
-- The shim is an interim; the durable fix is upstream (guard the import) or a `seismostats`
-  dependency in `pyproject.toml`, either of which is an architect decision.
+- `seismostats` is a runtime dependency only because of the import in `etas/simulation.py`;
+  rupture calls nothing from it.
 - Moving the etas pin (ADR-0009) must re-check the three properties listed under Context.
 
 ## Alternatives considered
