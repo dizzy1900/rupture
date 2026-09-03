@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<nrml xmlns:gml="http://www.opengis.net/gml"
+      xmlns="http://openquake.org/xmlns/nrml/0.4">
+
+<!--  source models : area sources and SEIS + fault sources]  pre-release model  -->
+
+    <logicTree logicTreeID="lt1">
+            <logicTreeBranchSet branchSetID="bs1" uncertaintyType="sourceModel" >
+
+<!--  area sources low TGR models vs MaxMags-->
+
+                <logicTreeBranch branchID="ABL_ML">
+                    <uncertaintyModel>
+
+					 source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml
+					 source_models/asm_v12e/asm_ver12e_winGT_fs017_twingr.xml
+
+					 source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml
+					 source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_low.xml
+
+					 source_models/interface_v12b/CaA_IF2222222_M40.xml
+					 source_models/interface_v12b/CyA_IF2222222_M40.xml
+					 source_models/interface_v12b/GiA_IF2222222_M40.xml
+					 source_models/interface_v12b/HeA_IF2222222_M40.xml
+
+                    </uncertaintyModel>
+                    <uncertaintyWeight>0.030</uncertaintyWeight>
+                </logicTreeBranch>
+                <logicTreeBranch branchID="ABL_MC">
+                    <uncertaintyModel>
+
+					 source_models/asm_v12e/asm_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml
+					 source_models/asm_v12e/asm_ver12e_winGT_fs017_twingr.xml
+
+					 source_models/deep_v12e/asm_deep_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml
+					 source_models/volcanic_v12e/asm_volcanic_ver12e_winGT_fs017_lo_abgrs_maxmag_mid.xml
+
+					 source_models/interface_v12b/CaA_IF2222222_M40.xml
+					 source_models/interface_v12b/CyA_IF2222222_M40.xml
+					 source_models/interface_v12b/GiA_IF2222222_M40.xml
+					 source_models/interface_v12b/HeA_IF2222222_M40.xml
+
+
+                     </uncertaintyModel>
+                    <uncertaintyWeight>0.024</uncertaintyWeight>
+                </logicTreeBranch>
+                <logicTreeBranch branchID="ABL_MU">
+                    <uncertaintyModel>
+
+					 source_model

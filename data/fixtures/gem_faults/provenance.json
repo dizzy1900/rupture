@@ -1,0 +1,31 @@
+{
+  "source": "gem-gaf",
+  "licence": "CC-BY-SA-4.0",
+  "attribution": "GEM Global Active Faults Database (GEM GAF-DB), Styron, R. & Pagani, M. (2020), Earthquake Spectra 36(1_suppl), 160-180, doi:10.1177/8755293020944182; (c) GEM Foundation, CC-BY-SA-4.0",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with the recorded filter and re-record provenance",
+  "files": {
+    "gem_active_faults_harmonized.nepal-bbox.geojson": {
+      "source_url": "https://raw.githubusercontent.com/GEMScienceTools/gem-global-active-faults/master/geojson/gem_active_faults_harmonized.geojson",
+      "repository": "https://github.com/GEMScienceTools/gem-global-active-faults",
+      "commit_of_last_change_to_file": "850fd05b48841eb806d61a37043b5567f5bb99dd",
+      "retrieved_at": "2026-09-03T10:08:32.624198+00:00",
+      "parent_sha256": "37babb516edfac22b5ae91744495d8546b3ae4676b4d4f68cc77da8222df20e1",
+      "parent_size": 10622730,
+      "parent_n_features": 13696,
+      "sha256": "33132f3fbc8cc936966defa92c62977111bbf039b2a3e1477f87c971adca675d",
+      "size": 41726,
+      "n_features": 59,
+      "query": {
+        "filter": "features whose geometry intersects the bbox",
+        "bbox": {
+          "min_longitude": 80.0,
+          "min_latitude": 26.0,
+          "max_longitude": 89.0,
+          "max_latitude": 31.0
+        }
+      },
+      "notes": "subset of the real GAF GeoJSON: feature dicts copied verbatim, re-serialised compactly; properties untouched"
+    }
+  }
+}

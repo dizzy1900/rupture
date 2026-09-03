@@ -1,0 +1,85 @@
+{
+  "source": "usgs-comcat",
+  "licence": "public-domain (USGS)",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with the adapter and re-record provenance",
+  "files": {
+    "gorkha-2015-30d-m4.geojson": {
+      "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2015-04-25T00%3A00%3A00&endtime=2015-05-25T00%3A00%3A00&minmagnitude=4&minlongitude=80&maxlongitude=89&minlatitude=26&maxlatitude=31&orderby=time-asc",
+      "retrieved_at": "2026-09-03T10:08:10.990767+00:00",
+      "sha256": "5cfa67778b3293d44fcef3011bedd12f15a1224099a7326267238547616e58fc",
+      "size": 171689,
+      "n_events": 242,
+      "query": {
+        "starttime": "2015-04-25T00:00:00",
+        "endtime": "2015-05-25T00:00:00",
+        "minmagnitude": 4.0,
+        "bbox": {
+          "min_longitude": 80.0,
+          "min_latitude": 26.0,
+          "max_longitude": 89.0,
+          "max_latitude": 31.0
+        }
+      },
+      "notes": "2015 Gorkha sequence, 30 days"
+    },
+    "kahramanmaras-2023-30d-m4.geojson": {
+      "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2023-02-06T00%3A00%3A00&endtime=2023-03-08T00%3A00%3A00&minmagnitude=4&minlongitude=35&maxlongitude=42&minlatitude=35.5&maxlatitude=40&orderby=time-asc",
+      "retrieved_at": "2026-09-03T10:08:11.729749+00:00",
+      "sha256": "a7006ba1f2c4b8d5b483591b1c942a718f915915e8ab5543f7a3b5d64640d46a",
+      "size": 329408,
+      "n_events": 472,
+      "query": {
+        "starttime": "2023-02-06T00:00:00",
+        "endtime": "2023-03-08T00:00:00",
+        "minmagnitude": 4.0,
+        "bbox": {
+          "min_longitude": 35.0,
+          "min_latitude": 35.5,
+          "max_longitude": 42.0,
+          "max_latitude": 40.0
+        }
+      },
+      "notes": "2023 Kahramanmaras doublet, 30 days"
+    },
+    "nepal-2026-landslide-us7000tbwb.geojson": {
+      "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2026-08-20T00%3A00%3A00&endtime=2026-09-01T00%3A00%3A00&minmagnitude=4&minlongitude=80&maxlongitude=89&minlatitude=26&maxlatitude=31&orderby=time-asc",
+      "retrieved_at": "2026-09-03T10:08:12.303958+00:00",
+      "sha256": "7e0178d3f289720d188dc86258bc969f2fc2d98f55401a7e07d42cc89d7cab0f",
+      "size": 1842,
+      "n_events": 2,
+      "query": {
+        "starttime": "2026-08-20T00:00:00",
+        "endtime": "2026-09-01T00:00:00",
+        "minmagnitude": 4.0,
+        "bbox": {
+          "min_longitude": 80.0,
+          "min_latitude": 26.0,
+          "max_longitude": 89.0,
+          "max_latitude": 31.0
+        }
+      },
+      "notes": "window containing the landslide-type entry us7000tbwb (2026-08-26); eventtype unrestricted"
+    },
+    "ridgecrest-2019-30d-m3.5.geojson": {
+      "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-07-04T00%3A00%3A00&endtime=2019-08-03T00%3A00%3A00&minmagnitude=3.5&minlongitude=-122&maxlongitude=-114&minlatitude=32&maxlatitude=37.5&orderby=time-asc",
+      "retrieved_at": "2026-09-03T10:08:12.130431+00:00",
+      "sha256": "9185ef36189306cbbb035643d2ba6210d0782c27a0d4a420b1ee8177227814e3",
+      "size": 303701,
+      "n_events": 401,
+      "query": {
+        "starttime": "2019-07-04T00:00:00",
+        "endtime": "2019-08-03T00:00:00",
+        "minmagnitude": 3.5,
+        "bbox": {
+          "min_longitude": -122.0,
+          "min_latitude": 32.0,
+          "max_longitude": -114.0,
+          "max_latitude": 37.5
+        }
+      },
+      "notes": "2019 Ridgecrest sequence, 30 days"
+    }
+  },
+  "notes": "byte-exact ComCat FDSN GeoJSON responses; eventtype unrestricted so landslide-type entries are present"
+}

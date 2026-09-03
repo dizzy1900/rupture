@@ -1,0 +1,25 @@
+{
+  "source": "eshm20",
+  "licence": "CC-BY-4.0",
+  "licence_text_first_lines": "This repository contains the European Seismic Hazard Model (ESHM20).  The findings, comments, statements or recommendations expressed herein are exclusively\nof the author(s) and do not necessarily reflect the views and policies of the institutions listed here: i.e. Swiss Seismological Service, ETH Zurich, Istituto\nNazionale di Geofisica e Vulcanologia (INGV), German Research Centre for Geociences (GFZ), Institut des Sciences de la Terre (ISTerre), Instituto Superior",
+  "citation": "Danciu, L., Nandan, S., Reyes, C., Wiemer, S., & Giardini, D. (2021). OpenQuake Input Files for the 2020 Update of the European Seismic Hazard Model (ESHM20) [Data set]. EFEHR. https://doi.org/10.12686/ESHM20-OQ-INPUT",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with the recorded query and re-record provenance",
+  "files": {
+    "source_model_logic_tree_eshm20_model_v12e.head2048.xml": {
+      "source_url": "https://gitlab.seismo.ethz.ch/api/v4/projects/efehr%2Feshm20/repository/files/oq_computational%2Foq_configuration_eshm20_v12e_region_main%2Fsource_model_logic_tree_eshm20_model_v12e.xml/raw?ref=fbd334de68f85d72669f73fc5a314a113db67317",
+      "repository": "https://gitlab.seismo.ethz.ch/efehr/eshm20",
+      "commit": "fbd334de68f85d72669f73fc5a314a113db67317",
+      "path": "oq_computational/oq_configuration_eshm20_v12e_region_main/source_model_logic_tree_eshm20_model_v12e.xml",
+      "retrieved_at": "2026-09-03T10:08:34.010466+00:00",
+      "parent_sha256": "97a37911f9eae73766f386686b112e5a4e111965da3e4e1543627c28d4201867",
+      "parent_size": 17579,
+      "sha256": "20761822fd3ffb95c1b5ec37fbd0857a1278bf4eae3645ad69f95511fa2b96fa",
+      "size": 2048,
+      "query": {
+        "excerpt": "first 2048 bytes of the file, byte-exact"
+      },
+      "notes": "byte-exact prefix of the ESHM20 v12e source-model logic tree; the rest of the file is not committed"
+    }
+  }
+}

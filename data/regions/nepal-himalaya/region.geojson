@@ -1,0 +1,62 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+      [
+        [
+          80.0,
+          28.2
+        ],
+        [
+          83.0,
+          27.3
+        ],
+        [
+          85.5,
+          26.8
+        ],
+        [
+          89.0,
+          26.5
+        ],
+        [
+          89.0,
+          28.4
+        ],
+        [
+          86.5,
+          28.9
+        ],
+        [
+          84.0,
+          29.6
+        ],
+        [
+          80.0,
+          30.5
+        ],
+        [
+          80.0,
+          28.2
+        ]
+      ]
+    ]
+  },
+  "properties": {
+    "id": "nepal-himalaya",
+    "name": "Nepal Himalaya (Main Himalayan Thrust corridor)",
+    "depth_min_km": 0.0,
+    "depth_max_km": 70.0,
+    "tectonic_setting": "continental_collision",
+    "cell_size_deg": 0.1,
+    "target_min_magnitude": 4.5,
+    "magnitude_bin_width": 0.1,
+    "magnitude_max": 8.95,
+    "mc": null,
+    "description": "Corridor defined by rupture, not an official region: an octagon following the Himalayan arc between about 80 and 89 E; the southern edge runs just south of the Main Frontal Thrust from about 28.2 N in the west to 26.5 N in the east, the northern edge from about 30.5 N in the west to 28.4 N in the east. Includes the 2015 Gorkha sequence and the 2026-08-26 landslide-type entry us7000tbwb.",
+    "references": [
+      "Avouac 2003, Adv. Geophys. 46 (MHT geometry)"
+    ]
+  }
+}
