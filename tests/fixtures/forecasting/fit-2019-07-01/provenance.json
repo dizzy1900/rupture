@@ -1,0 +1,18 @@
+{
+  "auxiliary_years": 0.5,
+  "command": "uv run python -m tests.fixtures.forecasting.make_fit_fixture",
+  "created_at": "2026-09-03T10:15:48.830184+00:00",
+  "derived_from": "comcat-california-2018-2019-m3.geojson",
+  "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
+  "fit_cutoff": "2019-07-01T00:00:00+00:00",
+  "licence": "public-domain (USGS)",
+  "magnitudes": "reported ComCat magnitudes used as mw (loader reported_as_mw=True)",
+  "mc": 3.0,
+  "mc_note": "3.0 is the fixture's ComCat query floor, passed explicitly; not a fitted Mc",
+  "model_id": "etas-mizrahi",
+  "model_version": "etas-3.0.0+097f08b",
+  "n_events": 214,
+  "parameter_snapshot_hash": "9e9325406a9009de6d19d3f468c14c25350643a8bbd950032d8285a768a5a91a",
+  "source_sha256": "153be1f5659e2b308c62cbb83dcf7afacd8eb96e7b5e3cdfce4d1c4c314011f9",
+  "training_catalog_hash": "00b9f3f98265fb4b303cc2131cb673d982e51899f518b27507d61f02c29f78c4"
+}
