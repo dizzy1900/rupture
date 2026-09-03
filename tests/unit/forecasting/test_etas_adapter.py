@@ -12,6 +12,7 @@ import pytest
 from rupture.adapters.forecasting.etas_mizrahi import (
     PARAMETER_KEYS,
     MizrahiETAS,
+    archive_dir,
     cell_areas_km2,
     gr_bin_probabilities,
     load_fit,
@@ -212,11 +213,11 @@ def test_fit_refuses_an_auxiliary_window_that_eats_the_data(
 
 def test_save_and_load_fit_round_trip(committed_fit: FitResult, tmp_path: Path) -> None:
     out = save_fit(committed_fit, tmp_path)
-    assert {p.name for p in out.iterdir()} == {
-        "fit_result.json",
-        "parameters.json",
-        "diagnostics.json",
-    }
+    files = {"fit_result.json", "parameters.json", "diagnostics.json"}
+    # the three files, plus the per-cutoff archive that keeps a refit from destroying this fit
+    assert {p.name for p in out.iterdir()} == files | {"fits"}
+    archive = archive_dir(tmp_path, committed_fit.region_id, committed_fit.fit_cutoff)
+    assert {p.name for p in archive.iterdir()} == files
     assert load_fit(tmp_path, committed_fit.region_id) == committed_fit
     with pytest.raises(FileNotFoundError):
         load_fit(tmp_path, "nowhere")
