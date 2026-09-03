@@ -1,0 +1,57 @@
+{
+  "source": "gem/oq-engine",
+  "ref": "engine-3.26",
+  "retrieved_at": "2026-09-03T20:06:25.991777Z",
+  "licence": "AGPL-3.0-or-later",
+  "notes": "OpenQuake's own committed GSIM expected-value tables, carried unmodified as verification fixtures for rupture's native_gsim adapter (ADR-0020).",
+  "files": [
+    {
+      "file": "BSSA_2014_INTER_STD.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_INTER_STD.csv",
+      "sha256": "ee36a61fc7a7a319fbdff92d80789bc05d549467e22d650f962e864573b75fd5",
+      "bytes": 126212
+    },
+    {
+      "file": "BSSA_2014_INTRA_STD.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_INTRA_STD.csv",
+      "sha256": "27ffec8c7ba7d823b0f98a0d8cb37c5f9ec6f3ef7d5b6a9ace1f6d77853bcf69",
+      "bytes": 127556
+    },
+    {
+      "file": "BSSA_2014_MEAN.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_MEAN.csv",
+      "sha256": "189881f603fd197c7ef0f538b69d1d217cbefd1b0ca65d9f81cad051995edc7a",
+      "bytes": 196961
+    },
+    {
+      "file": "BSSA_2014_NOSOF_INTER_STD.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_NOSOF_INTER_STD.csv",
+      "sha256": "bfe6b9d2e29e0aa0e1cbe8be672af929fc9acc7e57f4844f5f15770fa40be4b3",
+      "bytes": 41503
+    },
+    {
+      "file": "BSSA_2014_NOSOF_INTRA_STD.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_NOSOF_INTRA_STD.csv",
+      "sha256": "21b0ec33ff920023ce6bc213ce398f8c6e8786cc6a7ab9223eac02196ebf0912",
+      "bytes": 41951
+    },
+    {
+      "file": "BSSA_2014_NOSOF_MEAN.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_NOSOF_MEAN.csv",
+      "sha256": "63d62f6c03baeac9adca328b21e10ed0620af1026d184f56839ad74f0ea6d881",
+      "bytes": 65007
+    },
+    {
+      "file": "BSSA_2014_NOSOF_TOTAL_STD.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_NOSOF_TOTAL_STD.csv",
+      "sha256": "831157f450abe4978a684cd95879b8f9a4b9ded8864e8d79305a290eac2c31ba",
+      "bytes": 45539
+    },
+    {
+      "file": "BSSA_2014_TOTAL_STD.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BSSA2014/BSSA_2014_TOTAL_STD.csv",
+      "sha256": "ce36f2c42ca26f1494d60f1f455bdd14ea3566cb552a828cd9ad7724de7c9917",
+      "bytes": 138320
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "source": "usgs-comcat",
+  "event_id": "us20002926",
+  "product": "finite-fault",
+  "product_code": "us20002926",
+  "product_source": "us",
+  "source_url": "https://earthquake.usgs.gov/product/finite-fault/us20002926/us/1539809906375/complete_inversion.fsp",
+  "detail_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&eventid=us20002926",
+  "retrieved_at": "2026-09-03T20:38:55.487860Z",
+  "sha256": "448471425bf721aaad2f04675aa9f52702e548c73ae7cda511aa97dedc712be2",
+  "bytes": 53443,
+  "licence": "US Government work (USGS); public domain",
+  "magnitude": 7.8,
+  "place": "67 km NNE of Bharatpur, Nepal",
+  "notes": "USGS NEIC finite-fault inversion for the 2015 Gorkha earthquake, in SRCMOD FSP format. rupture builds the Gorkha-repeat scenario's rupture plane from this file; see rupture.risk.scenarios for the trimming rule."
+}

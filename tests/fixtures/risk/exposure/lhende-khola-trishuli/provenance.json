@@ -1,0 +1,12 @@
+{
+  "source": "serac",
+  "source_repository": "github.com/dizzy1900/serac",
+  "source_path": "data/aoi/lhende-khola-trishuli/exposed_assets.geojson",
+  "source_commit": "7af421e0e9b7122ba65952b7e572be1133f83411",
+  "source_committed_at": "2026-09-03T10:53:18Z",
+  "retrieved_at": "2026-09-03T00:00:00Z",
+  "licence": "see the serac repository; rupture carries this copy unmodified",
+  "sha256": "24cc2e418ab7453c5e954b8569566e53d6b55b4975b1b1eb04535420fbec047d",
+  "bytes": 11688,
+  "notes": "A FALLBACK ONLY. serac, not rupture, is the source of truth for this exposure. rupture reads the live export from SERAC_EXPORT_DIR (default ../serac) whenever it is present; this committed copy exists so the offline gate and the unit tests can run in a fresh clone, and every portfolio built from it says so in its Provenance.notes."
+}

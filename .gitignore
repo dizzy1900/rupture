@@ -16,13 +16,20 @@ htmlcov/
 .env
 
 # generated reports and scratch
-/reports/
+# `/reports/*` rather than `/reports/`: git cannot re-include a path whose parent directory is
+# excluded, so ignoring the directory itself made every negation below inert.
+/reports/*
 # ...but the schedule aggregates are the published evidence behind docs/BASELINE_RESULTS.md,
 # and reports/ is otherwise untracked while the DVC remote is a local placeholder.
 !/reports/protocol/
 !/reports/protocol/*/
 !/reports/protocol/*/eval/
 !/reports/protocol/*/eval/schedule-*.json
+# ...and the model cards, which are documentation rather than generated output.
+# NOTE for the architect: `make clean` does `rm -rf reports`, which deletes these tracked
+# files. The hazard predates the risk layer (it already applied to reports/protocol/) but
+# now costs a committed document; see docs/RISK.md.
+!/reports/MODEL_CARD_*.md
 .scratch/
 
 # DVC-managed directories (contents tracked by .dvc files / dvc.yaml outs)
