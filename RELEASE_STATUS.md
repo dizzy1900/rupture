@@ -35,7 +35,7 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
 | C1a neural temporal point process | validated | full 55-window schedule, both regions. **Not promotable** |
 | C1b gridded ConvLSTM | validated | same schedule, same targets. **Not promotable** |
 | Log-linear ensemble | validated | beats ETAS on information gain in Türkiye only (+0.335/event); the rule needs 2 of 3 regions. **Not promoted** |
-| Leaky ablation | validated | +0.68 to +2.16 nats/event; on Nepal it flips the sign of the result |
+| Leaky ablation | validated | +0.31 to +2.16 nats/event across the three models; on Nepal the NTPP leak (+0.77) flips the sign of the result |
 | C2 ground motion (native GSIMs) | validated | BC Hydro reproduces OpenQuake's 22,400 reference values to 5e-7 %, stddev exact; BSSA14 to 0.00067 % at tabulated periods |
 | C2 exposure, vulnerability, loss, avoided loss | validated | the serac Trishuli corridor priced end to end; `make underwriting-check` prints USD 675.2M [361.6–996.5M] expected, retrofit avoiding USD 45.0M [32.2–54.5M] |
 | C2 FastAPI service | working | tested with `TestClient`; **never served outside tests** |

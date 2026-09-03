@@ -63,7 +63,8 @@ aftershock totals by two to six times. That is worth having. It is not a discove
 promotion rule — two of three regions — it is not a promotion.
 
 **The most useful number in Prompt 2 is from the leaky ablation.** Letting a fit see across the
-cutoff buys +0.68 to +2.16 nats per event. On Nepal it *flips the sign*: a model that honestly
+cutoff buys between +0.31 and +2.16 nats per event depending on the model and region. On Nepal the
+neural challenger's leak (+0.77) *flips the sign*: a model that honestly
 loses to ETAS by 0.35 appears to win by 0.43, and its spatial pass rate moves from below the
 baseline to above it. On Türkiye the same leak barely moves the pass rates while nearly tripling
 information gain, so neither diagnostic catches it alone. Leakage arrives as good news, in the

@@ -132,7 +132,10 @@ baseline that over-forecasts aftershock totals by two to six times**, not new in
 where or when earthquakes occur. That is worth having and it is not a discovery.
 
 The leaky ablation on the ensemble buys **+2.16 nats per event** in Türkiye — about 6.4 times the
-largest honest gain anywhere in this evaluation.
+largest honest gain anywhere in this evaluation — and **+0.31** in Nepal. Across all three models
+the leak is worth between +0.31 and +2.16 nats per event; every figure in this paragraph is in
+`reports/challenger/<region>/schedule-<region>-challengers.json`, which is committed so a reader
+can check it.
 
 The gridded model does train (11.1 % and 3.7 % held-out likelihood improvement over its untrained
 state) but learns a near-static spatial correction: after a month containing 160 events its
