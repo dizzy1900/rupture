@@ -1,0 +1,61 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholders: <r> region id,
+# <from>/<to> UTC instants bounding the pseudo-prospective schedule (ADR-0015).
+manifest_version: "0"
+name: evaluate-schedule
+description: >-
+  Rolling pseudo-prospective issue-and-evaluate for one region: every 30 days from <from> to <to>,
+  issue the ETAS forecast from data strictly before the issue time and score it with the CSEP
+  tests. Aggregates to reports/eval/schedule-<r>.json.
+image: ${RUPTURE_IMAGE}
+command:
+  - rupture
+  - evaluate
+  - schedule
+  - --region
+  - <r>
+  - --model
+  - etas
+  - --from
+  - <from>
+  - --to
+  - <to>
+  - --step
+  - 30d
+inputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+  - path: baselines/etas/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/etas/<r>
+    kind: dvc
+outputs:
+  - path: data/forecasts/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/forecasts/<r>
+    kind: dvc
+  - path: reports/eval/schedule-<r>.json
+    remote: ${RUPTURE_DVC_REMOTE_URL}/reports/eval/schedule-<r>.json
+    kind: report
+resources:
+  cpu: 8
+  memory_gib: 32
+  timeout_minutes: 720
+  gpu: none
+schedule: null
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - AWS_REGION
+aws:
+  service: batch-ec2
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-evaluate-schedule
+    vcpus: 8
+    memory_mib: 32768
+    attempts: 1
+    timeout_seconds: 43200
+    compute_environment_note: long-running; EC2-backed queue so a 12 h wall clock is allowed
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: reports/eval/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/evaluate-schedule

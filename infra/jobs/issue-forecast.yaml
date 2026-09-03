@@ -1,0 +1,58 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholders: <r> region id,
+# <t> issue time (UTC). The horizon is fixed at 30 days for the operational baseline.
+manifest_version: "0"
+name: issue-forecast
+description: >-
+  Issue a 30-day ETAS ForecastGrid for one region at the issue time from the persisted fit,
+  using only events with origin_time < issue time. Writes zarr + STAC item under data/forecasts/.
+image: ${RUPTURE_IMAGE}
+command:
+  - rupture
+  - forecast
+  - issue
+  - --model
+  - etas
+  - --region
+  - <r>
+  - --horizon
+  - 30d
+  - --issue
+  - <t>
+inputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+  - path: baselines/etas/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/etas/<r>
+    kind: dvc
+outputs:
+  - path: data/forecasts/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/forecasts/<r>
+    kind: dvc
+    note: one ForecastGrid (zarr) and STAC item per issue time; idempotent per (region, issue time)
+resources:
+  cpu: 2
+  memory_gib: 8
+  timeout_minutes: 60
+  gpu: none
+schedule:
+  cron: "15 00 * * *"
+  timezone: UTC
+  note: daily issuance described in docs/SCHEDULER.md; the cron is informational, not wired
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - AWS_REGION
+aws:
+  service: batch-fargate
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-issue-forecast
+    vcpus: 2
+    memory_mib: 8192
+    attempts: 2
+    timeout_seconds: 3600
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: data/forecasts/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/issue-forecast

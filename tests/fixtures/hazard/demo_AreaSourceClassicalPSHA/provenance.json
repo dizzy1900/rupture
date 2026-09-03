@@ -1,0 +1,43 @@
+{
+  "source": "gem/oq-engine",
+  "source_url": "https://github.com/gem/oq-engine/tree/engine-3.26/demos/hazard/AreaSourceClassicalPSHA/",
+  "branch": "engine-3.26",
+  "retrieved_at": "2026-09-03T09:56:29Z",
+  "retrieved_with": "curl (raw.githubusercontent.com)",
+  "licence": "AGPL-3.0-or-later",
+  "adapter_version": "0.1.0",
+  "description": "OpenQuake engine bundled demo 'hazard/AreaSourceClassicalPSHA' input files (branch engine-3.26). This is the demo the CI job hazard-integration runs inside the pinned image. Copied verbatim; not edited. No outputs are committed: the demo was not run on the development machine (no Docker).",
+  "edited_by_hand": false,
+  "files": [
+    {
+      "path": "README.txt",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/demos/hazard/AreaSourceClassicalPSHA/README.txt",
+      "sha256": "01975f719d9ccae69aeca66c1365276694e18689000820f8b0b0ed31411c89fa",
+      "bytes": 727
+    },
+    {
+      "path": "gmpe_logic_tree.xml",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/demos/hazard/AreaSourceClassicalPSHA/gmpe_logic_tree.xml",
+      "sha256": "550ba836487633dd5245d39153b482ae60f2fa704a409f66c3fd24bc490b7e9f",
+      "bytes": 583
+    },
+    {
+      "path": "job.ini",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/demos/hazard/AreaSourceClassicalPSHA/job.ini",
+      "sha256": "f5b38f4b3b4ab749ad951b749222c6a0ca2423c79ad5ed34fa1affa0cc8a9e0f",
+      "bytes": 1085
+    },
+    {
+      "path": "source_model.xml",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/demos/hazard/AreaSourceClassicalPSHA/source_model.xml",
+      "sha256": "65fee578dfc7cefde480365cfcd427269154d4ef521c5b1378a2ea9f6073267c",
+      "bytes": 1976
+    },
+    {
+      "path": "source_model_logic_tree.xml",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/demos/hazard/AreaSourceClassicalPSHA/source_model_logic_tree.xml",
+      "sha256": "b3412c7ab0b9c2116683a5217ead0618cd063be4eb820f6aaf21e6bfa64efb2b",
+      "bytes": 561
+    }
+  ]
+}

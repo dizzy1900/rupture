@@ -1,0 +1,57 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholders: <r> is a region id
+# from `rupture region list`; <from>/<to> are UTC instants; ${...} are environment variables.
+manifest_version: "0"
+name: build-catalog
+description: >-
+  Merge public catalogues (ComCat, ISC, ISC-GEM, GCMT) for one region, homogenise magnitudes,
+  estimate Mc and write the GeoParquet catalogue plus the homogenisation log. Network required.
+image: ${RUPTURE_IMAGE}
+command:
+  - rupture
+  - catalog
+  - build
+  - --region
+  - <r>
+  - --from
+  - <from>
+  - --to
+  - <to>
+inputs:
+  - path: data/regions/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/regions/<r>
+    kind: source
+    note: region polygon and thresholds (git-tracked; listed for completeness)
+outputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+    note: GeoParquet catalogue, homogenisation log, Mc estimate, provenance
+resources:
+  cpu: 2
+  memory_gib: 8
+  timeout_minutes: 180
+  gpu: none
+schedule:
+  cron: "30 02 1 * *"
+  timezone: UTC
+  note: monthly refresh; idempotent for a fixed [from, to)
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - RUPTURE_CONTACT_EMAIL
+  - RUPTURE_ISC_GEM_CSV
+  - AWS_REGION
+aws:
+  service: batch-fargate
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-build-catalog
+    vcpus: 2
+    memory_mib: 8192
+    attempts: 2
+    timeout_seconds: 10800
+    compute_environment_note: Fargate is enough; outbound internet to FDSN/ComCat/GCMT endpoints required
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: data/catalogs/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/build-catalog

@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/dizzy1900/rupture/infra/jobs/schema.json",
+  "title": "RuptureJobManifest",
+  "description": "Portable batch-job manifest (ADR-0016). The image and command are what runs; inputs/outputs are DVC paths with remote URIs; the aws block is an annotation a deployer reads and every other platform ignores.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["manifest_version", "name", "description", "image", "command", "inputs", "outputs", "resources", "schedule", "env", "aws"],
+  "properties": {
+    "manifest_version": { "const": "0" },
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9-]*$",
+      "description": "Job name; equals the file name without .yaml."
+    },
+    "description": { "type": "string", "minLength": 1 },
+    "image": {
+      "type": "string",
+      "pattern": "^(\\$\\{RUPTURE_IMAGE\\}|[a-z0-9./_-]+(:[A-Za-z0-9._-]+)?)$",
+      "description": "Image reference. rupture's own image is ${RUPTURE_IMAGE}; the OpenQuake engine is its pinned tag."
+    },
+    "command": {
+      "type": "array",
+      "minItems": 2,
+      "items": { "type": "string" },
+      "description": "argv passed to the image entrypoint-less container: the exact `rupture ...` invocation."
+    },
+    "inputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "outputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cpu", "memory_gib", "timeout_minutes"],
+      "properties": {
+        "cpu": { "type": "number", "exclusiveMinimum": 0 },
+        "memory_gib": { "type": "number", "exclusiveMinimum": 0 },
+        "timeout_minutes": { "type": "integer", "minimum": 1 },
+        "gpu": { "const": "none" },
+        "docker_socket": {
+          "type": "boolean",
+          "description": "True when the command drives a second container (the OpenQuake image) and needs /var/run/docker.sock on the host."
+        }
+      }
+    },
+    "schedule": {
+      "oneOf": [
+        { "type": "null" },
+        {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["cron", "timezone", "note"],
+          "properties": {
+            "cron": { "type": "string", "pattern": "^\\S+ \\S+ \\S+ \\S+ \\S+$" },
+            "timezone": { "const": "UTC" },
+            "note": { "type": "string" }
+          }
+        }
+      ],
+      "description": "Informational cron (UTC) or null for on-demand jobs. Nothing here triggers anything (docs/SCHEDULER.md describes the scheduler)."
+    },
+    "env": {
+      "type": "array",
+      "items": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$" },
+      "uniqueItems": true,
+      "description": "Names of variables the job reads (from .env.example). Never values."
+    },
+    "aws": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["service", "batch", "s3", "iam_role_name", "log_group", "region"],
+      "properties": {
+        "service": { "enum": ["batch-ec2", "batch-fargate", "ecs-task"] },
+        "region": { "type": "string", "pattern": "^\\$\\{AWS_REGION\\}$|^[a-z]{2}-[a-z]+-[0-9]$" },
+        "batch": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["job_definition_name", "vcpus", "memory_mib", "attempts", "timeout_seconds"],
+          "properties": {
+            "job_definition_name": { "type": "string", "pattern": "^[a-zA-Z0-9_-]+$" },
+            "vcpus": { "type": "integer", "minimum": 1 },
+            "memory_mib": { "type": "integer", "minimum": 512 },
+            "attempts": { "type": "integer", "minimum": 1, "maximum": 10 },
+            "timeout_seconds": { "type": "integer", "minimum": 60 },
+            "compute_environment_note": { "type": "string" }
+          }
+        },
+        "s3": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": ["bucket_env", "prefix"],
+          "properties": {
+            "bucket_env": { "const": "RUPTURE_DVC_REMOTE_URL" },
+            "prefix": { "type": "string" }
+          }
+        },
+        "iam_role_name": { "type": "string", "pattern": "^[A-Za-z0-9+=,.@_-]+$" },
+        "log_group": { "type": "string", "pattern": "^/[A-Za-z0-9/_.-]+$" }
+      }
+    }
+  },
+  "$defs": {
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "remote", "kind"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^[^/].*$", "description": "Repository-relative path (DVC-tracked unless kind = source)." },
+        "remote": { "type": "string", "pattern": "^\\$\\{RUPTURE_DVC_REMOTE_URL\\}/.+$" },
+        "kind": { "enum": ["dvc", "source", "report"] },
+        "note": { "type": "string" }
+      }
+    }
+  }
+}

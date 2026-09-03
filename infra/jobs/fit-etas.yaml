@@ -1,0 +1,54 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholders: <r> region id,
+# <cutoff> UTC instant (events with origin_time < cutoff only; ADR-0015).
+manifest_version: "0"
+name: fit-etas
+description: >-
+  Fit the ETAS baseline for one region on the catalogue strictly before the cutoff and persist the
+  FitResult with diagnostics to baselines/etas/<r>/. Offline once the catalogue is pulled.
+image: ${RUPTURE_IMAGE}
+command:
+  - rupture
+  - forecast
+  - fit
+  - --model
+  - etas
+  - --region
+  - <r>
+  - --cutoff
+  - <cutoff>
+inputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+  - path: data/regions/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/regions/<r>
+    kind: source
+outputs:
+  - path: baselines/etas/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/etas/<r>
+    kind: dvc
+    note: FitResult JSON, parameter snapshot, diagnostics
+resources:
+  cpu: 4
+  memory_gib: 16
+  timeout_minutes: 360
+  gpu: none
+schedule: null
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - AWS_REGION
+aws:
+  service: batch-fargate
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-fit-etas
+    vcpus: 4
+    memory_mib: 16384
+    attempts: 1
+    timeout_seconds: 21600
+    compute_environment_note: CPU-bound likelihood maximisation; no network needed after dvc pull
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: baselines/etas/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/fit-etas

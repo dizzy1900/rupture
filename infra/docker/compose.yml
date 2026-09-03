@@ -1,0 +1,41 @@
+# Local development only (ADR-0016): rupture and the OpenQuake engine side by side.
+#   docker compose -f infra/docker/compose.yml build
+#   docker compose -f infra/docker/compose.yml run --rm rupture hazard check
+#   docker compose -f infra/docker/compose.yml up -d openquake   # WebUI on http://127.0.0.1:8800
+# Not used by CI (the hazard-integration job calls `docker run` through the adapter) and not a
+# deployment target.
+
+services:
+  rupture:
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      args:
+        GIT_SHA: ${GIT_SHA:-dev}
+    image: rupture:dev
+    # Mount the checkout over /app so edits are live; the venv stays the image's.
+    volumes:
+      - ../..:/app
+    # `rupture hazard ...` is run from the host (uv run rupture hazard demo): the image carries
+    # no docker CLI, so inside this container those verbs skip with a printed reason.
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      RUPTURE_OPENQUAKE_IMAGE: ${RUPTURE_OPENQUAKE_IMAGE:-openquake/engine:3.26.2}
+    working_dir: /app
+    entrypoint: ["rupture"]
+    command: ["--help"]
+
+  openquake:
+    image: openquake/engine:3.26.2
+    # Headless mode: the image's entrypoint starts the dbserver, then the WebUI on 8800.
+    ports:
+      - "127.0.0.1:8800:8800"
+    volumes:
+      - oqdata:/home/openquake/oqdata
+      - ../../data:/data:ro
+    stop_signal: SIGINT
+
+volumes:
+  oqdata:
