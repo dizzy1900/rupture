@@ -35,11 +35,17 @@ dependencies = [
   "pycsep==0.8.0",
   "pyyaml>=6.0.3",
   "seismostats>=1.0",
+  "torch>=2.9",
+  "fastapi>=0.118",
+  "uvicorn>=0.38",
 ]
 
 [project.optional-dependencies]
 # ComCat detail products (ShakeMap, PAGER, ground-failure) — needed from Prompt 2 onwards.
 comcat-products = ["usgs-libcomcat>=2.1"]
+# Optional experiment tracking. The local JSONL tracker is the default and the only one tests use
+# (ADR-0023); this extra is never required and its absence is not an error.
+wandb = ["wandb>=0.18"]
 
 [project.scripts]
 rupture = "rupture.cli:app"
@@ -61,6 +67,7 @@ dev = [
   "types-jsonschema>=4.23",
   "types-shapely>=2.0",
   "types-pyyaml>=6.0.12.20260815",
+  "httpx>=0.28",
 ]
 
 [tool.hatch.metadata]
