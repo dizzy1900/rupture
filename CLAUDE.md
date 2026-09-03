@@ -86,8 +86,8 @@ after `uv sync`.
 | `schema-export` | regenerate contracts/*.json from the domain models |
 | `schema-check` | fail if contracts/*.json drift from the domain models |
 | `validate-rupture` | everything, offline (`lint typecheck test` + `$(VALIDATE_GATES)`, initially `validate-language schema-check`) |
-| `promote` | refuse unless validate-rupture is green; then print the promotion record |
-| `underwriting-check` | AvoidedLossRequest round-trip; exits non-zero: not implemented (Prompt 2) |
+| `promote` | refuse unless every gate is green **and** `PROMOTE_APPROVED_BY` names a human approver; then print the promotion record, naming each skipped gate and its reason |
+| `underwriting-check` | run the serac Nepal corridor portfolio through the MHT scenario and print expected and avoided loss with intervals; exits non-zero if any figure is missing or the response is a stub |
 | `clean` | remove caches |
 
 How the gates are wired:

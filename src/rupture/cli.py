@@ -7,15 +7,14 @@ implemented exits with status 2 and names the phase that delivers it.
 
 from __future__ import annotations
 
-import json
 import sys
 from pathlib import Path
 from typing import Annotated
 
-import jsonschema
 import typer
 
 from rupture import __version__
+from rupture.adapters.exposure import SeracExposureSource
 from rupture.commands import (
     aftershock,
     cascade,
@@ -26,7 +25,17 @@ from rupture.commands import (
     region,
     risk,
 )
-from rupture.domain import contracts, loss, utc_now
+from rupture.domain import contracts, utc_now
+from rupture.domain.avoided_loss_v1 import (
+    AvoidedLossRequestV1,
+    HazardKind,
+    Intervention,
+    InterventionKind,
+    ResponseStatus,
+)
+from rupture.domain.loss import TriggerKind
+from rupture.domain.money import ModelProvenance, MoneyRange
+from rupture.risk.avoided_loss import respond
 from rupture.validation import GateResult, GateStatus
 from rupture.validation.registry import GATES, run_gate
 
@@ -129,6 +138,10 @@ def schema_export(
 @app.command()
 def promote(
     root: Annotated[Path, typer.Option(help="Repository root.")] = REPO_ROOT,
+    approved_by: Annotated[
+        str | None,
+        typer.Option("--approved-by", help="The person accepting this release. Required."),
+    ] = None,
 ) -> None:
     """Re-run every gate and print the promotion record, naming each skip and its reason.
 
@@ -138,6 +151,10 @@ def promote(
     (that is the rule in CLAUDE.md) but its reason is always printed, so a promotion record can
     never hide that, say, the OpenQuake container never ran.
     """
+    if not approved_by or not approved_by.strip():
+        print("promote: REFUSED — no approver named (--approved-by / PROMOTE_APPROVED_BY)")
+        print("promote: a release nobody is willing to sign is not a release")
+        raise typer.Exit(EXIT_FAIL)
     results = [run_gate(name, root) for name in GATES]
     for result in results:
         print(result.render())
@@ -152,37 +169,69 @@ def promote(
     if skipped:
         summary += f", {len(skipped)} skipped ({', '.join(r.name for r in skipped)})"
     print(f"promote: rupture {__version__} — {summary}; see RELEASE_STATUS.md")
+    print(f"promote: approved by {approved_by.strip()} at {utc_now().isoformat()}")
 
 
 @app.command("underwriting-check")
-def underwriting_check() -> None:
-    """Round-trip an AvoidedLossRequest through its schema; exit 2: not implemented (Prompt 2)."""
-    example_path = (
-        REPO_ROOT / "tests" / "contract" / "fixtures" / "avoided-loss.request.example.json"
+def underwriting_check(
+    portfolio: Annotated[
+        str, typer.Option("--portfolio", help="Portfolio to price; the serac Nepal corridor.")
+    ] = "trishuli-corridor",
+    scenario: Annotated[
+        str, typer.Option("--scenario", help="Scenario id from `rupture risk scenarios`.")
+    ] = "mht-m8-hypothetical",
+) -> None:
+    """Run the Nepal corridor portfolio through the MHT scenario and print the numbers.
+
+    This is the underwriter-facing end of rupture: a portfolio, a scenario, expected loss and what
+    an intervention avoids, each as an interval with a stated basis. It exits non-zero if any
+    figure is missing or the response is not a real answer, so a green run means numbers were
+    actually produced — not that the code path executed.
+    """
+    source = SeracExposureSource()
+    portfolio_obj = source.load(portfolio_id=portfolio)
+    request = AvoidedLossRequestV1(
+        request_id="underwriting-check",
+        hazard_kind=HazardKind.SEISMIC,
+        requested_at=utc_now(),
+        portfolio=portfolio_obj,
+        trigger_kind=TriggerKind.SCENARIO,
+        trigger_id=scenario,
+        interventions=(
+            Intervention(
+                id="retrofit-all",
+                kind=InterventionKind.STRUCTURAL_RETROFIT,
+                description="Seismic retrofit of every priced asset.",
+            ),
+        ),
     )
-    payload = json.loads(example_path.read_text(encoding="utf-8"))
-    request = loss.AvoidedLossRequest.model_validate(payload)
-    schema = contracts.schema_for("avoided-loss.v0.json")
-    jsonschema.validate(
-        {
-            "request": request.model_dump(mode="json"),
-            "response": _not_implemented_response(request),
-        },
-        schema,
+    response = respond(request, repo_root=REPO_ROOT)
+    print(f"underwriting-check: portfolio {portfolio_obj.id} ({len(portfolio_obj.assets)} assets)")
+    print(f"underwriting-check: scenario {scenario}")
+    if response.status is not ResponseStatus.OK:
+        print(f"underwriting-check: {response.status.value}: {response.message}")
+        raise typer.Exit(EXIT_FAIL)
+    total = response.baseline_total
+    if total is None:
+        print("underwriting-check: no baseline total was produced")
+        raise typer.Exit(EXIT_FAIL)
+    print(
+        f"underwriting-check: expected loss {_money(total)}"
+        f"  [{total.confidence.value} confidence, {total.provenance.value}]"
     )
-    print("underwriting-check: AvoidedLossRequest round-trip OK")
-    print("underwriting-check: not implemented: Prompt 2 (loss layer)")
-    raise typer.Exit(EXIT_NOT_IMPLEMENTED)
+    for outcome in response.interventions:
+        avoided = outcome.avoided_vs_baseline
+        print(f"underwriting-check: {outcome.intervention_id} avoids {_money(avoided)}")
+    if response.provenance_kind is ModelProvenance.STUB:
+        print("underwriting-check: the response is a stub; no figure above is usable")
+        raise typer.Exit(EXIT_FAIL)
+    print("underwriting-check: OK — every figure carries an interval and a basis")
 
 
-def _not_implemented_response(request: loss.AvoidedLossRequest) -> dict[str, object]:
-    resp = loss.AvoidedLossResponse(
-        request_id=request.request_id,
-        status=loss.ResponseStatus.NOT_IMPLEMENTED,
-        responded_at=utc_now(),
-        message="not implemented: Prompt 2 (loss layer)",
-    )
-    return resp.model_dump(mode="json")
+def _money(m: MoneyRange) -> str:
+    """Render a MoneyRange as a reader would want it: a central figure and its interval."""
+    mid = m.best if m.best is not None else (m.low + m.high) / 2.0
+    return f"{m.currency} {mid / 1e6:.1f}M [{m.low / 1e6:.1f}-{m.high / 1e6:.1f}M]"
 
 
 def main() -> None:

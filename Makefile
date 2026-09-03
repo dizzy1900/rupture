@@ -64,9 +64,13 @@ VALIDATE_GATES := validate-language schema-check
 validate-rupture: lint typecheck test $(VALIDATE_GATES) ## everything, offline
 	@echo "validate-rupture: green ($(VALIDATE_GATES))"
 
-promote: ## refuse unless validate-rupture is green; then print the promotion record
+promote: ## refuse unless every gate is green AND a human approver is named
+	@test -n "$(PROMOTE_APPROVED_BY)" || { \
+	  echo "promote: REFUSED — set PROMOTE_APPROVED_BY to the person accepting this release."; \
+	  echo "promote: e.g. make promote PROMOTE_APPROVED_BY='A. Name <a@example.org>'"; \
+	  exit 1; }
 	@$(MAKE) --no-print-directory validate-rupture || { echo "promote: REFUSED (validate-rupture not green)"; exit 1; }
-	$(RUN) rupture promote
+	$(RUN) rupture promote --approved-by "$(PROMOTE_APPROVED_BY)"
 
 underwriting-check: ## AvoidedLossRequest round-trip; exits non-zero: not implemented (Prompt 2)
 	$(RUN) rupture underwriting-check
