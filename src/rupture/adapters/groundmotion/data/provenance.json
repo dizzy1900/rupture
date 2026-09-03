@@ -1,0 +1,34 @@
+{
+  "source": "gem/oq-engine",
+  "ref": "engine-3.26",
+  "retrieved_at": "2026-09-03T20:22:54.047636Z",
+  "licence": "AGPL-3.0-or-later (oq-engine transcription)",
+  "primary_sources": [
+    "Boore, D.M., Stewart, J.P., Seyhan, E. & Atkinson, G.M. (2014). NGA-West2 equations for PGA, PGV and 5%-damped PSA for shallow crustal earthquakes. Earthquake Spectra 30(3), 1057-1085. doi:10.1193/070113EQS184M [title abbreviated; see docs/RISK.md]",
+    "Abrahamson, N., Gregor, N. & Addo, K. (2016). BC Hydro ground motion model for subduction earthquakes. Earthquake Spectra 32(1), 23-44. doi:10.1193/051712EQS188MR [title abbreviated; see docs/RISK.md]"
+  ],
+  "notes": "Coefficient tables extracted verbatim from the oq-engine source at the pinned tag; never hand-typed. See docs/RISK.md for the licence note.",
+  "files": [
+    {
+      "file": "bchydro_sinter_coeffs.txt",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/gsim/abrahamson_2015.py",
+      "extracted_from": "AbrahamsonEtAl2015SInter.COEFFS",
+      "sha256": "e22c4b3ffec8c3e99402f7367841a40ca1c080c77739d605907d71d231f8681b",
+      "rows": 23
+    },
+    {
+      "file": "bchydro_sinter_dc1.txt",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/gsim/abrahamson_2015.py",
+      "extracted_from": "AbrahamsonEtAl2015SInter.COEFFS_MAG_SCALE",
+      "sha256": "0f0cc7f7886e9e42476d2f3e1fdaf16483b4954c650eedb269b1f656d178f416",
+      "rows": 8
+    },
+    {
+      "file": "bssa14_coeffs.txt",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/gsim/boore_2014.py",
+      "extracted_from": "BooreEtAl2014.COEFFS",
+      "sha256": "c59375b930813a0e38f0e67e8f3b04f043d8c0855e61e3aa7d628d6140a36a55",
+      "rows": 107
+    }
+  ]
+}

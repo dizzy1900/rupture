@@ -1,0 +1,33 @@
+{
+  "source": "gem/oq-engine",
+  "ref": "engine-3.26",
+  "retrieved_at": "2026-09-03T20:06:25.991777Z",
+  "licence": "AGPL-3.0-or-later",
+  "notes": "OpenQuake's own committed GSIM expected-value tables, carried unmodified as verification fixtures for rupture's native_gsim adapter (ADR-0020).",
+  "files": [
+    {
+      "file": "BCHYDRO_SINTER_CENTRAL_MEAN.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BCHYDRO/BCHYDRO_SINTER_CENTRAL_MEAN.csv",
+      "sha256": "802994a375ead17f263b37d17d49e4b9d06f162ac67a530191ddcbffbf7b45a3",
+      "bytes": 94026
+    },
+    {
+      "file": "BCHYDRO_SINTER_CENTRAL_STDDEV_INTER.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BCHYDRO/BCHYDRO_SINTER_CENTRAL_STDDEV_INTER.csv",
+      "sha256": "622ca6566979da59cf85231e4038dacd61d884c61e211cbc1a2a3afb2b0ee151",
+      "bytes": 54126
+    },
+    {
+      "file": "BCHYDRO_SINTER_CENTRAL_STDDEV_INTRA.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BCHYDRO/BCHYDRO_SINTER_CENTRAL_STDDEV_INTRA.csv",
+      "sha256": "c67f7bb166fde3bd3e6c3498474a90551b1c5259a095750850ed4da231297b46",
+      "bytes": 54126
+    },
+    {
+      "file": "BCHYDRO_SINTER_CENTRAL_STDDEV_TOTAL.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/tests/gsim/data/BCHYDRO/BCHYDRO_SINTER_CENTRAL_STDDEV_TOTAL.csv",
+      "sha256": "4fa70829de69b73424fbe836409affb5fee8718a658918392945baee88d30f42",
+      "bytes": 52026
+    }
+  ]
+}
