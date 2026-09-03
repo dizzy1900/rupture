@@ -38,3 +38,5 @@ Consequences / Alternatives considered. All dates UTC.
 | [0030](0030-openquake-runner-design.md) | OpenQuake runner: docker CLI via subprocess, demo-first validation, skip semantics | accepted |
 | [0033](0033-gsim-coefficient-provenance-and-licence.md) | GSIM coefficients are numeric facts from the journal articles, extracted via oq-engine with attribution; rupture ships no AGPL code | accepted |
 | [0034](0034-cite-published-titles-verbatim.md) | The banned-language allowlist admits published paper titles quoted verbatim, so rupture can cite its sources by name | accepted |
+| [0031](0031-gridded-spatio-temporal-challenger.md) | C1b is a small ConvLSTM over rasterised seismicity plus static covariates, added to a climatological log-rate | accepted |
+| [0032](0032-log-linear-ensemble.md) | The ensemble is a log-linear pool, weights fitted on a validation window, rates floored relatively | accepted |

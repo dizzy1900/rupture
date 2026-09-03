@@ -53,8 +53,13 @@ htmlcov/
 # ETAS fits are outputs of the dvc.yaml `fit_etas` stages (DVC-tracked, not git-tracked).
 # The fitted parameters are published for review in docs/ETAS_BASELINE.md.
 /baselines/etas/
+# Gridded challenger fits (C1b): model weights and normalisation state, the same kind of
+# artefact as an ETAS fit. The fitted parameters and scores are published in
+# docs/CHALLENGER_GRIDDED.md and reports/MODEL_CARD_gridded.md.
+/baselines/gridded/
 /baselines/**/*.parquet
 /baselines/**/*.zarr
+/baselines/**/*.pt
 
 # OS / editors
 .DS_Store
