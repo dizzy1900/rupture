@@ -29,4 +29,6 @@ Consequences / Alternatives considered. All dates UTC.
 | [0021](0021-avoided-loss-v1-serac-reconciliation.md) | Avoided loss v1: shared value vocabulary and field aliases reconciled with the sibling `serac`, envelopes kept distinct | accepted |
 | [0022](0022-leakage-engineering-for-learned-models.md) | Leakage engineering for learned models: causal features, blocked time-forward CV only, a labelled leaky ablation | accepted |
 | [0023](0023-tracker-adapters.md) | Local-filesystem tracking is the default; Weights & Biases is optional and never required | accepted |
+| [0026](0026-usgs-ground-failure-models.md) | USGS ground-failure models (Nowicki Jessee 2018 landslide, Zhu 2017 general liquefaction): coefficients taken from the USGS reference implementation, covariates a declared gap | accepted |
+| [0027](0027-serac-slope-units.md) | serac slope units by file contract, with a labelled fixture fallback while serac has no export, and a screening threshold that is not a failure criterion | accepted |
 | [0030](0030-openquake-runner-design.md) | OpenQuake runner: docker CLI via subprocess, demo-first validation, skip semantics | accepted |

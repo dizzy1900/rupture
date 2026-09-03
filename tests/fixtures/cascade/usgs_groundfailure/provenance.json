@@ -1,0 +1,47 @@
+{
+  "source": "usgs-groundfailure",
+  "source_repository": "https://code.usgs.gov/ghsc/esi/groundfailure/groundfailure",
+  "licence": "CC0-1.0 (US public domain; see LICENSE.md)",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; re-fetch from the URL below and re-record provenance",
+  "why": "rupture implements the two USGS ground-failure models from their published coefficients. The .ini files are the model configuration; the two .py.txt files are the USGS reference implementation and are the machine-readable source of every coefficient rupture uses. They are committed so the coefficient provenance can be checked offline against src/rupture/cascade/coefficients.py.",
+  "retrieved_at": "2026-09-03T20:15:38+00:00",
+  "ref": "main branch as of the retrieval time; the repository does not tag releases",
+  "files": {
+    "jessee_2018.ini": {
+      "source_url": "https://code.usgs.gov/ghsc/esi/groundfailure/groundfailure/-/raw/main/defaultconfigfiles/models/jessee_2018.ini",
+      "retrieved_at": "2026-09-03T20:15:38+00:00",
+      "sha256": "f4307e8e494e5228cdf11e494d0d6d2f42507cd8b8a87a34e5b2762fe87fc3e9",
+      "size": 4059,
+      "notes": "Model configuration for Nowicki Jessee et al. (2018): layer files, refs, slope mask (2-90 deg), minpga 2 %g, maxprob 0.256. Carries no regression coefficients: the operational implementation holds them in gfail/models/jessee_2018.py."
+    },
+    "zhu_2017_general.ini": {
+      "source_url": "https://code.usgs.gov/ghsc/esi/groundfailure/groundfailure/-/raw/main/defaultconfigfiles/models/zhu_2017_general.ini",
+      "retrieved_at": "2026-09-03T20:15:38+00:00",
+      "sha256": "ab58a63bb15561dbc67b853aa563003590186febed9639d8f83480f54e2e7b95",
+      "size": 3763,
+      "notes": "Model configuration for Zhu et al. (2017) general/global model: layer files, refs, slope mask (0-5 deg), minpgv 3 cm/s, minpga 10 %g, vs30max 620 m/s, maxprob 0.487."
+    },
+    "jessee_2018.py.txt": {
+      "source_url": "https://code.usgs.gov/ghsc/esi/groundfailure/groundfailure/-/raw/main/src/gfail/models/jessee_2018.py",
+      "retrieved_at": "2026-09-03T20:15:38+00:00",
+      "sha256": "10e2ba4fc725fec7d57064ac6b74db14e63fba964c923216a16b955f30b1b068",
+      "size": 4734,
+      "notes": "Authoritative machine-readable coefficient table for the landslide model (COEFFS, TERMS, CLIPS, COV_COEFFS) and the unconsolidated-sediment substitution (-3.21 -> -1.36). Renamed .py -> .py.txt so ruff/mypy do not lint vendored source."
+    },
+    "zhu_2017.py.txt": {
+      "source_url": "https://code.usgs.gov/ghsc/esi/groundfailure/groundfailure/-/raw/main/src/gfail/models/zhu_2017.py",
+      "retrieved_at": "2026-09-03T20:15:38+00:00",
+      "sha256": "d7fdd5ac57ce8ceaaa3e78e35a8972a0870a2d60108ae20326cab03af585501d",
+      "size": 3823,
+      "notes": "Authoritative machine-readable coefficient table for the liquefaction model (COEFFS, TERMS, CLIPS, COV_COEFFS) and the magnitude-scaling factor applied to PGV. Renamed .py -> .py.txt so ruff/mypy do not lint vendored source."
+    },
+    "LICENSE.md": {
+      "source_url": "https://code.usgs.gov/ghsc/esi/groundfailure/groundfailure/-/raw/main/LICENSE.md",
+      "retrieved_at": "2026-09-03T20:15:38+00:00",
+      "sha256": "2abb8cbde4ddb9026f757be4c593b6e0225c99325f8b4ee8726b793ef6bc6c07",
+      "size": 1778,
+      "notes": "USGS groundfailure licence: US public domain, plus a worldwide CC0 1.0 dedication."
+    }
+  }
+}

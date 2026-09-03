@@ -1,0 +1,70 @@
+{
+  "source": "usgs-comcat-products",
+  "event": {
+    "id": "us20002926",
+    "name": "2015 Gorkha, Nepal",
+    "magnitude": 7.8,
+    "origin_time": "2015-04-25T06:11:25Z",
+    "latitude": 28.2305,
+    "longitude": 84.7314,
+    "detail_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?eventid=us20002926&format=geojson"
+  },
+  "licence": "public-domain (USGS)",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with `rupture cascade refresh-fixtures` and re-record provenance",
+  "why": "Offline slices of the real USGS ShakeMap and the real USGS ground-failure product for Gorkha, so the reproduction comparison in docs/CASCADE.md and the validate-cascade gate run with no network. The CSVs carry the original cell values verbatim; nothing is interpolated, smoothed or synthesised.",
+  "retrieved_at": "2026-09-03T20:16:15+00:00",
+  "window_4326": {
+    "min_longitude": 84.0,
+    "max_longitude": 86.5,
+    "min_latitude": 26.3,
+    "max_latitude": 28.0
+  },
+  "files": {
+    "shakemap_grid_slice.csv": {
+      "source_url": "https://earthquake.usgs.gov/product/shakemap/us20002926/atlas/1594162031303/download/grid.xml",
+      "retrieved_at": "2026-09-03T20:30:26+00:00",
+      "sha256": "6eeb30306455223c35ebe212620073f6e9d637cde3bc84fc9bdf8317bb305965",
+      "size": 695148,
+      "parent_sha256": "3ffbe2492aed02029ddd3a08c8a0aa4f3206085acdd46c07423bb261cd43291c",
+      "parent_size": 14875206,
+      "notes": "Rows of <grid_data> whose LON/LAT fall in the fixture window padded by 0.05 deg and extended north to 28.40 deg so the serac AOI lhende-khola-trishuli (the Langtang 2015 mechanism) is inside the sampled grid, with columns LON, LAT, PGA (%g), PGV (cm/s), SVEL (Vs30, m/s) kept verbatim; MMI and the three PSA columns dropped. ShakeMap Atlas, shakemap_version 1, code_version 4.0.2+335.gcbad862, processed 2020-06-03. This is the same ShakeMap version the ground-failure product below was computed from (info.json: shakemap_version 1). Grid spacing 0.0166667 deg.",
+      "n_rows": 20410,
+      "window_4326": {
+        "min_longitude": 83.95,
+        "max_longitude": 86.55,
+        "min_latitude": 26.25,
+        "max_latitude": 28.4
+      }
+    },
+    "usgs_zhu_2017_general_coverage_slice.csv": {
+      "source_url": "https://earthquake.usgs.gov/product/ground-failure/20002926/us/1597450486389/zhu_2017_general_model.tif",
+      "retrieved_at": "2026-09-03T20:16:15+00:00",
+      "sha256": "f88c9697b55dff06522ce827c1d076585b45874c1d40824c9fdc2edaf8f44924",
+      "size": 428418,
+      "parent_sha256": "34667ac2336fd1ed5482d8d96873b7a57d35bc38e8130bf4a1218eb0903f7afd",
+      "parent_size": 1045845,
+      "notes": "Published Zhu et al. (2017) general-model output, areal coverage (proportion of area affected). Parent raster is 2228x1912 at 1/240 deg, EPSG:4326. The fixture takes every 4th cell in each direction inside the window (0.0166663 deg effective spacing); cell values and cell-centre coordinates are the parent's, unmodified. Values are the product's own 4-dp rounding.",
+      "n_rows": 15300
+    },
+    "usgs_jessee_2018_coverage_slice.csv": {
+      "source_url": "https://earthquake.usgs.gov/product/ground-failure/20002926/us/1597450486389/jessee_2017_model.tif",
+      "retrieved_at": "2026-09-03T20:16:15+00:00",
+      "sha256": "8287ad5a9eb43118bc45c248e4b9d3e7725005f010fdf1b4f16f749e2252096c",
+      "size": 431274,
+      "parent_sha256": "a56b7dd184598710d924acf4e98b2098fc3c98519fe898f0077e835bd72b92ba",
+      "parent_size": 30316442,
+      "notes": "Published Nowicki Jessee et al. (2018) output, areal coverage. The product file is named jessee_2017 (preprint year); the paper is 2018. Parent raster is 4455x3824 at 1/480 deg, EPSG:4326. The fixture takes every 8th cell in each direction inside the window (0.0166667 deg effective spacing); values and coordinates are the parent's, unmodified.",
+      "n_rows": 15402
+    },
+    "usgs_ground_failure_info_preferred.json": {
+      "source_url": "https://earthquake.usgs.gov/product/ground-failure/20002926/us/1597450486389/info.json",
+      "retrieved_at": "2026-09-03T20:16:15+00:00",
+      "sha256": "6b3eea10a451673eb93149d79fd66dfdc69108302f139860d9cac7f97d2332df",
+      "size": 5446,
+      "parent_sha256": "d1124af4c4adaf4e694f58db9d6bd193fee9e8d3f80c96c77c10d94dbdb97969",
+      "parent_size": 5867,
+      "notes": "Slice of the product's info.json: the Summary block and the two entries the product marks preferred (jessee_2017, zhu_2017_general), which are the two models rupture implements. The three non-preferred entries (nowicki_2014_global, godt_2008, zhu_2015) are dropped because rupture does not implement them; the parent sha256 below is of the full file. Records the alert values, extents, and the note that the unconsolidated-sediment lithology coefficient was changed to -1.36 from -3.22."
+    }
+  }
+}

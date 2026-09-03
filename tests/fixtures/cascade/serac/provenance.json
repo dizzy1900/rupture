@@ -1,0 +1,46 @@
+{
+  "source": "serac",
+  "source_repository": "https://github.com/dizzy1900/serac",
+  "source_commit": "8eee940282a9e2b182d84418832d03620eb47207",
+  "licence": "Apache-2.0",
+  "attribution": "These files are serac's, copied verbatim and unmodified. rupture does not present them as its own work and does not re-derive them. serac is a separate standalone repository; the two share file contracts only, never code.",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; re-copy from the serac checkout and re-record provenance",
+  "why": "As of the retrieval date serac has not exported a slope-unit.v0 inventory for any AOI. rupture's SlopeUnitSource therefore falls back to serac's source-zone polygons, with every terrain attribute null, and these copies let the offline suite exercise that path without a serac checkout. When serac exports slope-unit.v0, SERAC_EXPORT_DIR takes precedence and this fallback stops being used. See docs/adr/0027-serac-slope-units.md.",
+  "retrieved_at": "2026-09-03T20:26:22+00:00",
+  "contract": "serac contracts/slope-unit.v0.json (not yet populated with data)",
+  "files": {
+    "chamoli-rishiganga/exposed_assets.geojson": {
+      "source_url": "https://github.com/dizzy1900/serac/blob/8eee940282a9e2b182d84418832d03620eb47207/data/aoi/chamoli-rishiganga/exposed_assets.geojson",
+      "source_path": "data/aoi/chamoli-rishiganga/exposed_assets.geojson",
+      "retrieved_at": "2026-09-03T20:26:22+00:00",
+      "sha256": "5aa9a736b30eea47b955dc5221a79c11151c6deaa1a9f7fb264fe1c69ae7c2a0",
+      "size": 1893,
+      "n_features": 2
+    },
+    "chamoli-rishiganga/source_zone.geojson": {
+      "source_url": "https://github.com/dizzy1900/serac/blob/8eee940282a9e2b182d84418832d03620eb47207/data/aoi/chamoli-rishiganga/source_zone.geojson",
+      "source_path": "data/aoi/chamoli-rishiganga/source_zone.geojson",
+      "retrieved_at": "2026-09-03T20:26:22+00:00",
+      "sha256": "d1fd5f7b8c0d7126e04ed5e4cc82a2e5472763f71120618d91be7719bfc1b1a0",
+      "size": 565,
+      "n_features": 1
+    },
+    "lhende-khola-trishuli/exposed_assets.geojson": {
+      "source_url": "https://github.com/dizzy1900/serac/blob/8eee940282a9e2b182d84418832d03620eb47207/data/aoi/lhende-khola-trishuli/exposed_assets.geojson",
+      "source_path": "data/aoi/lhende-khola-trishuli/exposed_assets.geojson",
+      "retrieved_at": "2026-09-03T20:26:22+00:00",
+      "sha256": "24cc2e418ab7453c5e954b8569566e53d6b55b4975b1b1eb04535420fbec047d",
+      "size": 11688,
+      "n_features": 14
+    },
+    "lhende-khola-trishuli/source_zone.geojson": {
+      "source_url": "https://github.com/dizzy1900/serac/blob/8eee940282a9e2b182d84418832d03620eb47207/data/aoi/lhende-khola-trishuli/source_zone.geojson",
+      "source_path": "data/aoi/lhende-khola-trishuli/source_zone.geojson",
+      "retrieved_at": "2026-09-03T20:26:22+00:00",
+      "sha256": "a6c6659c1b88c9a1dfdd8cc14dffcad5789783acebf3c291422d444fb214bd1e",
+      "size": 567,
+      "n_features": 1
+    }
+  }
+}

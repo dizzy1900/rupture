@@ -1,0 +1,155 @@
+{
+    "Summary": {
+        "code": "20002926",
+        "net": "us",
+        "magnitude": 7.8,
+        "depth": 8.2,
+        "time": "2015-04-25T06:11:25Z",
+        "lat": 28.2305,
+        "lon": 84.7314,
+        "event_url": "https://earthquake.usgs.gov/earthquakes/eventpage/us20002926#executive",
+        "shakemap_version": 1,
+        "rupture_warning": false,
+        "point_source": false,
+        "zoom_extent": [
+            83.26668354913163,
+            87.83958333333332,
+            26.263714366265532,
+            29.630180624177722
+        ]
+    },
+    "Landslides": [
+        {
+            "id": "jessee_2017",
+            "title": "Nowicki Jessee and others (2017)",
+            "overlay": "jessee_2017.png",
+            "extent": [
+                80.85104166666666,
+                90.13229166665822,
+                23.982291666660323,
+                31.94895833333333
+            ],
+            "units": "Proportion of area affected",
+            "preferred": true,
+            "alert": "red",
+            "hazard_alert": {
+                "color": "red",
+                "value": 1500.0,
+                "std": 75.7029,
+                "parameter": "Aggregate Hazard",
+                "units": "km^2"
+            },
+            "population_alert": {
+                "color": "red",
+                "value": 85000,
+                "std": 7300.5354,
+                "parameter": "Population exposure",
+                "units": "people"
+            },
+            "probability": {
+                "max": 0.25,
+                "std": 0.05,
+                "hagg0.1g": 1490.98,
+                "popexp0.1g": 84709.28,
+                "hagg0.1g_std": 75.7029,
+                "popexp0.1g_std": 7300.5354,
+                "hlim0.1g": 11161.3576,
+                "elim0.1g": 1026798.24,
+                "p_hagg": 335.9474,
+                "q_hagg": 2178.9311,
+                "p_exp": 123.4438,
+                "q_exp": 1372.8723,
+                "hagg_1std": [
+                    1415.2822030694917,
+                    1566.6748214246763
+                ],
+                "hagg_2std": [
+                    1342.862438249933,
+                    1645.5978235216573
+                ],
+                "pop_1std": [
+                    77413.75817396586,
+                    92005.0280449667
+                ],
+                "pop_2std": [
+                    70690.83738825463,
+                    99873.19239575676
+                ]
+            },
+            "longref": "Nowicki Jessee, M.A., Hamburger, H.W., Allstadt, K.E., Wald, D.J., Robeson, S.M., Tanyas, H., Hearne, M., Thompson, E.M., 2018, A Global Empirical Model for Near Real-time Assessment of Seismically Induced Landslides, J. Geophys. Res. (in press).",
+            "parameters": {
+                "slopemin": 2.0,
+                "slopemax": 90.0,
+                "modeltype": "landslide",
+                "notes": "unconsolidated sediment coefficient changed                     to -1.36 (weaker) from -3.22 to better reflect that this                     unit is not actually strong\n"
+            }
+        }
+    ],
+    "Liquefaction": [
+        {
+            "id": "zhu_2017_general",
+            "title": "Zhu and others (2017)",
+            "overlay": "zhu_2017_general.png",
+            "extent": [
+                80.84798954001104,
+                90.13110797638382,
+                23.982600163041653,
+                31.94879259512838
+            ],
+            "units": "Proportion of area affected",
+            "preferred": true,
+            "alert": "red",
+            "hazard_alert": {
+                "color": "red",
+                "value": 3800.0,
+                "std": 100.75,
+                "parameter": "Aggregate Hazard",
+                "units": "km^2"
+            },
+            "population_alert": {
+                "color": "red",
+                "value": 4100000,
+                "std": 108478.61,
+                "parameter": "Population exposure",
+                "units": "people"
+            },
+            "probability": {
+                "max": 0.44,
+                "std": 0.11,
+                "hagg0.1g": 3786.95,
+                "popexp0.1g": 4109892.72,
+                "hagg0.1g_std": 100.75,
+                "popexp0.1g_std": 108478.61,
+                "hlim0.1g": 12383.9438,
+                "elim0.1g": 13606930.1975,
+                "p_hagg": 980.5473,
+                "q_hagg": 2226.0014,
+                "p_exp": 1001.5435,
+                "q_exp": 2314.3416,
+                "hagg_1std": [
+                    3686.1900753088194,
+                    3887.712128608749
+                ],
+                "hagg_2std": [
+                    3586.976514097737,
+                    3989.9255509830696
+                ],
+                "pop_1std": [
+                    4001399.5765171396,
+                    4218386.103940292
+                ],
+                "pop_2std": [
+                    3894580.2766728727,
+                    4328454.406836696
+                ]
+            },
+            "longref": "Zhu, J.;  Baise, L. G.; Thompson, E. M., 2017, An Updated Geospatial Liquefaction Model for Global Application, Bulletin of the Seismological Society of America, 107, p 1365-1385, doi: 0.1785/0120160198",
+            "parameters": {
+                "slopemin": 0.0,
+                "slopemax": 5.0,
+                "modeltype": "liquefaction",
+                "notes": ""
+            }
+        }
+    ]
+}
