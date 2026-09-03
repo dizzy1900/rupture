@@ -72,6 +72,24 @@ def local_frame(
     return distance * np.sin(bearing), distance * np.cos(bearing)
 
 
+def from_local_frame(
+    origin_lon: float, origin_lat: float, x_km: FloatArray, y_km: FloatArray
+) -> tuple[FloatArray, FloatArray]:
+    """Inverse of :func:`local_frame`: local east/north kilometres back to (lon, lat) degrees."""
+    lat0 = math.radians(origin_lat)
+    lon0 = math.radians(origin_lon)
+    distance = np.hypot(x_km, y_km) / EARTH_RADIUS_KM
+    bearing = np.arctan2(x_km, y_km)
+    lat = np.arcsin(
+        math.sin(lat0) * np.cos(distance) + math.cos(lat0) * np.sin(distance) * np.cos(bearing)
+    )
+    lon = lon0 + np.arctan2(
+        np.sin(bearing) * np.sin(distance) * math.cos(lat0),
+        np.cos(distance) - math.sin(lat0) * np.sin(lat),
+    )
+    return np.degrees((lon + np.pi) % (2.0 * np.pi) - np.pi), np.degrees(lat)
+
+
 def _point_segment_distance(p: FloatArray, a: FloatArray, b: FloatArray) -> FloatArray:
     """Distance from points ``p`` (n, d) to the segment ``ab``, in any dimension."""
     ab = b - a
