@@ -49,7 +49,12 @@ src/rupture/
   ports/            CatalogSource, ForecastModel, Evaluator, HazardEngine, Tracker, GridStore
   adapters/         catalogs · sources · forecasting · evaluation · hazard · storage
   pipelines/        build_catalog · fit_etas · run_forecast · evaluate
+  risk/             ground motion → damage → loss → avoided loss (F2)
+  cascade/          earthquake-triggered ground failure and slope exposure (F3)
+  models/           challenger forecast models and the ensemble
+  services/         operational products (the aftershock forecast service)
   validation/       the make validate-* gates
+  commands/         one typer sub-application per CLI noun
   cli.py            `rupture ...`
 infra/              docker/ (the deployment unit) · jobs/ (portable manifests, AWS-annotated)
 baselines/          ETAS fits per region (DVC-tracked)

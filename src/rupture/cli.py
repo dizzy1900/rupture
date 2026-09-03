@@ -16,7 +16,16 @@ import jsonschema
 import typer
 
 from rupture import __version__
-from rupture.commands import cascade, catalog, evaluate, forecast, hazard, region, risk
+from rupture.commands import (
+    aftershock,
+    cascade,
+    catalog,
+    evaluate,
+    forecast,
+    hazard,
+    region,
+    risk,
+)
 from rupture.domain import contracts, loss, utc_now
 from rupture.validation import GateResult, GateStatus
 from rupture.validation.registry import GATES, run_gate
@@ -47,6 +56,7 @@ app.add_typer(evaluate.app, name="evaluate")
 app.add_typer(hazard.app, name="hazard")
 app.add_typer(cascade.app, name="cascade")
 app.add_typer(risk.app, name="risk")
+app.add_typer(aftershock.app, name="aftershock")
 
 
 def _finish(result: GateResult) -> None:

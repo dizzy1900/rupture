@@ -1,0 +1,60 @@
+{
+  "auxiliary_years": 2.0,
+  "command": "uv run python -m tests.fixtures.aftershock.make_fits",
+  "created_at": "2026-09-03T20:40:04.441572+00:00",
+  "derived_from": "comcat-turkiye-2013-2023-m3.8.geojson",
+  "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
+  "fits": {
+    "2023-02-06T02:17:34.342000+00:00": {
+      "at_bound": [],
+      "b_value": 1.0255402361529682,
+      "beta_fixed": true,
+      "branching_ratio": 0.8467504698496939,
+      "converged": true,
+      "issue_label": "1h",
+      "iterations": 27,
+      "mc": 4.3,
+      "n_events": 116,
+      "parameter_snapshot_hash": "10f0cc607e5da2fd5293329c03bf2bcf551e35ba87b86709a3b5d9d937fbeef4",
+      "runtime_s": 28.6,
+      "training_catalog_hash": "6b67bb3de6d3d3cdb7733bbc7b1152728680fbe28beb3b08ef3871f4cdf7f7a8"
+    },
+    "2023-02-07T01:17:34.342000+00:00": {
+      "at_bound": [],
+      "b_value": 1.0255402361529682,
+      "beta_fixed": true,
+      "branching_ratio": 0.732108349498123,
+      "converged": true,
+      "issue_label": "1d",
+      "iterations": 26,
+      "mc": 4.3,
+      "n_events": 303,
+      "parameter_snapshot_hash": "da9ce9f43eb2bedeb720d68486fa5f5edd31b6566433124f9fed70a23ba5b435",
+      "runtime_s": 39.2,
+      "training_catalog_hash": "9dc8f45161a11b5474e83490858093ea462f45c0618779655af91e7e3fd02962"
+    },
+    "2023-02-13T01:17:34.342000+00:00": {
+      "at_bound": [],
+      "b_value": 1.0255402361529682,
+      "beta_fixed": true,
+      "branching_ratio": 0.8105355701795419,
+      "converged": true,
+      "issue_label": "7d",
+      "iterations": 54,
+      "mc": 4.3,
+      "n_events": 446,
+      "parameter_snapshot_hash": "fc80246e2214b4dcdd13ee8a603a3061c252b1297be970c3ce193b676c7e4a9b",
+      "runtime_s": 106.7,
+      "training_catalog_hash": "5321c95ef1eee978450691a2644fbec2f58c06ee607f3ca371d35e54a2577cc5"
+    }
+  },
+  "fix_b_value": true,
+  "licence": "public-domain (USGS)",
+  "m_max": 8.95,
+  "mc_source": "parent region Region.mc (published catalogue build)",
+  "model_id": "etas-mizrahi",
+  "region_id": "aftershock-us6000jllz",
+  "sequence": "kahramanmaras",
+  "source_sha256": "bf01ef853dd87ec0a6913b9fb75a80a904cc3fa3c8e8739829b3cb853d20d8ef",
+  "zone_radius_note": "Wells & Coppersmith (1994) subsurface rupture length x 1.5; see rupture.services.aftershock.window"
+}

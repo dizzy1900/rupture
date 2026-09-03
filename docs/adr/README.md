@@ -33,6 +33,7 @@ Consequences / Alternatives considered. All dates UTC.
 | [0027](0027-serac-slope-units.md) | serac slope units by file contract, with a labelled fixture fallback while serac has no export, and a screening threshold that is not a failure criterion | accepted |
 | [0024](0024-hydropower-damage-state-decomposition.md) | Hydropower damage-state decomposition: HAZUS for powerhouse, switchyard and tunnel; intake and penstock explicitly assumed | accepted |
 | [0025](0025-avoided-loss-intervention-models-and-scenarios.md) | Intervention models, the IRENA replacement-cost basis, and how the Gorkha and MHT scenarios are built | accepted |
+| [0028](0028-operational-aftershock-forecast-service.md) | Operational aftershock forecast service: sequence window, refit schedule, fixed b, Poisson summary | accepted |
 | [0030](0030-openquake-runner-design.md) | OpenQuake runner: docker CLI via subprocess, demo-first validation, skip semantics | accepted |
 | [0033](0033-gsim-coefficient-provenance-and-licence.md) | GSIM coefficients are numeric facts from the journal articles, extracted via oq-engine with attribution; rupture ships no AGPL code | accepted |
 | [0034](0034-cite-published-titles-verbatim.md) | The banned-language allowlist admits published paper titles quoted verbatim, so rupture can cite its sources by name | accepted |

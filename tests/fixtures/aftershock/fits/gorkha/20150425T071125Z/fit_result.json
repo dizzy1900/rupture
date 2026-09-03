@@ -1,0 +1,108 @@
+{
+  "converged": true,
+  "diagnostics": {
+    "area_km2": 148626.23265114403,
+    "at_bound": [
+      "log10_k0",
+      "omega"
+    ],
+    "auxiliary_start": "2005-02-08T01:51:35.940000+00:00",
+    "auxiliary_years": 2.0,
+    "b_value": 1.138125688070699,
+    "beta_fixed": true,
+    "branching_ratio": 0.3464349546301795,
+    "branching_ratio_note": null,
+    "converged_reason": "tolerance 0.001 reached",
+    "coppersmith_multiplier": 100.0,
+    "delta_m": 0.1,
+    "em_tolerance": 0.001,
+    "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
+    "iterations": 12,
+    "log_likelihood_note": "the etas package does not expose the full point-process log-likelihood at convergence; log_likelihood is null",
+    "max_iterations": 200,
+    "max_seconds": 900.0,
+    "mc": 4.4,
+    "mc_source": "region.mc (maximum_curvature)",
+    "n_hat_background": 22.999094117476027,
+    "n_source_events": 56,
+    "n_target_events": 48,
+    "ranges": {
+      "a": [
+        0.01,
+        20
+      ],
+      "gamma": [
+        -1,
+        5.0
+      ],
+      "log10_c": [
+        -8,
+        0
+      ],
+      "log10_d": [
+        -4,
+        3
+      ],
+      "log10_k0": [
+        -20,
+        10
+      ],
+      "log10_mu": [
+        -10,
+        0
+      ],
+      "log10_tau": [
+        0.01,
+        12.26
+      ],
+      "omega": [
+        -0.99,
+        1
+      ],
+      "rho": [
+        0.01,
+        5.0
+      ]
+    },
+    "runtime_s": 10.68,
+    "theta_0": {
+      "a": 1.8,
+      "gamma": 1.2,
+      "log10_c": -2.5,
+      "log10_d": -0.5,
+      "log10_iota": null,
+      "log10_k0": -2.5,
+      "log10_mu": -6.0,
+      "log10_tau": 3.5,
+      "omega": -0.02,
+      "rho": 0.6
+    },
+    "timewindow_end": "2015-04-25T07:11:25.950000+00:00",
+    "timewindow_start": "2007-02-08T13:51:35.940000+00:00",
+    "training_max_origin_time": "2015-04-25T07:07:59.920000+00:00"
+  },
+  "fit_cutoff": "2015-04-25T07:11:25.950000Z",
+  "fitted_at": "2026-09-03T20:36:26.684393Z",
+  "log_likelihood": null,
+  "mc": 4.4,
+  "model_id": "etas-mizrahi",
+  "model_version": "etas-3.0.0+097f08b",
+  "n_events": 56,
+  "notes": null,
+  "parameter_snapshot_hash": "25f8cbcb808f483b722291564a0b0348933e368110561bbcf99417aa137eee00",
+  "parameters": {
+    "a": 5.626123231684951,
+    "beta": 2.6206312433051826,
+    "gamma": 1.0025747594822785,
+    "log10_c": -2.0386888447553266,
+    "log10_d": 2.7574763116091874,
+    "log10_k0": 10.0,
+    "log10_mu": -7.287176129451387,
+    "log10_tau": 8.531320231434655,
+    "omega": 1.0,
+    "rho": 4.555754039754551
+  },
+  "region_id": "aftershock-us20002926",
+  "training_catalog_hash": "b52b69388a5234053e189b316f44768976c4999772b5649fe87bedbe65dd85b9",
+  "training_start": "2005-02-08T01:51:35.940000Z"
+}

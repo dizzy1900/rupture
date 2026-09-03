@@ -23,6 +23,7 @@ GATES: tuple[str, ...] = (
     "hazard",
     "cascade",
     "risk",
+    "aftershock",
 )
 
 PHASE_FOR_GATE: dict[str, str] = {
@@ -31,6 +32,7 @@ PHASE_FOR_GATE: dict[str, str] = {
     "eval": "Phase 2B (forecast-engineer)",
     "hazard": "Phase 2C (hazard-engineer)",
     "cascade": "Phase 2D (cascade-engineer)",
+    "aftershock": "Prompt 2 C4 (ops-forecaster)",
 }
 
 
