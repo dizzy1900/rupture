@@ -1,0 +1,43 @@
+{
+  "condition_1_pass_rates": false,
+  "condition_2_paired_t": false,
+  "mean_information_gain_per_event": -0.34577171945843793,
+  "min_windows_required": 12,
+  "n_scored_windows": 55,
+  "note": "condition 3 (at least two of three regions) cannot be decided from one region's report; the architect assembles it across regions",
+  "per_test": {
+    "L": {
+      "at_or_above": false,
+      "baseline": 0.7272727272727273,
+      "challenger": 0.6818181818181818
+    },
+    "M": {
+      "at_or_above": true,
+      "baseline": 0.9545454545454546,
+      "challenger": 0.9545454545454546
+    },
+    "N": {
+      "at_or_above": true,
+      "baseline": 0.9090909090909091,
+      "challenger": 0.9090909090909091
+    },
+    "S": {
+      "at_or_above": false,
+      "baseline": 0.6818181818181818,
+      "challenger": 0.5454545454545454
+    }
+  },
+  "promotable_in_this_region": false,
+  "reasons_not_promotable": [
+    "S-test pass rate 0.5454545454545454 is below the baseline's 0.6818181818181818",
+    "L-test pass rate 0.6818181818181818 is below the baseline's 0.7272727272727273",
+    "paired T-test: won 1 of 9 window(s) where it is defined, mean information gain per event -0.34577171945843793"
+  ],
+  "region_id": "nepal-himalaya",
+  "regions_required": 2,
+  "t_test_windows": 9,
+  "t_test_wins": 1,
+  "w_test_disagrees": false,
+  "w_test_windows": 22,
+  "w_test_wins": 0
+}

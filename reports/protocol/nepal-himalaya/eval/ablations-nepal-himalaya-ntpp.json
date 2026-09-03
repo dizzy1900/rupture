@@ -1,0 +1,200 @@
+{
+  "banner": "LEAKY ABLATION - NOT A RESULT: this forecast was produced by a model that was allowed to see data from inside its own target window, to quantify what the leakage rules are worth.",
+  "fit_leak": {
+    "comparison_summary": {
+      "mean_information_gain_per_event": 0.42871216537824475,
+      "note": "information gain is the challenger's mean per-event log-rate advantage over ETAS; a positive value in a single window is not a skill claim",
+      "t_test_wins": 3,
+      "t_w_disagreements": 3,
+      "w_test_windows": 22,
+      "w_test_wins": 0,
+      "windows_compared": 9,
+      "windows_with_positive_gain": 7
+    },
+    "delta": {
+      "information_gain_vs_etas": {
+        "change": 0.7744838848366826,
+        "honest": -0.34577171945843793,
+        "leaky": 0.42871216537824475,
+        "units": "nats per target event"
+      },
+      "pass_rate_change": {
+        "CL": {
+          "change": 0.09090909090909094,
+          "honest": 0.7727272727272727,
+          "leaky": 0.8636363636363636,
+          "scored": 22
+        },
+        "L": {
+          "change": 0.045454545454545525,
+          "honest": 0.6818181818181818,
+          "leaky": 0.7272727272727273,
+          "scored": 22
+        },
+        "M": {
+          "change": 0.0,
+          "honest": 0.9545454545454546,
+          "leaky": 0.9545454545454546,
+          "scored": 22
+        },
+        "N": {
+          "change": 0.0,
+          "honest": 0.9090909090909091,
+          "leaky": 0.9090909090909091,
+          "scored": 55
+        },
+        "S": {
+          "change": 0.2727272727272728,
+          "honest": 0.5454545454545454,
+          "leaky": 0.8181818181818182,
+          "scored": 22
+        }
+      },
+      "t_test_wins": {
+        "honest": 1,
+        "leaky": 3
+      },
+      "total_expected_events": {
+        "honest": 39.5064823735173,
+        "leaky": 38.44378935309274
+      }
+    },
+    "honest_fit_cutoff": "2022-01-01T00:00:00+00:00",
+    "leaky_fit_cutoff": "2026-08-01T00:00:01+00:00",
+    "leaky_fit_n_events": 942,
+    "n_scored": 55,
+    "pass_rates": {
+      "CL": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 19,
+        "rate": 0.8636363636363636,
+        "scored": 22
+      },
+      "L": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 16,
+        "rate": 0.7272727272727273,
+        "scored": 22
+      },
+      "M": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 21,
+        "rate": 0.9545454545454546,
+        "scored": 22
+      },
+      "N": {
+        "denominator_rule": "all evaluated windows",
+        "passed": 50,
+        "rate": 0.9090909090909091,
+        "scored": 55
+      },
+      "S": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 18,
+        "rate": 0.8181818181818182,
+        "scored": 22
+      }
+    },
+    "what_leaked": "the parameters were fitted on the whole catalogue, target windows included, and then used to issue forecasts for windows inside the fitting period; the conditioning history at each issue time was still strictly before it"
+  },
+  "honest_label": "ntpp",
+  "note": "These are ablations, never results. They exist to say how much apparent skill leakage buys on this catalogue and this schedule, and nothing else.",
+  "tuning_leak": {
+    "chosen_config_hash": "9c03e31f201532fde576247c59935c318355fc6dc2a28d32ed2765a56325bd2a",
+    "comparison_summary": {
+      "mean_information_gain_per_event": -0.19492271507857548,
+      "note": "information gain is the challenger's mean per-event log-rate advantage over ETAS; a positive value in a single window is not a skill claim",
+      "t_test_wins": 1,
+      "t_w_disagreements": 1,
+      "w_test_windows": 22,
+      "w_test_wins": 0,
+      "windows_compared": 9,
+      "windows_with_positive_gain": 5
+    },
+    "delta": {
+      "information_gain_vs_etas": {
+        "change": 0.15084900437986246,
+        "honest": -0.34577171945843793,
+        "leaky": -0.19492271507857548,
+        "units": "nats per target event"
+      },
+      "pass_rate_change": {
+        "CL": {
+          "change": 0.045454545454545525,
+          "honest": 0.7727272727272727,
+          "leaky": 0.8181818181818182,
+          "scored": 22
+        },
+        "L": {
+          "change": 0.0,
+          "honest": 0.6818181818181818,
+          "leaky": 0.6818181818181818,
+          "scored": 22
+        },
+        "M": {
+          "change": 0.0,
+          "honest": 0.9545454545454546,
+          "leaky": 0.9545454545454546,
+          "scored": 22
+        },
+        "N": {
+          "change": 0.0,
+          "honest": 0.9090909090909091,
+          "leaky": 0.9090909090909091,
+          "scored": 55
+        },
+        "S": {
+          "change": 0.13636363636363635,
+          "honest": 0.5454545454545454,
+          "leaky": 0.6818181818181818,
+          "scored": 22
+        }
+      },
+      "t_test_wins": {
+        "honest": 1,
+        "leaky": 1
+      },
+      "total_expected_events": {
+        "honest": 39.5064823735173,
+        "leaky": 36.36111007128156
+      }
+    },
+    "honest_config_hash": "1ef984d705c3dfbbb6e06f9adf89e709602be7045a0939385254a51195960e4f",
+    "n_candidates": 4,
+    "n_scored": 55,
+    "pass_rates": {
+      "CL": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 18,
+        "rate": 0.8181818181818182,
+        "scored": 22
+      },
+      "L": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 15,
+        "rate": 0.6818181818181818,
+        "scored": 22
+      },
+      "M": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 21,
+        "rate": 0.9545454545454546,
+        "scored": 22
+      },
+      "N": {
+        "denominator_rule": "all evaluated windows",
+        "passed": 50,
+        "rate": 0.9090909090909091,
+        "scored": 55
+      },
+      "S": {
+        "denominator_rule": "windows with >= 1 target event",
+        "passed": 15,
+        "rate": 0.6818181818181818,
+        "scored": 22
+      }
+    },
+    "same_config_as_honest": false,
+    "what_leaked": "the hyperparameter configuration was chosen by scoring candidates on the test window itself; the fit still used only events before the cutoff"
+  }
+}

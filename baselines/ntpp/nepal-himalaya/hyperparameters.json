@@ -1,0 +1,259 @@
+{
+  "chosen": {
+    "background_sigma_km": 10.0,
+    "epochs": 8000,
+    "feature_clip": 3.0,
+    "hidden": 16,
+    "learning_rate": 0.05,
+    "max_alpha_fraction": 0.95,
+    "max_branching_ratio": 0.98,
+    "n_space_basis": 5,
+    "n_time_basis": 6,
+    "omori_p": 1.15,
+    "seed": 20220101,
+    "space_scale_max_km": 50.0,
+    "space_scale_min_km": 0.5,
+    "spatial_s": 1.5,
+    "time_scale_max_days": 100.0,
+    "time_scale_min_days": 0.001,
+    "weight_decay": 0.001
+  },
+  "chosen_config_hash": "1ef984d705c3dfbbb6e06f9adf89e709602be7045a0939385254a51195960e4f",
+  "hard_cutoff": "2022-01-01T00:00:00+00:00",
+  "mc": 4.4,
+  "region_id": "nepal-himalaya",
+  "rule": "hyperparameters chosen only on windows ending at or before the hard cutoff (ADR-0022 decision 4); the chosen configuration is frozen and its hash recorded before any test window is scored",
+  "selected_at": "2026-09-03T22:33:13.026984+00:00",
+  "splits": [
+    {
+      "fold": 0,
+      "train_end": "1991-07-28T20:29:15.942000+00:00",
+      "train_start": "1976-05-10T18:43:53.913000+00:00",
+      "val_end": "2006-10-14T22:14:37.971000+00:00",
+      "val_start": "1991-07-28T20:29:15.942000+00:00"
+    },
+    {
+      "fold": 1,
+      "train_end": "2006-10-14T22:14:37.971000+00:00",
+      "train_start": "1976-05-10T18:43:53.913000+00:00",
+      "val_end": "2022-01-01T00:00:00+00:00",
+      "val_start": "2006-10-14T22:14:37.971000+00:00"
+    }
+  ],
+  "train_start": "1976-05-10T18:43:53.913000+00:00",
+  "trials": [
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 8,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.0
+      },
+      "config_hash": "e3f156486823af0b9147719b91d6c8940685c962c2805f2a80d11f1674374f9c",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 188,
+          "nll": 16.236118140820512,
+          "note": null,
+          "score_end": "2006-10-14T22:14:37.971000+00:00",
+          "score_start": "1991-07-28T20:29:15.942000+00:00",
+          "sll": -12.021390319467626,
+          "tll": -4.214727821352887,
+          "total_log_likelihood": -3080.95823173143,
+          "train_cutoff": "1991-07-28T20:29:15.942000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 461,
+          "nll": 11.380296707569588,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-10-14T22:14:37.971000+00:00",
+          "sll": -10.563992531067068,
+          "tll": -0.8163041765025207,
+          "total_log_likelihood": -5281.200995048125,
+          "train_cutoff": "2006-10-14T22:14:37.971000+00:00"
+        }
+      ],
+      "mean_nll": 12.786913702101442,
+      "n_validation_events": 649
+    },
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 8,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.001
+      },
+      "config_hash": "9c03e31f201532fde576247c59935c318355fc6dc2a28d32ed2765a56325bd2a",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 188,
+          "nll": 16.05664516937071,
+          "note": null,
+          "score_end": "2006-10-14T22:14:37.971000+00:00",
+          "score_start": "1991-07-28T20:29:15.942000+00:00",
+          "sll": -11.87407414048035,
+          "tll": -4.18257102889036,
+          "total_log_likelihood": -3048.509352423375,
+          "train_cutoff": "1991-07-28T20:29:15.942000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 461,
+          "nll": 11.48999248735021,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-10-14T22:14:37.971000+00:00",
+          "sll": -10.600440863221763,
+          "tll": -0.8895516241284467,
+          "total_log_likelihood": -5332.6050880227685,
+          "train_cutoff": "2006-10-14T22:14:37.971000+00:00"
+        }
+      ],
+      "mean_nll": 12.812844111725946,
+      "n_validation_events": 649
+    },
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 16,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.0
+      },
+      "config_hash": "b61600907c7d8ec70809047a57ff80a97e4deb448bd72002c8d3243b62af7a55",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 188,
+          "nll": 16.252064028700296,
+          "note": null,
+          "score_end": "2006-10-14T22:14:37.971000+00:00",
+          "score_start": "1991-07-28T20:29:15.942000+00:00",
+          "sll": -11.965787295028843,
+          "tll": -4.286276733671455,
+          "total_log_likelihood": -3084.850586895311,
+          "train_cutoff": "1991-07-28T20:29:15.942000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 461,
+          "nll": 11.432038607872967,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-10-14T22:14:37.971000+00:00",
+          "sll": -10.578533902599428,
+          "tll": -0.8535047052735389,
+          "total_log_likelihood": -5305.374753227875,
+          "train_cutoff": "2006-10-14T22:14:37.971000+00:00"
+        }
+      ],
+      "mean_nll": 12.828286341487047,
+      "n_validation_events": 649
+    },
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 16,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.001
+      },
+      "config_hash": "1ef984d705c3dfbbb6e06f9adf89e709602be7045a0939385254a51195960e4f",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 188,
+          "nll": 16.083257459760986,
+          "note": null,
+          "score_end": "2006-10-14T22:14:37.971000+00:00",
+          "score_start": "1991-07-28T20:29:15.942000+00:00",
+          "sll": -11.92706595027854,
+          "tll": -4.156191509482445,
+          "total_log_likelihood": -3051.779032402719,
+          "train_cutoff": "1991-07-28T20:29:15.942000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 461,
+          "nll": 11.355497577111212,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-10-14T22:14:37.971000+00:00",
+          "sll": -10.658498453217344,
+          "tll": -0.696999123893867,
+          "total_log_likelihood": -5270.422504811475,
+          "train_cutoff": "2006-10-14T22:14:37.971000+00:00"
+        }
+      ],
+      "mean_nll": 12.725018159450439,
+      "n_validation_events": 649
+    }
+  ],
+  "validation_end": "2022-01-01T00:00:00+00:00"
+}

@@ -1,0 +1,6408 @@
+{
+  "benchmark_model_id": "etas-mizrahi",
+  "benchmark_pass_rates": {
+    "CL": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 23,
+      "rate": 0.7931034482758621,
+      "scored": 29
+    },
+    "L": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 27,
+      "rate": 0.9310344827586207,
+      "scored": 29
+    },
+    "M": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 28,
+      "rate": 0.9655172413793104,
+      "scored": 29
+    },
+    "N": {
+      "denominator_rule": "all evaluated windows",
+      "passed": 50,
+      "rate": 0.9090909090909091,
+      "scored": 55
+    },
+    "S": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 16,
+      "rate": 0.5517241379310345,
+      "scored": 29
+    }
+  },
+  "catalog_event_hash": "80649982ef4a9e43343e44f1a9c99bf4062266b0b1570e581b090e529e334cd5",
+  "catalog_id": "turkiye-eaf/1976-01-01T00:00:00+00:00/2026-08-01T00:00:00+00:00",
+  "catalogue_end": "2026-08-01T00:00:00+00:00",
+  "comparison_summary": {
+    "mean_information_gain_per_event": 0.3938120693600101,
+    "note": "information gain is the challenger's mean per-event log-rate advantage over ETAS; a positive value in a single window is not a skill claim",
+    "t_test_wins": 1,
+    "t_w_disagreements": 1,
+    "w_test_windows": 29,
+    "w_test_wins": 0,
+    "windows_compared": 10,
+    "windows_with_positive_gain": 5
+  },
+  "config": {
+    "background_sigma_km": 10.0,
+    "epochs": 8000,
+    "feature_clip": 3.0,
+    "hidden": 16,
+    "learning_rate": 0.05,
+    "max_alpha_fraction": 0.95,
+    "max_branching_ratio": 0.98,
+    "n_space_basis": 5,
+    "n_time_basis": 6,
+    "omori_p": 1.15,
+    "seed": 20220101,
+    "space_scale_max_km": 50.0,
+    "space_scale_min_km": 0.5,
+    "spatial_s": 1.5,
+    "time_scale_max_days": 100.0,
+    "time_scale_min_days": 0.001,
+    "weight_decay": 0.001
+  },
+  "config_hash": "1ef984d705c3dfbbb6e06f9adf89e709602be7045a0939385254a51195960e4f",
+  "generated_at": "2026-09-03T22:25:58.676872+00:00",
+  "label": "ntpp",
+  "leakage_checks": {
+    "history_before_issue_time": "asserted per window by the adapter",
+    "snapshot_constant_between_refits": "asserted over the schedule",
+    "target_inside_window": "asserted per window",
+    "training_before_cutoff": "asserted per fit"
+  },
+  "model_id": "ntpp-neural-hawkes",
+  "model_version": "ntpp-0.1.0+torch-2.14.0",
+  "n_issued": 55,
+  "n_scored": 55,
+  "not_scored": [],
+  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes.",
+  "pass_rates": {
+    "CL": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 23,
+      "rate": 0.7931034482758621,
+      "scored": 29
+    },
+    "L": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 23,
+      "rate": 0.7931034482758621,
+      "scored": 29
+    },
+    "M": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 28,
+      "rate": 0.9655172413793104,
+      "scored": 29
+    },
+    "N": {
+      "denominator_rule": "all evaluated windows",
+      "passed": 53,
+      "rate": 0.9636363636363636,
+      "scored": 55
+    },
+    "S": {
+      "denominator_rule": "windows with >= 1 target event",
+      "passed": 18,
+      "rate": 0.6206896551724138,
+      "scored": 29
+    }
+  },
+  "pycsep_version": "0.8.0",
+  "refits": [],
+  "region_id": "turkiye-eaf",
+  "schedule": {
+    "alpha": 0.05,
+    "benchmark_simulations": 100,
+    "end": "2026-08-01T00:00:00+00:00",
+    "eval_simulations": 1000,
+    "horizon": "30d",
+    "n_simulations": 100,
+    "refit_policy": "none",
+    "seed": 20220101,
+    "start": "2022-01-01T00:00:00+00:00",
+    "step": "30d",
+    "tests": [
+      "N",
+      "M",
+      "S",
+      "L",
+      "CL"
+    ]
+  },
+  "windows": [
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6816263250406498,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.3832736817940637,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220101T000000Z-30d",
+      "issue_time": "2022-01-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7466328356930749,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.292181733167292,
+      "window_end": "2022-01-31T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.04,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.660888177289948
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.02,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.660888177289948
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.872,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.577215763851214
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.13957185458116028,
+          "quantile_low": 0.9713491405396443,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.011,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.80529378500234
+        }
+      },
+      "benchmark_total_expected": 0.6527898458926469,
+      "comparison": {
+        "T": {
+          "p_value": 0.043727419771599184,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.969057330223427
+        },
+        "W": {
+          "p_value": 0.17971249487899976,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.3416407864998738
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220131T000000Z-30d",
+      "issue_time": "2022-01-31T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.23,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.722773516843088
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.006,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.722773516843088
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.867,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.555664473960329
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.039451208251818914,
+          "quantile_low": 0.9960162190068562,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.106,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -14.748526955493674
+        }
+      },
+      "total_expected": 0.3111715513232387,
+      "window_end": "2022-03-02T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6433752415743258,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.4410271455294744,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220302T000000Z-30d",
+      "issue_time": "2022-03-02T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7609467365131106,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.27319191501134527,
+      "window_end": "2022-04-01T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.151,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.071936019684877
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.117,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.071936019684877
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.299,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.922008741583799
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3719221082477415,
+          "quantile_low": 0.9201913222487302,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.232,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.919314186560293
+        }
+      },
+      "benchmark_total_expected": 0.46509108875256217,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.070688079398196
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220401T000000Z-30d",
+      "issue_time": "2022-04-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.53,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.001247940286682
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.118,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.001247940286682
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.287,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.9288063526881256
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.19444392250378095,
+          "quantile_low": 0.9797353946782259,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.679,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.324771635687352
+        }
+      },
+      "total_expected": 0.21622246054350508,
+      "window_end": "2022-05-01T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6311079836447291,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.46027830010794457,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220501T000000Z-30d",
+      "issue_time": "2022-05-01T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7609467365131106,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.27319191501134527,
+      "window_end": "2022-05-31T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7049811872471412,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.34958416128174075,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220531T000000Z-30d",
+      "issue_time": "2022-05-31T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7573427381531154,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.27793936955033194,
+      "window_end": "2022-06-30T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6882190504062726,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.37364810450482855,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220630T000000Z-30d",
+      "issue_time": "2022-06-30T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6174977126318655,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.4820799147267594,
+      "window_end": "2022-07-30T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.119,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.554190220096663
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.098,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.554190220096663
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6683371694527995
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3658473061216717,
+          "quantile_low": 0.9229873749414675,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.033,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.643952258254279
+        }
+      },
+      "benchmark_total_expected": 0.4554655114633269,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.5200438096957026
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220730T000000Z-30d",
+      "issue_time": "2022-07-30T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.235,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.034146410400961
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.069,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.034146410400961
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.651703772490767
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.23543211463013125,
+          "quantile_low": 0.9698118988524752,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.072,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.798886939880814
+        }
+      },
+      "total_expected": 0.2684444604723586,
+      "window_end": "2022-08-29T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.114,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.22622179441854
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.178,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.22622179441854
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.548,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.295172955518304
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4768970856147512,
+          "quantile_low": 0.8620616014864704,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.098,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.84917179291412
+        }
+      },
+      "benchmark_total_expected": 0.6479770572480293,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 3.4705711164301367
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220829T000000Z-30d",
+      "issue_time": "2022-08-29T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.762,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.755650677988403
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.185,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.755650677988403
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.545,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.2902550625894524
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.24265726184688463,
+          "quantile_low": 0.9678381013289143,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.734,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.907103961628225
+        }
+      },
+      "total_expected": 0.27793936955033194,
+      "window_end": "2022-09-28T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.254,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.49856621062748
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.143,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.49856621062748
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.459,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.504118217540135
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3627879070223847,
+          "quantile_low": 0.9243734576909864,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.271,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.746737018251602
+        }
+      },
+      "benchmark_total_expected": 0.4506527228187095,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.6613457731376877
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20220928T000000Z-30d",
+      "issue_time": "2022-09-28T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.515,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.837220437489792
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.132,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.837220437489792
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.452,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5031054926223417
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.2207743761029879,
+          "quantile_low": 0.9736070731900242,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.56,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.696182127910886
+        }
+      },
+      "total_expected": 0.24945464231641185,
+      "window_end": "2022-10-28T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6190746259453357,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.4795294546864147,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20221028T000000Z-30d",
+      "issue_time": "2022-10-28T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.7222283506608669,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.3254139149401988,
+      "window_end": "2022-11-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.127,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.72311998941765
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.087,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.72311998941765
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0862276934964634
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3216463168126069,
+          "quantile_low": 0.9416135698046679,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.052,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.30227872324897
+        }
+      },
+      "benchmark_total_expected": 0.38808647043868116,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.5357034351649882
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20221127T000000Z-30d",
+      "issue_time": "2022-11-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.079,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.258823424582639
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.041,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.258823424582639
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0774046325565503
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.24981413160482413,
+          "quantile_low": 0.9658150023144919,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.018,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.647223472445525
+        }
+      },
+      "total_expected": 0.2874342786283053,
+      "window_end": "2022-12-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.215,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.353136565716376
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.143,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.353136565716376
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.086227693496464
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3627879070223847,
+          "quantile_low": 0.9243734576909866,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.202,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.01919789738417
+        }
+      },
+      "benchmark_total_expected": 0.45065272281870944,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.7254568070144278
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20221227T000000Z-30d",
+      "issue_time": "2022-12-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.611,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.627679758701948
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.188,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.627679758701948
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0774046325565507
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.28119226955658916,
+          "quantile_low": 0.9561302751188325,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.534,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.111940011045608
+        }
+      },
+      "total_expected": 0.33016136947918545,
+      "window_end": "2023-01-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1999.9951775426346
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1999.9951775426346
+        },
+        "M": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.01,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -58.41356474533518
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 160.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -892.9514130809395
+        }
+      },
+      "benchmark_total_expected": 0.4265887795956217,
+      "comparison": {
+        "T": {
+          "p_value": 0.5245377100786911,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.05097201768379128
+        },
+        "W": {
+          "p_value": 0.4154452727009612,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.8143486047092877
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230126T000000Z-30d",
+      "issue_time": "2023-01-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 160,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2008.150700372041
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2008.150700372041
+        },
+        "M": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.014,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -57.78681376517221
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.0,
+          "quantile_low": 1.0,
+          "statistic": 160.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -836.0406532394665
+        }
+      },
+      "total_expected": 0.2826868240893186,
+      "window_end": "2023-02-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.115,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -87.2697041082892
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.956,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -87.2697041082892
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.898,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.98985070924114
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.9886436796179554,
+          "quantile_low": 0.02182360280376177,
+          "statistic": 12.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.002,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -60.119062294687666
+        }
+      },
+      "benchmark_total_expected": 21.246712456211178,
+      "comparison": {
+        "T": {
+          "p_value": 0.8984336622545938,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.04489090230592252
+        },
+        "W": {
+          "p_value": 0.5829195472688132,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.5491251783869153
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230225T000000Z-30d",
+      "issue_time": "2023-02-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 12,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.028,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -87.80839493596025
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.324,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -87.80839493596025
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.891,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.891784313984289
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6219343349270477,
+          "quantile_low": 0.4898290274384135,
+          "statistic": 12.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -63.123948885084985
+        }
+      },
+      "total_expected": 12.75899735254632,
+      "window_end": "2023-03-27T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.065,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -27.967016767809397
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.999,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -27.967016767809397
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.834,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.643527158345657
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.9999845082150283,
+          "quantile_low": 0.00011491306121303977,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.01,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.721050827830567
+        }
+      },
+      "benchmark_total_expected": 13.767638902475491,
+      "comparison": {
+        "T": {
+          "p_value": 0.46333711524487886,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.0067197311437406
+        },
+        "W": {
+          "p_value": 0.17971249487899976,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.3416407864998738
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230327T000000Z-30d",
+      "issue_time": "2023-03-27T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.062,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.953577305521918
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.983,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -23.953577305521918
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.829,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.61026036442159
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.9982026296771442,
+          "quantile_low": 0.00870431219914136,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.01,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.98179427588016
+        }
+      },
+      "total_expected": 8.58123735823804,
+      "window_end": "2023-04-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.586,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -47.481844224757076
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.674,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -47.481844224757076
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.981,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.356091756272491
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.733158646717524,
+          "quantile_low": 0.3984701529200493,
+          "statistic": 7.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.139,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -33.86530895076102
+        }
+      },
+      "benchmark_total_expected": 8.401379563726914,
+      "comparison": {
+        "T": {
+          "p_value": 0.36283661065740086,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.5550519906337449
+        },
+        "W": {
+          "p_value": 0.6120898800892568,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.50709255283711
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230426T000000Z-30d",
+      "issue_time": "2023-04-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 7,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.318,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -51.367208159193275
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.077,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -51.367208159193275
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.981,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.286519993670979
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.10433737909142227,
+          "quantile_low": 0.9524594859623883,
+          "statistic": 7.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.029,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -36.97973994210852
+        }
+      },
+      "total_expected": 3.9382268191090644,
+      "window_end": "2023-05-26T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.696,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.822289716594117
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.997,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.822289716594117
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.827,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.8772824314746424
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 0.9987542615672835,
+          "quantile_low": 0.009577270464291252,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.524,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.157299362761285
+        }
+      },
+      "benchmark_total_expected": 6.688026806243064,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.8752594759978116
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230526T000000Z-30d",
+      "issue_time": "2023-05-26T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.475,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.947030240596305
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.917,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.947030240596305
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.822,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.8645542025236677
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9674670458296334,
+          "quantile_low": 0.1439746449271331,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.229,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.888222260349027
+        }
+      },
+      "total_expected": 3.425501728898503,
+      "window_end": "2023-06-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.001607702708521846,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 6.432949008078333,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230625T000000Z-30d",
+      "issue_time": "2023-06-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.08609761671113096,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 2.452273548406233,
+      "window_end": "2023-07-25T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -60.28486801398049
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.08,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -60.28486801398049
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.788,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.84656573946466
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.592399890782701,
+          "quantile_low": 0.5824427078919476,
+          "statistic": 5.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -49.08069292757792
+        }
+      },
+      "benchmark_total_expected": 5.191249537767004,
+      "comparison": {
+        "T": {
+          "p_value": 0.16032752717905688,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 3.1485044194471326
+        },
+        "W": {
+          "p_value": 0.07961580146011343,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.7529196424044293
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230725T000000Z-30d",
+      "issue_time": "2023-07-25T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 5,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.029,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -44.54234591674482
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.009,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -44.54234591674482
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.777,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.829786610842518
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.05106802671640864,
+          "quantile_low": 0.9840675868341596,
+          "statistic": 5.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.002,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -31.750279073073106
+        }
+      },
+      "total_expected": 1.9822755490465513,
+      "window_end": "2023-08-24T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.656,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.161898479791134
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.956,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.161898479791134
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0862276934964616
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9870804230498335,
+          "quantile_low": 0.06910696600403451,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.533,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.196607844972776
+        }
+      },
+      "benchmark_total_expected": 4.349011524958931,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.8922860447597443
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230824T000000Z-30d",
+      "issue_time": "2023-08-24T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.789,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.269612435031389
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.988,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.269612435031389
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.077404632556551
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9951980150154802,
+          "quantile_low": 0.030438466631731085,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.723,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.528468924881867
+        }
+      },
+      "total_expected": 5.338725908110136,
+      "window_end": "2023-09-23T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.856,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.728529612512919
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.946,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.728529612512919
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.668337169452802
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9643324198182757,
+          "quantile_low": 0.15456592670984695,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.66,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.930706061270307
+        }
+      },
+      "benchmark_total_expected": 3.3335131209446263,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.008440301161971586
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20230923T000000Z-30d",
+      "issue_time": "2023-09-23T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.478,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.73696991367489
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.659,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.73696991367489
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6517037724907673
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.8236717409780673,
+          "quantile_low": 0.482329715017502,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.112,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.901100722298501
+        }
+      },
+      "total_expected": 1.7354079130192437,
+      "window_end": "2023-10-23T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.011,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -14.897107192283631
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.84,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -14.897107192283631
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0862276934964643
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9683758065893113,
+          "quantile_low": 0.1408488710580636,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.004,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.596531243366716
+        }
+      },
+      "benchmark_total_expected": 3.453832837060065,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 6.1672953401890656
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20231023T000000Z-30d",
+      "issue_time": "2023-10-23T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.451,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.729811852094564
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.531,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.729811852094564
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0774046325565516
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7309571071316606,
+          "quantile_low": 0.6222651257328828,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.255,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.611749354259711
+        }
+      },
+      "total_expected": 1.312884459049429,
+      "window_end": "2023-11-22T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.071,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -28.009455226101508
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.54,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -28.009455226101508
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.834,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.171791476506911
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7448648303547044,
+          "quantile_low": 0.4558554820911299,
+          "statistic": 3.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.01,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.125053847074078
+        }
+      },
+      "benchmark_total_expected": 3.886983815075645,
+      "comparison": {
+        "T": {
+          "p_value": 0.15620001027335573,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.33907075837461065
+        },
+        "W": {
+          "p_value": 0.10880943004054569,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.6035674514745464
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20231122T000000Z-30d",
+      "issue_time": "2023-11-22T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 3,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.142,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.992242950977676
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.056,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.992242950977676
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.82,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.149227461698232
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.1458648842078185,
+          "quantile_low": 0.9556079512817811,
+          "statistic": 3.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.034,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.448284260094677
+        }
+      },
+      "total_expected": 1.3128844590494289,
+      "window_end": "2023-12-22T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.842,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.483054104512977
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.934,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.483054104512977
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6683371694528004
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9544097271572733,
+          "quantile_low": 0.1863758118318345,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.634,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.854199388484087
+        }
+      },
+      "benchmark_total_expected": 3.088060900069131,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.211548327843993
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20231222T000000Z-30d",
+      "issue_time": "2023-12-22T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.009,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.694602432356971
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.384,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -13.694602432356971
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6517037724907664
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7610666945106583,
+          "quantile_low": 0.5809832541571198,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.001,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.970100156018788
+        }
+      },
+      "total_expected": 1.431570822524096,
+      "window_end": "2024-01-21T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.557,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.185963967395342
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.866,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.185963967395342
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.366,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.7130634795619564
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9364531902725163,
+          "quantile_low": 0.2386804500372494,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.66,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.7306945502486055
+        }
+      },
+      "benchmark_total_expected": 2.7559784835905194,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0013859402297038415
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240121T000000Z-30d",
+      "issue_time": "2024-01-21T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.284,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.184578027165639
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.433,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.184578027165639
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.362,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.715955922655226
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6927076584696163,
+          "quantile_low": 0.6698837013058943,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.394,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.45414329503647
+        }
+      },
+      "total_expected": 1.1799557319578016,
+      "window_end": "2024-02-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.09894393243824301,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 2.313201928285704,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240220T000000Z-30d",
+      "issue_time": "2024-02-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.2875322947455123,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.2464200955036153,
+      "window_end": "2024-03-21T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.068,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.083083380667395
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.083083380667395
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0862276934964634
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9010560675617569,
+          "quantile_low": 0.3278212277465571,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.039,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.52228643978775
+        }
+      },
+      "benchmark_total_expected": 2.313201928285704,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.597217526369901
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240321T000000Z-30d",
+      "issue_time": "2024-03-21T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.279,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.485865854297494
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.274,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.485865854297494
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.077404632556551
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5355619909769228,
+          "quantile_low": 0.8206281448496606,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.198,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.376170620436371
+        }
+      },
+      "total_expected": 0.7669271870659603,
+      "window_end": "2024-04-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.10584040980421117,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 2.2458228872610584,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240420T000000Z-30d",
+      "issue_time": "2024-04-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.45354333384378887,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7906644597608937,
+      "window_end": "2024-05-20T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.12169321692573513,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 2.1062520165671494,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240520T000000Z-30d",
+      "issue_time": "2024-05-20T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4801316195400567,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7336950052930535,
+      "window_end": "2024-06-19T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.11431262390154265,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 2.1688182689471773,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240619T000000Z-30d",
+      "issue_time": "2024-06-19T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5180229500080402,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.6577357326692665,
+      "window_end": "2024-07-19T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.145,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -18.549242516799964
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.378,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -18.549242516799964
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.159325239807551
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6195167660090921,
+          "quantile_low": 0.6505423410724458,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.048,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -15.001361306487203
+        }
+      },
+      "benchmark_total_expected": 2.096626439277914,
+      "comparison": {
+        "T": {
+          "p_value": 0.5894489922399565,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.4526844067100257
+        },
+        "W": {
+          "p_value": 0.6547208460185769,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.4472135954999579
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240719T000000Z-30d",
+      "issue_time": "2024-07-19T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.061,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -21.454611330220015
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.022,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -21.454611330220015
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.129963613894546
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.14939107803875373,
+          "quantile_low": 0.968073616281525,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.009,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -17.103588710226422
+        }
+      },
+      "total_expected": 0.6814730053642,
+      "window_end": "2024-08-18T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.876,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.468225400246312
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.804,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.468225400246312
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.459,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5041182175401375
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.8398946213252532,
+          "quantile_low": 0.45340611451128265,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.737550388523037
+        }
+      },
+      "benchmark_total_expected": 1.8319230638239485,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.0600838021016794
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240818T000000Z-30d",
+      "issue_time": "2024-08-18T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.414,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.528309202347991
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.869,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.528309202347991
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.452,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.5031054926223417
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9542097916448756,
+          "quantile_low": 0.18699278710246456,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.423,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.067644018719032
+        }
+      },
+      "total_expected": 3.0836850020914617,
+      "window_end": "2024-09-17T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.008,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -15.024264268969995
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.579,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -15.024264268969995
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.054,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.5935708377584445
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.8996171157999021,
+          "quantile_low": 0.3311394006830684,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.043,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.964301265659863
+        }
+      },
+      "benchmark_total_expected": 2.2987635623518514,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 2.529499109999603
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20240917T000000Z-30d",
+      "issue_time": "2024-09-17T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.035,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.494765158970392
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.237,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.494765158970392
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.053,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.6316097929512585
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5894924693043034,
+          "quantile_low": 0.7760074283186675,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.159,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.856666086125482
+        }
+      },
+      "total_expected": 0.890361005079614,
+      "window_end": "2024-10-17T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -36.06605047183954
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.09,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -36.06605047183954
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.406,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.70071970515418
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4844773331496932,
+          "quantile_low": 0.7334767081846584,
+          "statistic": 3.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -28.735092626478895
+        }
+      },
+      "benchmark_total_expected": 2.611594824251993,
+      "comparison": {
+        "T": {
+          "p_value": 0.09488286276767575,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.5784737195589598
+        },
+        "W": {
+          "p_value": 0.10880943004054569,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.6035674514745464
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20241017T000000Z-30d",
+      "issue_time": "2024-10-17T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 3,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.001,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -34.33062931316266
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.062,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -34.33062931316266
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.386,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.693776362389741
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.3544724951341174,
+          "quantile_low": 0.8357597579873389,
+          "statistic": 3.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -26.8705763000763
+        }
+      },
+      "total_expected": 2.1152042761381784,
+      "window_end": "2024-11-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.12892833742325593,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 2.0484985528317385,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20241116T000000Z-30d",
+      "issue_time": "2024-11-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.3822911365213502,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.9615728231644142,
+      "window_end": "2024-12-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.1518497492314176,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.8848637389147418,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20241216T000000Z-30d",
+      "issue_time": "2024-12-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.30151197361714704,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 1.1989455501137483,
+      "window_end": "2025-01-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.15857166525815583,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.8415486411131838,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250115T000000Z-30d",
+      "issue_time": "2025-01-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.46664814947668554,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7621797325269736,
+      "window_end": "2025-02-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.069,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.038195502133464
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.457,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -12.038195502133464
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.827,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.8772824314746432
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.7757576424572109,
+          "quantile_low": 0.5594909291699863,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.032,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.068030053209553
+        }
+      },
+      "benchmark_total_expected": 1.4950278587007193,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 1.5675910454766644
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250214T000000Z-30d",
+      "issue_time": "2025-02-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.188,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.4706044566568
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.245,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.4706044566568
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.822,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.8645542025236685
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5266581238009767,
+          "quantile_low": 0.82737195367825,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.117,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -8.567676849306062
+        }
+      },
+      "total_expected": 0.7479373689100136,
+      "window_end": "2025-03-16T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.2866264044598772,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.2495756378252239,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250316T000000Z-30d",
+      "issue_time": "2025-03-16T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4916649784230167,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.7099577325981201,
+      "window_end": "2025-04-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.098,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.135896487687937
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.346,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.135896487687937
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.086227693496464
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.6874358160397067,
+          "quantile_low": 0.676059277098789,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.075,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.037679313160563
+        }
+      },
+      "benchmark_total_expected": 1.162945442222108,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 4.205285429632974
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250415T000000Z-30d",
+      "issue_time": "2025-04-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.898,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.930611058054963
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.463,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.930611058054963
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0774046325565507
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.49412870783672924,
+          "quantile_low": 0.8506089219612463,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.882,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.78823478088668
+        }
+      },
+      "total_expected": 0.6814730053642001,
+      "window_end": "2025-05-15T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.26538325403911583,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.326580256139105,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250515T000000Z-30d",
+      "issue_time": "2025-05-15T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5536229779522253,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.591271369123453,
+      "window_end": "2025-06-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.26032318237778285,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.3458314107175753,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250614T000000Z-30d",
+      "issue_time": "2025-06-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5916695422701503,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5248070055776395,
+      "window_end": "2025-07-14T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.24689994983551364,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.3987720858083683,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250714T000000Z-30d",
+      "issue_time": "2025-07-14T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.44925736078776213,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.8001593688388671,
+      "window_end": "2025-08-13T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.2553595912774051,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.3650825652960457,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250813T000000Z-30d",
+      "issue_time": "2025-08-13T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.5916695422701503,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5248070055776395,
+      "window_end": "2025-09-12T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.39190164514144343,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.9367443759250829,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20250912T000000Z-30d",
+      "issue_time": "2025-09-12T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6058821808329996,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5010697328827061,
+      "window_end": "2025-10-12T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.31863969807762577,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.1436942876436378,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20251012T000000Z-30d",
+      "issue_time": "2025-10-12T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6058821808329996,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5010697328827061,
+      "window_end": "2025-11-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.2950239008901878,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.2206989059575186,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20251111T000000Z-30d",
+      "issue_time": "2025-11-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6058821808329996,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5010697328827061,
+      "window_end": "2025-12-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.3295573900280903,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 1.110004767131315,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20251211T000000Z-30d",
+      "issue_time": "2025-12-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.580539855079298,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5437968237335862,
+      "window_end": "2026-01-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.4212399958777122,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.8645525462558193,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20260110T000000Z-30d",
+      "issue_time": "2026-01-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6058821808329996,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.5010697328827061,
+      "window_end": "2026-02-09T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.103,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.459817552751865
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.252,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.459817552751865
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.687,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.0862276934964648
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5746857489126284,
+          "quantile_low": 0.7889268746277909,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.058,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.3619236601819
+        }
+      },
+      "benchmark_total_expected": 0.8549269689665842,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.19015088803499935
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20260209T000000Z-30d",
+      "issue_time": "2026-02-09T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.093,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.649968440786864
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.104,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.649968440786864
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.07740463255655
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.4055148552917768,
+          "quantile_low": 0.9036528221643304,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.041,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -9.39869230445612
+        }
+      },
+      "total_expected": 0.5200595510386528,
+      "window_end": "2026-03-11T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.39760111097884693,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.9223060099912301,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20260311T000000Z-30d",
+      "issue_time": "2026-03-11T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.632330775982312,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.45834264203182595,
+      "window_end": "2026-04-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.46157553666998463,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "benchmark_total_expected": 0.7731095620080859,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "W": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20260410T000000Z-30d",
+      "issue_time": "2026-04-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": true,
+      "n_target_events": 0,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "L": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "M": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 1.0,
+          "quantile_low": 0.6263552661112088,
+          "statistic": 0.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.0
+        }
+      },
+      "total_expected": 0.46783755110979924,
+      "window_end": "2026-05-10T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.083,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.077324660447534
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.12,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.077324660447534
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.312,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.248777860025861
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.323940722901211,
+          "quantile_low": 0.8874217580165461,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.086,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -14.194924558342176
+        }
+      },
+      "benchmark_total_expected": 1.162945442222108,
+      "comparison": {
+        "T": {
+          "p_value": 0.6395723165086961,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0001059478142849
+        },
+        "W": {
+          "p_value": 0.6547208460185769,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -0.4472135954999579
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20260510T000000Z-30d",
+      "issue_time": "2026-05-10T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 2,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.066,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.077536556076105
+        },
+        "L": {
+          "p_value": null,
+          "passed": false,
+          "quantile": 0.017,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -22.077536556076105
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.299,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.258467914223459
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.0890907434424717,
+          "quantile_low": 0.9858896158406815,
+          "statistic": 2.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.058,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -15.14909802420679
+        }
+      },
+      "total_expected": 0.49632227834371945,
+      "window_end": "2026-06-09T00:00:00+00:00"
+    },
+    {
+      "benchmark_tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.69,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.814788586099568
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.479,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.814788586099568
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6683371694528004
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.5827952304128104,
+          "quantile_low": 0.7819160521989661,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.499,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.137802171693294
+        }
+      },
+      "benchmark_total_expected": 0.8741781235450545,
+      "comparison": {
+        "T": {
+          "p_value": null,
+          "passed": null,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": 0.3666636174754813
+        },
+        "W": {
+          "p_value": 0.31731050786291415,
+          "passed": false,
+          "quantile": null,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -1.0
+        }
+      },
+      "fit_cutoff": "2022-01-01T00:00:00+00:00",
+      "forecast_id": "ntpp-neural-hawkes-turkiye-eaf-20260609T000000Z-30d",
+      "issue_time": "2026-06-09T00:00:00+00:00",
+      "n_excluded_non_earthquake": 0,
+      "n_only": false,
+      "n_target_events": 1,
+      "parameter_snapshot_hash": "8d8a21fbe1e3c038bb350ac085e14a478c26c27cb1777aa9a140a5bf0f7efa8f",
+      "tests": {
+        "CL": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.754,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.448124968624087
+        },
+        "L": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.315,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -7.448124968624087
+        },
+        "M": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -2.6517037724907686
+        },
+        "N": {
+          "p_value": null,
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.388337625165007,
+          "quantile_low": 0.9123401989724891,
+          "statistic": 1.0
+        },
+        "S": {
+          "p_value": null,
+          "passed": true,
+          "quantile": 0.573,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.594705256961925
+        }
+      },
+      "total_expected": 0.49157482380473266,
+      "window_end": "2026-07-09T00:00:00+00:00"
+    }
+  ]
+}

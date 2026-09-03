@@ -1,0 +1,259 @@
+{
+  "chosen": {
+    "background_sigma_km": 10.0,
+    "epochs": 8000,
+    "feature_clip": 3.0,
+    "hidden": 16,
+    "learning_rate": 0.05,
+    "max_alpha_fraction": 0.95,
+    "max_branching_ratio": 0.98,
+    "n_space_basis": 5,
+    "n_time_basis": 6,
+    "omori_p": 1.15,
+    "seed": 20220101,
+    "space_scale_max_km": 50.0,
+    "space_scale_min_km": 0.5,
+    "spatial_s": 1.5,
+    "time_scale_max_days": 100.0,
+    "time_scale_min_days": 0.001,
+    "weight_decay": 0.001
+  },
+  "chosen_config_hash": "1ef984d705c3dfbbb6e06f9adf89e709602be7045a0939385254a51195960e4f",
+  "hard_cutoff": "2022-01-01T00:00:00+00:00",
+  "mc": 4.3,
+  "region_id": "turkiye-eaf",
+  "rule": "hyperparameters chosen only on windows ending at or before the hard cutoff (ADR-0022 decision 4); the chosen configuration is frozen and its hash recorded before any test window is scored",
+  "selected_at": "2026-09-03T22:00:33.805336+00:00",
+  "splits": [
+    {
+      "fold": 0,
+      "train_end": "1991-05-07T01:19:19.538000+00:00",
+      "train_start": "1976-01-07T13:58:59.307000+00:00",
+      "val_end": "2006-09-03T12:39:39.769000+00:00",
+      "val_start": "1991-05-07T01:19:19.538000+00:00"
+    },
+    {
+      "fold": 1,
+      "train_end": "2006-09-03T12:39:39.769000+00:00",
+      "train_start": "1976-01-07T13:58:59.307000+00:00",
+      "val_end": "2022-01-01T00:00:00+00:00",
+      "val_start": "2006-09-03T12:39:39.769000+00:00"
+    }
+  ],
+  "train_start": "1976-01-07T13:58:59.307000+00:00",
+  "trials": [
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 8,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.0
+      },
+      "config_hash": "e3f156486823af0b9147719b91d6c8940685c962c2805f2a80d11f1674374f9c",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 136,
+          "nll": 14.614390320633838,
+          "note": null,
+          "score_end": "2006-09-03T12:39:39.769000+00:00",
+          "score_start": "1991-05-07T01:19:19.538000+00:00",
+          "sll": -10.307228617947814,
+          "tll": -4.307161702686024,
+          "total_log_likelihood": -2022.9400117863845,
+          "train_cutoff": "1991-05-07T01:19:19.538000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 167,
+          "nll": 12.793725184353429,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-09-03T12:39:39.769000+00:00",
+          "sll": -9.497781487243971,
+          "tll": -3.295943697109457,
+          "total_log_likelihood": -2161.2693754282395,
+          "train_cutoff": "2006-09-03T12:39:39.769000+00:00"
+        }
+      ],
+      "mean_nll": 13.610921417139354,
+      "n_validation_events": 303
+    },
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 8,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.001
+      },
+      "config_hash": "9c03e31f201532fde576247c59935c318355fc6dc2a28d32ed2765a56325bd2a",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 136,
+          "nll": 14.453175096383102,
+          "note": null,
+          "score_end": "2006-09-03T12:39:39.769000+00:00",
+          "score_start": "1991-05-07T01:19:19.538000+00:00",
+          "sll": -10.238193531670019,
+          "tll": -4.214981564713084,
+          "total_log_likelihood": -2000.9679013894738,
+          "train_cutoff": "1991-05-07T01:19:19.538000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 167,
+          "nll": 12.883597122513743,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-09-03T12:39:39.769000+00:00",
+          "sll": -9.488122979741858,
+          "tll": -3.3954741427718855,
+          "total_log_likelihood": -2176.3256263413045,
+          "train_cutoff": "2006-09-03T12:39:39.769000+00:00"
+        }
+      ],
+      "mean_nll": 13.588094166890748,
+      "n_validation_events": 303
+    },
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 16,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.0
+      },
+      "config_hash": "b61600907c7d8ec70809047a57ff80a97e4deb448bd72002c8d3243b62af7a55",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 136,
+          "nll": 14.53776732080225,
+          "note": null,
+          "score_end": "2006-09-03T12:39:39.769000+00:00",
+          "score_start": "1991-05-07T01:19:19.538000+00:00",
+          "sll": -10.237186720559308,
+          "tll": -4.3005806002429425,
+          "total_log_likelihood": -2012.6351678434055,
+          "train_cutoff": "1991-05-07T01:19:19.538000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 167,
+          "nll": 12.904822871067113,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-09-03T12:39:39.769000+00:00",
+          "sll": -9.473738671926226,
+          "tll": -3.431084199140887,
+          "total_log_likelihood": -2180.0673961027865,
+          "train_cutoff": "2006-09-03T12:39:39.769000+00:00"
+        }
+      ],
+      "mean_nll": 13.637761633984534,
+      "n_validation_events": 303
+    },
+    {
+      "all_converged": true,
+      "config": {
+        "background_sigma_km": 10.0,
+        "epochs": 8000,
+        "feature_clip": 3.0,
+        "hidden": 16,
+        "learning_rate": 0.05,
+        "max_alpha_fraction": 0.95,
+        "max_branching_ratio": 0.98,
+        "n_space_basis": 5,
+        "n_time_basis": 6,
+        "omori_p": 1.15,
+        "seed": 20220101,
+        "space_scale_max_km": 50.0,
+        "space_scale_min_km": 0.5,
+        "spatial_s": 1.5,
+        "time_scale_max_days": 100.0,
+        "time_scale_min_days": 0.001,
+        "weight_decay": 0.001
+      },
+      "config_hash": "1ef984d705c3dfbbb6e06f9adf89e709602be7045a0939385254a51195960e4f",
+      "folds": [
+        {
+          "converged": true,
+          "fold": 0,
+          "n_events": 136,
+          "nll": 14.472176674150294,
+          "note": null,
+          "score_end": "2006-09-03T12:39:39.769000+00:00",
+          "score_start": "1991-05-07T01:19:19.538000+00:00",
+          "sll": -10.22410980659001,
+          "tll": -4.2480668675602855,
+          "total_log_likelihood": -2003.6964439420867,
+          "train_cutoff": "1991-05-07T01:19:19.538000+00:00"
+        },
+        {
+          "converged": true,
+          "fold": 1,
+          "n_events": 167,
+          "nll": 12.805256841476721,
+          "note": null,
+          "score_end": "2022-01-01T00:00:00+00:00",
+          "score_start": "2006-09-03T12:39:39.769000+00:00",
+          "sll": -9.419118870610674,
+          "tll": -3.3861379708660473,
+          "total_log_likelihood": -2163.7539331075873,
+          "train_cutoff": "2006-09-03T12:39:39.769000+00:00"
+        }
+      ],
+      "mean_nll": 13.553445281224596,
+      "n_validation_events": 303
+    }
+  ],
+  "validation_end": "2022-01-01T00:00:00+00:00"
+}
