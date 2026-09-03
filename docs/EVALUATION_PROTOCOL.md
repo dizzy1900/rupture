@@ -67,7 +67,7 @@ All tests are the pycsep Poisson-forecast implementations (`csep.core.poisson_ev
 
 Each outcome is an `EvaluationResult`: one-sided tests fill `quantile`, the N-test fills
 `quantile_low`/`quantile_high`, comparisons fill `p_value` and `benchmark_model_id`; `alpha`,
-`n_simulations` and the seed are recorded so that the run is reproducible. Passing a consistency test means "not rejected at α"; it is not evidence of skill.
+`n_simulations` and the seed are recorded so that the run is reproducible; the seed is recorded in `notes` as `{"seed": N}` (the domain model has no seed field). Passing a consistency test means "not rejected at α"; it is not evidence of skill.
 Skill is only ever claimed from the paired comparison against ETAS.
 
 ## 5. Minimum target events
@@ -133,7 +133,9 @@ reproducible:
 - The target slice is **frozen at evaluation time**: its hash (`Catalog.event_hash()`, the
   SHA-256 over sorted event ids and origin times) is stored as `target_catalog_hash` on every
   `EvaluationResult`, together with `target_window_start`/`target_window_end`, and the slice
-  itself is archived under `reports/eval/<forecast_id>/target.parquet`.
+  itself is archived under `reports/eval/<forecast_id>/<hash12>/target.parquet`, where
+  `hash12` is the first 12 characters of `target_catalog_hash`; the results for that slice are
+  `reports/eval/<forecast_id>/results-<hash12>.json` and `latest.json` points at the newest.
 - Re-evaluating an old forecast against a revised catalogue produces a new `EvaluationResult`
   with a new hash; the old one is not overwritten. Both are kept, and the schedule report names
   which catalogue build (by hash) each result used.

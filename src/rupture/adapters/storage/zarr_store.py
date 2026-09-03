@@ -4,6 +4,11 @@ Layout: ``<root>/<region_id>/<model_id>/<forecast_id>.zarr`` holding an xarray D
 ``cell`` and ``magnitude_bin``; every non-array field of the grid is kept verbatim as the JSON
 attribute ``rupture_forecast_grid`` so the round trip is exact. A STAC item is written alongside
 (``<forecast_id>.stac.json``) and the per-directory ``collection.json`` is refreshed.
+
+zarr v3 through xarray runs its store I/O on an asyncio loop, and Python's event loop creates an
+AF_UNIX ``socketpair`` for its self-pipe; that is why the unit suite runs with
+``--allow-unix-socket`` next to ``--disable-socket``. It is local inter-thread signalling, not
+network access.
 """
 
 from __future__ import annotations

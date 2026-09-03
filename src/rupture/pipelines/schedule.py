@@ -364,7 +364,7 @@ def _initial_fit(
     tracker: Tracker,
     use_existing_fit: bool,
 ) -> FitResult:
-    """Reuse a persisted, converged fit with the same cutoff when allowed; otherwise fit now."""
+    """Reuse a persisted, converged fit with the same cutoff *and* training slice; else fit now."""
     fit: FitResult | None = None
     if use_existing_fit:
         try:
@@ -372,6 +372,16 @@ def _initial_fit(
         except FileNotFoundError:
             candidate = None
         if candidate is not None and candidate.fit_cutoff == start and candidate.converged:
+            in_hand = MizrahiETAS.training_slice(catalog, region, start, candidate.mc)
+            if in_hand.event_hash() != candidate.training_catalog_hash:
+                msg = (
+                    f"persisted fit for {region.id} at {start.isoformat()} was trained on a "
+                    f"different slice (training_catalog_hash "
+                    f"{candidate.training_catalog_hash[:12]} vs {in_hand.event_hash()[:12]} for "
+                    f"the catalogue in hand, {len(in_hand)} events); refit, or pass a catalogue "
+                    "that matches the fit"
+                )
+                raise ValueError(msg)
             fit = candidate
             model.load_fit(fit, region)
     if fit is None:

@@ -25,10 +25,10 @@ import numpy as np
 import numpy.typing as npt
 import pandas as pd
 from etas import inversion as etas_inversion
+from etas import simulation as etas_sim
 from scipy.special import ndtr
 from shapely.geometry import Point, Polygon
 
-from rupture.adapters.forecasting._etas_compat import etas_simulation
 from rupture.adapters.forecasting.grid import (
     Lattice,
     build_lattice,
@@ -95,6 +95,7 @@ PARAMETERS_FILE = "parameters.json"
 DIAGNOSTICS_FILE = "diagnostics.json"
 
 EARTH_RADIUS_KM = 6.3781e3  # the package's value
+EM_TOLERANCE = 0.001  # the package's convergence criterion (summed absolute parameter change)
 
 
 def _etas_version() -> str:
@@ -223,6 +224,10 @@ class MizrahiETAS:
         Optional upper magnitude bound for simulated events (``None`` = unbounded, as upstream).
     theta_0:
         EM starting point; defaults to :data:`DEFAULT_THETA_0` so fits are reproducible.
+    max_iterations, max_seconds:
+        Caps on the EM loop (the package's own ``invert`` has none and would run until its
+        tolerance is met). Hitting a cap yields ``converged=False``; the fit is still persisted
+        and ``forecast`` refuses to use it.
     """
 
     model_id: str = MODEL_ID
@@ -237,10 +242,17 @@ class MizrahiETAS:
         gaussian_scale: float = 0.1,
         m_max: float | None = None,
         theta_0: Mapping[str, float | None] | None = None,
+        max_iterations: int = 200,
+        max_seconds: float = 1800.0,
     ) -> None:
         if auxiliary_years <= 0:
             msg = "auxiliary_years must be positive"
             raise ValueError(msg)
+        if max_iterations < 1 or max_seconds <= 0:
+            msg = "max_iterations must be >= 1 and max_seconds positive"
+            raise ValueError(msg)
+        self.max_iterations = max_iterations
+        self.max_seconds = max_seconds
         self.auxiliary_years = auxiliary_years
         self.coppersmith_multiplier = coppersmith_multiplier
         self.fixed_beta = fixed_beta
@@ -296,7 +308,7 @@ class MizrahiETAS:
     ) -> FitResult:
         """Fit on ``origin_time < cutoff`` earthquakes with ``mw >= mc`` inside the region."""
         mc_value, mc_source = self._resolve_mc(catalog, region, mc)
-        training = self._training_slice(catalog, region, cutoff, mc_value)
+        training = self.training_slice(catalog, region, cutoff, mc_value)
         assert_all_before(training, cutoff, what="fit training catalogue")
         if len(training) == 0:
             msg = "no training events after filtering; refusing to fit"
@@ -331,11 +343,15 @@ class MizrahiETAS:
         t0 = time.perf_counter()
         calc = etas_inversion.ETASParameterCalculation(metadata)
         calc.prepare()
-        theta = calc.invert()
+        em_converged, em_reason = self._invert_capped(calc)
+        theta = calc.theta
         runtime_s = time.perf_counter() - t0
 
         parameters = self._parameters_from(theta, calc.beta)
-        converged = all(math.isfinite(v) for v in parameters.values())
+        finite = all(math.isfinite(v) for v in parameters.values())
+        converged = em_converged and finite
+        if not finite:
+            em_reason = "non-finite parameter(s)"
         at_bound = sorted(
             k
             for k, (lo, hi) in ETAS_RANGES.items()
@@ -356,6 +372,10 @@ class MizrahiETAS:
 
         diagnostics: dict[str, Any] = {
             "iterations": int(calc.i),
+            "em_tolerance": EM_TOLERANCE,
+            "max_iterations": self.max_iterations,
+            "max_seconds": self.max_seconds,
+            "converged_reason": em_reason,
             "n_target_events": len(calc.target_events),
             "n_source_events": len(calc.source_events),
             "n_hat_background": _to_float(calc.n_hat),
@@ -398,10 +418,47 @@ class MizrahiETAS:
             diagnostics=diagnostics,
             converged=converged,
             fitted_at=utc_now(),
-            notes=None if converged else "non-finite parameter(s): fit is not usable",
+            notes=None if converged else f"not converged ({em_reason}): fit is not usable",
         )
         self.load_fit(result, region)
         return result
+
+    def _invert_capped(self, calc: Any) -> tuple[bool, str]:
+        """The package's EM loop (``ETASParameterCalculation.invert``) with iteration/time caps.
+
+        Mirrors upstream step for step (expectation step, parameter optimisation, summed absolute
+        change < tolerance, final expectation step) but stops at ``max_iterations`` or
+        ``max_seconds`` instead of running until it converges. ``free_productivity`` is not used.
+        """
+        theta_old = etas_inversion.parameter_dict2array(calc.theta_0)
+        mc_min = calc.m_ref - calc.delta_m / 2.0
+        start = time.perf_counter()
+        i = 0
+        converged, reason = False, ""
+        while True:
+            calc.pij, calc.target_events, calc.source_events, calc.n_hat, calc.i_hat = (
+                calc.expectation_step(theta_old, mc_min)
+            )
+            theta_new = calc.optimize_parameters(theta_old)
+            diff = etas_inversion.calc_diff_to_before(theta_old, theta_new)
+            theta_old = theta_new
+            i += 1
+            if diff < EM_TOLERANCE:
+                converged, reason = True, f"tolerance {EM_TOLERANCE} reached"
+                break
+            if i >= self.max_iterations:
+                reason = f"iteration cap {self.max_iterations} hit"
+                break
+            if time.perf_counter() - start > self.max_seconds:
+                reason = f"wall-clock cap {self.max_seconds}s hit"
+                break
+        calc.theta = etas_inversion.parameter_array2dict(theta_old)
+        calc.i = i
+        calc.pij, calc.target_events, calc.source_events, calc.n_hat, calc.i_hat = (
+            calc.expectation_step(theta_old, mc_min)
+        )
+        calc.inversion_done = True
+        return converged, reason
 
     # ------------------------------------------------------------------ forecast
     def forecast(
@@ -437,7 +494,7 @@ class MizrahiETAS:
         spatial = self._inside_region(history, region)
 
         state = self.issuance_state(spatial, issue_time)
-        sim = etas_simulation()
+        sim = etas_sim
         # The package works in (lat, lon) order; its polygon must be built the same way.
         polygon_lat_lon = Polygon(shape_coords_lat_lon(region))
         delta_m = region.magnitude_bin_width
@@ -637,10 +694,12 @@ class MizrahiETAS:
         ]
         return catalog.model_copy(update={"events": tuple(kept), "id": f"{catalog.id}/in-region"})
 
-    def _training_slice(
-        self, catalog: Catalog, region: Region, cutoff: datetime, mc: float
+    @classmethod
+    def training_slice(
+        cls, catalog: Catalog, region: Region, cutoff: datetime, mc: float
     ) -> Catalog:
-        return self._inside_region(catalog.earthquakes().before(cutoff).at_least(mc), region)
+        """Exactly the events a fit with these inputs uses (hash = ``training_catalog_hash``)."""
+        return cls._inside_region(catalog.earthquakes().before(cutoff).at_least(mc), region)
 
     @staticmethod
     def _check_history_contents(history: Catalog, mc: float) -> None:

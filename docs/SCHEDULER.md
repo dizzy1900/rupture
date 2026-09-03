@@ -26,10 +26,13 @@ Every job is safe to re-run:
   same id overwrites the zarr store and STAC item with an identical grid (same fit, same history,
   same seed);
 - a fit is keyed by `(region, cutoff)` under `baselines/etas/<region>/`; the refit job skips when
-  a converged fit with that cutoff exists;
-- scoring writes `reports/eval/<forecast_id>/`; a window already holding `results.json` for the
-  current catalogue build hash is skipped; a *new* catalogue build hash produces a new result set
-  next to the old one (protocol § 9), never an overwrite;
+  a converged fit with that cutoff exists *and* its `training_catalog_hash` equals the hash of the
+  training slice cut from the catalogue in hand (a mismatch is an error, not a silent reuse);
+- scoring writes `reports/eval/<forecast_id>/results-<hash12>.json` plus a `<hash12>/` bundle
+  (`target.parquet`, plots, `summary.json`) where `hash12` is the target slice hash; a window
+  whose results file for the current target hash exists is skipped and the stored results are
+  reused; a revised catalogue gives a new hash and a new file next to the old one (protocol § 9),
+  never an overwrite; `latest.json` points at the newest;
 - the run log (`data/forecasts/<region>/runs.jsonl`) is append-only; duplicates carry distinct
   `run_id`s and are harmless.
 
@@ -58,7 +61,7 @@ out-of-calendar refit (for example after a network change alters Mc) needs an AD
 |---|---|---|
 | Forecast grids | `data/forecasts/<region>/<model>/<id>.zarr` + `<id>.stac.json`; `collection.json` per directory | DVC |
 | Fits | `baselines/etas/<region>/` | DVC |
-| Results | `reports/eval/<forecast_id>/{results.json,target.parquet,summary.json,*.png}` | not committed; schedule reports that inform `RELEASE_STATUS.md` are DVC-tracked |
+| Results | `reports/eval/<forecast_id>/results-<hash12>.json`, `latest.json`, `<hash12>/{target.parquet,summary.json,*.png}` | not committed; schedule reports that inform `RELEASE_STATUS.md` are DVC-tracked |
 | Schedule aggregates | `reports/eval/schedule-<region>-<model>.json` | DVC |
 | Run log | `data/forecasts/<region>/runs.jsonl` | DVC |
 
@@ -71,9 +74,11 @@ proof.
 - **Catalogue refresh fails** (network, provider outage): issuance still runs on the last good
   catalogue and the run record notes the catalogue build hash used; scoring is deferred, never
   performed against a partial catalogue.
-- **Fit does not converge**: the fit is persisted with `converged=false`, the refit record says
-  so, issuance refuses to use it and keeps the previous converged fit; the on-call reviewer files
-  an ADR if the previous fit is to be kept past the boundary.
+- **Fit does not converge**: the EM loop is capped (default 200 iterations or 30 minutes,
+  `MizrahiETAS(max_iterations=, max_seconds=)`), so a stuck inversion returns rather than hangs.
+  The fit is persisted with `converged=false` and `diagnostics.converged_reason` naming the cap,
+  the refit record says so, issuance refuses to use it and keeps the previous converged fit; the
+  on-call reviewer files an ADR if the previous fit is to be kept past the boundary.
 - **Issuance fails** (for example the history contains an event at or after the issue time
   because of a clock or timezone error): `LeakageError`, non-zero exit, no grid written. Nothing
   downstream runs for that region that day.
