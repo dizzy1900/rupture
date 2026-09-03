@@ -1,0 +1,137 @@
+[build-system]
+requires = ["hatchling>=1.27"]
+build-backend = "hatchling.build"
+
+[project]
+name = "rupture"
+version = "0.1.0"
+description = "Probabilistic seismic forecasting and cascade-loss model. rupture does not predict earthquakes."
+readme = "README.md"
+license = "Apache-2.0"
+requires-python = ">=3.12,<3.13"
+authors = [{ name = "rupture contributors" }]
+dependencies = [
+  # domain / contracts
+  "pydantic>=2.13,<3",
+  "jsonschema>=4.23",
+  "typer>=0.27",
+  "python-dotenv>=1.1",
+  # data layer
+  "numpy>=2.0",
+  "scipy>=1.14",
+  "pandas>=2.2",
+  "geopandas>=1.1",
+  "pyarrow>=20",
+  "shapely>=2.1",
+  "xarray>=2026.7",
+  "zarr>=3.3",
+  "pystac>=1.15",
+  "requests>=2.32",
+  # catalogues
+  "obspy>=1.5",
+  # forecasting baseline (Mizrahi et al.), pinned to a commit: not on PyPI
+  "etas @ git+https://github.com/lmizrahi/etas@097f08b69a4f06f9c38d14799dedfbd4543144e3",
+  # evaluation
+  "pycsep==0.8.0",
+]
+
+[project.optional-dependencies]
+# ComCat detail products (ShakeMap, PAGER, ground-failure) — needed from Prompt 2 onwards.
+comcat-products = ["usgs-libcomcat>=2.1"]
+
+[project.scripts]
+rupture = "rupture.cli:app"
+
+[project.urls]
+Repository = "https://github.com/dizzy1900/rupture"
+
+[dependency-groups]
+dev = [
+  "ruff>=0.13",
+  "mypy>=1.17",
+  "pytest>=8.4",
+  "pytest-xdist>=3.8",
+  "pytest-socket>=0.7",
+  "import-linter>=2.3",
+  "dvc>=3.60",
+  "pandas-stubs>=2.2",
+  "types-requests>=2.32",
+  "types-jsonschema>=4.23",
+  "types-shapely>=2.0",
+]
+
+[tool.hatch.metadata]
+# the ETAS baseline is a pinned git dependency (not on PyPI); see docs/adr/0009-etas-baseline.md
+allow-direct-references = true
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/rupture"]
+
+# ---------------------------------------------------------------- ruff
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "SIM", "RUF", "PL", "N", "ANN", "T20", "DTZ", "PT"]
+ignore = [
+  "PLR0913",  # many arguments are normal for scientific config
+  "PLR2004",  # magic values in physical constants
+  "ANN401",   # Any in adapter boundaries
+  "RUF012",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"tests/**" = ["PLR2004", "ANN", "S101"]
+"src/rupture/cli.py" = ["T20"]  # the CLI prints
+"src/rupture/validation/**" = ["T20"]
+
+# ---------------------------------------------------------------- mypy
+[tool.mypy]
+python_version = "3.12"
+strict = true
+warn_unreachable = true
+mypy_path = "src"
+packages = ["rupture"]
+plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = [
+  "geopandas.*", "obspy.*", "csep.*", "etas.*", "pystac.*", "zarr.*", "xarray.*",
+  "pyarrow.*", "scipy.*", "matplotlib.*", "cartopy.*", "pyproj.*", "libcomcat.*",
+]
+ignore_missing_imports = true
+
+# ---------------------------------------------------------------- pytest
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = [
+  "integration: needs network or Docker; opt-in with -m integration",
+]
+addopts = "-ra --strict-markers -m 'not integration'"
+filterwarnings = ["error::DeprecationWarning:rupture.*"]
+
+# ---------------------------------------------------------------- import-linter
+[tool.importlinter]
+root_package = "rupture"
+
+[[tool.importlinter.contracts]]
+name = "domain is pure: imports nothing from adapters, pipelines, cli or validation"
+type = "forbidden"
+source_modules = ["rupture.domain"]
+forbidden_modules = ["rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation"]
+
+[[tool.importlinter.contracts]]
+name = "ports import only domain"
+type = "forbidden"
+source_modules = ["rupture.ports"]
+forbidden_modules = ["rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation"]
+
+[[tool.importlinter.contracts]]
+name = "adapters do not import each other across families"
+type = "independence"
+modules = [
+  "rupture.adapters.catalogs", "rupture.adapters.sources", "rupture.adapters.forecasting",
+  "rupture.adapters.evaluation", "rupture.adapters.hazard",
+]

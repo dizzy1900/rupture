@@ -1,0 +1,18 @@
+# Exact line fragments permitted by `make validate-language` even though they match a banned
+# pattern. Keep this list short. Each entry needs a reason on the preceding comment line.
+#
+# The one sentence rupture is allowed to say about prediction.
+rupture does not predict earthquakes
+# The definitional sentences (glossary, README, ADRs) that explain the distinction.
+Deterministic prediction of the time, place and magnitude of individual earthquakes
+prediction of the time, place and magnitude of individual earthquakes has no
+# The gate's own vocabulary.
+banned-language
+banned_language
+BANNED_PATTERNS
+The word "predict" is banned
+The word "predict" and its derivatives are banned
+"predict" and its derivatives
+# Glossary entries that define what rupture is *not*.
+**Prediction**
+**Early warning**

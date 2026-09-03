@@ -1,0 +1,34 @@
+# python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+build/
+dist/
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.import_linter_cache/
+.coverage
+htmlcov/
+
+# secrets
+.env
+
+# generated reports and scratch
+reports/
+.scratch/
+
+# DVC-managed directories (contents tracked by .dvc files / dvc.yaml outs)
+/data/raw/
+/data/interim/
+/data/catalogs/
+/data/forecasts/
+/baselines/**/*.parquet
+/baselines/**/*.zarr
+
+# OS / editors
+.DS_Store
+.idea/
+.vscode/
+.dvc/local-remote/

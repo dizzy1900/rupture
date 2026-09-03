@@ -1,0 +1,47 @@
+# rupture DVC pipeline. Stages are declared per test region; outputs are DVC-tracked, not git-tracked.
+# `dvc repro` needs network access (catalogue fetches). The offline gates never call it.
+# Remote: `.dvc/local-remote` is a placeholder for a fresh clone; production points at S3 via
+#   dvc remote modify local url s3://<bucket>/rupture   (see docs/ARCHITECTURE.md § Data layer)
+
+vars:
+  - regions: [california, nepal-himalaya, turkiye-eaf]
+  - cutoff: "2022-01-01T00:00:00Z"
+  - schedule_end: "2026-08-01T00:00:00Z"
+
+stages:
+  build_catalog:
+    foreach: ${regions}
+    do:
+      cmd: uv run rupture catalog build --region ${item} --from 1976-01-01 --to ${schedule_end}
+      deps:
+        - src/rupture/adapters/catalogs
+        - src/rupture/pipelines/build_catalog.py
+        - data/regions/${item}
+      outs:
+        - data/catalogs/${item}
+
+  fit_etas:
+    foreach: ${regions}
+    do:
+      cmd: uv run rupture forecast fit --model etas --region ${item} --cutoff ${cutoff}
+      deps:
+        - src/rupture/adapters/forecasting
+        - src/rupture/pipelines/fit_etas.py
+        - data/catalogs/${item}
+      outs:
+        - baselines/etas/${item}
+
+  evaluate_schedule:
+    foreach: ${regions}
+    do:
+      cmd: >-
+        uv run rupture evaluate schedule --region ${item} --model etas
+        --from ${cutoff} --to ${schedule_end} --step 30d
+      deps:
+        - src/rupture/adapters/evaluation
+        - src/rupture/pipelines/evaluate.py
+        - data/catalogs/${item}
+        - baselines/etas/${item}
+      outs:
+        - data/forecasts/${item}
+        - reports/eval/schedule-${item}.json

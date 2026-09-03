@@ -1,0 +1,48 @@
+name: ci
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  offline:
+    name: lint · typecheck · offline tests · language gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - name: Sync locked environment
+        run: uv sync --locked
+      - name: Lint (ruff, import-linter)
+        run: make lint
+      - name: Typecheck (mypy --strict)
+        run: make typecheck
+      - name: Offline tests (sockets disabled)
+        run: make test
+      - name: Language gate
+        run: make validate-language
+
+  hazard-integration:
+    name: OpenQuake demo in pinned Docker image
+    # Docker is available on ubuntu runners; it is not assumed on developer machines.
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
+    needs: offline
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v6
+        with:
+          enable-cache: true
+      - run: uv sync --locked
+      - name: validate-hazard
+        run: make validate-hazard
