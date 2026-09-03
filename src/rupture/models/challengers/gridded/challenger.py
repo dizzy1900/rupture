@@ -66,6 +66,7 @@ PARAMETERS_FILE = "parameters.json"
 DIAGNOSTICS_FILE = "diagnostics.json"
 WEIGHTS_FILE = "weights.pt"
 STATE_FILE = "model_state.json"
+HYPERPARAMETERS_FILE = "hyperparameters.json"
 
 
 @dataclass(frozen=True)
@@ -297,6 +298,9 @@ class GriddedChallenger:
             "train_windows": len(train_idx),
             "validation_windows": len(val_idx),
             "train_block_end": train_end.isoformat(),
+            "training_max_origin_time": (
+                latest.isoformat() if (latest := training.max_origin_time()) else None
+            ),
             "first_issue_time": issue_times[0].isoformat(),
             "last_issue_time": issue_times[-1].isoformat(),
             "train_target_events": float(samples.counts[train_idx].sum()),
@@ -577,15 +581,33 @@ def archive_dir(baselines_dir: Path, region_id: str, cutoff: datetime) -> Path:
     return fit_dir(baselines_dir, region_id) / "fits" / f"{cutoff:%Y%m%dT%H%M%SZ}"
 
 
-_FILES = (FIT_RESULT_FILE, PARAMETERS_FILE, DIAGNOSTICS_FILE, WEIGHTS_FILE, STATE_FILE)
+_FILES = (
+    FIT_RESULT_FILE,
+    PARAMETERS_FILE,
+    DIAGNOSTICS_FILE,
+    WEIGHTS_FILE,
+    STATE_FILE,
+    HYPERPARAMETERS_FILE,
+)
 
 
-def save_fit(model: GriddedChallenger, baselines_dir: Path, *, canonical: bool = True) -> Path:
+def save_fit(
+    model: GriddedChallenger,
+    baselines_dir: Path,
+    *,
+    canonical: bool = True,
+    search_provenance: dict[str, Any] | None = None,
+) -> Path:
     """Persist a fitted model, mirroring the ETAS layout; every fit is archived per cutoff.
 
     ``canonical=False`` writes the archive only and restores whatever was at the top of
     ``baselines/gridded/<region>/`` — the same rule the ETAS adapter uses so that a schedule's
     refits never replace a declared baseline.
+
+    ``hyperparameters.json`` records the frozen configuration, its hash, and the window the choice
+    was made on, so that the ``validate-challengers`` gate can check the freezing claim against the
+    fit rather than take the documentation's word for it. ``search_provenance`` carries the
+    hyperparameter search that chose the configuration, when the caller ran one.
     """
     fit, region, raster, state = model._require_fit()
     out = fit_dir(baselines_dir, fit.region_id)
@@ -615,6 +637,31 @@ def save_fit(model: GriddedChallenger, baselines_dir: Path, *, canonical: bool =
     )
     (out / DIAGNOSTICS_FILE).write_text(
         json.dumps(fit.diagnostics, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
+    (out / HYPERPARAMETERS_FILE).write_text(
+        json.dumps(
+            {
+                "config": state.config.as_dict(),
+                "config_hash": state.config.hash(),
+                "frozen_before_scoring": True,
+                "validation_start": fit.diagnostics["train_block_end"],
+                "validation_end": fit.fit_cutoff.isoformat(),
+                "validation_windows": fit.diagnostics["validation_windows"],
+                "criterion": (
+                    "lowest Poisson negative log-likelihood on the blocked, time-forward inner "
+                    "validation block, which ends at the fit cutoff; the untrained network is a "
+                    "candidate (epoch -1)"
+                ),
+                "selected_the_untrained_climatology": fit.diagnostics["training"][
+                    "selected_the_untrained_climatology"
+                ],
+                "search": search_provenance,
+            },
+            indent=2,
+            sort_keys=True,
+        )
+        + "\n",
+        encoding="utf-8",
     )
     torch.save(state.net.state_dict(), out / WEIGHTS_FILE)
     (out / STATE_FILE).write_text(

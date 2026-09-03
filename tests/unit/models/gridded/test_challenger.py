@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import json
 import math
 from datetime import timedelta
 from pathlib import Path
@@ -200,3 +201,27 @@ def test_fault_density_reads_the_committed_gem_fixture(tmp_path: Path) -> None:
 def test_config_hash_is_stable_and_sensitive() -> None:
     assert GriddedConfig().hash() == GriddedConfig().hash()
     assert GriddedConfig().hash() != GriddedConfig(hidden_channels=32).hash()
+
+
+def test_persisted_fit_satisfies_the_challenger_gate_s_checks(
+    fitted: GriddedChallenger, tmp_path: Path
+) -> None:
+    """The things ``validate-challengers`` reads off a persisted fit, asserted here too.
+
+    The gate lives on ``main`` and audits ``baselines/{ntpp,gridded,ensemble}/**/fit_result.json``:
+    the fit converged, its training data ends strictly before its cutoff, no leaky ablation is
+    persisted as a baseline, and any ``hyperparameters.json`` beside it was chosen on a window
+    ending at or before the cutoff. Checking it here means a change to persistence fails in this
+    suite rather than in the gate after a merge.
+    """
+    out = save_fit(fitted, tmp_path)
+    fit = json.loads((out / "fit_result.json").read_text(encoding="utf-8"))
+    assert fit["converged"] is True
+    assert fit["diagnostics"]["training_max_origin_time"] < fit["fit_cutoff"]
+    assert not any(marker in fit["model_id"].lower() for marker in ("leak", "ablation"))
+
+    chosen = json.loads((out / "hyperparameters.json").read_text(encoding="utf-8"))
+    assert chosen["validation_end"] <= fit["fit_cutoff"]
+    assert chosen["validation_start"] < chosen["validation_end"]
+    assert chosen["config_hash"] == fit["diagnostics"]["config_hash"]
+    assert chosen["frozen_before_scoring"] is True

@@ -111,6 +111,11 @@ than every training window. Static covariates and normalisation statistics are c
 events before the **training-block end**, so the early-stopping decision cannot see the validation
 block either.
 
+Every persisted fit carries a `hyperparameters.json` next to it holding the frozen configuration,
+its hash, the inner-validation window the choice was made on, and the full search table. That is
+the evidence the `validate-challengers` gate reads, so the freezing claim is checked against the
+artefact rather than taken from this document.
+
 Refit policy: **none**. The gridded model is fitted once at the test cutoff and its
 time-dependence comes entirely from the lookback frames. ETAS refits yearly over the same
 schedule. That is a handicap to the challenger and is not corrected for.
@@ -213,7 +218,17 @@ result leaves open.
 | `nepal-himalaya` | 6 frames of 30 d, 8 hidden, lr 3e-3, hash `86617c8cd1d4` | 5234, sha256 `8fc20071b7ab`, snapshot `e0bf8c78be79` | 206 windows, 558 target events | 37 windows, 28 events | 4.4 | 1.100 | 51 features, 2313 km |
 | `turkiye-eaf` | same config | 5234, sha256 `c8b4d877ac64`, snapshot `85f622aae6f7` | 206 windows, 175 target events | 37 windows, 71 events | 4.3 | 0.939 | 65 features, 2542 km |
 
-The GEM fault-density channel was available and non-zero in both regions.
+Training of the fits that were actually scored, against their own untrained (climatological) state:
+
+| Region | untrained validation NLL | best | at epoch | epochs run | improvement | kept the climatology |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 6.39765 | 6.16073 | 6 | 22 | 3.7 % | no |
+| `turkiye-eaf` | 12.92477 | 11.49398 | 4 | 20 | 11.1 % | no |
+
+The GEM fault-density channel was available and non-zero in both regions. Every fit is persisted to
+`baselines/gridded/<region>/` with its weights, its normalisation state and a `hyperparameters.json`
+recording the frozen configuration, its hash and the window it was chosen on, and is archived under
+`fits/<cutoff>/`.
 
 ### The hyperparameter search, and what it says
 
@@ -228,28 +243,42 @@ The GEM fault-density channel was available and non-zero in both regions.
 | `turkiye-eaf` | 6 | 30 | 16 | 3e-4 | 16226 | 15 | -1 | 4.00049 | 4.00049 | yes |
 | `turkiye-eaf` | 8 | 7.5 | 8 | 3e-4 | 5234 | 15 | -1 | 4.00049 | 4.00049 | yes |
 
-**This is the most informative table in the document.** In `turkiye-eaf`, every candidate's
-held-out likelihood was best *before any gradient step* and got monotonically worse from the first
-epoch onward, at every learning rate and every frame length tried, so early stopping kept the
-untrained network — whose zero head makes it exactly the smoothed historical rate. All four
-candidates therefore score identically and the tie is broken toward the smallest model with the
-shortest lookback. In `nepal-himalaya` training did help, by 0.4 % of the held-out
-negative log-likelihood, and the improvement did not survive contact with the test period.
+**This is the most informative table in the document, and it needs reading carefully: it is the
+*search* at the 2020-01-01 cutoff, not the fits that were scored.** In `turkiye-eaf` every
+candidate's held-out likelihood was best *before any gradient step* and got monotonically worse
+from the first epoch onward, at every learning rate and every frame length tried, so early stopping
+kept the untrained network — whose zero head makes it exactly the smoothed historical rate. All
+four candidates therefore score identically and the tie is broken toward the smallest model with
+the shortest lookback. In `nepal-himalaya` training helped, by 0.4 % of the held-out negative
+log-likelihood.
 
-The mechanism is visible in the data. The two regions have opposite activity imbalances between
-the training block and the inner validation block that follows it: 0.85 target events per window
-rising to 1.92 in `turkiye-eaf`, and 2.71 falling to 0.76 in `nepal-himalaya` (the training block
-there contains the 2015 Gorkha sequence). A global calibration learned on either training block is
-wrong for the block after it by a factor of two to three before any spatial or temporal structure
-is considered, and a model with a few thousand parameters and a few hundred target events cannot
-pay for that with better structure. What Nepal's model learned on a quiet validation block then
-cost it the L-test over the test period.
+The **test fits**, refitted with the frozen configuration at the 2022-01-01 cutoff, did train: their
+inner validation block is 2019-2022 rather than 2017-2020, and against their own untrained state
+they improve the held-out negative log-likelihood by 11.1 % in `turkiye-eaf` (12.925 to 11.494,
+best at epoch 4) and 3.7 % in `nepal-himalaya` (6.398 to 6.161, best at epoch 6). So the network
+does learn something — the question is what.
 
-In operation the challenger is therefore a smoothed time-independent rate model with a
-Gutenberg-Richter magnitude distribution: its total expected count varies by under 8 % across the
+**What it learns is a mostly-spatial refinement with a very weak temporal response.** The direct
+test is the month after the 2023 Kahramanmaraş doublet: given a history containing 160 target
+events in the previous 30 days, the fitted `turkiye-eaf` model raises its busiest cell by a factor
+of 2.3 and changes 373 of 1409 cells by more than 10 % — it has noticed — but its **total** expected
+count rises only 4.4 %, from 0.427 to 0.446. ETAS's total over the same step rises from 0.45 to
+25.16, a factor of 56. The challenger's time-dependence is real and roughly two orders of magnitude
+too weak, which is exactly what the L-test then says: 20/29 against the baseline's 26/29.
+
+The mechanism behind the weakness is visible in the data. The two regions have opposite activity
+imbalances between the training block and the inner validation block that follows it: 0.85 target
+events per window rising to 1.92 in `turkiye-eaf`, and 2.71 falling to 0.76 in `nepal-himalaya`
+(the training block there contains the 2015 Gorkha sequence). A global calibration learned on
+either training block is wrong for the block after it by a factor of two to three before any
+spatial or temporal structure is considered, and a model with a few thousand parameters and a few
+hundred target events spends what it has on that rather than on clustering.
+
+In operation the challenger is therefore very close to a smoothed time-independent rate model with
+a Gutenberg-Richter magnitude distribution: its total expected count varies by under 9 % across the
 55 windows in both regions (0.419 to 0.453 in `nepal-himalaya`, 0.425 to 0.448 in `turkiye-eaf`).
 That is a respectable CSEP baseline in its own right — it wins the S-test in both regions — and it
-is not a time-dependent forecast.
+is not, in any useful sense, a time-dependent forecast.
 
 ### The leaky ablation (ADR-0022 § 6) — not a result
 
@@ -281,13 +310,14 @@ parameter snapshots over the schedule (four yearly refits); the challenger used 
   protocol horizon is the trained one; a 1-day or 365-day forecast from this model is an
   extrapolation and is not scored here.
 - **No refits.** See § 4. The baseline refits yearly and the challenger does not.
-- **The fitted model is a climatology.** This is the finding, not a caveat about it: in
-  `turkiye-eaf` no configuration improved on the untrained network's held-out likelihood, and in
-  `nepal-himalaya` the improvement was 0.4 % and did not survive the test period. The delivered
-  model is a smoothed time-independent rate with a Gutenberg-Richter magnitude distribution and it
-  cannot track an aftershock sequence. Anyone reading this as a deep-learning result should read it
-  as the opposite: on catalogues of this size, under a blocked time-forward protocol, the ConvLSTM
-  bought nothing.
+- **The fitted model is nearly a climatology.** This is the finding, not a caveat about it. The
+  network does train — 11.1 % and 3.7 % improvements in held-out negative log-likelihood over its
+  own untrained state — and what it learns is close to a static spatial correction: after a month
+  containing 160 target events its total expected count moves by 4.4 % where ETAS's moves by a
+  factor of 56. The delivered model cannot track an aftershock sequence, and that is what loses it
+  the L-test in both regions. Anyone reading this as a deep-learning success should read it as the
+  opposite: on catalogues of this size, under a blocked time-forward protocol, the ConvLSTM bought
+  a small spatial refinement over smoothed seismicity and no useful time dependence.
 - **The climatological prior is a long-term average over a period of changing completeness.** It is
   the count of `mw >= mc` events per cell divided by the number of frames the catalogue spans, from
   1976 onward, and network coverage in the 1970s and 1980s is not that of the 2020s. The prior is

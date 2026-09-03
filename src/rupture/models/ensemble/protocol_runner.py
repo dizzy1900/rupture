@@ -190,6 +190,7 @@ def fit_gridded_cached(
     baselines: Path,
     *,
     canonical: bool,
+    search_provenance: dict[str, Any] | None = None,
 ) -> GriddedChallenger:
     """Fit, or reload an archived fit whose config hash matches."""
     archive = gridded_archive_dir(baselines, region.id, cutoff)
@@ -203,7 +204,7 @@ def fit_gridded_cached(
     started = time.time()
     model.fit(catalog, region, cutoff)
     log.info("gridded fit at %s took %.1f s", cutoff.isoformat(), time.time() - started)
-    save_gridded_fit(model, baselines, canonical=canonical)
+    save_gridded_fit(model, baselines, canonical=canonical, search_provenance=search_provenance)
     return model
 
 
@@ -815,7 +816,18 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
 
     log.info("[%s] test fit", region_id)
     gridded_test = fit_gridded_cached(
-        catalog, region, TEST_CUTOFF, config, paths.baselines, canonical=True
+        catalog,
+        region,
+        TEST_CUTOFF,
+        config,
+        paths.baselines,
+        canonical=True,
+        search_provenance={
+            "search_cutoff": SEARCH_CUTOFF.isoformat(),
+            "grid": list(SEARCH_GRID),
+            "candidates": search_table,
+            "chosen_config_hash": config.hash(),
+        },
     )
     test_fit = gridded_test.fit_result
     assert test_fit is not None

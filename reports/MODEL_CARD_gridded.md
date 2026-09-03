@@ -76,12 +76,14 @@ regions and loses the likelihood test in both; the Türkiye information gain is 
 because of the single window containing the 2023 Kahramanmaraş doublet, and is **-1.19** per event
 without it.
 
-**The fitted model is close to its climatological initialisation.** In `turkiye-eaf` every
-configuration's held-out likelihood was best before any gradient step, so early stopping kept the
-untrained network; in `nepal-himalaya` training improved the held-out likelihood by 0.4 % and that
-improvement did not survive the test period. The total expected count varies by under 8 % across
-the 55 windows. The ConvLSTM runs, is deterministic, and learned nothing that survived a blocked
-time-forward validation on this data.
+**The fitted model is close to its climatological initialisation.** It does train — the scored fits
+improve their own untrained state's held-out negative log-likelihood by 11.1 % (`turkiye-eaf`) and
+3.7 % (`nepal-himalaya`) — but what it learns is close to a static spatial correction. Given a
+history containing 160 target events in the previous 30 days, its total expected count rises 4.4 %
+where ETAS's rises by a factor of 56, and across the 55 windows its total varies by under 9 %. In
+the hyperparameter search at the earlier cutoff, no `turkiye-eaf` configuration improved on the
+untrained network at all. The ConvLSTM runs, is deterministic, and bought a small spatial
+refinement over smoothed seismicity and no useful time dependence.
 
 **Leaky ablation** (never a result): a fit that sees its own test windows buys +2.16 nats per event
 of apparent skill in `turkiye-eaf`, about six times the largest honest gain anywhere in this work.

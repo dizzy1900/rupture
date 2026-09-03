@@ -150,7 +150,8 @@ passed. The ensemble is recorded as not promoted.**
 
 ### What the ensemble is actually doing
 
-The gridded component is, in operation, a near-static smoothed climatology (see
+The gridded component is, in operation, a near-static smoothed climatology: its total expected
+count moves by 4.4 % over the month in which ETAS's moves by a factor of 56 (see
 `CHALLENGER_GRIDDED.md` § 6). With a second component that barely moves, the log-linear pool is
 close to **tempering** the baseline: raising ETAS's rate field to the power `w_etas` and
 renormalising, with the climatology's spatial pattern blended in at weight `1 - w_etas`. Tempering
