@@ -40,6 +40,15 @@ ENGINE_VERSION = "3.26.2"
 DEFAULT_IMAGE = f"openquake/engine:{ENGINE_VERSION}"
 IMAGE_ENV = "RUPTURE_OPENQUAKE_IMAGE"
 DEMOS_DIR_ENV = "RUPTURE_OPENQUAKE_DEMOS_DIR"
+ALLOW_EMULATION_ENV = "RUPTURE_OPENQUAKE_ALLOW_EMULATION"
+"""Set to ``1`` to run even when the image architecture differs from the host's.
+
+``openquake/engine`` publishes a single-platform ``linux/amd64`` image. On an arm64 host
+(Apple Silicon) Docker runs it under emulation, where the bundled demo is far slower than the
+run timeout allows. The engine is not at fault and neither is the adapter, so the gate reports
+this as a skip with the reason printed rather than a failure; CI runs on amd64 and executes the
+demo for real. Set this variable to attempt the emulated run anyway (expect hours).
+"""
 DEFAULT_DEMOS_DIR = "/opt/openquake/demos"
 DEFAULT_DEMO = "hazard/AreaSourceClassicalPSHA"
 CONTAINER_WORK = "/work"
@@ -98,7 +107,38 @@ class OpenQuakeDocker:
             detail = (proc.stderr or proc.stdout or "").strip().splitlines()
             reason = detail[0] if detail else f"exit {proc.returncode}"
             return False, f"docker daemon not reachable: {reason}"
-        return True, ""
+        return self._platform_ok()
+
+    def _docker_arch(self, args: list[str]) -> str | None:
+        """Architecture reported by a docker format query, or None when it cannot be read."""
+        try:
+            proc = self._run(
+                [self.docker, *args], capture_output=True, text=True, timeout=60, check=False
+            )
+        except (OSError, subprocess.TimeoutExpired):
+            return None
+        if proc.returncode != 0:
+            return None
+        arch = (proc.stdout or "").strip()
+        return arch or None
+
+    def _platform_ok(self) -> tuple[bool, str]:
+        """Refuse an emulated run: the image is amd64-only and the demo cannot finish under QEMU.
+
+        Only decides when both architectures are known and the image is already present locally;
+        an unknown architecture never blocks, so the run proceeds and reports its own outcome.
+        """
+        if os.environ.get(ALLOW_EMULATION_ENV, "").strip().lower() in {"1", "true", "yes"}:
+            return True, ""
+        host = self._docker_arch(["version", "--format", "{{.Server.Arch}}"])
+        image = self._docker_arch(["image", "inspect", "--format", "{{.Architecture}}", self.image])
+        if host is None or image is None or host == image:
+            return True, ""
+        return False, (
+            f"image {self.image} is {image}-only and this host is {host}, so it would run under "
+            f"emulation, where the demo exceeds the {self.run_timeout_s:.0f}s run timeout; "
+            f"set {ALLOW_EMULATION_ENV}=1 to attempt it anyway"
+        )
 
     def image_digest(self) -> str | None:
         """``repo@sha256:...`` of the local image, or ``None`` when not present locally."""

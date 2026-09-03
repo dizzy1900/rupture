@@ -82,7 +82,7 @@ after `uv sync`.
 | `validate-catalog` | catalogue schema, provenance, Mc present, no duplicates, landslide events retained |
 | `validate-etas` | ETAS fit diagnostics present, parameters plausible, forecast sums finite |
 | `validate-eval` | CSEP harness runs on fixtures; leakage assertion passes |
-| `validate-hazard` | OpenQuake demo runs in the pinned Docker image (skips with reason if Docker absent) |
+| `validate-hazard` | OpenQuake demo runs in the pinned Docker image (skips with a printed reason when the container cannot run here: Docker absent, or the amd64-only image on an arm64 host) |
 | `schema-export` | regenerate contracts/*.json from the domain models |
 | `schema-check` | fail if contracts/*.json drift from the domain models |
 | `validate-rupture` | everything, offline (`lint typecheck test` + `$(VALIDATE_GATES)`, initially `validate-language schema-check`) |

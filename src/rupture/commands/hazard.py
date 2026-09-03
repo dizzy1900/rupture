@@ -1,6 +1,6 @@
 """`rupture hazard ...` — OpenQuake hazard runs in the pinned Docker image.
 
-Exit codes: 0 ran; 1 failed; 3 skipped because Docker is not available (the reason is printed).
+Exit codes: 0 ran; 1 failed; 3 skipped because the container cannot run here (reason printed).
 """
 
 from __future__ import annotations
@@ -29,7 +29,7 @@ def _engine_or_skip() -> OpenQuakeDocker:
     engine = OpenQuakeDocker()
     ok, reason = engine.available()
     if not ok:
-        typer.echo(f"SKIPPED: Docker not available: {reason}", err=True)
+        typer.echo(f"SKIPPED: cannot run the container here: {reason}", err=True)
         typer.echo(
             "CI job hazard-integration runs the OpenQuake demo; see docs/HAZARD.md", err=True
         )
@@ -56,7 +56,7 @@ def check() -> None:
             f"docker: available; image {'present: ' + digest if digest else 'not pulled yet'}"
         )
         return
-    typer.echo(f"docker: not available: {reason}")
+    typer.echo(f"cannot run the container here: {reason}")
     raise typer.Exit(EXIT_SKIPPED)
 
 

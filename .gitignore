@@ -37,6 +37,9 @@ reports/
 !/data/interim/**/*.provenance.json
 /data/catalogs/
 /data/forecasts/
+# ETAS fits are outputs of the dvc.yaml `fit_etas` stages (DVC-tracked, not git-tracked).
+# The fitted parameters are published for review in docs/ETAS_BASELINE.md.
+/baselines/etas/
 /baselines/**/*.parquet
 /baselines/**/*.zarr
 

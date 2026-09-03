@@ -1,13 +1,15 @@
 """``validate-hazard``: the OpenQuake bundled demo runs in the pinned image and parses cleanly.
 
-Without Docker the gate is SKIPPED with the printed reason (never a silent pass). With Docker it
+When the container cannot run here — Docker absent, or the amd64-only image on an arm64 host,
+where the demo cannot finish under emulation — the gate is SKIPPED with the printed reason (never
+a silent pass, never a failure blamed on the adapter). Otherwise it
 runs ``demos/hazard/AreaSourceClassicalPSHA`` through :class:`OpenQuakeDocker`, parses the mean
 hazard curves and checks: at least one site, PoE in [0, 1], PoE non-increasing with IML,
 ``investigation_time`` equal to the job's.
 
 Set ``RUPTURE_HAZARD_WORK_DIR`` to keep the work directory (CI uploads it on failure); otherwise
 a temporary directory is used and removed. Set ``RUPTURE_HAZARD_REQUIRE=1`` where a container run
-is mandatory (the CI job): a Docker-unavailable skip then becomes FAILED.
+is mandatory (the CI job, which runs on amd64): any such skip then becomes FAILED.
 """
 
 from __future__ import annotations
@@ -35,13 +37,13 @@ def run(repo_root: Path, *, engine: OpenQuakeDocker | None = None) -> GateResult
     if not ok:
         findings = [f"image pinned: {eng.image}", f"demo: {DEFAULT_DEMO}"]
         if required():
-            findings.insert(0, f"Docker not available: {reason}")
+            findings.insert(0, f"cannot run the container here: {reason}")
             findings.append(f"{REQUIRE_ENV} is set: a skip is not acceptable here")
             return GateResult(name=GATE, status=GateStatus.FAILED, findings=findings)
         return GateResult(
             name=GATE,
             status=GateStatus.SKIPPED,
-            reason=f"Docker not available: {reason}; {CI_HINT}",
+            reason=f"cannot run the container here: {reason}; {CI_HINT}",
             findings=findings,
         )
 

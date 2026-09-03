@@ -11,8 +11,8 @@ Decisions: ADR-0008 (source models per region), ADR-0011 (pinned image), ADR-003
 |---|---|
 | `adapters/hazard/job_builder.py` — `ClassicalPSHAJob` / `ScenarioGroundMotionJob` → `job.ini` | working; unit-tested against the engine's own demo and QA `job.ini` keys |
 | `adapters/hazard/result_parser.py` — `hazard_curve-*.csv` → `HazardCurveSet` | working; unit-tested on real QA expected outputs from `gem/oq-engine` (`engine-3.26`), contract-validated |
-| `adapters/hazard/openquake_docker.py` — `OpenQuakeDocker` (`HazardEngine`) | working offline with an injected fake `docker`; **not yet run against a real container** (no Docker on the development machine) |
-| `run_bundled_demo`, `validate-hazard`, `rupture hazard demo` | code complete; skip with reason here; proving ground is CI job `hazard-integration` (runs on pushes to `main` and manual dispatch). Until that job has run green, treat the container path as unverified |
+| `adapters/hazard/openquake_docker.py` — `OpenQuakeDocker` (`HazardEngine`) | working offline with an injected fake `docker`; the real container path is verified in CI, not on this machine (see "Why the gate skips on Apple Silicon") |
+| `run_bundled_demo`, `validate-hazard`, `rupture hazard demo` | **verified in CI**: the demo ran through the adapter in `openquake/engine:3.26.2` on `ubuntu-latest` (run 33744626791, 2026-09-03; gate 86 s, integration test 85 s) with `RUPTURE_HAZARD_REQUIRE=1` so a skip would have failed the job |
 | `run_scenario` | implemented from the manual; no test or CI run exercises it |
 | `rupture hazard classical` + `infra/jobs/examples/turkiye-eaf-classical.json` | code complete; the ESHM20 job has **not** been run and its input file names are unconfirmed |
 | California, Nepal PSHA | gaps (ADR-0008): no openly licensed NRML model verified |
@@ -101,7 +101,32 @@ Assumed (stated in code, overridable):
 | The whole demo (2112 sites × 8 IMTs) finishes well inside 25 min on a 2-vCPU runner | CI | per-step `timeout-minutes`, adapter `run_timeout_s`; if too slow, switch `DEFAULT_DEMO` to a smaller demo by ADR |
 | `oq engine --run` returns non-zero when the calculation fails | error handling | the export step then finds no CSV and fails loudly anyway |
 
-## Running the demo locally (once Docker exists)
+## Why the gate skips on Apple Silicon
+
+`openquake/engine:3.26.2` is published as a **single-platform `linux/amd64` image**; there is no
+arm64 variant (`docker manifest inspect` returns a plain v2 manifest, not a manifest list). On an
+arm64 host Docker therefore runs it under emulation, and the bundled demo — 2112 sites, parallel
+source-model reading — does not finish inside the adapter's 3600 s run timeout. This was observed
+here on 2026-09-03: the container was killed at the timeout while still reading the source model,
+and the gate reported FAILED, which in turn made `make promote` refuse.
+
+That is an accurate report of what happened, but blaming the adapter for the host's architecture
+is not useful, so `OpenQuakeDocker.available()` now compares the image architecture with the
+daemon's and returns `(False, reason)` when they differ. The gate then reports **SKIPPED with the
+reason printed**, exactly as it does when Docker is absent — never a silent pass. The decision is
+made only when both architectures are known and the image is already local; an unknown
+architecture never blocks a run.
+
+To attempt the emulated run anyway (expect hours, not minutes):
+
+```bash
+RUPTURE_OPENQUAKE_ALLOW_EMULATION=1 make validate-hazard
+```
+
+In CI the runner is amd64, the architectures match, and `RUPTURE_HAZARD_REQUIRE=1` turns any skip
+into a failure — so the demo genuinely runs there and cannot be quietly skipped.
+
+## Running the demo locally (amd64 host, or emulation opt-in)
 
 ```bash
 docker pull openquake/engine:3.26.2

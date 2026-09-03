@@ -47,3 +47,23 @@ for Prompt 1; GitHub's `ubuntu-latest` runners have it.
 - **A hosted OpenQuake service.** Rejected: hosted-platform dependency (non-negotiable 6).
 - **Skip hazard until Prompt 2.** Rejected: the adapter and demo are Prompt 1 deliverables; the
   gap is Docker locally, and CI covers it.
+
+## Addendum (2026-09-03): single-platform image and the arm64 skip
+
+`openquake/engine` publishes a single-platform `linux/amd64` image; `docker manifest inspect
+openquake/engine:3.26.2` returns a plain v2 manifest, not a manifest list, so there is no arm64
+variant to pin. On an arm64 development host the image runs under emulation, where the bundled
+demo does not finish inside the adapter's 3600 s timeout (observed 2026-09-03: killed at the
+timeout while reading the source model, gate FAILED, `make promote` correctly refused).
+
+Decision: `OpenQuakeDocker.available()` compares the image architecture with the daemon's and
+reports the mismatch as unavailability, so `validate-hazard` **skips with the reason printed**
+instead of failing. This is the same treatment as a missing Docker daemon and follows the rule in
+CLAUDE.md that a gate is either offline-safe or skips with a printed reason; it is never a silent
+pass. `RUPTURE_OPENQUAKE_ALLOW_EMULATION=1` forces the attempt. CI runs on amd64 with
+`RUPTURE_HAZARD_REQUIRE=1`, which turns any skip into a failure, so the container path is proved
+there on every push to `main`.
+
+Consequence: on Apple Silicon the OpenQuake lane is exercised only through the offline parser and
+job-builder tests. A contributor who needs a local container run needs an amd64 machine, a remote
+Docker context, or patience with emulation.

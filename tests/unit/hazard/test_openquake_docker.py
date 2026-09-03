@@ -58,7 +58,7 @@ def test_gate_skips_with_reason_without_docker(no_docker_on_path: Path) -> None:
     result = gate.run(REPO_ROOT)
     assert result.status == GateStatus.SKIPPED
     assert result.reason is not None
-    assert result.reason.startswith("Docker not available:")
+    assert result.reason.startswith("cannot run the container here:")
     assert "hazard-integration" in result.reason
     assert result.ok, "skipped-with-reason does not block promotion"
     assert "SKIPPED" in result.render()
@@ -68,10 +68,11 @@ def test_cli_demo_and_check_report_skip_without_docker(no_docker_on_path: Path) 
     runner = CliRunner()
     res = runner.invoke(app, ["hazard", "check"])
     assert res.exit_code == 3
-    assert "not available" in res.output
+    assert "cannot run the container here" in res.output
+    assert "binary not found on PATH" in res.output
     res = runner.invoke(app, ["hazard", "demo"])
     assert res.exit_code == 3
-    assert "SKIPPED: Docker not available" in res.output
+    assert "SKIPPED: cannot run the container here" in res.output
 
 
 # ------------------------------------------------------------------ staging + fake container

@@ -27,8 +27,8 @@ def engine() -> OpenQuakeDocker:
     ok, reason = eng.available()
     if not ok:
         if required():
-            pytest.fail(f"Docker not available but {REQUIRE_ENV} is set: {reason}")
-        pytest.skip(f"Docker not available: {reason}")
+            pytest.fail(f"container cannot run here but {REQUIRE_ENV} is set: {reason}")
+        pytest.skip(f"cannot run the container here: {reason}")
     eng.ensure_image()
     return eng
 
