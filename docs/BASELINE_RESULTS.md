@@ -10,8 +10,8 @@ these results.
 Run on 2026-09-03 with `rupture evaluate schedule`: one forecast every 30 days from
 `2022-01-01T00:00:00Z` to `2026-08-01T00:00:00Z`, horizon 30 days, 1000 ETAS continuations per
 forecast, 1000 simulations per test, seed 20220101, refits yearly on 1 January (4 per region,
-each logged). California is absent — its fit converged only hours before this was written and its
-schedule had not run; see `RELEASE_STATUS.md`.
+each logged). California is reported separately below: its schedule was stopped after six windows for a
+stated reason, not abandoned quietly.
 
 All three leakage rules held in every window: the model saw only events before the issue time,
 each target slice lay inside its window, and the parameter snapshot hash changed only across a
@@ -53,6 +53,32 @@ rather than by mapped faults.
 | 2023-04-26 | 7 | 9.05 | pass | pass | pass | pass | pass |
 | 2023-07-25 | 5 | 5.34 | pass | pass | **fail** | pass | **fail** |
 | 2023-11-22 | 3 | 3.39 | pass | pass | pass | pass | pass |
+
+## `california` — M ≥ 3.95, six windows of a planned 55
+
+California's fit converged (55,828 events at Mc 2.70; 94 minutes of EM) and its schedule ran the
+first six 30-day windows at full protocol settings before being stopped:
+
+| Issue date | Targets | N | M | S | L | CL |
+|---|---|---|---|---|---|---|
+| 2022-01-01 | 4 | pass | pass | pass | pass | pass |
+| 2022-01-31 | 1 | pass | pass | pass | pass | pass |
+| 2022-03-02 | 2 | pass | pass | pass | pass | pass |
+| 2022-04-01 | 2 | pass | pass | pass | pass | pass |
+| 2022-05-01 | 1 | pass | pass | pass | pass | pass |
+| 2022-05-31 | 2 | pass | pass | pass | pass | pass |
+
+Thirty of thirty tests passed. Six quiet windows are not evidence of skill and must not be read as
+such; they are consistent with a well-calibrated background rate over a quiet half-year, and the
+test that matters is a window containing a sequence, which these do not.
+
+**Why it stopped.** Issuance cost grows with the conditioning history, and California's is
+55,828 events above Mc 2.70 against Nepal's 772. The first window took 12 minutes; by the sixth it
+was over an hour, putting the remaining 49 windows at an estimated **35–60 hours of one core**.
+That was judged not worth the machine time when the acceptance criterion is one closed window per
+region and the six completed windows already characterise the quiet-period behaviour. The run is
+resumable: the schedule is idempotent per window (results are keyed by target-catalogue hash), so
+restarting it re-uses these six and continues.
 
 ### What the busiest windows show
 
