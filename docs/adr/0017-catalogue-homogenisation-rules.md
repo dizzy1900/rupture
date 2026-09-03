@@ -21,8 +21,9 @@ once forecasts are issued. Implementation: `src/rupture/pipelines/build_catalog.
 - Two records are the same event when `|Δt| ≤ 16 s` **and** great-circle distance `≤ 100 km`,
   the windows Weatherill, Pagani & Garcia (2016, GJI 206, 1652–1676) use to merge global
   bulletins. Both are `MergeConfig` parameters (`--time-window-s`, `--distance-km`).
-- Association is single-linkage in time order; a record joins the cluster holding its nearest
-  compatible member.
+- Association runs in time order: a record joins, among the clusters whose *first* key lies
+  within one time window of it, the one holding the nearest compatible member. A cluster therefore
+  never chains beyond one window from its first record (bounded single linkage).
 - **Lane rule.** Records from the same *lane* never merge with each other: a bulletin has already
   de-duplicated its own events, and the fixed windows would otherwise collapse dense aftershock
   pairs (Ridgecrest, Gorkha) into one. The lane is the source id (`isc`, `gcmt`, `isc-gem`),
@@ -48,14 +49,14 @@ Highest first, over every magnitude any contributing record reported:
 1. GCMT Mw from the scalar moment, `Mw = (2/3)(log10 M0[dyne·cm] − 16.1)` (Hanks & Kanamori 1979),
    rounded to two decimals — `identity:mwc`;
 2. ISC-GEM Mw — `identity:mw`;
-3. a reported moment magnitude (`mww`, `mwc`, `mwb`, `mwr`, `mw`) from ISC, then ComCat —
-   `identity:<type>`;
+3. a reported moment magnitude (`mww`, `mwc`, `mwb`, `mwr`, `mw`, and `mwp` normalised to `mw`)
+   from ISC, then ComCat — `identity:<type>`;
 4. `mb` or `Ms` converted with **Scordilis (2006)**, J. Seismol. 10, 225–236,
    doi:10.1007/s10950-006-9012-4, inside the published validity ranges only:
 
    | From | Range | Relation | Stored as |
    |---|---|---|---|
-   | mb | 3.5 ≤ mb ≤ 6.2 | Mw = 0.85 mb + 1.03 | `scordilis2006:mb` |
+   | mb (teleseismic; not `mb_lg`) | 3.5 ≤ mb ≤ 6.2 | Mw = 0.85 mb + 1.03 | `scordilis2006:mb` |
    | Ms | 3.0 ≤ Ms ≤ 6.1 | Mw = 0.67 Ms + 2.07 | `scordilis2006:ms` |
    | Ms | 6.2 ≤ Ms ≤ 8.2 | Mw = 0.99 Ms + 0.08 | `scordilis2006:ms` |
 
@@ -101,6 +102,29 @@ of the next five 0.1 bins, ≥ 30 events per cut-off). b is the Aki (1965) MLE w
 correction; σ_b is Shi & Bolt (1982). The `etas` package KS estimate (Mizrahi et al. 2021) is a
 third, optional cross-check. `Region.mc` stores the maximum-curvature estimate from the real build;
 the protocol threshold rule is in `docs/EVALUATION_PROTOCOL.md` § 1.
+
+## Addendum (2026-09-03, after QA review of the first merge)
+
+- **Depth lower bound.** `Region.depth_min_km` defaults to 0.0; networks report small negative
+  depths for very shallow events (ComCat `ci38462175`, −0.13 km, Ridgecrest 2019). The lower bound
+  is therefore applied only when `depth_min_km > 0` is set explicitly; the upper bound always
+  applies. Unknown depth is kept.
+- **Magnitude-type table additions.** `mwp` (P-wave moment magnitude, Tsuboi et al. 1995) is a
+  moment magnitude and is accepted as `identity:mw`. `mb_lg`/`mblg` (regional Lg-wave body-wave
+  magnitude) are *not* the teleseismic mb Scordilis (2006) regressed and are mapped to `OTHER`
+  (no Mw under the strict policy).
+- **Publication of `Region.mc`** (QA blocker B1): `--update-region-mc` writes every estimate to
+  `Region.mc_estimates` (each carrying a note with the Mw coverage at the target threshold and the
+  maximum-curvature b) and sets `Region.mc` to the maximum-curvature estimate only when that
+  b ≥ 0.7 and ≥ 80 % of earthquakes reported at or above the target threshold carry a homogenised
+  Mw; otherwise `mc` stays null and the command prints why (`--force-mc` overrides, and the
+  estimate then says so in its notes).
+- **b-value stability range.** The mean b is taken over the six cut-offs Mc … Mc+0.5 (the
+  half-magnitude range of Woessner & Wiemer 2005), not five as first implemented.
+- **Magnitude policy.** `Region.magnitude_policy = network-preferred-as-mw` (ADR-0019; California)
+  inserts one step before "unconvertible": a preferred `ml`/`md`/`mlv` magnitude with no moment
+  magnitude from any source and no Scordilis route is assumed Mw-equivalent
+  (`assumed-equivalent:<type>`, log detail "assumed Mw-equivalent (ADR-0019)").
 
 ## Consequences
 

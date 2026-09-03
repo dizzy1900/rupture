@@ -4,14 +4,17 @@ Rules (ADR-0017, docs/CATALOG_BUILD.md):
 
 * **Duplicate association** across sources: two records are the same event when
   ``|dt| <= time_window_s`` (16 s) and the great-circle distance is ``<= distance_km`` (100 km),
-  the windows used by Weatherill, Pagani & Garcia (2016) for global catalogue merging. Records
-  from the same *lane* are never merged with each other (a source has already de-duplicated its
-  own bulletin); the lane is the source id, except ComCat where it is ``usgs-comcat/<net>`` so
-  that ComCat's own copies of ISC-GEM origins (``net=iscgem``) can be associated with the ``us``
-  origin. Matching is single-linkage in time order, choosing the cluster with the nearest member.
+  the windows used by Weatherill, Pagani & Garcia (2016) for global catalogue merging. A record
+  joins the cluster with the nearest compatible member among clusters whose *first* key lies
+  within one time window of it, so a cluster never chains further than one window from its
+  first record. Records from the same *lane* are never merged with each other (a source has
+  already de-duplicated its own bulletin); the lane is the source id, except ComCat where it is
+  ``usgs-comcat/<net>`` so that ComCat's own copies of ISC-GEM origins (``net=iscgem``) can be
+  associated with the ``us`` origin.
 * **Preferred solution** for location/time/depth/preferred-as-reported magnitude:
   ISC-GEM > ISC > ComCat > GCMT (GCMT is a centroid; it wins only when nothing else has the event).
-* **Homogenised Mw**: :func:`rupture.pipelines.magnitudes.preferred_mw`.
+* **Homogenised Mw**: :func:`rupture.pipelines.magnitudes.preferred_mw`, under the region's
+  ``magnitude_policy`` (ADR-0019: California assumes network-preferred ML/Md Mw-equivalent).
 * **Event type**: any non-earthquake tag from any contributing record is kept (ComCat is the only
   source that classifies routinely); landslide-type entries are retained and tagged, never dropped.
 * **Filters** run *after* association so that a GCMT centroid just outside the polygon still
@@ -32,6 +35,7 @@ import logging
 import math
 import re
 from bisect import bisect_left
+from collections import Counter
 from collections.abc import Sequence
 from dataclasses import dataclass, field
 from datetime import datetime, timedelta
@@ -47,11 +51,12 @@ from rupture.domain import (
     EventType,
     HomogenisationLogEntry,
     HomogenisationStep,
+    MagnitudePolicy,
     MagnitudeRecord,
     Region,
     utc_now,
 )
-from rupture.pipelines.completeness import InsufficientDataError, estimate_completeness
+from rupture.pipelines.completeness import InsufficientDataError, estimate_completeness_report
 from rupture.pipelines.magnitudes import SourcedMagnitude, preferred_mw
 from rupture.ports.catalog_source import CatalogSource
 
@@ -193,7 +198,10 @@ def associate(records: Sequence[Event], config: MergeConfig) -> list[list[Event]
 
 
 def _merge_cluster(
-    members: list[Event], log_entries: list[HomogenisationLogEntry], now: datetime
+    members: list[Event],
+    log_entries: list[HomogenisationLogEntry],
+    now: datetime,
+    policy: MagnitudePolicy = MagnitudePolicy.STRICT,
 ) -> Event:
     members = sorted(members, key=location_rank)
     loc = members[0]
@@ -226,7 +234,7 @@ def _merge_cluster(
     for m in members:
         sourced.append(SourcedMagnitude(m.source_catalog, m.magnitude))
         sourced.extend(SourcedMagnitude(m.source_catalog, om) for om in m.other_magnitudes)
-    result = preferred_mw(sourced)
+    result = preferred_mw(sourced, policy=policy, preferred=loc.magnitude)
     others: list[MagnitudeRecord] = []
     seen: set[str] = set()
     for sm in sourced:
@@ -283,6 +291,31 @@ def _merge_cluster(
         contributing_ids=contributing,
         provenance=loc.provenance,
     )
+
+
+def depth_in_range(depth_km: float, region: Region) -> bool:
+    """Depth filter. The lower bound applies only when ``depth_min_km > 0`` is explicit: networks
+    report small negative depths for very shallow events (ComCat ``ci`` -0.13 km at Ridgecrest),
+    and the default 0.0 must not drop them (ADR-0017 addendum)."""
+    if depth_km > region.depth_max_km:
+        return False
+    return not (region.depth_min_km > 0 and depth_km < region.depth_min_km)
+
+
+def mw_coverage_at(catalog: Catalog, threshold: float) -> tuple[int, int]:
+    """``(with_mw, total)`` over earthquakes whose *reported* magnitude (any scale) is >= threshold.
+
+    The ratio is the share of target-size events that a magnitude-based analysis can see.
+    """
+    total = 0
+    with_mw = 0
+    for e in catalog.events:
+        if e.event_type != EventType.EARTHQUAKE or e.magnitude.value < threshold:
+            continue
+        total += 1
+        if e.mw is not None:
+            with_mw += 1
+    return with_mw, total
 
 
 def _bounds(events: Sequence[Event], start: datetime, end: datetime) -> Bounds | None:
@@ -360,6 +393,13 @@ def build_catalog(
             notes.append(f"source {src.source_id} not included: {exc}")
             continue
         used.append(src.source_id)
+        skipped = list(getattr(src, "last_skipped", []))
+        if skipped:
+            reasons = Counter(why for _, why in skipped)
+            notes.append(
+                f"{src.source_id} skipped {len(skipped)} source rows: "
+                + ", ".join(f"{why} x{n}" for why, n in sorted(reasons.items()))
+            )
         for e in cat.events:
             records.append(e)
             entries.append(
@@ -376,7 +416,9 @@ def build_catalog(
             )
         log.info("%s: %d records", src.source_id, len(cat.events))
 
-    merged = [_merge_cluster(cl, entries, now) for cl in associate(records, cfg)]
+    policy = region.magnitude_policy
+    notes.append(f"magnitude_policy={policy.value}")
+    merged = [_merge_cluster(cl, entries, now, policy) for cl in associate(records, cfg)]
 
     polygon = region_polygon(region)
     kept: list[Event] = []
@@ -392,9 +434,7 @@ def build_catalog(
                 )
             )
             continue
-        if e.depth_km is not None and not (
-            region.depth_min_km <= e.depth_km <= region.depth_max_km
-        ):
+        if e.depth_km is not None and not depth_in_range(e.depth_km, region):
             entries.append(
                 HomogenisationLogEntry(
                     event_id=e.id,
@@ -415,16 +455,19 @@ def build_catalog(
     if estimate_mc:
         mws = [e.mw for e in kept if e.event_type == EventType.EARTHQUAKE and e.mw is not None]
         try:
-            completeness = tuple(
-                estimate_completeness(
-                    mws,
-                    window_start=start,
-                    window_end=end,
-                    with_etas_cross_check=etas_cross_check,
-                )
+            report = estimate_completeness_report(
+                mws,
+                window_start=start,
+                window_end=end,
+                with_etas_cross_check=etas_cross_check,
             )
         except InsufficientDataError as exc:
             notes.append(f"no completeness estimate: {exc}")
+        else:
+            completeness = tuple(report.estimates)
+            notes.extend(report.notes)
+    if estimate_mc and not etas_cross_check:
+        notes.append("etas cross-check not run (--no-etas-cross-check)")
 
     ordered_used = sorted(
         used, key=lambda s: LOCATION_PRECEDENCE.index(s) if s in LOCATION_PRECEDENCE else 99

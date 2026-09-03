@@ -1,0 +1,12 @@
+{
+  "source": "gem-gaf",
+  "source_url": "https://raw.githubusercontent.com/GEMScienceTools/gem-global-active-faults/master/geojson/gem_active_faults_harmonized.geojson",
+  "repository": "https://github.com/GEMScienceTools/gem-global-active-faults",
+  "ref": "master",
+  "retrieved_at": "2026-09-03T10:18:12.574749+00:00",
+  "sha256": "37babb516edfac22b5ae91744495d8546b3ae4676b4d4f68cc77da8222df20e1",
+  "licence": "CC-BY-SA-4.0",
+  "attribution": "GEM Global Active Faults Database (GEM GAF-DB), Styron, R. & Pagani, M. (2020), Earthquake Spectra 36(1_suppl), 160-180, doi:10.1177/8755293020944182; (c) GEM Foundation, CC-BY-SA-4.0",
+  "adapter_version": "0.1.0",
+  "n_features": 13696
+}

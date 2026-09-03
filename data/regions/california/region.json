@@ -643,17 +643,44 @@
   "magnitude_bin_width": 0.1,
   "magnitude_max": 8.95,
   "mc": {
-    "mc": 3.7,
+    "mc": 2.7,
     "method": "maximum_curvature",
-    "b_value": 0.5904006040601665,
-    "b_value_uncertainty": 0.009710726560536953,
-    "n_events": 2358,
+    "b_value": 1.0102958751447824,
+    "b_value_uncertainty": 0.0040378959932511555,
+    "n_events": 65544,
     "window_start": "1976-01-01T00:00:00Z",
     "window_end": "2026-08-01T00:00:00Z",
-    "computed_at": "2026-09-03T10:34:21.309023Z",
+    "computed_at": "2026-09-03T11:01:33.300643Z",
     "correction": 0.2,
-    "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE"
+    "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE; Mw coverage at M>=3.95: 3080/3123 (99%); maximum-curvature b=1.01"
   },
+  "mc_estimates": [
+    {
+      "mc": 2.7,
+      "method": "maximum_curvature",
+      "b_value": 1.0102958751447824,
+      "b_value_uncertainty": 0.0040378959932511555,
+      "n_events": 65544,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T11:01:33.300643Z",
+      "correction": 0.2,
+      "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE; Mw coverage at M>=3.95: 3080/3123 (99%); maximum-curvature b=1.01"
+    },
+    {
+      "mc": 2.6,
+      "method": "b_value_stability",
+      "b_value": 1.0022907439567044,
+      "b_value_uncertainty": 0.003513415104359575,
+      "n_events": 82710,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T11:01:33.300643Z",
+      "correction": 0.0,
+      "notes": "Cao & Gao 2002: mean b over next 6 bins within sigma_b; min 30 events per cut-off; Mw coverage at M>=3.95: 3080/3123 (99%); maximum-curvature b=1.01"
+    }
+  ],
+  "magnitude_policy": "network-preferred-as-mw",
   "description": "Outer boundary of the pycsep RELM California region (union of the 7682 0.1-degree cells, simplified to 158 vertices with the area preserved). RELM conventions: M >= 3.95, depth <= 30 km.",
   "references": [
     "Schorlemmer & Gerstenberger 2007, SRL 78(1) (RELM testing region)",

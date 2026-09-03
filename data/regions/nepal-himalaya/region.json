@@ -39,21 +39,60 @@
   "depth_max_km": 70.0,
   "tectonic_setting": "continental_collision",
   "cell_size_deg": 0.1,
-  "target_min_magnitude": 4.5,
+  "target_min_magnitude": 4.7,
   "magnitude_bin_width": 0.1,
   "magnitude_max": 8.95,
   "mc": {
     "mc": 4.4,
     "method": "maximum_curvature",
-    "b_value": 1.138891810979349,
-    "b_value_uncertainty": 0.03507231769552208,
-    "n_events": 1037,
+    "b_value": 1.138125688070699,
+    "b_value_uncertainty": 0.03454831476136753,
+    "n_events": 1052,
     "window_start": "1976-01-01T00:00:00Z",
     "window_end": "2026-08-01T00:00:00Z",
-    "computed_at": "2026-09-03T10:20:28.300594Z",
+    "computed_at": "2026-09-03T10:57:45.313554Z",
     "correction": 0.2,
-    "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE"
+    "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE; Mw coverage at M>=4.7: 187/195 (96%); maximum-curvature b=1.14"
   },
+  "mc_estimates": [
+    {
+      "mc": 4.4,
+      "method": "maximum_curvature",
+      "b_value": 1.138125688070699,
+      "b_value_uncertainty": 0.03454831476136753,
+      "n_events": 1052,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T10:57:45.313554Z",
+      "correction": 0.2,
+      "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE; Mw coverage at M>=4.7: 187/195 (96%); maximum-curvature b=1.14"
+    },
+    {
+      "mc": 4.7,
+      "method": "b_value_stability",
+      "b_value": 1.2238015337345112,
+      "b_value_uncertainty": 0.05781052513242238,
+      "n_events": 513,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T10:57:45.313554Z",
+      "correction": 0.0,
+      "notes": "Cao & Gao 2002: mean b over next 6 bins within sigma_b; min 30 events per cut-off; Mw coverage at M>=4.7: 187/195 (96%); maximum-curvature b=1.14"
+    },
+    {
+      "mc": 4.3,
+      "method": "mc_ks",
+      "b_value": 1.1165331469059103,
+      "b_value_uncertainty": null,
+      "n_events": 1355,
+      "window_start": "1976-01-01T00:00:00Z",
+      "window_end": "2026-08-01T00:00:00Z",
+      "computed_at": "2026-09-03T10:57:45.313554Z",
+      "correction": 0.0,
+      "notes": "etas.mc_b_est.estimate_mc (Mizrahi et al. 2021) KS test, p >= 0.1; Mw coverage at M>=4.7: 187/195 (96%); maximum-curvature b=1.14"
+    }
+  ],
+  "magnitude_policy": "strict",
   "description": "Corridor defined by rupture, not an official region: an octagon following the Himalayan arc between about 80 and 89 E; the southern edge runs just south of the Main Frontal Thrust from about 28.2 N in the west to 26.5 N in the east, the northern edge from about 30.5 N in the west to 28.4 N in the east. Includes the 2015 Gorkha sequence and the 2026-08-26 landslide-type entry us7000tbwb.",
   "references": [
     "Avouac 2003, Adv. Geophys. 46 (MHT geometry)"

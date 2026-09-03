@@ -30,10 +30,11 @@ _TYPE_MAP: dict[str, MagnitudeType] = {
     "mwc": MagnitudeType.MWC,
     "mwb": MagnitudeType.MWB,
     "mwr": MagnitudeType.MWR,
-    "mwp": MagnitudeType.MW,  # ComCat P-wave moment magnitude: a moment magnitude
+    # P-wave moment magnitude (Tsuboi et al. 1995) is a moment magnitude (ADR-0017 addendum)
+    "mwp": MagnitudeType.MW,
     "mb": MagnitudeType.MB,
-    "mb_lg": MagnitudeType.MB,
-    "mblg": MagnitudeType.MB,
+    # mb_lg / mblg (regional Lg-wave mb) are NOT teleseismic mb: Scordilis (2006) does not apply,
+    # so they stay OTHER (ADR-0017 addendum) and get no Mw under the strict policy.
     "ms": MagnitudeType.MS,
     "ms_20": MagnitudeType.MS,
     "ms20": MagnitudeType.MS,
@@ -50,8 +51,9 @@ _TYPE_MAP: dict[str, MagnitudeType] = {
 def normalise_magnitude_type(raw: str | None) -> MagnitudeType:
     """Map an agency magnitude-type string to :class:`MagnitudeType`.
 
-    ``mb1`` (IDC), ``ms_vx`` (ComCat ``ms_vx`` for surface-wave amplitude of non-tectonic
-    sources), ``mh``, ``mi``, ``mun`` and every unknown code become ``OTHER``; the raw string is
+    ``mb1`` (IDC), ``mb_lg``/``mblg`` (regional Lg-wave mb, not teleseismic), ``ms_vx`` (ComCat
+    surface-wave amplitude of non-tectonic sources), ``mh``, ``mi``, ``mun`` and every unknown
+    code become ``OTHER``; the raw string is
     kept alongside on the :class:`MagnitudeRecord`.
     """
     if raw is None:

@@ -12,7 +12,7 @@ from typer.testing import CliRunner
 from rupture.adapters.catalogs.fixtures import FixtureError, load_fixture_dir
 from rupture.adapters.sources import gem_faults, openquake_sources, regions
 from rupture.cli import app
-from rupture.domain import Region, TectonicSetting, sha256_hex
+from rupture.domain import MagnitudePolicy, Region, TectonicSetting, sha256_hex
 from rupture.validation.catalog import run as run_catalog_gate
 
 runner = CliRunner()
@@ -34,10 +34,13 @@ def test_region_parameters_match_protocol(
 ) -> None:
     assert (california.depth_max_km, california.target_min_magnitude) == (30.0, 3.95)
     assert california.tectonic_setting is TectonicSetting.TRANSFORM
-    assert (nepal.depth_max_km, nepal.target_min_magnitude) == (70.0, 4.5)
+    assert california.magnitude_policy is MagnitudePolicy.NETWORK_PREFERRED_AS_MW  # ADR-0019
+    assert (nepal.depth_max_km, nepal.target_min_magnitude) == (70.0, 4.7)  # ADR-0019
     assert nepal.tectonic_setting is TectonicSetting.CONTINENTAL_COLLISION
-    assert (turkiye.depth_max_km, turkiye.target_min_magnitude) == (50.0, 4.0)
+    assert nepal.magnitude_policy is MagnitudePolicy.STRICT
+    assert (turkiye.depth_max_km, turkiye.target_min_magnitude) == (50.0, 4.6)  # ADR-0019
     assert turkiye.tectonic_setting is TectonicSetting.TRANSFORM
+    assert turkiye.magnitude_policy is MagnitudePolicy.STRICT
     assert len(california.polygon) <= 200
 
 

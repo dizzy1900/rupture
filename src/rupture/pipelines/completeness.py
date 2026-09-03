@@ -7,8 +7,10 @@ method; ``Catalog.completeness`` holds all of them):
   non-cumulative frequency-magnitude distribution, plus the +0.2 correction recommended by
   Woessner & Wiemer (2005) because MAXC under-estimates Mc for gradually curved distributions.
 * **b-value stability** (Cao & Gao 2002, as operationalised by Woessner & Wiemer 2005): the
-  smallest cut-off Mc at which the mean b-value over the next five successive 0.1 bins
-  (Mc, Mc+0.1, ..., Mc+0.4) lies within the b-value uncertainty of b(Mc).
+  smallest cut-off Mc at which the mean b-value over the half-magnitude range of successive
+  0.1 cut-offs (Mc, Mc+0.1, ..., Mc+0.5: six values, ``b_ave = sum(b(Mc..Mc+0.5)) / 6`` in
+  Woessner & Wiemer 2005) lies within the b-value uncertainty of b(Mc). Earlier drafts of this
+  module averaged five cut-offs; six is the published range as read by the author on 2026-09-03.
 
 b is the Aki (1965) maximum-likelihood estimate with the Utsu (1965) half-bin correction,
 ``b = log10(e) / (mean(m) - (Mc - dm/2))``, and its uncertainty is the Shi & Bolt (1982)
@@ -24,6 +26,7 @@ from __future__ import annotations
 import logging
 import math
 from collections.abc import Sequence
+from dataclasses import dataclass
 from datetime import datetime
 from typing import Any
 
@@ -36,7 +39,7 @@ log = logging.getLogger(__name__)
 
 LOG10_E = math.log10(math.e)
 MAXC_CORRECTION = 0.2
-STABILITY_BINS = 5
+STABILITY_BINS = 6  # Mc, Mc+0.1, ..., Mc+0.5: the half-magnitude range of Woessner & Wiemer 2005
 MIN_EVENTS_FOR_B = 30
 
 MagArray = Sequence[float] | NDArray[np.floating[Any]]
@@ -136,14 +139,43 @@ def estimate_completeness(
     """All Mc estimates for a set of Mw values. Reports each method; never picks silently.
 
     Raises :class:`InsufficientDataError` when fewer than two magnitudes are supplied; the caller
-    records that the catalogue slice was too thin for a completeness estimate.
+    records that the catalogue slice was too thin for a completeness estimate. Use
+    :func:`estimate_completeness_report` to also receive the notes (e.g. "etas cross-check
+    unavailable") that belong in ``Catalog.notes``.
     """
+    return estimate_completeness_report(
+        mags,
+        window_start=window_start,
+        window_end=window_end,
+        delta_m=delta_m,
+        with_etas_cross_check=with_etas_cross_check,
+    ).estimates
+
+
+@dataclass(frozen=True, slots=True)
+class CompletenessReport:
+    """Every estimate that succeeded, plus human-readable notes about what did not."""
+
+    estimates: list[CompletenessEstimate]
+    notes: list[str]
+
+
+def estimate_completeness_report(
+    mags: Sequence[float | None],
+    *,
+    window_start: datetime,
+    window_end: datetime,
+    delta_m: float = 0.1,
+    with_etas_cross_check: bool = True,
+) -> CompletenessReport:
+    """As :func:`estimate_completeness`, returning the notes as well."""
     arr = np.asarray([m for m in mags if m is not None], dtype=float)
     if arr.size < 2:
         msg = f"completeness needs >= 2 magnitudes, have {arr.size}"
         raise InsufficientDataError(msg)
     now = utc_now()
     out: list[CompletenessEstimate] = []
+    notes: list[str] = []
 
     mc_maxc = maximum_curvature(arr, delta_m)
     try:
@@ -190,9 +222,12 @@ def estimate_completeness(
         )
     else:
         log.info("completeness: no stable b-value cut-off found (n=%d)", arr.size)
+        notes.append("no stable b-value cut-off found (b-value stability Mc absent)")
 
     if with_etas_cross_check:
-        ks = _etas_mc_ks(arr, delta_m)
+        ks, ks_note = _etas_mc_ks(arr, delta_m)
+        if ks_note:
+            notes.append(ks_note)
         if ks is not None:
             mc_ks, beta = ks
             b_ks = beta / math.log(10.0) if beta else None
@@ -209,30 +244,35 @@ def estimate_completeness(
                     notes="etas.mc_b_est.estimate_mc (Mizrahi et al. 2021) KS test, p >= 0.1",
                 )
             )
-    return out
+    return CompletenessReport(estimates=out, notes=notes)
 
 
 def _etas_mc_ks(
     arr: NDArray[np.floating[Any]], delta_m: float
-) -> tuple[float, float | None] | None:
-    """Cross-check with the ``etas`` package; ``None`` if unavailable or nothing passes."""
+) -> tuple[tuple[float, float | None] | None, str | None]:
+    """Cross-check with the ``etas`` package: ``(result, note)``.
+
+    ``result`` is ``None`` when the package is unavailable, the call fails, or no cut-off passes;
+    ``note`` says which, so the pipeline can record it in ``Catalog.notes`` (never silent).
+    """
     try:
         from etas.mc_b_est import estimate_mc  # noqa: PLC0415  (optional heavy import)
-    except Exception:
-        return None
+    except Exception as exc:  # pragma: no cover - the package is pinned
+        log.warning("completeness: etas cross-check unavailable: %s", exc)
+        return None, f"etas cross-check unavailable: {type(exc).__name__}: {exc}"
     binned = bin_magnitudes(arr, delta_m)
     lo = float(np.round(binned.min(), 6))
     hi = float(np.round(np.quantile(binned, 0.9), 6))
     mcs = np.round(np.arange(lo, hi + delta_m / 2, delta_m), 6)
     if mcs.size == 0:
-        return None
+        return None, "etas cross-check skipped: no candidate cut-offs"
     try:
         _, _, _, best_mc, beta = estimate_mc(
             binned, mcs, delta_m, p_pass=0.1, stop_when_passed=True, n_samples=2000
         )
     except Exception as exc:
-        log.info("completeness: etas cross-check failed: %s", exc)
-        return None
+        log.warning("completeness: etas cross-check failed: %s", exc)
+        return None, f"etas cross-check failed: {type(exc).__name__}: {exc}"
     if best_mc is None:
-        return None
-    return float(best_mc), (float(beta) if beta is not None else None)
+        return None, "etas cross-check: no cut-off passed the KS test (p >= 0.1)"
+    return (float(best_mc), (float(beta) if beta is not None else None)), None

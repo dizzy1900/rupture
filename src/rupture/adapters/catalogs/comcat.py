@@ -165,11 +165,22 @@ def parse_comcat_geojson_report(payload: bytes | str, *, provenance: Provenance)
     return ParseReport(events=events, skipped=skipped)
 
 
-def parse_comcat_geojson(payload: bytes | str, *, provenance: Provenance) -> list[Event]:
-    """Pure parser: ComCat GeoJSON bytes -> events (see :func:`parse_comcat_geojson_report`)."""
+def parse_comcat_geojson(
+    payload: bytes | str,
+    *,
+    provenance: Provenance,
+    skipped: list[tuple[str, str]] | None = None,
+) -> list[Event]:
+    """Pure parser: ComCat GeoJSON bytes -> events (see :func:`parse_comcat_geojson_report`).
+
+    Skipped features are logged and, when ``skipped`` is given, appended to it so the caller
+    can record a count (the pipeline writes it into ``Catalog.notes``).
+    """
     report = parse_comcat_geojson_report(payload, provenance=provenance)
     for fid, why in report.skipped:
         log.warning("comcat: skipped feature %s: %s", fid, why)
+    if skipped is not None:
+        skipped.extend(report.skipped)
     return report.events
 
 
@@ -215,6 +226,7 @@ class ComCatSource:
     ) -> None:
         self.offline_fixtures = offline_fixtures
         self.cache_dir = cache_dir
+        self.last_skipped: list[tuple[str, str]] = []
 
     # ------------------------------------------------------------------ port
     def fetch(
@@ -228,12 +240,15 @@ class ComCatSource:
         if end <= start:
             msg = "end must be after start"
             raise ValueError(msg)
+        self.last_skipped = []
         if self.offline_fixtures is not None:
             events = self._from_fixtures(region, start, end, min_magnitude=min_magnitude)
             note = f"offline fixtures from {self.offline_fixtures}"
         else:
             events = self._fetch_window(region, start, end, min_magnitude=min_magnitude)
             note = "online ComCat FDSN GeoJSON"
+        if self.last_skipped:
+            note += f"; skipped {len(self.last_skipped)} source rows"
         events.sort(key=lambda e: (e.origin_time, e.source_event_id))
         return Catalog(
             id=f"{SOURCE_ID}/{region.id}/{start.isoformat()}/{end.isoformat()}",
@@ -290,7 +305,7 @@ class ComCatSource:
             licence=LICENCE,
             adapter_version=ADAPTER_VERSION,
         )
-        events = parse_comcat_geojson(payload.content, provenance=prov)
+        events = parse_comcat_geojson(payload.content, provenance=prov, skipped=self.last_skipped)
         if len(events) != n:
             log.info(
                 "comcat: count said %d, page had %d events (revisions in flight)", n, len(events)
@@ -312,7 +327,9 @@ class ComCatSource:
         events: list[Event] = []
         seen: set[str] = set()
         for f in files:
-            for e in parse_comcat_geojson(f.content, provenance=f.provenance):
+            for e in parse_comcat_geojson(
+                f.content, provenance=f.provenance, skipped=self.last_skipped
+            ):
                 if e.id in seen:
                     continue
                 seen.add(e.id)

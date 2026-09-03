@@ -1,0 +1,5 @@
+outs:
+- md5: f44c0a11e18540495bb1dfc8e50292c2
+  size: 2411040
+  hash: md5
+  path: gem_active_faults.parquet

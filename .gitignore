@@ -20,8 +20,21 @@ reports/
 .scratch/
 
 # DVC-managed directories (contents tracked by .dvc files / dvc.yaml outs)
-/data/raw/
-/data/interim/
+/data/raw/**
+/data/interim/**
+# ...but keep the directories walkable and track DVC pointers, DVC-written .gitignore files and
+# the provenance/manifest sidecars that describe what was fetched (contents stay DVC-only)
+!/data/raw/**/
+!/data/interim/**/
+!/data/raw/**/*.dvc
+!/data/interim/**/*.dvc
+!/data/raw/**/.gitignore
+!/data/interim/**/.gitignore
+!/data/raw/**/manifest.json
+!/data/interim/**/manifest.json
+!/data/raw/**/provenance.json
+!/data/interim/**/provenance.json
+!/data/interim/**/*.provenance.json
 /data/catalogs/
 /data/forecasts/
 /baselines/**/*.parquet

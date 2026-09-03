@@ -14,15 +14,75 @@ from rupture.adapters.catalogs import SOURCE_IDS
 from rupture.adapters.sources.regions import (
     default_regions_root,
     load_region,
-    with_mc,
     write_region,
 )
 from rupture.adapters.storage.geoparquet import read_catalog, write_catalog
-from rupture.domain import McMethod
-from rupture.pipelines.build_catalog import MergeConfig, build_catalog
+from rupture.domain import Catalog, CompletenessEstimate, McMethod, Region
+from rupture.pipelines.build_catalog import MergeConfig, build_catalog, mw_coverage_at
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 EXIT_FAIL = 1
+MIN_PUBLISHABLE_B = 0.7
+MIN_PUBLISHABLE_COVERAGE = 0.8
+
+
+def region_mc_decision(
+    catalog: Catalog, region: Region, *, force: bool = False
+) -> tuple[Region, str]:
+    """Apply the publication rules for ``Region.mc`` (QA blocker B1).
+
+    Every estimate goes into ``mc_estimates`` with a note naming the Mw coverage at the target
+    threshold and the maximum-curvature b. ``mc`` is set to the maximum-curvature estimate only
+    when that b is >= 0.7 **and** at least 80 % of earthquakes reported at or above the target
+    threshold carry a homogenised Mw; otherwise ``mc`` is left ``None`` (unless ``force``) and the
+    reason is returned for printing. A too-low b or too-low coverage means the Mw distribution is
+    not the region's seismicity and the estimate would mislead the fit.
+    """
+    maxc = catalog.preferred_mc(McMethod.MAXIMUM_CURVATURE)
+    with_mw, total = mw_coverage_at(catalog, region.target_min_magnitude)
+    coverage = with_mw / total if total else 0.0
+    b = maxc.b_value if maxc is not None else None
+    tag = (
+        f"Mw coverage at M>={region.target_min_magnitude:g}: {with_mw}/{total} "
+        f"({coverage:.0%}); maximum-curvature b={b:.2f}"
+        if b is not None
+        else f"Mw coverage at M>={region.target_min_magnitude:g}: {with_mw}/{total} "
+        f"({coverage:.0%}); maximum-curvature b unavailable"
+    )
+    estimates = tuple(
+        c.model_copy(update={"notes": f"{c.notes + '; ' if c.notes else ''}{tag}"})
+        for c in catalog.completeness
+    )
+    problems: list[str] = []
+    if maxc is None:
+        problems.append("no maximum-curvature estimate")
+    if b is None or b < MIN_PUBLISHABLE_B:
+        problems.append(
+            f"maximum-curvature b {b if b is None else round(b, 2)} < {MIN_PUBLISHABLE_B}"
+        )
+    if coverage < MIN_PUBLISHABLE_COVERAGE:
+        problems.append(f"Mw coverage {coverage:.0%} < {MIN_PUBLISHABLE_COVERAGE:.0%}")
+    publish = maxc is not None and (not problems or force)
+    mc_est: CompletenessEstimate | None = None
+    if publish:
+        mc_est = next(c for c in estimates if c.method is McMethod.MAXIMUM_CURVATURE)
+        if problems:
+            mc_est = mc_est.model_copy(
+                update={
+                    "notes": (
+                        f"{mc_est.notes}; published with --force-mc despite: " + "; ".join(problems)
+                    )
+                }
+            )
+    updated = region.model_copy(update={"mc": mc_est, "mc_estimates": estimates})
+    if mc_est is not None:
+        reason = f"mc={mc_est.mc:.2f} published ({tag})" + (" [forced]" if problems else "")
+    else:
+        reason = (
+            "mc left null: " + "; ".join(problems) + f" ({tag}); estimates written to mc_estimates"
+        )
+    return updated, reason
+
 
 app = typer.Typer(help="Build and inspect homogenised catalogues.", no_args_is_help=True)
 
@@ -71,6 +131,13 @@ def build(  # noqa: PLR0917  typer options are positional to typer
     no_etas_cross_check: Annotated[
         bool, typer.Option("--no-etas-cross-check", help="Skip the etas KS Mc cross-check.")
     ] = False,
+    force_mc: Annotated[
+        bool,
+        typer.Option(
+            "--force-mc",
+            help="With --update-region-mc: publish mc even if b < 0.7 or Mw coverage < 80 %.",
+        ),
+    ] = False,
     root: Annotated[Path, typer.Option(help="Repository root.")] = REPO_ROOT,
 ) -> None:
     """Merge sources, homogenise magnitudes, estimate Mc, write GeoParquet + homogenisation log."""
@@ -116,13 +183,18 @@ def build(  # noqa: PLR0917  typer options are positional to typer
         typer.echo(f"  Mc[{c.method.value}] = {c.mc:.2f} (n={c.n_events}){b}")
     if catalog.notes:
         typer.echo(f"notes: {catalog.notes}")
+    with_mw, total = mw_coverage_at(catalog, reg.target_min_magnitude)
+    typer.echo(
+        f"Mw coverage at M>={reg.target_min_magnitude:g} (reported, any scale): "
+        f"{with_mw}/{total}" + (f" ({with_mw / total:.0%})" if total else "")
+    )
     if update_region_mc:
-        est = catalog.preferred_mc(McMethod.MAXIMUM_CURVATURE)
-        if est is None:
-            typer.echo("no maximum-curvature estimate; region.json left unchanged", err=True)
+        if not catalog.completeness:
+            typer.echo("no completeness estimates; region.json left unchanged", err=True)
             raise typer.Exit(EXIT_FAIL)
-        json_path, _ = write_region(regions_root, with_mc(reg, est))
-        typer.echo(f"updated {json_path} mc={est.mc:.2f}")
+        updated, reason = region_mc_decision(catalog, reg, force=force_mc)
+        json_path, _ = write_region(regions_root, updated)
+        typer.echo(f"updated {json_path}: {reason}")
 
 
 @app.command("inspect")

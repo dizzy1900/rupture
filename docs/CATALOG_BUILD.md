@@ -29,7 +29,9 @@ file whose sha256 differs from `provenance.json` (fixtures are never edited by h
 ### Association
 
 Same event when `|Δt| ≤ 16 s` and distance `≤ 100 km` (Weatherill, Pagani & Garcia 2016).
-Parameters: `--time-window-s`, `--distance-km`. Single linkage in time order, nearest member.
+Parameters: `--time-window-s`, `--distance-km`. In time order, a record joins — among the clusters
+whose first key lies within one time window of it — the cluster with the nearest compatible
+member, so a cluster never chains beyond one window from its first record.
 **Lane rule:** records from the same lane never merge (lane = source id; for ComCat
 `usgs-comcat/<net>` from the id prefix), so one bulletin's own aftershock pairs are never
 collapsed while ComCat's separate copies of ISC-GEM or other-network origins can be associated.
@@ -50,7 +52,8 @@ record; `contributing_ids` lists every merged record as `<source>:<id>`.
 | 2 | ISC-GEM Mw | `identity:mw` |
 | 3 | reported `mww`/`mwc`/`mwb`/`mwr`/`mw` from ISC, then ComCat | `identity:<type>` |
 | 4 | Scordilis (2006): Mw = 0.85 mb + 1.03 (3.5 ≤ mb ≤ 6.2); Mw = 0.67 Ms + 2.07 (3.0 ≤ Ms ≤ 6.1); Mw = 0.99 Ms + 0.08 (6.2 ≤ Ms ≤ 8.2); Ms before mb within a source | `scordilis2006:mb`, `scordilis2006:ms` |
-| — | ML, Md, `mb1`, `ms_vx`, unknown scales, or mb/Ms outside the ranges | `None` + `magnitude_unconvertible` in the log |
+| 5 | **`network-preferred-as-mw` regions only** (`Region.magnitude_policy`, ADR-0019; California): a preferred `ml`/`md`/`mlv` magnitude with no moment magnitude from any source is assumed Mw-equivalent | `assumed-equivalent:<type>` + `magnitude_converted` "assumed Mw-equivalent (ADR-0019)" |
+| — | otherwise (`strict` policy): ML, Md, `mb1`, `ms_vx`, unknown scales, or mb/Ms outside the ranges | `None` + `magnitude_unconvertible` in the log |
 
 Scordilis, E. M. (2006), J. Seismol. 10, 225–236, doi:10.1007/s10950-006-9012-4. See the
 `verify` note in ADR-0017: the slopes and ranges were confirmed against third-party citations on
@@ -66,7 +69,8 @@ accepted conversion) and are excluded from fits and targets by filter, never del
 ### Filters
 
 After association: epicentre must be covered by the region polygon (`outside_region_dropped`),
-depth within `[depth_min_km, depth_max_km]` (`depth_filtered`; unknown depth kept). Half-open
+depth ≤ `depth_max_km`, and ≥ `depth_min_km` only when that is set above 0 (networks report
+small negative depths for very shallow events; `depth_filtered`; unknown depth kept). Half-open
 `[from, to)` on `origin_time`.
 
 ### Completeness (`pipelines/completeness.py`)
@@ -76,14 +80,20 @@ On the homogenised Mw of earthquakes, 0.1 bins:
 - **maximum curvature** (Wiemer & Wyss 2000) + 0.2 (Woessner & Wiemer 2005); ties resolved to the
   lowest bin before the correction;
 - **b-value stability** (Cao & Gao 2002; Woessner & Wiemer 2005): first cut-off whose Aki b is
-  within σ_b (Shi & Bolt 1982) of the mean b of the next five cut-offs; ≥ 30 events per cut-off;
+  within σ_b (Shi & Bolt 1982) of the mean b over the half-magnitude range Mc … Mc+0.5 (six
+  cut-offs, Woessner & Wiemer 2005 eq. for b_ave); ≥ 30 events per cut-off;
   if no cut-off is stable the method is absent and the notes say so;
 - **`mc_ks`** cross-check with `etas.mc_b_est.estimate_mc` (Mizrahi et al. 2021), p ≥ 0.1,
   2 000 simulated samples; reported when it passes, skipped with `--no-etas-cross-check`.
 
 b is Aki (1965) MLE with the Utsu half-bin correction: `b = log10(e) / (mean(m) − (Mc − 0.05))`.
-All estimates land in `Catalog.completeness`; `Region.mc` stores the maximum-curvature one from
-the real build (`--update-region-mc`).
+All estimates land in `Catalog.completeness`. `--update-region-mc` copies them all to
+`Region.mc_estimates` (each noting the Mw coverage at the target threshold and the maximum-curvature
+b) and publishes `Region.mc` (the maximum-curvature estimate, which the ETAS fit reads) **only** when
+that b ≥ 0.7 and ≥ 80 % of earthquakes reported at or above the target threshold have a homogenised
+Mw; otherwise `mc` stays null and the command prints the reason (`--force-mc` overrides and marks the
+estimate). The build also records per-source skipped-row counts, the etas cross-check status and the
+magnitude policy in `Catalog.notes`.
 
 ## 3. Outputs
 
@@ -125,6 +135,10 @@ the variable the build proceeds and records `source isc-gem not included` in the
 `--min-magnitude` overrides the floor; `--no-etas-cross-check` skips the KS estimate (used for
 California, where the simulation on ~10^5 magnitudes is slow).
 
+`dvc repro build_catalog@<region>` runs the same build **without** `--update-region-mc`, so it never
+touches `data/regions/<id>/region.json`; the region record is refreshed out of band with the command
+above and committed to git.
+
 Fixtures: `uv run rupture catalog refresh-fixtures` (network) re-cuts every ComCat, ISC and GCMT
 fixture and rewrites `provenance.json`. Regions: `uv run rupture region init` writes the three
 default region files (refuses to overwrite a file holding a fitted `mc` unless `--force`).
@@ -141,61 +155,78 @@ openquake_sources.available_models("california")   # ([], gap reason referencing
 ## 5. Real runs (2026-09-03)
 
 Builds from 1976-01-01T00:00:00Z to 2026-08-01T00:00:00Z with ComCat + ISC + GCMT, association
-windows 16 s / 100 km, source magnitude floor = target − 1.5 (California 2.45, Nepal 3.0,
-Türkiye 2.5). ISC-GEM was **not** included (no CSV configured). Results are what the commands
-above printed; nothing here is adjusted.
+windows 16 s / 100 km, source magnitude floor = target − 1.5. ISC-GEM was **not** included in any
+build (no CSV configured). Results are what the commands printed; nothing here is adjusted.
 
-| Region | Events (earthquake / explosion / other) | Preferred source (ISC / ComCat / GCMT) | Events with Mw | Mc maximum curvature (+0.2) | Mc b-value stability | Mc KS (`etas`) | Runtime |
-|---|---|---|---|---|---|---|---|
-| `nepal-himalaya` | 2 847 (2 846 / 1 / 0) | 2 812 / 35 / 0 | 2 165 | **4.40** (b = 1.14 ± 0.04, n = 1 037) | 4.70 (b = 1.21 ± 0.06, n = 500) | 4.20 (n = 1 670) | 146 s |
-| `turkiye-eaf` | 27 716 (27 446 / 269 / 1) | 27 632 / 82 / 2 | 2 572 | **4.30** (b = 1.03 ± 0.03, n = 915) | 4.60 (b = 1.16 ± 0.05, n = 494) | 4.70 (n = 387) | 32 s (second attempt; the first, 324 s, failed on a stray `?` line in the ISC 2023 page, fixed in `isc.py`, and its pages were reused from `data/raw/isc/`) |
-| `california` | 104 630 (103 535 / 1 068 / 27) | 42 852 / 61 778 / 0 | 3 418 | **3.70** (b = 0.59 ± 0.01, n = 2 358) — see caveat | 4.90 (b = 0.95 ± 0.04, n = 486) | not run (`--no-etas-cross-check`) | 510 s |
+The numbers below are the **second** set of builds, run after three changes that all affect the
+result: the ADR-0019 thresholds (Nepal 4.7, Türkiye 4.6, so their fetch floors rose to 3.2 and 3.1
+and their event counts fell), the ADR-0019 California magnitude policy
+(`network-preferred-as-mw`), and the depth-filter fix that stops dropping events reported with a
+small negative depth. The first set (before those changes) is kept at the end of this section
+because the ETAS baseline was first fitted on it.
 
-The bold maximum-curvature values were written to `data/regions/<id>/region.json` (`mc`) by
-`--update-region-mc`. Homogenised-Mw mix: Nepal 1 663 `scordilis2006:mb`, 306 `scordilis2006:ms`,
-126 `identity:mw` (ISC's GCMT Mw), 70 `identity:mwc`, 682 without Mw (ISC `ML`, `mb1`, `MD`, and
-`mb` < 3.5); Türkiye 1 570 `identity:mw`, 672 `scordilis2006:mb`, 122 `identity:mwc`, 118
-`identity:mwr`, 89 `scordilis2006:ms`, 25 144 without Mw (ISC `ML`, `MD`/`Md`); California 1 534
-`identity:mw`, 788 `identity:mwr`, 683 `scordilis2006:mb`, 276 `identity:mwc`, 129
-`scordilis2006:ms`, 8 `identity:mww`, 101 212 without Mw (ISC `ML`, ComCat `md`/`ml`/`mc`/`mh`).
-Largest events: Gorkha 2015-04-25 Mw 7.88 (ISC + ComCat + GCMT), Kahramanmaraş 2023-02-06
-Mw 7.78 and 7.70 (three sources each), Imperial Valley 1980-11-08 Mw 7.30 and Landers 1992-06-28
-Mw 7.28 (three sources each). Records associated from two sources: Nepal 921, Türkiye 1 172,
-California 38 233; from three: 70, 120, 336.
+| Region | Events (earthquake / explosion / other) | Preferred source (ISC / ComCat / GCMT) | Events with Mw | Mw coverage at the target threshold | Mc maximum curvature (+0.2) | Mc b-value stability | Mc KS (`etas`) | Runtime |
+|---|---|---|---|---|---|---|---|---|
+| `nepal-himalaya` (target 4.7, floor 3.2) | 2 728 (2 727 / 1 / 0) | 2 678 / 50 / 0 | 2 132 | 187 / 195 (96 %) | **4.40** (b = 1.14 ± 0.03, n = 1 052) | 4.70 (b = 1.22 ± 0.06, n = 513) | 4.30 (n = 1 355) | 104 s |
+| `turkiye-eaf` (target 4.6, floor 3.1) | 7 038 (7 036 / 2 / 0) | 6 943 / 93 / 2 | 2 363 | 282 / 288 (98 %) | **4.30** (b = 1.03 ± 0.03, n = 917) | 4.60 (b = 1.16 ± 0.05, n = 495) | 4.70 (n = 388) | 160 s |
+| `california` (target 3.95, floor 2.45, policy `network-preferred-as-mw`) | 110 766 (107 601 / 3 137 / 28) | 42 860 / 67 906 / 0 | 106 381 | 3 080 / 3 123 (99 %) | **2.70** (b = 1.01 ± 0.004, n = 65 544) | 2.60 (b = 1.00 ± 0.004, n = 82 710) | not run (`--no-etas-cross-check`) | 66 s |
 
-**California caveat.** Only 3 211 of 103 535 California earthquakes have a homogenised Mw, because
-ComCat `ml`/`md`/`mc` and ISC `ML`/`MD` have no accepted conversion (ADR-0017). Of the 3 056
-earthquakes with *any* reported magnitude ≥ 3.95, only 1 487 (49 %) carry Mw; the rest are
-`ml`-only (ComCat `ml` 717, ISC `ML`/`mL` 636, ComCat `mlr` 45, ...). The Mw frequency-magnitude
-distribution is therefore not a Gutenberg–Richter population (moment tensors exist mainly above
-about M 3.5), the maximum-curvature b of 0.59 is a symptom of that, and **the California Mc of
-3.70 must not be read as the completeness of California seismicity**. Until a cited ML→Mw relation
-for California is adopted (a new ADR), the homogenised California catalogue is unfit for a
-M ≥ 3.95 target at the RELM convention: about half of the target-size events would be missing.
-The Nepal and Türkiye catalogues are less affected because ISC's preferred magnitude there is
-`mb` (convertible) for most M ≥ 4 events.
+The bold maximum-curvature values are the ones `--update-region-mc` published to
+`data/regions/<id>/region.json` (`mc`); every estimate, with its Mw-coverage note, is in
+`mc_estimates`. All three passed the publication rules (maximum-curvature b ≥ 0.7 and Mw coverage
+at the target ≥ 80 %).
 
-**Thresholds against the protocol rule** (`EVALUATION_PROTOCOL.md` § 1 rule 3, both methods at or
-below the target): Nepal target 4.5 vs. Mc 4.40 / 4.70 — the b-value-stability estimate is
-*above* the provisional threshold; Türkiye target 4.0 vs. 4.30 / 4.60 — both estimates are above
-the provisional threshold; California target 3.95 vs. 3.70 / 4.90 — the b-value-stability estimate
-is above it and the catalogue has the Mw-coverage problem above. Under the protocol's own rule the
-Nepal and Türkiye thresholds would rise (to ≥ 4.7 and ≥ 4.6) and an ADR must record that;
-this document does not change them.
+**California under the ADR-0019 policy.** 102 940 events take their Mw from the network-preferred
+scale (`assumed-equivalent:ml` 54 702, `assumed-equivalent:md` 48 238); 2 628 keep a moment
+magnitude (`identity:mw` 1 553, `identity:mwr` 791, `identity:mwc` 276, `identity:mww` 8), 813 come
+from Scordilis (684 `mb`, 129 `Ms`), and 4 385 still have no Mw (ComCat `mh` 3 390, ISC `M` 856,
+ComCat `ma` 71, `mb` outside the Scordilis range). Coverage at M ≥ 3.95 rose from 49 % to 99 %, and
+the Mw frequency–magnitude distribution now behaves like a Gutenberg–Richter population: b = 1.01
+at the maximum-curvature Mc and 1.00 at the stability Mc, against 0.59 and 0.95 before. **Neither
+California Mc estimator exceeds 3.95** (2.70 and 2.60), so ADR-0019 decision 3 does not trigger and
+the California target threshold stays at the RELM 3.95; the decision is the architect's, and this
+document does not change it. The depth fix also matters here: `depth_filtered` fell from 7 015 to
+879 events, because ComCat reports small negative depths for very shallow Californian events.
+
+Homogenised-Mw mix elsewhere: Nepal 1 678 `scordilis2006:mb`, 279 `scordilis2006:ms`, 105
+`identity:mw`, 70 `identity:mwc`, 596 without Mw (ISC `mb` below 3.5, `ML`, `mb1`, `MD`); Türkiye
+1 370 `identity:mw`, 674 `scordilis2006:mb`, 122 `identity:mwc`, 118 `identity:mwr`, 78
+`scordilis2006:ms`, 4 675 without Mw (ISC `MD`/`Md` 2 786, `ML`/`Ml` 1 715). Largest events:
+Gorkha 2015-04-25 Mw 7.88, Kahramanmaraş 2023-02-06 Mw 7.78 and 7.70, Imperial Valley 1980-11-08
+Mw 7.30 and Landers 1992-06-28 Mw 7.28 — each associated from ISC + ComCat + GCMT. Records
+associated from two sources: Nepal 903, Türkiye 1 114, California 38 245; from three: 70, 120, 336
+(and one California event from four).
 
 ISC coverage: the ISC FDSN service returned events through 2026-07 for all three regions, but rows
-after the reviewed period carry other agencies' prime hypocentres (`Author` = IDC, GFZ, ...), not
+after the reviewed period carry other agencies' prime hypocentres (`Author` = IDC, GFZ, NEIC), not
 ISC's reviewed solutions; the adapter records the row's `MagAuthor` and does not distinguish
-reviewed from preliminary. ISC-GEM was not included in any build.
+reviewed from preliminary.
 
 Outputs are DVC-tracked through the `build_catalog@<region>` stages in `dvc.yaml`
 (`uv run dvc commit -f build_catalog@<region>`, recorded in `dvc.lock`; `dvc add` refuses paths
-that are stage outputs). Sizes: Nepal 0.2 MB parquet + 2.7 MB log; Türkiye 1.5 MB + 15.9 MB;
-California 5.6 MB + 80 MB (one `ingested` entry per source record). `data/interim/` and
-`data/raw/` are git-ignored as whole directories, so `dvc add` could not place `.dvc` pointers
-for `gem_active_faults.parquet` (13 696 faults, 2.4 MB) or `data/raw/eshm20/` (55 files, 40.2 MB,
-`manifest.json` verified); both were fetched on 2026-09-03 and are reproducible from the
-functions in § 4.
+that are stage outputs). Sizes: Nepal 0.19 MB parquet + 2.6 MB log; Türkiye 0.41 MB + 4.5 MB;
+California 6.0 MB + 78 MB (one `ingested` entry per source record).
+`data/interim/gem_active_faults.parquet` (13 696 faults, 2.4 MB) now has a committed `.dvc`
+pointer; `data/raw/eshm20/` (55 files, 40.2 MB) is DVC-free but its `manifest.json` (paths, sizes,
+sha256, commit, licence text) is committed, so the fetch is reproducible and verifiable
+(`openquake_sources.verify_manifest()`).
+
+### Superseded first builds (2026-09-03, before ADR-0019 and the depth fix)
+
+Kept because the first ETAS fits were made on them. Same window and sources; Nepal floor 3.0,
+Türkiye floor 2.5, California floor 2.45, `strict` magnitude policy everywhere, and the depth
+filter still dropping negative-depth events.
+
+| Region | Events | Events with Mw | Mc maximum curvature | Mc b-value stability | Runtime |
+|---|---|---|---|---|---|
+| `nepal-himalaya` | 2 847 | 2 165 | 4.40 (b = 1.14) | 4.70 (b = 1.21) | 146 s |
+| `turkiye-eaf` | 27 716 | 2 572 | 4.30 (b = 1.03) | 4.60 (b = 1.16) | 32 s (a first attempt failed after 324 s on a stray `?` line in the ISC 2023 page; fixed in `isc.py`) |
+| `california` | 104 630 | 3 418 | 3.70 (b = 0.59) | 4.90 (b = 0.95) | 510 s |
+
+The California figures in that table are the artefact ADR-0019 was written to remove: only 49 % of
+events reported at M ≥ 3.95 carried an Mw, so the b of 0.59 described the availability of moment
+tensors, not the seismicity. Under the current publication rules (§ 2) that estimate would not have
+been published to `Region.mc` at all.
 
 ## 6. Known limitations
 
@@ -207,15 +238,22 @@ functions in § 4.
 - **ISC reviewed bulletin lags about two years**; the FDSN service still returns later events,
   but as other agencies' prime hypocentres (IDC, GFZ, NEIC), which the adapter cannot tell apart
   from reviewed ISC solutions in the text format.
-- **No ML/Md conversion**: California events reported only as `ml`/`mlr` (most below about M 3.5
-  in the RELM region) have `mw = None` and do not enter Mc or fits; the effective floor of the
-  homogenised California catalogue is therefore set by the availability of `mw`/`mwr` and `mb`,
-  not by the fetch floor. A regional relation is a new ADR.
+- **No cited ML/Md→Mw relation.** Under the `strict` policy (Nepal, Türkiye) events reported only
+  as `ML`/`Md` have `mw = None` and enter neither Mc nor fits — 596 Nepal and 4 675 Türkiye events.
+  Under `network-preferred-as-mw` (California, ADR-0019) those magnitudes are *assumed*
+  Mw-equivalent, which is an approximation adopted from CSEP RELM practice, not a conversion:
+  93 % of the California catalogue's Mw values are assumed rather than measured or converted, and
+  every one is identifiable by the `assumed-equivalent:` prefix in `mw_conversion`. A cited
+  regional relation would be a new ADR and a rebuild.
 - **Fixed windows** merge dense cross-bulletin aftershock pairs within 16 s / 100 km; the lane
   rule protects only same-bulletin pairs. The gate verifies the algorithm's guarantee (no cross-lane
   pair within the windows survives), not that every merge is right.
 - **Quick CMTs** (`qcmt.ndk`, stamp `Q-`) are used for the most recent months and may be revised;
   the `raw_type` says which flavour each Mw came from.
+- **`Region.mc` may be absent by design.** `--update-region-mc` refuses to publish a
+  maximum-curvature Mc whose b < 0.7 or whose Mw coverage at the target threshold is < 80 %,
+  because such an estimate describes magnitude availability rather than seismicity. The estimates
+  are still written to `mc_estimates`, and `--force-mc` overrides with a note on the record.
 - **ComCat summary feed has no uncertainties** (`horizontalError` etc. are only in the detail
   feed), so location/time/magnitude uncertainties are `None` for ComCat-preferred events.
 - **Scordilis (2006) intercepts** carry a `verify` note (ADR-0017).
