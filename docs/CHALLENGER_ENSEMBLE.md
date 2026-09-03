@@ -194,8 +194,8 @@ discovery here.
 **Is it the zero-rate floor?** No. Across both regions and all 283 target events, **zero** events
 fell in a cell-magnitude bin that either the ETAS floor or the ensemble's own floor had raised. In
 the schedule's dominant window (`turkiye-eaf` 2023-01-26, 160 target events) every one of the 160
-events sat in a cell where both components had a real rate, and the ensemble's rates there were on
-average 1.31 times ETAS's.
+events sat in a cell where both components had a real rate, and the ensemble's rates there were a
+geometric mean of 1.31 times ETAS's.
 
 **Would any diffuse second component do?** Mostly not. Refitting and rescoring the pool with the
 challenger's spatial field flattened to uniform — total and magnitude distribution unchanged, so
