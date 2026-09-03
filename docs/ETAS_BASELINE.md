@@ -106,6 +106,53 @@ for the same history, parameters, `n_simulations`, region and package version; i
 across the package's own entry points (`ETASSimulation.simulate` reseeds from OS entropy), which
 rupture therefore does not use. Fits are reproducible through the fixed `theta_0`.
 
+## Published fits (2026-09-03)
+
+Non-negotiable 3 requires the baseline's parameters and fit diagnostics to be published. The fits
+are outputs of the `fit_etas` DVC stages (`baselines/etas/<region>/`, DVC-tracked, not in git);
+this table is the published record. All three are at the protocol's training cutoff
+`2022-01-01T00:00:00Z`, use the region's published maximum-curvature Mc, and a 2-year auxiliary
+window. Every fit is also archived under `baselines/etas/<region>/fits/<cutoff>/`, so a schedule's
+refits never destroy the fit its own DVC stage declares.
+
+| | `nepal-himalaya` | `turkiye-eaf` | `california` |
+|---|---|---|---|
+| Mc (fit) | 4.4 | 4.3 | 2.7 |
+| Training events ≥ Mc | 772 | 405 | 55,828 |
+| Training start | 1976-05-10 | 1976-01-07 | 1976-01-01 |
+| EM iterations | 28 | 27 | 14 |
+| Converged | true | true | true |
+| Branching ratio | 0.689 | 1.044 | 0.953 |
+| Any parameter at a bound | none | none | none |
+| `log10_mu` | -7.1428 | -7.1908 | -6.4601 |
+| `log10_k0` | 1.5137 | 0.2515 | -2.4114 |
+| `a` | 2.4577 | 2.2663 | 1.8227 |
+| `log10_c` | -2.4902 | -2.3516 | -2.8084 |
+| `omega` | -0.0029 | -0.0687 | -0.0481 |
+| `log10_tau` | 3.5733 | 3.7436 | 3.7316 |
+| `log10_d` | 2.1779 | 1.7503 | -0.4531 |
+| `gamma` | 0.7240 | 0.4475 | 1.5036 |
+| `rho` | 1.5855 | 1.3948 | 0.6419 |
+| `beta` | 2.3549 | 2.0895 | 2.1374 |
+| implied b = beta/ln 10 | 1.02 | 0.91 | 0.93 |
+| Snapshot hash | `bcd6f66f8bb3` | `f0b0865d9603` | `72e2f58edb60` |
+
+`log_likelihood` is `null` for every fit: the package does not expose the converged value. `omega`
+is the Omori exponent offset (`p = 1 + omega`); `beta = b ln 10`.
+
+Two diagnostics deserve a reader's attention rather than a footnote.
+
+**Türkiye's branching ratio is 1.04**, at or just above criticality: on the fitted parameters an
+average event's descendants do not die out in expectation, and simulated sequences stay finite
+only because the simulator caps magnitudes. It rests on 405 training events. rupture publishes
+this rather than tuning it away; it is the reason to treat Türkiye rates as weakly constrained,
+and the schedule below shows the model still scoring well there.
+
+**California cost 94 minutes of EM** over 55,828 events at Mc 2.70 (14 iterations). An earlier
+attempt under the default 1800 s cap stopped after 6 iterations and was persisted with
+`converged=false`; the adapter refused to issue from it, which is what the cap is for. The
+converged fit used `--max-seconds 21600`.
+
 ## Known limitations
 
 - **Uniform background in the fit, smoothed in the forecast.** The inversion estimates a spatially
