@@ -1,0 +1,11 @@
+{
+  "file": "comcat-california-2018-2019-m3.geojson",
+  "source": "usgs-comcat",
+  "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2018-01-01&endtime=2020-01-01&minmagnitude=3.0&minlatitude=32&maxlatitude=37.5&minlongitude=-122&maxlongitude=-114&orderby=time-asc",
+  "retrieved_at": "2026-09-03T09:49:40Z",
+  "sha256": "153be1f5659e2b308c62cbb83dcf7afacd8eb96e7b5e3cdfce4d1c4c314011f9",
+  "licence": "public-domain (USGS)",
+  "size_bytes": 1074655,
+  "event_count": 1433,
+  "notes": "Raw ComCat GeoJSON, unedited. California box 32-37.5N, 122-114W, M>=3.0 as reported by ComCat (magType ml/mlr/mw/md), 2018-01-01 to 2020-01-01, covering the 2019 Ridgecrest sequence (M6.4 on 2019-07-04, M7.1 on 2019-07-06). Used only by tests and offline gates through tests/fixtures/forecasting/loader.py. Magnitudes in this fixture are the reported preferred magnitudes, not homogenised Mw; production catalogues go through `rupture catalog build`."
+}
