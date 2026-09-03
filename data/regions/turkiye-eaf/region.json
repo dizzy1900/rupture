@@ -42,7 +42,18 @@
   "target_min_magnitude": 4.0,
   "magnitude_bin_width": 0.1,
   "magnitude_max": 8.95,
-  "mc": null,
+  "mc": {
+    "mc": 4.3,
+    "method": "maximum_curvature",
+    "b_value": 1.025151435496416,
+    "b_value_uncertainty": 0.031246769964284188,
+    "n_events": 915,
+    "window_start": "1976-01-01T00:00:00Z",
+    "window_end": "2026-08-01T00:00:00Z",
+    "computed_at": "2026-09-03T10:36:41.758679Z",
+    "correction": 0.2,
+    "notes": "Wiemer & Wyss 2000 MAXC + 0.2 (Woessner & Wiemer 2005); b: Aki 1965 MLE"
+  },
   "description": "Corridor defined by rupture, not an official region: an octagon along the left-lateral East Anatolian Fault from the Amanos/Hatay segment near 36 E, 36 N to the Karliova junction near 41 E, 39.3 N, about 150 km wide. Includes the 2023 Kahramanmaras doublet.",
   "references": [
     "Duman & Emre 2013, Geol. Soc. London Spec. Publ. 372 (EAF segmentation)"

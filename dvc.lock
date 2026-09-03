@@ -1,0 +1,74 @@
+schema: '2.0'
+stages:
+  build_catalog@nepal-himalaya:
+    cmd: uv run rupture catalog build --region nepal-himalaya --from 1976-01-01 
+      --to 2026-08-01T00:00:00Z
+    deps:
+    - path: data/regions/nepal-himalaya
+      hash: md5
+      md5: 2e3fa6cbced7078b39abb96ca3066972.dir
+      size: 3340
+      nfiles: 2
+    - path: src/rupture/adapters/catalogs
+      hash: md5
+      md5: 98e9fac1bf30186a3ac4976478b24065.dir
+      size: 158605
+      nfiles: 18
+    - path: src/rupture/pipelines/build_catalog.py
+      hash: md5
+      md5: 9c180f721701f1b9a96e6aa612f7be06
+      size: 16718
+    outs:
+    - path: data/catalogs/nepal-himalaya
+      hash: md5
+      md5: be2f918adb698bd8735eeee11836e711.dir
+      size: 2915971
+      nfiles: 3
+  build_catalog@turkiye-eaf:
+    cmd: uv run rupture catalog build --region turkiye-eaf --from 1976-01-01 
+      --to 2026-08-01T00:00:00Z
+    deps:
+    - path: data/regions/turkiye-eaf
+      hash: md5
+      md5: b73c160986f5fb76d576f66b882246df.dir
+      size: 3084
+      nfiles: 2
+    - path: src/rupture/adapters/catalogs
+      hash: md5
+      md5: 98e9fac1bf30186a3ac4976478b24065.dir
+      size: 158605
+      nfiles: 18
+    - path: src/rupture/pipelines/build_catalog.py
+      hash: md5
+      md5: 9c180f721701f1b9a96e6aa612f7be06
+      size: 16718
+    outs:
+    - path: data/catalogs/turkiye-eaf
+      hash: md5
+      md5: 326bab9c0c386d98dc3ed64942d2a1f7.dir
+      size: 17332960
+      nfiles: 3
+  build_catalog@california:
+    cmd: uv run rupture catalog build --region california --from 1976-01-01 --to
+      2026-08-01T00:00:00Z
+    deps:
+    - path: data/regions/california
+      hash: md5
+      md5: 3fc05c9257d1f2103f4b621b52955cfb.dir
+      size: 16920
+      nfiles: 2
+    - path: src/rupture/adapters/catalogs
+      hash: md5
+      md5: 98e9fac1bf30186a3ac4976478b24065.dir
+      size: 158605
+      nfiles: 18
+    - path: src/rupture/pipelines/build_catalog.py
+      hash: md5
+      md5: 9c180f721701f1b9a96e6aa612f7be06
+      size: 16718
+    outs:
+    - path: data/catalogs/california
+      hash: md5
+      md5: 698631b88668beeada4bb2b63efead8d.dir
+      size: 85742489
+      nfiles: 3

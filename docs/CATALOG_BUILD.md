@@ -145,7 +145,57 @@ windows 16 s / 100 km, source magnitude floor = target − 1.5 (California 2.45,
 Türkiye 2.5). ISC-GEM was **not** included (no CSV configured). Results are what the commands
 above printed; nothing here is adjusted.
 
-RESULTS_PLACEHOLDER
+| Region | Events (earthquake / explosion / other) | Preferred source (ISC / ComCat / GCMT) | Events with Mw | Mc maximum curvature (+0.2) | Mc b-value stability | Mc KS (`etas`) | Runtime |
+|---|---|---|---|---|---|---|---|
+| `nepal-himalaya` | 2 847 (2 846 / 1 / 0) | 2 812 / 35 / 0 | 2 165 | **4.40** (b = 1.14 ± 0.04, n = 1 037) | 4.70 (b = 1.21 ± 0.06, n = 500) | 4.20 (n = 1 670) | 146 s |
+| `turkiye-eaf` | 27 716 (27 446 / 269 / 1) | 27 632 / 82 / 2 | 2 572 | **4.30** (b = 1.03 ± 0.03, n = 915) | 4.60 (b = 1.16 ± 0.05, n = 494) | 4.70 (n = 387) | 32 s (second attempt; the first, 324 s, failed on a stray `?` line in the ISC 2023 page, fixed in `isc.py`, and its pages were reused from `data/raw/isc/`) |
+| `california` | 104 630 (103 535 / 1 068 / 27) | 42 852 / 61 778 / 0 | 3 418 | **3.70** (b = 0.59 ± 0.01, n = 2 358) — see caveat | 4.90 (b = 0.95 ± 0.04, n = 486) | not run (`--no-etas-cross-check`) | 510 s |
+
+The bold maximum-curvature values were written to `data/regions/<id>/region.json` (`mc`) by
+`--update-region-mc`. Homogenised-Mw mix: Nepal 1 663 `scordilis2006:mb`, 306 `scordilis2006:ms`,
+126 `identity:mw` (ISC's GCMT Mw), 70 `identity:mwc`, 682 without Mw (ISC `ML`, `mb1`, `MD`, and
+`mb` < 3.5); Türkiye 1 570 `identity:mw`, 672 `scordilis2006:mb`, 122 `identity:mwc`, 118
+`identity:mwr`, 89 `scordilis2006:ms`, 25 144 without Mw (ISC `ML`, `MD`/`Md`); California 1 534
+`identity:mw`, 788 `identity:mwr`, 683 `scordilis2006:mb`, 276 `identity:mwc`, 129
+`scordilis2006:ms`, 8 `identity:mww`, 101 212 without Mw (ISC `ML`, ComCat `md`/`ml`/`mc`/`mh`).
+Largest events: Gorkha 2015-04-25 Mw 7.88 (ISC + ComCat + GCMT), Kahramanmaraş 2023-02-06
+Mw 7.78 and 7.70 (three sources each), Imperial Valley 1980-11-08 Mw 7.30 and Landers 1992-06-28
+Mw 7.28 (three sources each). Records associated from two sources: Nepal 921, Türkiye 1 172,
+California 38 233; from three: 70, 120, 336.
+
+**California caveat.** Only 3 211 of 103 535 California earthquakes have a homogenised Mw, because
+ComCat `ml`/`md`/`mc` and ISC `ML`/`MD` have no accepted conversion (ADR-0017). Of the 3 056
+earthquakes with *any* reported magnitude ≥ 3.95, only 1 487 (49 %) carry Mw; the rest are
+`ml`-only (ComCat `ml` 717, ISC `ML`/`mL` 636, ComCat `mlr` 45, ...). The Mw frequency-magnitude
+distribution is therefore not a Gutenberg–Richter population (moment tensors exist mainly above
+about M 3.5), the maximum-curvature b of 0.59 is a symptom of that, and **the California Mc of
+3.70 must not be read as the completeness of California seismicity**. Until a cited ML→Mw relation
+for California is adopted (a new ADR), the homogenised California catalogue is unfit for a
+M ≥ 3.95 target at the RELM convention: about half of the target-size events would be missing.
+The Nepal and Türkiye catalogues are less affected because ISC's preferred magnitude there is
+`mb` (convertible) for most M ≥ 4 events.
+
+**Thresholds against the protocol rule** (`EVALUATION_PROTOCOL.md` § 1 rule 3, both methods at or
+below the target): Nepal target 4.5 vs. Mc 4.40 / 4.70 — the b-value-stability estimate is
+*above* the provisional threshold; Türkiye target 4.0 vs. 4.30 / 4.60 — both estimates are above
+the provisional threshold; California target 3.95 vs. 3.70 / 4.90 — the b-value-stability estimate
+is above it and the catalogue has the Mw-coverage problem above. Under the protocol's own rule the
+Nepal and Türkiye thresholds would rise (to ≥ 4.7 and ≥ 4.6) and an ADR must record that;
+this document does not change them.
+
+ISC coverage: the ISC FDSN service returned events through 2026-07 for all three regions, but rows
+after the reviewed period carry other agencies' prime hypocentres (`Author` = IDC, GFZ, ...), not
+ISC's reviewed solutions; the adapter records the row's `MagAuthor` and does not distinguish
+reviewed from preliminary. ISC-GEM was not included in any build.
+
+Outputs are DVC-tracked through the `build_catalog@<region>` stages in `dvc.yaml`
+(`uv run dvc commit -f build_catalog@<region>`, recorded in `dvc.lock`; `dvc add` refuses paths
+that are stage outputs). Sizes: Nepal 0.2 MB parquet + 2.7 MB log; Türkiye 1.5 MB + 15.9 MB;
+California 5.6 MB + 80 MB (one `ingested` entry per source record). `data/interim/` and
+`data/raw/` are git-ignored as whole directories, so `dvc add` could not place `.dvc` pointers
+for `gem_active_faults.parquet` (13 696 faults, 2.4 MB) or `data/raw/eshm20/` (55 files, 40.2 MB,
+`manifest.json` verified); both were fetched on 2026-09-03 and are reproducible from the
+functions in § 4.
 
 ## 6. Known limitations
 
@@ -154,7 +204,9 @@ RESULTS_PLACEHOLDER
   cost in parsing and volume.
 - **ISC-GEM is absent** from every build so far (form-gated download; ADR-0005). The top of the
   location precedence is therefore ISC in practice.
-- **ISC lags about two years**: 2025–2026 events come from ComCat (+ GCMT) only.
+- **ISC reviewed bulletin lags about two years**; the FDSN service still returns later events,
+  but as other agencies' prime hypocentres (IDC, GFZ, NEIC), which the adapter cannot tell apart
+  from reviewed ISC solutions in the text format.
 - **No ML/Md conversion**: California events reported only as `ml`/`mlr` (most below about M 3.5
   in the RELM region) have `mw = None` and do not enter Mc or fits; the effective floor of the
   homogenised California catalogue is therefore set by the availability of `mw`/`mwr` and `mb`,
