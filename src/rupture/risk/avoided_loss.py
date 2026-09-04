@@ -27,6 +27,7 @@ Four measures are implemented, and each says whether its effect is published or 
 
 from __future__ import annotations
 
+import json
 from collections.abc import Mapping
 from dataclasses import dataclass, replace
 from datetime import datetime
@@ -97,6 +98,7 @@ FORECAST_GRID_MISSING = (
     "<h> --issue <utc>) and point --forecast at its id"
 )
 FORECASTS_REL = "data/forecasts"
+REGIONS_REL = "data/regions"
 DEFAULT_ANNUAL_HORIZON = "1y"
 SHUTDOWN_TRIGGER_PARAMETERS = ("trigger_g", "s_wave_km_s", "latency_s", "stopping_time_s")
 OCCURRENCE_LAYER_NOTE = (
@@ -595,6 +597,22 @@ def load_forecast_grid(
     raise AvoidedLossError(FORECAST_GRID_MISSING.format(trigger=trigger_id, store=store_root))
 
 
+def load_region(region_id: str, *, repo_root: Path) -> Region | None:
+    """The grid's own region, so magnitudes are sampled with its **fitted** b-value.
+
+    A missing region file is not an error: sampling falls back to the stated assumed b-value and
+    the event set's assumptions say which was used. Guessing a b-value silently would not be
+    acceptable; falling back to a labelled one is.
+    """
+    path = repo_root / REGIONS_REL / region_id / "region.json"
+    if not path.is_file():
+        return None
+    try:
+        return Region.model_validate(json.loads(path.read_text(encoding="utf-8")))
+    except (ValueError, OSError):
+        return None
+
+
 def _catalogue_duration_years(horizon: str | None) -> tuple[float, str]:
     """The window an event-based figure is reported over, and how to name it."""
     text = horizon or DEFAULT_ANNUAL_HORIZON
@@ -747,6 +765,8 @@ def _forecast_response(
             None,
         )
 
+    if region is None:
+        region = load_region(grid.region_id, repo_root=repo_root)
     duration_years, horizon_text = _catalogue_duration_years(request.horizon)
     cfg = config or loss_module.RunConfig(interval_level=request.interval_level)
     sampling_cfg = sampling or es.SamplingConfig(
