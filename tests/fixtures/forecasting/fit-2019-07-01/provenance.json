@@ -1,7 +1,7 @@
 {
   "auxiliary_years": 0.5,
   "command": "uv run python -m tests.fixtures.forecasting.make_fit_fixture",
-  "created_at": "2026-09-03T10:15:48.830184+00:00",
+  "created_at": "2026-09-04T03:57:02.671820+00:00",
   "derived_from": "comcat-california-2018-2019-m3.geojson",
   "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
   "fit_cutoff": "2019-07-01T00:00:00+00:00",

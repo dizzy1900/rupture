@@ -37,9 +37,33 @@ never re-parametrised.
   `runtime_s`, `at_bound` (parameters sitting on an inversion bound), the package `ranges`,
   `theta_0`, the etas commit.
 
-`log_likelihood` is `null`: the package does not expose the full point-process log-likelihood at
-convergence (its optimiser minimises the expected complete-data negative log-likelihood of the
-EM step, which is not the same quantity). The diagnostics say so.
+`log_likelihood` is the space-time ETAS log-likelihood of the primary window at the fitted
+parameters (ADR-0036). The `etas` package exposes only the EM's expected complete-data objective —
+a Q function defined relative to the current responsibilities, so not comparable across cut-offs or
+regions — but every piece of the observed-data likelihood is produced by its own expectation step,
+and `point_process_log_likelihood` assembles them:
+
+```
+lambda(t, x, y) = mu + sum_{j: t_j < t} (xi_j + 1) g(t - t_j, r_ij, m_j)
+
+LL = sum_i (zeta_i + 1) log lambda(t_i, x_i, y_i)  -  mu * area * T  -  sum_j (xi_j + 1) G_j
+```
+
+`diagnostics.log_likelihood_terms` carries the three terms separately (`observed_term`,
+`background_integral`, `triggering_integral`) with `n_targets` and `n_sources`, so a reader can see
+which part of a fit moved. What the number is conditional on — the auxiliary catalogue, fixed
+`beta` (no magnitude term), and no spatial boundary correction, matching the package's own EM
+objective — is in ADR-0036; two values are comparable when the region, `mc`, `delta_m` and window
+agree, and not otherwise. At an EM optimum `background_integral + triggering_integral` equals the
+completeness-weighted target count, which is the sharpest check on the assembly and is asserted in
+`tests/unit/forecasting/test_etas_log_likelihood.py`.
+
+If the value cannot be computed (a variant the formula does not cover, or a non-finite term) it is
+persisted as `null` with the reason in `diagnostics.log_likelihood_note` — never a substitute
+quantity under the same name.
+
+`MizrahiETAS.log_likelihood(catalog)` scores a stored fit again without refitting, refusing unless
+the reconstructed training slice hashes to the fit's `training_catalog_hash`.
 
 `converged` is `true` when the EM loop met the package's tolerance (summed absolute parameter
 change < 0.001) with finite parameters. The package's own `invert()` has no iteration cap and
@@ -136,9 +160,25 @@ refits never destroy the fit its own DVC stage declares.
 | `beta` | 2.3549 | 2.0895 | 2.1374 |
 | implied b = beta/ln 10 | 1.02 | 0.91 | 0.93 |
 | Snapshot hash | `bcd6f66f8bb3` | `f0b0865d9603` | `72e2f58edb60` |
+| log-likelihood | -9,797.12 | -5,388.76 | -429,058.55 |
+| — observed term | -9,036.12 | -4,999.76 | -374,857.49 |
+| — background integral | 259.45 | 142.64 | 4,212.46 |
+| — triggering integral | 501.55 | 246.36 | 49,988.60 |
+| — primary-window targets | 761 | 389 | 54,201 |
 
-`log_likelihood` is `null` for every fit: the package does not expose the converged value. `omega`
-is the Omori exponent offset (`p = 1 + omega`); `beta = b ln 10`.
+`omega` is the Omori exponent offset (`p = 1 + omega`); `beta = b ln 10`.
+
+The log-likelihood row was **not** produced by a refit. These three fits were made on 2026-09-03,
+before ADR-0036, and their `fit_result.json` files on disk still carry `log_likelihood: null`. The
+values above were computed on 2026-09-04 with `MizrahiETAS.log_likelihood(catalog)`, which rebuilds
+each fit's own window from its diagnostics, runs one expectation step at the stored parameters and
+**refuses unless the reconstructed training slice hashes to the fit's `training_catalog_hash`** — so
+each number is certified to belong to the parameter set in the column above it, on the catalogue
+that produced it (`ee624a98462e`, `21ee1d78885f`, `c30a1e17e7e4`). No parameter moved. The
+persisted files gain the field the next time `fit_etas` runs; until then this table is the record,
+and `baselines/etas/<region>/fit_result.json` is one field behind it. Each column satisfies
+`background_integral + triggering_integral = targets` to within 1e-5 relative, the EM-optimum
+identity.
 
 Two diagnostics deserve a reader's attention rather than a footnote.
 
@@ -170,6 +210,12 @@ converged fit used `--max-seconds 21600`.
   forecast with pre-sequence parameters. The fixture shows this: fitted to mid-2019, the model
   puts ~1.2 events at M ≥ 3.95 on the 30 days that contain Ridgecrest (123 observed); the N-test
   fails, as it should.
-- **No log-likelihood** (see above).
+- **The log-likelihood has no spatial boundary correction and no magnitude term** (ADR-0036), so
+  it ranks fits of the same region, `mc` and window against each other and nothing else. It is not
+  a model-selection score against a challenger: paired comparison is the evaluator's T- and W-tests
+  on gridded rates (ADR-0010).
+- **The three published fits were scored after the fact.** Their persisted `fit_result.json` still
+  has `log_likelihood: null`; the values in the table above are hash-certified recomputations, not
+  a refit. See § Published fits.
 - **Test fixture magnitudes are reported, not homogenised Mw.** `tests/fixtures/forecasting/`
   labels them `reported-as-mw:<type>`; production goes through `rupture catalog build`.
