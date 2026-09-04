@@ -44,7 +44,13 @@ REPO_ROOT_ENV = "RUPTURE_REPO_ROOT"
 DEFAULT_REPO_ROOT = Path(__file__).resolve().parents[3]
 SURFACE = "risk"
 MAX_REALISATIONS = 5000
-"""A request cannot ask for an unbounded calculation; the cap is refused, not silently reduced."""
+"""The ceiling this surface would enforce if a request could name a realisation count.
+
+It cannot: ``AvoidedLossRequestV1`` (contract v1) carries no realisation count, so the number of
+ground-motion realisations is server-side configuration
+(``rupture.risk.avoided_loss``) and no client can ask for an unbounded calculation over HTTP.
+The constant is the number to apply, and the endpoint to apply it in, if a later contract version
+exposes one."""
 
 GUARD = ApiKeyGuard(surface=SURFACE, env_vars=API_KEY_ENV_VARS)
 """The shared guard for this surface. Keys are read from the environment on every request."""
