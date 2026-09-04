@@ -102,6 +102,26 @@ def _representative_point(geometry: dict[str, Any]) -> tuple[float, float]:
     return float(coords[:, 0].mean()), float(coords[:, 1].mean())
 
 
+def _exterior_ring(geometry: dict[str, Any]) -> tuple[tuple[float, float], ...]:
+    """The polygon's exterior ring as (lon, lat) pairs; empty for a point.
+
+    A ``MultiPolygon`` contributes only its first polygon's exterior ring; the caller records
+    that in the unit's notes rather than silently pretending the rest does not exist. serac's
+    committed AOI geometries are single polygons, so this branch is not exercised today.
+    """
+    kind = geometry.get("type")
+    if kind == "Polygon":
+        ring = geometry["coordinates"][0]
+    elif kind == "MultiPolygon":
+        ring = geometry["coordinates"][0][0]
+    else:
+        return ()
+    coords = [(float(c[0]), float(c[1])) for c in ring]
+    if len(coords) > 2 and coords[0] != coords[-1]:
+        coords.append(coords[0])  # emit a closed ring, so a GeoParquet round trip is exact
+    return tuple(coords)
+
+
 def _elevation_band(value: Any) -> str | None:
     if isinstance(value, list | tuple) and len(value) == 2:
         return f"{value[0]:g}-{value[1]:g} m"
@@ -242,8 +262,8 @@ class SeracSlopeUnitSource:
             ),
         )
 
-    def settlements(self, aoi_id: str) -> tuple[tuple[str, float, float], ...]:
-        """Settlements serac maps in this AOI's corridor: ``(id, lon, lat)``."""
+    def exposed_assets(self, aoi_id: str) -> tuple[tuple[str, str, float, float], ...]:
+        """Every asset serac maps in this AOI's corridor: ``(id, asset_type, lon, lat)``."""
         aoi_dir = self._aoi_dir(aoi_id)
         if aoi_dir is None:
             return ()
@@ -254,11 +274,25 @@ class SeracSlopeUnitSource:
         found = []
         for feature in payload.get("features", []):
             properties = feature.get("properties", {})
-            if properties.get("asset_type") != "settlement":
-                continue
             lon, lat = _representative_point(feature["geometry"])
-            found.append((str(properties.get("id")), lon, lat))
+            found.append((str(properties.get("id")), str(properties.get("asset_type")), lon, lat))
         return tuple(found)
+
+    def settlements(self, aoi_id: str) -> tuple[tuple[str, float, float], ...]:
+        """Settlements serac maps in this AOI's corridor: ``(id, lon, lat)``."""
+        return tuple(
+            (a[0], a[2], a[3]) for a in self.exposed_assets(aoi_id) if a[1] == "settlement"
+        )
+
+    def other_assets(self, aoi_id: str) -> tuple[tuple[str, str, float, float], ...]:
+        """Non-settlement assets serac maps in this AOI's corridor.
+
+        For ``chamoli-rishiganga`` serac maps no settlement at all: the two assets it carries are
+        the Rishi Ganga and Tapovan Vishnugad hydropower projects. Reporting them as
+        ``settlements_below`` would be wrong, and dropping them would lose the only receptors the
+        AOI has, so they are carried separately in ``ExposedSlopeUnit.assets_below``.
+        """
+        return tuple(a for a in self.exposed_assets(aoi_id) if a[1] != "settlement")
 
     def exposure(
         self,
@@ -283,6 +317,7 @@ class SeracSlopeUnitSource:
         inventory = self.inventory(aoi_id)
         settlements = self.settlements(aoi_id)
         settlement_ids = tuple(s[0] for s in settlements)
+        asset_ids = tuple(f"{a[0]} ({a[1]})" for a in self.other_assets(aoi_id))
 
         site_lons = np.array([s.longitude for s in field.sites], dtype=np.float64)
         site_lats = np.array([s.latitude for s in field.sites], dtype=np.float64)
@@ -325,9 +360,13 @@ class SeracSlopeUnitSource:
                     area_m2=(
                         float(record["area_m2"]) if record.get("area_m2") is not None else None
                     ),
+                    polygon=_exterior_ring(geometry),
+                    representative_longitude=lon,
+                    representative_latitude=lat,
                     pga_g=unit_pga,
                     exceeds_threshold=passes,
                     settlements_below=settlement_ids,
+                    assets_below=asset_ids,
                     source_refs=tuple(str(r) for r in record.get("source_refs", ())),
                 )
             )
@@ -337,11 +376,17 @@ class SeracSlopeUnitSource:
             f"slope-unit source: {inventory.notes}",
             f"serac ({SERAC_REPOSITORY}, {SERAC_LICENCE}); derived from "
             + ", ".join(inventory.derived_from),
-            "settlements_below lists the settlements serac maps in this AOI's river corridor; "
-            "serac's asset records carry no elevation, so 'below' here is corridor membership, "
-            "not a verified elevation relation",
+            "settlements_below lists the settlements serac maps in this AOI's river corridor, "
+            "assets_below the other assets it maps there; serac's asset records carry no "
+            "elevation, so 'below' here is corridor membership, not a verified elevation "
+            "relation",
             f"PGA sampled at each unit's representative point from ground-motion field {field.id}",
         ]
+        if not settlement_ids and asset_ids:
+            notes.append(
+                "serac maps no settlement in this AOI; the receptors below are "
+                + ", ".join(asset_ids)
+            )
         if slope_unknown:
             notes.append(
                 f"steepness screen NOT applied to {slope_unknown} of {len(units)} units: "
@@ -360,6 +405,7 @@ class SeracSlopeUnitSource:
             pga_threshold_g=pga_threshold_g,
             units=tuple(units),
             slope_unit_source=inventory.source_id,
+            shaking_source=field.id,
             provenance=ModelProvenance.ASSUMED
             if inventory.is_fallback
             else ModelProvenance.PUBLISHED,

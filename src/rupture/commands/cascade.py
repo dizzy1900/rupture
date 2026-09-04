@@ -6,14 +6,19 @@ particular slope fails.
 
 Sub-commands::
 
+    rupture cascade cases
     rupture cascade run --scenario <id> --model landslide|liquefaction
-    rupture cascade exposure --aoi <id> --scenario <id> --pga-threshold <g>
+    rupture cascade run --grid-xml <shakemap grid.xml> [--stride N] [--magnitude M]
+    rupture cascade run --pgv-field <gmf.json> [--pga-field <gmf.json>] [--magnitude M]
+    rupture cascade exposure --aoi <id> --scenario <id> [--out-parquet <file.parquet>]
+    rupture cascade fetch-shakemap --event <comcat id> --out-dir <dir>      # network
     rupture cascade reproduce [--model ...]     # the Gorkha comparison, offline
     rupture cascade discriminate --catalog <dir|geojson> [--export-dir <serac>]
 
-Registration note: ``src/rupture/cli.py`` does not yet mount this sub-application (that file is
-the architect's). Until it does, run these as ``python -m rupture.commands.cascade ...``; the
-``app`` object below is the one ``cli.py`` needs to add with a single ``add_typer`` line.
+Both input routes the layer is specified with are reachable here: a published ShakeMap grid for a
+real event (committed slice, a fetched ``grid.xml``, or one fetched by hand) and a scenario field
+computed by a GSIM. :mod:`rupture.adapters.cascade.cases` holds the routes; nothing in this module
+manufactures shaking.
 """
 
 from __future__ import annotations
@@ -25,12 +30,14 @@ from typing import Annotated
 import numpy as np
 import typer
 
-from rupture.adapters.cascade import gorkha
+from rupture.adapters.cascade import cases, chamoli, comcat_shakemap, gorkha
+from rupture.adapters.cascade.geoparquet import write_cascade_exposure
 from rupture.adapters.cascade.serac import (
     DEFAULT_PGA_THRESHOLD_G,
     DEFAULT_STEEP_SLOPE_DEG,
     SeracExportMissingError,
     SeracSlopeUnitSource,
+    _representative_point,
 )
 from rupture.cascade import discriminator
 from rupture.cascade.models import build as build_model
@@ -39,7 +46,6 @@ from rupture.domain.cascade import CascadeExposure, GroundFailureField
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
 EXIT_FAILED = 1
-EXIT_NOT_IMPLEMENTED = 2
 
 app = typer.Typer(
     help=(
@@ -51,6 +57,16 @@ app = typer.Typer(
 
 RootOpt = Annotated[Path, typer.Option("--root", help="Repository root.")]
 OutOpt = Annotated[Path | None, typer.Option("--out", help="Write the record here as JSON.")]
+PgvFieldOpt = Annotated[
+    Path | None,
+    typer.Option("--pgv-field", help="GroundMotionField JSON carrying PGV (any engine)."),
+]
+PgaFieldOpt = Annotated[
+    Path | None, typer.Option("--pga-field", help="GroundMotionField JSON carrying PGA.")
+]
+GridXmlOpt = Annotated[
+    Path | None, typer.Option("--grid-xml", help="A published ShakeMap grid.xml on disk.")
+]
 
 
 def _emit(payload: dict[str, object], out: Path | None) -> None:
@@ -63,56 +79,77 @@ def _emit(payload: dict[str, object], out: Path | None) -> None:
     typer.echo(f"wrote {out}")
 
 
+@app.command("cases")
+def list_cases() -> None:
+    """List the scenarios that run offline from committed inputs, and their input route."""
+    for case in cases.CASES:
+        typer.echo(f"{case.scenario_id}  [{case.route}]")
+        typer.echo(f"    {case.description}")
+    typer.echo(
+        "Any other event or scenario: supply the shaking with --grid-xml (see "
+        "`rupture cascade fetch-shakemap`) or --pgv-field/--pga-field."
+    )
+
+
 @app.command("run")
-def run(
-    scenario: Annotated[str, typer.Option("--scenario", help="Scenario id.")],
+def run(  # noqa: PLR0917 — typer builds the option list from the signature
+    scenario: Annotated[
+        str | None, typer.Option("--scenario", help="Scenario id; see `rupture cascade cases`.")
+    ] = None,
     model: Annotated[
         str, typer.Option("--model", help="landslide | liquefaction | a model id.")
     ] = "landslide",
+    pgv_field: PgvFieldOpt = None,
+    pga_field: PgaFieldOpt = None,
+    grid_xml: GridXmlOpt = None,
+    stride: Annotated[int, typer.Option("--stride", help="Use every Nth cell of a grid.xml.")] = 1,
+    magnitude: Annotated[
+        float | None,
+        typer.Option("--magnitude", help="Event magnitude (the liquefaction model needs one)."),
+    ] = None,
     root: RootOpt = REPO_ROOT,
     out: OutOpt = None,
 ) -> None:
-    """Evaluate a ground-failure model over a scenario's shaking.
+    """Evaluate a ground-failure model over a scenario's or an event's shaking.
 
-    Only the committed Gorkha case (``--scenario us20002926``) is wired offline today; any other
-    scenario needs a ground-motion field this command cannot yet locate, and exits 2 saying so
-    rather than inventing one.
+    The shaking comes from one of four routes (``rupture cascade cases`` lists the committed
+    ones). A request rupture cannot satisfy exits 1 saying exactly what would satisfy it, rather
+    than inventing a field.
     """
     try:
-        instance = build_model(model)
+        # built once to resolve the alias, then again on the grid the route actually returns
+        model_id = build_model(model).model_id
     except KeyError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(EXIT_FAILED) from exc
-    if scenario != gorkha.EVENT_ID:
-        typer.echo(
-            f"rupture cascade run --scenario {scenario}: not implemented — rupture has no "
-            f"ground-motion field for that scenario. The only scenario wired offline is "
-            f"'{gorkha.EVENT_ID}' (2015 Gorkha, from the committed ShakeMap slice). Scenario "
-            f"fields from the loss layer arrive with F2.",
-            err=True,
+    try:
+        shaking = cases.resolve(
+            root,
+            scenario=scenario,
+            model_id=model_id,
+            pgv_field=pgv_field,
+            pga_field=pga_field,
+            grid_xml=grid_xml,
+            stride=stride,
+            magnitude=magnitude,
         )
-        raise typer.Exit(EXIT_NOT_IMPLEMENTED)
-    case = gorkha.CASE_FOR_MODEL[instance.model_id]
-    shakemap = gorkha.load_shakemap(root)
-    published = gorkha.load_published(root, case)
-    pgv_field = shakemap.ground_motion_field(
-        imt="PGV",
-        lons=published.longitudes,
-        lats=published.latitudes,
-        scenario_id=scenario,
-    )
-    pga_field = shakemap.ground_motion_field(
-        imt="PGA",
-        lons=published.longitudes,
-        lats=published.latitudes,
-        scenario_id=scenario,
-    )
-    field: GroundFailureField = instance.evaluate(
-        pgv_field,
-        scenario_id=scenario,
-        pga_field=pga_field,
-        magnitude=gorkha.MAGNITUDE,
-    )
+    except (cases.ShakingUnavailableError, FileNotFoundError) as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(EXIT_FAILED) from exc
+    resolved_magnitude = magnitude if magnitude is not None else shaking.magnitude
+    instance = build_model(model, cell_size_deg=shaking.cell_size_deg)
+    scenario_id = scenario or shaking.pgv.scenario_id
+    try:
+        field: GroundFailureField = instance.evaluate(
+            shaking.pgv,
+            scenario_id=scenario_id,
+            pga_field=shaking.pga,
+            magnitude=resolved_magnitude,
+        )
+    except ValueError as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(EXIT_FAILED) from exc
+    typer.echo(f"shaking: {shaking.route} — {shaking.description}")
     typer.echo(f"model: {field.model_id} ({field.model_version})")
     typer.echo(f"cells: {len(field.cells)}  mean areal coverage: {field.mean_probability():.6f}")
     typer.echo(f"label: {field.notes}")
@@ -137,35 +174,38 @@ def exposure(
     export_dir: Annotated[
         Path | None, typer.Option("--export-dir", help="serac export dir (else SERAC_EXPORT_DIR).")
     ] = None,
+    pga_field: PgaFieldOpt = None,
+    grid_xml: GridXmlOpt = None,
     root: RootOpt = REPO_ROOT,
     out: OutOpt = None,
+    out_parquet: Annotated[
+        Path | None,
+        typer.Option("--out-parquet", help="Write the CascadeExposure as GeoParquet here."),
+    ] = None,
 ) -> None:
     """Flag slope units shaken above a screening threshold.
 
     A threshold is a screening device, not a failure criterion.
     """
     source = SeracSlopeUnitSource(export_dir=export_dir, repo_root=root)
-    shakemap = gorkha.load_shakemap(root)
     try:
         inventory = source.inventory(aoi)
     except SeracExportMissingError as exc:
         typer.echo(str(exc), err=True)
         raise typer.Exit(EXIT_FAILED) from exc
-    lons: list[float] = []
-    lats: list[float] = []
-    from rupture.adapters.cascade.serac import _representative_point  # noqa: PLC0415
-
-    for unit in inventory.units:
-        lon, lat = _representative_point(unit["geometry"])
-        lons.append(lon)
-        lats.append(lat)
+    points = [_representative_point(unit["geometry"]) for unit in inventory.units]
     try:
-        field = shakemap.ground_motion_field(
-            imt="PGA",
-            lons=np.array(lons, dtype=np.float64),
-            lats=np.array(lats, dtype=np.float64),
-            scenario_id=scenario,
+        field, route = cases.exposure_pga(
+            root,
+            scenario=scenario,
+            lons=np.array([p[0] for p in points], dtype=np.float64),
+            lats=np.array([p[1] for p in points], dtype=np.float64),
+            pga_field=pga_field,
+            grid_xml=grid_xml,
         )
+    except (cases.ShakingUnavailableError, FileNotFoundError) as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(EXIT_FAILED) from exc
     except ValueError as exc:
         typer.echo(
             f"cannot overlay scenario {scenario} on AOI {aoi}: {exc}. rupture does not "
@@ -181,11 +221,42 @@ def exposure(
         scenario_id=scenario,
     )
     typer.echo(f"aoi: {record.aoi_id}  units: {len(record.units)}  flagged: {record.n_exceeding}")
+    typer.echo(f"shaking: {route} — ground-motion field {record.shaking_source}")
     typer.echo(f"slope-unit source: {record.slope_unit_source}")
     typer.echo(f"label: {record.label}")
     typer.echo(f"notes: {record.notes}")
     if out is not None:
         _emit(record.model_dump(mode="json"), out)
+    if out_parquet is not None:
+        written = write_cascade_exposure(record, out_parquet)
+        typer.echo(f"wrote {written} (GeoParquet, EPSG:4326, one row per slope unit)")
+
+
+@app.command("fetch-shakemap")
+def fetch_shakemap(
+    *,
+    event: Annotated[str, typer.Option("--event", help="ComCat event id, e.g. us20002926.")],
+    out_dir: Annotated[
+        Path, typer.Option("--out-dir", help="Directory to write grid.xml + provenance.json.")
+    ],
+    url: Annotated[
+        str | None,
+        typer.Option("--url", help="Skip the product lookup and download this grid.xml URL."),
+    ] = None,
+) -> None:
+    """Download the published ShakeMap ``grid.xml`` for a real ComCat event. **Network.**
+
+    Writes ``grid.xml`` and a ``provenance.json`` recording the URL, retrieval time, sha256 and
+    licence. Feed the result to ``rupture cascade run --grid-xml``.
+    """
+    try:
+        written = comcat_shakemap.fetch_shakemap(event, out_dir, grid_url=url)
+    except (comcat_shakemap.ShakeMapFetchError, OSError) as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(EXIT_FAILED) from exc
+    for name, path in written.items():
+        typer.echo(f"wrote {name}: {path}")
+    typer.echo(f"next: rupture cascade run --grid-xml {written['grid']} --model landslide")
 
 
 @app.command("reproduce")
@@ -197,11 +268,11 @@ def reproduce(
     out: OutOpt = None,
 ) -> None:
     """Compare rupture against the published USGS ground-failure product for Gorkha, offline."""
-    cases = gorkha.CASES
+    all_cases = gorkha.CASES
     if model is not None:
         resolved = build_model(model).model_id
-        cases = tuple(c for c in cases if c.model_id == resolved)
-    reports = {case.model_id: gorkha.run_case(root, case) for case in cases}
+        all_cases = tuple(c for c in all_cases if c.model_id == resolved)
+    reports = {case.model_id: gorkha.run_case(root, case) for case in all_cases}
     for model_id, report in reports.items():
         typer.echo(f"--- {model_id} ({report.n_compared_cells} cells compared)")
         for item in report.agreements:
@@ -220,6 +291,26 @@ def reproduce(
         typer.echo(f"    covariates not sourced: {', '.join(report.covariates_not_sourced)}")
     if out is not None:
         _emit({k: v.as_dict() for k, v in reports.items()}, out)
+
+
+@app.command("scenario")
+def scenario_summary(
+    root: RootOpt = REPO_ROOT,
+    out: OutOpt = None,
+) -> None:
+    """Print the Chamoli/Ronti scenario rupture and its assumptions, without running a model."""
+    rupture_model = chamoli.scenario_rupture(root)
+    window = chamoli.aoi_window(root)
+    typer.echo(f"scenario: {rupture_model.id}  Mw {rupture_model.magnitude:.2f}  HYPOTHETICAL")
+    typer.echo(
+        f"window: {window.min_longitude:.4f}-{window.max_longitude:.4f} E, "
+        f"{window.min_latitude:.4f}-{window.max_latitude:.4f} N at "
+        f"{window.cell_size_deg:.6f} deg, derived from {', '.join(window.derived_from)}"
+    )
+    for assumption in chamoli.ASSUMPTIONS:
+        typer.echo(f"  assumed: {assumption}")
+    if out is not None:
+        _emit(rupture_model.model_dump(mode="json"), out)
 
 
 @app.command("discriminate")

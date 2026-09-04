@@ -16,6 +16,7 @@ from pydantic import Field, model_validator
 
 from rupture.domain.common import Provenance, RuptureModel, UTCDatetime
 from rupture.domain.money import ConfidenceTier, ModelProvenance
+from rupture.domain.region import LonLat
 
 
 class CascadeKind(StrEnum):
@@ -62,7 +63,14 @@ class GroundFailureField(RuptureModel):
 
 
 class ExposedSlopeUnit(RuptureModel):
-    """A slope unit flagged as shaken above a threshold. Fields mirror serac's `slope-unit.v0`."""
+    """A slope unit flagged as shaken above a threshold. Fields mirror serac's `slope-unit.v0`.
+
+    The unit carries its own footprint (`polygon`, an exterior ring in EPSG:4326) so a
+    :class:`CascadeExposure` can be written as GeoParquet and overlaid in a GIS. `polygon` is
+    empty when the slope-unit source carries no geometry, which is a statement about the source,
+    not a licence to invent one. `representative_longitude` / `representative_latitude` are the
+    point at which `pga_g` was actually sampled.
+    """
 
     id: str
     aoi_id: str | None = None
@@ -71,9 +79,23 @@ class ExposedSlopeUnit(RuptureModel):
     permafrost_index: float | None = Field(default=None, ge=0.0, le=1.0)
     elevation_band_m: str | None = None
     area_m2: float | None = Field(default=None, ge=0.0)
+    polygon: tuple[LonLat, ...] = Field(
+        default=(),
+        description="Exterior ring of the unit's footprint, (lon, lat) degrees, EPSG:4326.",
+    )
+    representative_longitude: float | None = Field(default=None, ge=-180.0, le=180.0)
+    representative_latitude: float | None = Field(default=None, ge=-90.0, le=90.0)
     pga_g: float = Field(ge=0.0, description="Ground motion received at the unit.")
     exceeds_threshold: bool
     settlements_below: tuple[str, ...] = ()
+    assets_below: tuple[str, ...] = Field(
+        default=(),
+        description=(
+            "Ids of the non-settlement assets the slope-unit source maps in the same corridor "
+            "(hydropower, roads, bridges). Corridor membership, not a verified elevation "
+            "relation."
+        ),
+    )
     source_refs: tuple[str, ...] = ()
 
 
@@ -92,6 +114,14 @@ class CascadeExposure(RuptureModel):
     pga_threshold_g: float = Field(gt=0.0)
     units: tuple[ExposedSlopeUnit, ...]
     slope_unit_source: str = Field(description="Where the inventory came from, e.g. serac export.")
+    shaking_source: str | None = Field(
+        default=None,
+        description=(
+            "Id of the GroundMotionField the PGA was sampled from: a published ShakeMap grid or "
+            "a GSIM-computed scenario field. Null only for a record built before this field "
+            "existed."
+        ),
+    )
     provenance: ModelProvenance = ModelProvenance.ASSUMED
     confidence: ConfidenceTier = ConfidenceTier.UNQUALIFIED
     computed_at: UTCDatetime
