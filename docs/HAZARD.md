@@ -13,8 +13,8 @@ Decisions: ADR-0008 (source models per region), ADR-0011 (pinned image), ADR-003
 | `adapters/hazard/result_parser.py` — `hazard_curve-*.csv` → `HazardCurveSet` | working; unit-tested on real QA expected outputs from `gem/oq-engine` (`engine-3.26`), contract-validated |
 | `adapters/hazard/openquake_docker.py` — `OpenQuakeDocker` (`HazardEngine`) | working offline with an injected fake `docker`; the real container path is verified in CI, not on this machine (see "Why the gate skips on Apple Silicon") |
 | `run_bundled_demo`, `validate-hazard`, `rupture hazard demo` | **verified in CI**: the demo ran through the adapter in `openquake/engine:3.26.2` on `ubuntu-latest` (run 33744626791, 2026-09-03; gate 86 s, integration test 85 s) with `RUPTURE_HAZARD_REQUIRE=1` so a skip would have failed the job |
-| `run_scenario` | implemented from the manual; no test or CI run exercises it |
-| `run_classical` on a rupture-rendered `job.ini` | **exercised against the real engine in CI**: `tests/integration/hazard/test_openquake_classical.py` runs the engine's own QA case `classical/case_01` through `ClassicalPSHAJob` → `job_builder` → container → `result_parser` and checks the PoEs against GEM's committed baseline. Before it, no ini rupture rendered had ever been read by OpenQuake — only the bundled demo's own ini had. |
+| `run_scenario` | **run against the real engine**: `tests/integration/hazard/test_openquake_scenario.py` puts the engine's own QA case `scenario/case_1` through `ScenarioGroundMotionJob` → `job_builder` → container and reads the `gmf_data` export. Values are not compared to the fixture's: the QA file was generated with `ses_seed`, which `ScenarioGroundMotionJob` has no field for, so the shape of the output and the median PGA per site are checked instead. Giving the port a `ses_seed` would make the run reproducible and is a `ports/` decision. |
+| `run_classical` on a rupture-rendered `job.ini` | **run against the real engine**: `tests/integration/hazard/test_openquake_classical.py` puts the engine's own QA case `classical/case_01` through `ClassicalPSHAJob` → `job_builder` → container → `result_parser`. Verified here on 2026-09-04 under emulation (`OQ_DISTRIBUTE=no`, ~1 min): both exported curves are **bit-for-bit identical** to GEM's committed baseline. Before it, no ini rupture rendered had ever been read by OpenQuake — only the bundled demo's own ini had. |
 | `pipelines.hazard.eshm20_classical_job` — ESHM20 → runnable `ClassicalPSHAJob` | working; both logic-tree paths and the provenance come from `data/raw/eshm20/manifest.json`, the region cut from the `turkiye-eaf` polygon. Verified offline to resolve all 51 source-model files the ESHM20 logic tree names. The PSHA itself has **not** been run. |
 | California, Nepal PSHA | gaps (ADR-0008): no openly licensed NRML model verified |
 
@@ -76,7 +76,10 @@ published run; whichever is used is visible in the staged `job.ini` and inside `
 Scenario (`calculation_mode = scenario`): `[geometry] sites_csv`; `[rupture] rupture_model_file,
 rupture_mesh_spacing = 2.0`; `[site_params]` as above; `[calculation] intensity_measure_types,
 gsim, number_of_ground_motion_fields, truncation_level, maximum_distance`; export key
-`gmf_data`.
+`gmf_data`, which writes `out/gmf-data_<calc>.csv` (`event_id, gmv_<IMT>, custom_site_id`)
+alongside `sigma_epsilon_<calc>.csv` and `sitemesh_<calc>.csv` — observed on 2026-09-04, not
+inferred from the manual. `run_scenario` returns that `out/` directory; rupture has no parser for
+these files, so a caller reads them itself.
 
 The engine flattens all sections into one dictionary, so section names are the manual's
 conventions and nothing more. Input files are referenced by bare name and copied next to
@@ -126,11 +129,26 @@ reason printed**, exactly as it does when Docker is absent — never a silent pa
 made only when both architectures are known and the image is already local; an unknown
 architecture never blocks a run.
 
-To attempt the emulated run anyway (expect hours, not minutes):
+What exactly is slow under emulation is now known: the engine reaches `Reading the source
+model(s) in parallel` and does not come back. Its process pool, not the hazard arithmetic, is what
+QEMU cannot carry. Running the calculation serially gets through it — the QA classical case above
+finishes in about a minute this way, and produced GEM's own answer to the last digit on this
+machine. `OpenQuakeDocker(env={"OQ_DISTRIBUTE": "no"})` sets it, and the classical integration test
+does so automatically when emulation is opted into, so the emulated path is reproducible rather
+than merely skipped:
+
+```bash
+RUPTURE_OPENQUAKE_ALLOW_EMULATION=1 \
+  uv run pytest tests/integration/hazard/test_openquake_classical.py -m integration -ra
+```
+
+The bundled demo is a different matter — 2112 sites and eight IMTs — so
 
 ```bash
 RUPTURE_OPENQUAKE_ALLOW_EMULATION=1 make validate-hazard
 ```
+
+still expects hours, not minutes, and the gate still skips by default.
 
 In CI the runner is amd64, the architectures match, and `RUPTURE_HAZARD_REQUIRE=1` turns any skip
 into a failure — so the demo genuinely runs there and cannot be quietly skipped.
@@ -219,6 +237,12 @@ shipped in `gem/oq-engine`. It therefore checks the whole rupture-authored half 
 names, the geometry, the JSON `intensity_measure_types_and_levels`, staging the source models the
 logic tree names, the export key, and the CSV parse back.
 
+**Result (2026-09-04, this machine, emulated and serial):** every PoE in both exported files
+matches `expected/hazard_curve-PGA.csv` and `expected/hazard_curve-SA(0.1).csv` exactly, including
+the `-0.1` site depths, on engine 3.26.2 against a baseline generated by 3.20. So the rendered
+keys, the geometry, the IMTL JSON, the staging and the parse back are all correct, and the CI run
+is a regression guard rather than a first attempt.
+
 One difference from the fixture's own `job.ini` is deliberate: the fixture lists four inline
 `sites`, while `ClassicalPSHAJob` takes a `sites_csv`. The CSV is written **headerless**
 (`lon,lat,depth` per line) because the engine keeps the depth column on that path and drops it when
@@ -232,6 +256,12 @@ difference in what rupture rendered.
 `tests/fixtures/hazard/` holds verbatim copies from `gem/oq-engine` (`engine-3.26`), each
 directory with a `provenance.json` (URL, `retrieved_at`, sha256 per file, licence
 AGPL-3.0-or-later): `qa_classical_case_01` (job + inputs + expected PGA and SA(0.1) curves),
-`qa_classical_case_02` (job + expected PGA curve), `demo_AreaSourceClassicalPSHA` (the demo's
+`qa_classical_case_02` (job + expected PGA curve), `qa_scenario_case_01` (job + rupture model +
+the engine's `gmf_data` export for `ses_seed = 3`), `demo_AreaSourceClassicalPSHA` (the demo's
 inputs; no outputs, because the demo was not run here). Nothing in these directories is edited by
 hand.
+
+`qa_scenario_case_01/expected/BooreAtkinson2008_gmf.csv` is a **reference distribution, not a
+target**: the values depend on `ses_seed`, which rupture's `ScenarioGroundMotionJob` does not carry,
+so the integration test compares the median rather than the samples and the fixture's
+`provenance.json` says so.

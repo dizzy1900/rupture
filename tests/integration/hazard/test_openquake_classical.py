@@ -32,8 +32,8 @@ from pathlib import Path
 
 import pytest
 
-from rupture.adapters.hazard import OpenQuakeDocker
 from rupture.adapters.hazard.job_builder import ErfSettings, SiteDepthSettings, classical_job_ini
+from rupture.adapters.hazard.openquake_docker import ALLOW_EMULATION_ENV, OpenQuakeDocker
 from rupture.adapters.hazard.result_parser import check_curve_set, parse_hazard_curve_csv
 from rupture.domain import HazardCurveSet
 from rupture.pipelines import hazard as pipeline
@@ -54,8 +54,15 @@ POE_FLOOR = 1e-6
 def engine() -> OpenQuakeDocker:
     """The runner with the fixture's own ERF and site settings, so the two jobs differ only in
     geometry (inline ``sites`` there, a ``sites_csv`` here)."""
+    # Under QEMU emulation (an arm64 host running the amd64 image, opted into with
+    # RUPTURE_OPENQUAKE_ALLOW_EMULATION) the engine hangs at "Reading the source model(s) in
+    # parallel". Serial execution gets through it in about a minute, so the emulated path is
+    # reproducible rather than merely skipped. On amd64 (CI) nothing is set and the engine uses
+    # its own process pool; the calculation is identical either way.
+    emulating = os.environ.get(ALLOW_EMULATION_ENV, "").strip().lower() in {"1", "true", "yes"}
     eng = OpenQuakeDocker(
         run_timeout_s=1800.0,
+        env={"OQ_DISTRIBUTE": "no"} if emulating else None,
         erf=ErfSettings(
             rupture_mesh_spacing_km=1.0, width_of_mfd_bin=1.0, area_source_discretization_km=10.0
         ),

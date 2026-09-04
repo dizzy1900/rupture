@@ -26,7 +26,7 @@ import shlex
 import shutil
 import subprocess
 import uuid
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from pathlib import Path
 from typing import Any
 
@@ -80,6 +80,7 @@ class OpenQuakeDocker:
         pull_timeout_s: float = 1800.0,
         erf: job_builder.ErfSettings | None = None,
         site: job_builder.SiteDepthSettings | None = None,
+        env: Mapping[str, str] | None = None,
         runner: Runner = subprocess.run,
         which: Callable[[str], str | None] = shutil.which,
     ) -> None:
@@ -92,6 +93,12 @@ class OpenQuakeDocker:
         discretisation for a first pass than for a published one — and because a calculation
         reproduced from a stored job must be able to state them. Both default to the values of the
         engine's bundled demo, which is what every run before this used implicitly.
+
+        ``env`` is passed to the container as ``-e KEY=VALUE``. The one setting that has been
+        needed so far is ``OQ_DISTRIBUTE=no``: under QEMU emulation the engine reaches "Reading
+        the source model(s) in parallel" and does not come back, while the same calculation run
+        serially finishes in about a minute. Nothing is set by default, so an amd64 run uses the
+        engine's own configuration.
         """
         self.image = image or os.environ.get(IMAGE_ENV) or DEFAULT_IMAGE
         self.docker = docker
@@ -99,6 +106,7 @@ class OpenQuakeDocker:
         self.pull_timeout_s = pull_timeout_s
         self.erf = erf or job_builder.ErfSettings()
         self.site = site or job_builder.SiteDepthSettings()
+        self.env = dict(env or {})
         self._run = runner
         self._which = which
 
@@ -314,6 +322,7 @@ class OpenQuakeDocker:
         self, work_dir: Path, script: str, *, log_name: str, timeout_s: float
     ) -> subprocess.CompletedProcess[str]:
         name = f"rupture-oq-{uuid.uuid4().hex[:12]}"
+        env_args = [arg for k, v in sorted(self.env.items()) for arg in ("-e", f"{k}={v}")]
         argv = [
             self.docker,
             "run",
@@ -322,6 +331,7 @@ class OpenQuakeDocker:
             name,
             "-v",
             f"{work_dir.resolve()}:{CONTAINER_WORK}",
+            *env_args,
             self.image,
             "bash",
             "-c",
