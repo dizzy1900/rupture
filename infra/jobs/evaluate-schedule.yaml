@@ -6,6 +6,7 @@ description: >-
   Rolling pseudo-prospective issue-and-evaluate for one region: every 30 days from <from> to <to>,
   issue the ETAS forecast from data strictly before the issue time and score it with the CSEP
   tests. Aggregates to reports/eval/schedule-<r>.json.
+status: run
 image: ${RUPTURE_IMAGE}
 command:
   - rupture
@@ -39,6 +40,16 @@ resources:
   cpu: 8
   memory_gib: 32
   timeout_minutes: 720
+  core_hours_estimate: 1.0
+  core_hours_basis: measured
+  core_hours_note: >-
+    Measured on an arm64 laptop, single-threaded in practice (93 % of one core). Turkiye, 55 windows
+    with 4 yearly refits: 3317.65 s user + 93.29 s system = 0.95 core-hours over a 1:00:44 wall clock
+    (reports/protocol/schedule-turkiye-eaf.log). Nepal, 55 windows: 2055.53 + 91.33 s = 0.60
+    core-hours (reports/protocol/schedule-nepal-himalaya.log). California is the warning: one window
+    alone cost 437.23 + 38.64 s = 0.13 core-hours against a 55,828-event history
+    (reports/protocol/schedule-california-probe.log), so cost per window grows with the history and
+    the full California schedule is tens of core-hours, not one. Confirm per region before paying.
   gpu: none
 schedule: null
 env:

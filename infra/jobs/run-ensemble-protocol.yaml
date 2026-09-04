@@ -1,0 +1,90 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholder: <r> region id.
+# Every cutoff in this job is a module constant, not an argument: search and weight fitting end at
+# 2020-01-01T00:00:00Z, the test period opens at 2022-01-01T00:00:00Z and runs to 2026-08-01
+# (src/rupture/models/ensemble/protocol_runner.py). Nothing here takes a cutoff from the caller,
+# which is deliberate — the protocol is fixed before it is run (ADR-0015).
+#
+# `command` uses the module form because the protocol runner has no `rupture` verb; it is an
+# argparse main(), not a typer sub-app. See infra/jobs/README.md.
+manifest_version: "0"
+name: run-ensemble-protocol
+description: >-
+  Full training of the gridded ConvLSTM challenger and the log-linear ensemble for one region,
+  followed by the pseudo-prospective protocol that scores them: hyperparameter search over the
+  four-candidate grid, the weight-fitting block, the 55-window schedule at 1000 continuations
+  against the ETAS baseline, and the leaky ablation that quantifies what leakage would have
+  bought. The gridded challenger has no standalone training entry point; this is it.
+status: run
+image: ${RUPTURE_IMAGE}
+command:
+  - python
+  - -m
+  - rupture.models.ensemble.protocol_runner
+  - --region
+  - <r>
+  - --repo
+  - /app
+inputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+  - path: data/regions/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/regions/<r>
+    kind: source
+  - path: data/interim/gem_active_faults.parquet
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/interim/gem_active_faults.parquet
+    kind: dvc
+    note: >-
+      GEM active faults (CC-BY-SA-4.0), the fault-density feature. The fit records whether it was
+      available; absence is recorded, not silently substituted.
+outputs:
+  - path: baselines/gridded/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/gridded/<r>
+    kind: dvc
+    note: gridded fits, archived per cutoff and keyed by config hash so a rerun reloads rather than refits
+  - path: reports/challenger/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/reports/challenger/<r>
+    kind: report
+    note: >-
+      hyperparameter_search.json, schedule-<r>-challengers.json and runs.jsonl — the last being the
+      Tracker record for the gridded and ensemble fits (ADR-0023). It is written under an ignored
+      path today, so it does not survive the run; see infra/jobs/README.md.
+resources:
+  cpu: 8
+  memory_gib: 32
+  timeout_minutes: 720
+  core_hours_estimate: 4
+  core_hours_basis: extrapolated
+  core_hours_note: >-
+    Extrapolated from the measured ETAS-only schedule over the same 55 windows and the same 1000
+    continuations: Turkiye cost 0.95 core-hours (reports/protocol/schedule-turkiye-eaf.log). This
+    job runs that schedule again for three model families rather than one, and adds a four-candidate
+    ConvLSTM search at up to 80 epochs, a weight-fitting block over the 2020-2022 validation span,
+    and the leaky ablation — call it three to five times the baseline schedule. It has never been
+    timed directly: the runner logs each fit's duration to stdout but nothing persists it, and the
+    committed schedule reports carry no elapsed time. Confirm against a single-region run before
+    paying for three.
+  gpu: none
+schedule: null
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - AWS_REGION
+aws:
+  service: batch-ec2
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-run-ensemble-protocol
+    vcpus: 8
+    memory_mib: 32768
+    attempts: 1
+    timeout_seconds: 43200
+    compute_environment_note: >-
+      Long wall clock, so an EC2-backed queue. CPU-only torch (the ConvLSTM is small and sets its
+      own thread count); a GPU is not worth the queue. The run is resumable — archived fits are
+      reloaded by config hash and scored windows are cached — so a retry is cheap, but attempts is
+      1 so a failure is looked at rather than repeated.
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: reports/challenger/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/run-ensemble-protocol

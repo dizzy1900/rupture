@@ -1,0 +1,91 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholders: <r> region id,
+# <cutoff> UTC instant (only events with origin_time < cutoff condition the simulation; ADR-0015).
+#
+# STATUS: command-not-implemented. There is no `rupture forecast simulate` verb. The ETAS adapter
+# already draws continuations and averages them into a ForecastGrid
+# (src/rupture/adapters/forecasting/etas_mizrahi.py), and the risk layer already accepts one
+# simulated event through `rupture.risk.scenarios.from_stochastic_event`, but nothing in between
+# persists a catalogue, and docs/RISK.md says so in as many words. This manifest is the sized
+# proposal for the job that would close that seam; it is committed unrun, as oq-classical.yaml is,
+# so the compute is on the record before anyone pays for it.
+manifest_version: "0"
+name: stochastic-event-set
+description: >-
+  Draw a stochastic event set of 10 000 events for one region from the fitted ETAS model,
+  conditioned only on events before the cutoff, and persist it as a catalogue under
+  data/event_sets/<r>/ with provenance, the seed and the parameter snapshot hash of the fit that
+  produced it. This is the bridge from the forecasting layer to event-based loss: each event
+  becomes a ScenarioRupture through risk.scenarios.from_stochastic_event, as a finite fault where
+  the set carries a geometry and as a point rupture where it does not.
+status: command-not-implemented
+image: ${RUPTURE_IMAGE}
+command:
+  - rupture
+  - forecast
+  - simulate
+  - --model
+  - etas
+  - --region
+  - <r>
+  - --cutoff
+  - <cutoff>
+  - --n-events
+  - "10000"
+  - --seed
+  - "20220101"
+inputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+  - path: data/regions/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/regions/<r>
+    kind: source
+  - path: baselines/etas/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/etas/<r>
+    kind: dvc
+    note: the fit the set is drawn from; its parameter snapshot hash belongs in the set's provenance
+outputs:
+  - path: data/event_sets/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/event_sets/<r>
+    kind: dvc
+    note: >-
+      the simulated catalogue plus provenance.json. Simulated events are labelled as simulated at
+      the record level so nothing downstream can mistake them for observations.
+resources:
+  cpu: 4
+  memory_gib: 16
+  timeout_minutes: 240
+  core_hours_estimate: 1.0
+  core_hours_basis: guess
+  core_hours_note: >-
+    Guess, because the job does not exist and its shape is not settled. The arithmetic behind the
+    figure: the Turkiye 55-window schedule drew 1000 ETAS continuations of a 30-day horizon per
+    window, 55 000 continuations for 0.95 core-hours in total, so a continuation costs on the order
+    of 6e-5 core-hours (reports/protocol/schedule-turkiye-eaf.log). If a 30-day continuation of this
+    region yields a few events above Mc, reaching 10 000 events needs on the order of a thousand to
+    ten thousand continuations, which is 0.06 to 0.6 core-hours; 1.0 leaves room for the longer
+    simulated span an event set for loss work actually wants, and for the catalogue write. What
+    would make this measured is running it once, which cannot happen until the verb exists.
+  gpu: none
+schedule: null
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - AWS_REGION
+aws:
+  service: batch-fargate
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-stochastic-event-set
+    vcpus: 4
+    memory_mib: 16384
+    attempts: 1
+    timeout_seconds: 14400
+    compute_environment_note: >-
+      Sizing is provisional along with the rest of this manifest. Fargate is enough if the set is
+      drawn in one process; a set large enough to need sharding by seed belongs on an EC2 queue as
+      an array job, one shard per seed, concatenated afterwards.
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: data/event_sets/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/stochastic-event-set

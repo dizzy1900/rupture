@@ -1,0 +1,85 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholder: <r> region id.
+# The cutoff is pinned to the protocol's first issue time (ADR-0015): the fit sees only events
+# with origin_time < 2022-01-01T00:00:00Z, which is the leakage guard this job exists to respect.
+# Run select-ntpp.yaml first — this job reads the frozen configuration and refuses without it.
+#
+# `command` uses the module form because src/rupture/cli.py has not mounted the challenger
+# sub-app; it becomes `rupture challenger ntpp fit ...` on the day it does.
+manifest_version: "0"
+name: train-ntpp
+description: >-
+  Full training of the neural temporal point-process challenger for one region: fit the frozen
+  configuration on events strictly before the cutoff and persist the FitResult, the parameter
+  snapshot, the diagnostics and the weights to baselines/ntpp/<r>/, archived per cutoff. Exits
+  non-zero if the fit did not converge.
+status: run
+image: ${RUPTURE_IMAGE}
+command:
+  - python
+  - -m
+  - rupture.commands.challenger
+  - ntpp
+  - fit
+  - --region
+  - <r>
+  - --cutoff
+  - "2022-01-01T00:00:00Z"
+  - --auxiliary-years
+  - "2.0"
+inputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+  - path: data/regions/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/regions/<r>
+    kind: source
+  - path: baselines/ntpp/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/ntpp/<r>
+    kind: dvc
+    note: hyperparameters.json from select-ntpp.yaml; the fit refuses without the frozen config
+outputs:
+  - path: baselines/ntpp/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/ntpp/<r>
+    kind: dvc
+    note: fit_result.json, parameters.json, diagnostics.json, weights.json (plain lists, no pickles)
+  - path: data/forecasts/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/forecasts/<r>
+    kind: dvc
+    note: runs.jsonl — the Tracker record for this fit (ADR-0023); the record of truth for citations
+resources:
+  cpu: 4
+  memory_gib: 8
+  timeout_minutes: 60
+  core_hours_estimate: 0.1
+  core_hours_basis: extrapolated
+  core_hours_note: >-
+    Extrapolated from a timed anchor fit, not measured as this job. Anchor: the committed fixture
+    fit (tests/fixtures/models/ntpp-fit-2019-07-01) takes 7.4 CPU-seconds on an arm64 laptop for
+    214 events over 538 epochs at hidden=8. The two real fits are larger — Turkiye 405 events over
+    554 epochs, Nepal 772 events over 978 epochs, both at hidden=16
+    (baselines/ntpp/<r>/fit_result.json) — and the Hawkes likelihood is pairwise in the history, so
+    scaling the anchor by epochs, by up to the square of the event ratio and by the width gives
+    roughly 30 CPU-seconds for Turkiye and roughly 350 for Nepal: under 0.1 core-hours. This
+    challenger is cheap; the pseudo-prospective schedule that evaluates it is what costs.
+  gpu: none
+schedule: null
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - AWS_REGION
+aws:
+  service: batch-fargate
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-train-ntpp
+    vcpus: 4
+    memory_mib: 8192
+    attempts: 1
+    timeout_seconds: 3600
+    compute_environment_note: >-
+      CPU-only torch, ~5k parameters, deterministic from the seed in the frozen configuration; a
+      rerun reproduces parameter_snapshot_hash. No GPU, no network after the catalogue is staged.
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: baselines/ntpp/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/train-ntpp

@@ -10,6 +10,7 @@ name: oq-classical
 description: >-
   Run a classical PSHA job in the pinned OpenQuake engine image and write the parsed
   HazardCurveSet (contracts/hazard-curve-set.v0.json) next to the raw exports and oq.log.
+status: not-run
 image: ${RUPTURE_IMAGE}
 command:
   - rupture
@@ -37,6 +38,15 @@ resources:
   cpu: 8
   memory_gib: 32
   timeout_minutes: 480
+  core_hours_estimate: 16
+  core_hours_basis: guess
+  core_hours_note: >-
+    Guess, and the weakest number in this directory. No PSHA has completed for any region
+    (RELEASE_STATUS.md), and the engine cannot run on the arm64 development host (ADR-0011
+    addendum), so nothing comparable has been timed. OpenQuake's classical calculator scales with
+    sources x sites x logic-tree branches and the ESHM20 logic tree is large; 16 core-hours is an
+    order-of-magnitude placeholder well inside the 64 core-hour ceiling this manifest's cpu and
+    timeout imply. Treat it as a prompt to run a one-site probe first, not as a budget.
   gpu: none
   docker_socket: true
 schedule: null

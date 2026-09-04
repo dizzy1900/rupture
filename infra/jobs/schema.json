@@ -5,7 +5,7 @@
   "description": "Portable batch-job manifest (ADR-0016). The image and command are what runs; inputs/outputs are DVC paths with remote URIs; the aws block is an annotation a deployer reads and every other platform ignores.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["manifest_version", "name", "description", "image", "command", "inputs", "outputs", "resources", "schedule", "env", "aws"],
+  "required": ["manifest_version", "name", "description", "status", "image", "command", "inputs", "outputs", "resources", "schedule", "env", "aws"],
   "properties": {
     "manifest_version": { "const": "0" },
     "name": {
@@ -14,6 +14,10 @@
       "description": "Job name; equals the file name without .yaml."
     },
     "description": { "type": "string", "minLength": 1 },
+    "status": {
+      "enum": ["run", "not-run", "command-not-implemented"],
+      "description": "Whether this job has ever been run as written. `run`: the command exists and has been executed at least once, and the core-hour estimate can cite it. `not-run`: the command exists but nothing has executed it here. `command-not-implemented`: the entry point named in `command` does not exist yet, so the manifest is a sized proposal and nothing can run it. A manifest never claims more than this field."
+    },
     "image": {
       "type": "string",
       "pattern": "^(\\$\\{RUPTURE_IMAGE\\}|[a-z0-9./_-]+(:[A-Za-z0-9._-]+)?)$",
@@ -23,18 +27,52 @@
       "type": "array",
       "minItems": 2,
       "items": { "type": "string" },
-      "description": "argv run as the container command (the image defines no ENTRYPOINT, only a default CMD): the exact `rupture ...` invocation, starting with the token `rupture`."
+      "description": "argv run as the container command (the image defines no ENTRYPOINT, only a default CMD). Either the exact `rupture ...` invocation, starting with the token `rupture`, or — for a training entry point that src/rupture/cli.py has not mounted as a verb yet — the module form `python -m rupture.<module> ...` that is runnable today. The module form is a statement that the verb is missing, not a licence to skip it.",
+      "oneOf": [
+        {
+          "prefixItems": [{ "const": "rupture" }]
+        },
+        {
+          "prefixItems": [
+            { "const": "python" },
+            { "const": "-m" },
+            { "type": "string", "pattern": "^rupture\\.[A-Za-z0-9_.]+$" }
+          ],
+          "minItems": 3
+        }
+      ]
     },
     "inputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
     "outputs": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
     "resources": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["cpu", "memory_gib", "timeout_minutes"],
+      "required": [
+        "cpu",
+        "memory_gib",
+        "timeout_minutes",
+        "core_hours_estimate",
+        "core_hours_basis",
+        "core_hours_note"
+      ],
       "properties": {
         "cpu": { "type": "number", "exclusiveMinimum": 0 },
         "memory_gib": { "type": "number", "exclusiveMinimum": 0 },
         "timeout_minutes": { "type": "integer", "minimum": 1 },
+        "core_hours_estimate": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "Expected cost of ONE invocation, in CPU-core-hours: (user + system CPU seconds) / 3600, summed over every core the job uses. This is a cost, not a wall clock and not a ceiling — `cpu` x `timeout_minutes` / 60 is the ceiling, and the estimate must stay at or below it. It is the number a person confirms against before a paid run."
+        },
+        "core_hours_basis": {
+          "enum": ["measured", "extrapolated", "guess"],
+          "description": "How the estimate was arrived at. `measured`: this job, as written, was timed and `core_hours_note` cites the log. `extrapolated`: a related run was timed and the note gives the arithmetic that carries it here. `guess`: nothing comparable was timed; the note says so and gives the reasoning. A `guess` is honest; an unlabelled number is not."
+        },
+        "core_hours_note": {
+          "type": "string",
+          "minLength": 40,
+          "description": "The basis in prose: which run was timed, on what host, for which region and placeholder values, and what was assumed to carry it to this job. Long enough to be checkable."
+        },
         "gpu": { "const": "none" },
         "docker_socket": {
           "type": "boolean",

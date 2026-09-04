@@ -10,7 +10,7 @@ else. Decisions: ADR-0016 (image + manifests), ADR-0011 and ADR-0030 (OpenQuake 
 |---|---|
 | `infra/docker/Dockerfile` (+ `Dockerfile.dockerignore`) | multi-stage build of the locked `uv` environment and the `rupture` CLI on `python:3.12-slim`; non-root user; OCI labels with the git sha. Two targets: `runtime` (default, the CLI) and `api` (the HTTP service) |
 | `infra/docker/compose.yml` | local development: `rupture` (`src/`, `contracts/`, `data/` mounted into `/app`), `api` (the service on 127.0.0.1:8000) and `openquake/engine:3.26.2` (named volume `oqdata`, WebUI on 127.0.0.1:8800). **Unexercised**: never brought up (no Docker here) |
-| `infra/jobs/*.yaml` + `schema.json` + `README.md` | five portable job manifests with `aws:` annotations, validated in the unit suite |
+| `infra/jobs/*.yaml` + `schema.json` + `README.md` | nine portable job manifests with `aws:` annotations, each carrying a core-hour estimate and the basis for it, validated in the unit suite |
 | `infra/jobs/examples/turkiye-eaf-classical.json` | example `ClassicalPSHAJob` input (not run) |
 
 ## What is not provided
@@ -136,10 +136,49 @@ the owners of that model code (ADR-0045).
 
 ## Job manifests
 
-See `infra/jobs/README.md` for field semantics. In one sentence: `image` + `command` is what runs
-(the `command` is the exact `rupture ...` verb from `CLAUDE.md`), `inputs`/`outputs` are DVC paths
-with `${RUPTURE_DVC_REMOTE_URL}/...` URIs, `resources` and `schedule` are sizing and cadence, `env`
-lists variable names, and `aws:` is an annotation.
+See `infra/jobs/README.md` for field semantics. In one sentence: `image` + `command` is what runs,
+`inputs`/`outputs` are DVC paths with `${RUPTURE_DVC_REMOTE_URL}/...` URIs, `resources` and
+`schedule` are sizing and cadence, `env` lists variable names, and `aws:` is an annotation.
+
+Nine manifests: the five Prompt 1 jobs (catalogue, ETAS fit, issuance, the pseudo-prospective
+schedule, classical PSHA) plus full training of the Prompt 2 learned challengers
+(`select-ntpp`, `train-ntpp`, `run-ensemble-protocol`) and the 10^4-event stochastic event set
+that would bridge the forecasting layer to event-based loss (`stochastic-event-set`).
+
+### What one run costs
+
+Every manifest carries `resources.core_hours_estimate` — expected CPU-core-hours for **one**
+invocation, `(user + system CPU seconds) / 3600` — next to `core_hours_basis`
+(`measured` / `extrapolated` / `guess`) and a `core_hours_note` that says which run the figure came
+from. This is the number to confirm against before a paid run (non-negotiable 7). It is not the
+same as `cpu × timeout_minutes`, which is the ceiling the job is killed at; the two differ by one
+or two orders of magnitude on most of these jobs, and the estimate is required to sit below it.
+
+One estimate is `measured` (`evaluate-schedule`, from the timed Türkiye and Nepal schedule runs
+under `reports/protocol/`), four are `extrapolated` and three are `guess`. `infra/jobs/README.md`
+gives the arithmetic for each. Nothing in this repository persists elapsed time — the ensemble
+protocol runner prints fit durations to stdout and drops them, and no committed report carries a
+duration — so recording `elapsed_seconds` in the schedule reports and in the `Tracker` records
+(ADR-0023) is what would turn the extrapolations into measurements on the next run.
+
+### Two manifests do not start with `rupture`
+
+`select-ntpp` and `train-ntpp` invoke `python -m rupture.commands.challenger ntpp ...` because
+`src/rupture/cli.py` has not mounted the challenger sub-app, and `run-ensemble-protocol` invokes
+`python -m rupture.models.ensemble.protocol_runner` because that runner is an argparse `main()`
+with no verb. Both forms run today. `stochastic-event-set` is different again: its command names a
+`rupture forecast simulate` verb that **does not exist**, and the manifest says so in its `status`
+field. `tests/unit/hazard/test_job_manifests.py` resolves every command against the typer
+application or the module path and fails if a `status` disagrees with the tree, so these three
+cannot quietly become stale once the verbs land.
+
+### Tracking
+
+No manifest configures a tracker. Jobs write run records through the `Tracker` port to a local
+JSONL log listed under `outputs`; the Weights & Biases mirror is opt-in via `WANDB_API_KEY` and the
+`wandb` extra (ADR-0023). `WANDB_API_KEY` is not in `.env.example`, so no manifest may list it in
+`env` — adding it there is the enabling step, and until the call sites use
+`rupture.adapters.storage.make_tracker` setting it changes nothing.
 
 ## Pointing at AWS Batch / ECS
 

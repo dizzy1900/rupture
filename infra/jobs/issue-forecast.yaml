@@ -5,6 +5,7 @@ name: issue-forecast
 description: >-
   Issue a 30-day ETAS ForecastGrid for one region at the issue time from the persisted fit,
   using only events with origin_time < issue time. Writes zarr + STAC item under data/forecasts/.
+status: run
 image: ${RUPTURE_IMAGE}
 command:
   - rupture
@@ -34,6 +35,13 @@ resources:
   cpu: 2
   memory_gib: 8
   timeout_minutes: 60
+  core_hours_estimate: 0.02
+  core_hours_basis: extrapolated
+  core_hours_note: >-
+    Extrapolated from reports/protocol/schedule-turkiye-eaf.log: 0.95 core-hours over 55 windows
+    is 0.017 core-hours per window, and a window is one issuance plus its CSEP scoring, so an
+    issuance alone is at or below that. Timed on an arm64 laptop at 1000 evaluation continuations;
+    a different --simulations count scales it roughly linearly.
   gpu: none
 schedule:
   cron: "15 00 * * *"
