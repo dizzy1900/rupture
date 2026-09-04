@@ -558,6 +558,19 @@ make test-integration
 >    `annual_expected_loss: MoneyRange | None` and `exceedance_curve` (additive, per ADR-0013)
 >    would let a consumer read it from the contract. Likewise `ground-motion-field.v0` has no field
 >    for a GSIM logic-tree id, so a mixed field records the tree in `notes` and in its provenance.
+>
+> And four stale claims outside this document that say the opposite of what the code does, left
+> here rather than edited from a parallel worktree:
+>
+> - the module docstring of `src/rupture/commands/risk.py` still says the sub-application "is not
+>   wired into `cli.py` yet". It is (`app.add_typer(risk.app, name="risk")`).
+> - `mk/risk.mk`'s header comment says the same, and the recipe invokes
+>   `python -m rupture.validation.risk` rather than the now-available `$(RUN) rupture validate risk`.
+> - the `Makefile` help text for `underwriting-check` says it "exits non-zero: not implemented
+>   (Prompt 2)". It exits **zero** and prints a loss and an avoided loss with intervals.
+> - `RELEASE_STATUS.md` records forecast and long-term-hazard triggers as not implemented. The
+>   forecast trigger is implemented (§ 6b); the hazard trigger is still not, for the reason in
+>   § 8 item 10.
 
 ### Deployment
 

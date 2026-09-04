@@ -626,7 +626,7 @@ def branches_for(
     model: HydropowerVulnerability,
 ) -> list[eb.BranchSpec]:
     """Translate each intervention into an event-based branch priced on the same ground motion."""
-    baseline_curves = _curves(portfolio, model)
+    baseline_curves = curves_for_portfolio(portfolio, model)
     out: list[eb.BranchSpec] = []
     for intervention in interventions:
         targets = frozenset(intervention.applies_to_asset_ids) or frozenset(
@@ -637,7 +637,7 @@ def branches_for(
             out.append(
                 eb.BranchSpec(
                     label=intervention.id,
-                    curves=_curves(
+                    curves=curves_for_portfolio(
                         portfolio, HydropowerVulnerability(retrofitted_asset_ids=targets)
                     ),
                     assumptions=(RETROFIT_NOTE,),
@@ -696,9 +696,14 @@ def branches_for(
     return out
 
 
-def _curves(
+def curves_for_portfolio(
     portfolio: ExposurePortfolio, model: HydropowerVulnerability
 ) -> dict[str, AssetLossCurve]:
+    """One loss curve per asset the model covers; an asset it does not cover is left out.
+
+    The omission is not a silent drop: ``HydropowerVulnerability.coverage`` names every
+    uncovered asset with its reason, and the event-based result carries that list.
+    """
     coverage = model.coverage(portfolio)
     modelled = set(coverage.modelled)
     out: dict[str, AssetLossCurve] = {}

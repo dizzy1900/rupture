@@ -135,7 +135,7 @@ def test_a_branch_priced_on_the_same_catalogues_can_be_differenced(
 ) -> None:
     model = HydropowerVulnerability()
     excluded = frozenset({portfolio.assets[0].id})
-    curves = al._curves(portfolio, model)
+    curves = al.curves_for_portfolio(portfolio, model)
     run = eb.run_event_based(
         portfolio,
         event_set,
