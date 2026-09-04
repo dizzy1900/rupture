@@ -96,6 +96,11 @@ DIAGNOSTICS_FILE = "diagnostics.json"
 
 EARTH_RADIUS_KM = 6.3781e3  # the package's value
 EM_TOLERANCE = 0.001  # the package's convergence criterion (summed absolute parameter change)
+LL_NOTE = (
+    "space-time ETAS log-likelihood of the primary window at the fitted theta, conditional on "
+    "the auxiliary catalogue; magnitudes excluded (fixed beta); no spatial boundary correction, "
+    "matching the package's own EM objective. See point_process_log_likelihood and ADR-0046."
+)
 
 
 def _etas_version() -> str:
@@ -139,6 +144,138 @@ def gr_bin_probabilities(
     hi = np.where(np.isinf(upper), 0.0, np.exp(-beta * (upper - mc_lower)))
     out: npt.NDArray[np.float64] = np.clip((lo - hi) / norm, 0.0, None)
     return out
+
+
+@dataclass(frozen=True, slots=True)
+class LogLikelihood:
+    """The ETAS space-time log-likelihood at one parameter vector, with its three terms.
+
+    ``total = observed_term - background_integral - triggering_integral``. A non-finite term
+    raises rather than being rounded or clipped, so a persisted ``log_likelihood`` is either a
+    real number or ``null`` with the reason recorded in the diagnostics.
+    """
+
+    total: float
+    observed_term: float
+    background_integral: float
+    triggering_integral: float
+    n_targets: int
+    n_sources: int
+
+    def as_dict(self) -> dict[str, float | int]:
+        return {
+            "log_likelihood": self.total,
+            "observed_term": self.observed_term,
+            "background_integral": self.background_integral,
+            "triggering_integral": self.triggering_integral,
+            "n_targets": self.n_targets,
+            "n_sources": self.n_sources,
+        }
+
+
+def point_process_log_likelihood(calc: Any) -> LogLikelihood:
+    """Space-time ETAS log-likelihood of the primary window, at ``calc.theta``.
+
+    The package minimises the EM *expected complete-data* negative log-likelihood
+    (:func:`etas.inversion.neg_log_likelihood`), which is the Q function of the current
+    responsibilities and is not comparable across catalogues or cut-offs. What is computed here is
+    the ordinary observed-data log-likelihood of the marked point process, built from exactly the
+    conditional intensity the package's own expectation step uses (ADR-0046)::
+
+        lambda(t, x, y) = mu + sum_{j: t_j < t} (xi_j + 1) g(t - t_j, r_ij, m_j)
+
+        LL = sum_i (zeta_i + 1) log lambda(t_i, x_i, y_i)
+             - mu * area * timewindow_length
+             - sum_j (xi_j + 1) G_j
+
+    where ``g`` is :func:`etas.inversion.triggering_kernel`, ``G_j`` is
+    :func:`etas.inversion.expected_aftershocks` — the integral of ``g`` over the plane and over
+    the part of the primary window that follows source ``j`` — and ``xi + 1`` / ``zeta + 1`` are
+    the package's completeness corrections for triggering by unobserved events and for a
+    target-time completeness above the reference magnitude (both are exactly 1 when ``mc`` is a
+    constant equal to ``m_ref``, which is how this adapter configures every fit).
+
+    Conditioning, stated because it bounds what the number may be compared with:
+
+    * the sum runs over the **primary window** targets only (auxiliary events are sources, never
+      targets), so the likelihood is conditional on the auxiliary catalogue;
+    * the magnitude density is not included — this is the space-time likelihood at fixed
+      ``beta``, so two fits are comparable by it only at the same ``mc``, ``delta_m``, region and
+      window;
+    * the integral term has no spatial boundary correction: ``G_j`` integrates the kernel over
+      the whole plane while targets are counted inside the region. That is the package's own
+      convention (its EM objective makes the same approximation), so the number is consistent
+      with the parameters that were fitted, and it is not a free-boundary-corrected likelihood.
+
+    Raises
+    ------
+    ValueError
+        when the calculation has not run its expectation step, when ``free_background`` /
+        ``free_productivity`` / an induced-seismicity term is in use (the intensity above is then
+        not the model's), or when any term is not finite.
+    """
+    if calc.pij is None or calc.target_events is None or calc.source_events is None:
+        msg = "log-likelihood needs a completed expectation step (calc.pij is unset)"
+        raise ValueError(msg)
+    if calc.free_background or calc.free_productivity or calc.bg_term is not None:
+        msg = (
+            "log-likelihood is defined here for the homogeneous-background ETAS this adapter "
+            "fits; free_background/free_productivity/bg_term change the intensity"
+        )
+        raise ValueError(msg)
+
+    theta_array = etas_inversion.parameter_dict2array(calc.theta)
+    mu = 10.0 ** float(theta_array[0])
+    mc_min = float(calc.m_ref) - float(calc.delta_m) / 2.0
+
+    targets = calc.target_events
+    pij = calc.pij
+    # Exactly the expectation step's ``tot_rates``: mu plus the completeness-corrected kernel sum
+    # over the sources that precede each target. Targets with no source within the Coppersmith
+    # distance cut-off carry the background rate alone.
+    triggered = (pij["gij"] * pij["xi_plus_1"]).groupby(level="target_id").sum()
+    lam = mu + triggered.reindex(targets.index).fillna(0.0).to_numpy(dtype=np.float64)
+    zeta_plus_1 = targets["zeta_plus_1"].to_numpy(dtype=np.float64)
+    if np.any(lam <= 0.0):
+        msg = "log-likelihood: conditional intensity is not positive at every target"
+        raise ValueError(msg)
+    observed_term = float(np.sum(zeta_plus_1 * np.log(lam)))
+
+    background_integral = mu * float(calc.area) * float(calc.timewindow_length)
+
+    sources = calc.source_events
+    g_integral = np.asarray(
+        etas_inversion.expected_aftershocks(
+            [
+                sources["source_magnitude"],
+                sources["pos_source_to_start_time_distance"],
+                sources["source_to_end_time_distance"],
+            ],
+            [theta_array[2:], mc_min],
+        ),
+        dtype=np.float64,
+    )
+    xi_plus_1 = np.asarray(
+        etas_inversion.responsibility_factor(
+            theta_array, calc.beta, sources["source_completeness_above_ref"]
+        ),
+        dtype=np.float64,
+    )
+    triggering_integral = float(np.sum(xi_plus_1 * g_integral))
+
+    total = observed_term - background_integral - triggering_integral
+    terms = (total, observed_term, background_integral, triggering_integral)
+    if not all(math.isfinite(v) for v in terms):
+        msg = f"log-likelihood is not finite: {terms}"
+        raise ValueError(msg)
+    return LogLikelihood(
+        total=total,
+        observed_term=observed_term,
+        background_integral=background_integral,
+        triggering_integral=triggering_integral,
+        n_targets=len(targets),
+        n_sources=len(sources),
+    )
 
 
 def cell_areas_km2(lattice: Lattice) -> npt.NDArray[np.float64]:
@@ -345,6 +482,12 @@ class MizrahiETAS:
         calc.prepare()
         em_converged, em_reason = self._invert_capped(calc)
         theta = calc.theta
+        try:
+            loglik: LogLikelihood | None = point_process_log_likelihood(calc)
+            loglik_note = LL_NOTE
+        except (ValueError, KeyError, FloatingPointError) as exc:
+            loglik, loglik_note = None, f"log-likelihood not computed: {exc}"
+            log.warning("ETAS log-likelihood not computed for %s: %s", region.id, exc)
         runtime_s = time.perf_counter() - t0
 
         parameters = self._parameters_from(theta, calc.beta)
@@ -397,10 +540,8 @@ class MizrahiETAS:
             "runtime_s": round(runtime_s, 3),
             "at_bound": at_bound,
             "ranges": {k: list(v) for k, v in ETAS_RANGES.items()},
-            "log_likelihood_note": (
-                "the etas package does not expose the full point-process log-likelihood at "
-                "convergence; log_likelihood is null"
-            ),
+            "log_likelihood_note": loglik_note,
+            "log_likelihood_terms": None if loglik is None else loglik.as_dict(),
             "etas_commit": ETAS_COMMIT,
         }
         result = FitResult(
@@ -414,7 +555,7 @@ class MizrahiETAS:
             mc=mc_value,
             parameters=parameters,
             parameter_snapshot_hash=snapshot_hash(parameters),
-            log_likelihood=None,
+            log_likelihood=None if loglik is None else loglik.total,
             diagnostics=diagnostics,
             converged=converged,
             fitted_at=utc_now(),
@@ -585,6 +726,59 @@ class MizrahiETAS:
             created_at=utc_now(),
             notes=notes,
         )
+
+    # ------------------------------------------------------------------ log-likelihood
+    def log_likelihood(self, catalog: Catalog) -> LogLikelihood:
+        """Score the loaded fit on its own training window again, without refitting.
+
+        The point is backfilling: a fit persisted before the likelihood existed, or one whose
+        computation failed, can be scored from the same catalogue without moving a parameter.
+        The rebuilt window is taken from the fit's own diagnostics, and the training slice must
+        hash to ``FitResult.training_catalog_hash`` — otherwise the catalogue is not the one that
+        produced the fit and the number would describe a different model, so it is refused.
+
+        Leakage: the reconstructed window ends at ``fit.fit_cutoff`` and the slice is asserted to
+        end strictly before it, exactly as in :meth:`fit`.
+        """
+        if self._fit is None or self._region is None:
+            msg = "no fit loaded: call fit() or load_fit() first"
+            raise RuntimeError(msg)
+        fit, region = self._fit, self._region
+        training = self.training_slice(catalog, region, fit.fit_cutoff, fit.mc)
+        assert_all_before(training, fit.fit_cutoff, what="log-likelihood training catalogue")
+        if training.event_hash() != fit.training_catalog_hash:
+            msg = (
+                "catalogue does not reproduce the fit's training slice "
+                f"({training.event_hash()[:12]} != {fit.training_catalog_hash[:12]}); "
+                "refusing to score this fit on a different catalogue"
+            )
+            raise ValueError(msg)
+        theta: dict[str, Any] = {k: fit.parameters[k] for k in THETA_KEYS}
+        theta["log10_iota"] = None
+        metadata = self._metadata(
+            training,
+            region,
+            fit.mc,
+            auxiliary_start=datetime.fromisoformat(fit.diagnostics["auxiliary_start"]),
+            timewindow_start=datetime.fromisoformat(fit.diagnostics["timewindow_start"]),
+            timewindow_end=fit.fit_cutoff,
+            name=f"{self.model_id}:{region.id}:loglik:{fit.fit_cutoff:%Y%m%dT%H%M%SZ}",
+        )
+        metadata["beta"] = float(fit.parameters["beta"])
+        metadata["theta_0"] = theta
+        metadata["coppersmith_multiplier"] = float(
+            fit.diagnostics.get("coppersmith_multiplier", self.coppersmith_multiplier)
+        )
+        calc = etas_inversion.ETASParameterCalculation(metadata)
+        calc.prepare()
+        calc.theta = theta
+        calc.pij, calc.target_events, calc.source_events, calc.n_hat, calc.i_hat = (
+            calc.expectation_step(
+                etas_inversion.parameter_dict2array(theta), calc.m_ref - calc.delta_m / 2.0
+            )
+        )
+        calc.inversion_done = True
+        return point_process_log_likelihood(calc)
 
     def issuance_state(self, history: Catalog, issue_time: datetime) -> IssuanceState:
         """Rebuild the package state at ``issue_time`` with parameters fixed from the fit.

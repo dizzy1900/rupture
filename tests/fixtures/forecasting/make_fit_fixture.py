@@ -42,6 +42,9 @@ def main() -> None:
     for p in written.iterdir():
         shutil.move(str(p), OUT_DIR / p.name)
     shutil.rmtree(OUT_DIR / "etas")
+    # save_fit also archives the fit under fits/<cutoff>/; for a fixture of one fit at one cutoff
+    # that is a byte-identical second copy, so it is dropped and a rerun stays reproducible.
+    shutil.rmtree(OUT_DIR / "fits", ignore_errors=True)
     source = json.loads(PROVENANCE.read_text(encoding="utf-8"))
     provenance = {
         "derived_from": source["file"],

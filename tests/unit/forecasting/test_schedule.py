@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from rupture.adapters.forecasting.etas_mizrahi import MizrahiETAS
+from rupture.adapters.forecasting.etas_mizrahi import MizrahiETAS, load_fit
 from rupture.adapters.forecasting.leakage import (
     LeakageError,
     assert_all_before,
@@ -198,3 +198,91 @@ def test_persisted_fit_with_a_different_training_slice_is_refused(
             eval_simulations=10,
             plots=False,
         )
+
+
+def test_the_refit_branch_runs_end_to_end_and_the_hash_changes_only_there(
+    tmp_path: Path, fixture_catalog: Catalog, region: Region
+) -> None:
+    """The legitimate-refit path of ``run_schedule``, exercised rather than simulated.
+
+    ``check_snapshot_constancy`` had only ever been tested against hand-built ``WindowRecord`` and
+    ``RefitLogEntry`` objects: the branch that *produces* them — a pending boundary popped before
+    an issue, ``fit_etas(kind="refit")``, a ``RefitLogEntry`` appended, and the constancy check
+    later reading it — was covered by no test and by no gate, because the fixture schedule spans
+    July-October 2019 and contains no 1 January. It is the load-bearing half of leakage rule 4:
+    the one case where a parameter hash is *allowed* to change.
+
+    The window here straddles 2019-01-01 with a real fit at the start and a real refit at the
+    boundary (Mc 3.5 and five simulations keep both to a few seconds).
+    """
+    start = datetime(2018, 11, 2, tzinfo=UTC)
+    boundary = datetime(2019, 1, 1, tzinfo=UTC)
+    tracker = JsonlTracker(tmp_path / "runs.jsonl")
+    report = run_schedule(
+        fixture_catalog,
+        region,
+        start=start,
+        end=datetime(2019, 3, 2, tzinfo=UTC),
+        step=30 * DAY,
+        horizon=30 * DAY,
+        baselines_dir=tmp_path / "baselines",
+        forecasts_dir=tmp_path / "data" / "forecasts",
+        reports_dir=tmp_path / "reports",
+        refit="yearly",
+        model=MizrahiETAS(auxiliary_years=0.5),
+        tracker=tracker,
+        tests=(TestName.N,),
+        n_simulations=5,
+        eval_simulations=50,
+        seed=1,
+        mc=3.5,
+        use_existing_fit=False,
+    )
+
+    assert [r["boundary"] for r in report["refits"]] == [boundary.isoformat()]
+    issues = [datetime.fromisoformat(w["issue_time"]) for w in report["windows"]]
+    assert boundary in issues, "the schedule must actually cross the declared boundary"
+    hashes = [w["parameter_snapshot_hash"] for w in report["windows"]]
+    before = {h for h, t in zip(hashes, issues, strict=True) if t < boundary}
+    after = {h for h, t in zip(hashes, issues, strict=True) if t >= boundary}
+    assert len(before) == 1, "one parameter set before the boundary"
+    assert len(after) == 1, "one parameter set after it"
+    assert before != after, "a refit that reproduced the old hash would prove nothing here"
+    assert report["refits"][0]["parameter_snapshot_hash"] == next(iter(after))
+
+    kinds = [
+        json.loads(line)["kind"] for line in (tmp_path / "runs.jsonl").read_text().splitlines()
+    ]
+    assert kinds.count("refit") == 1
+    assert kinds.count("fit") == 1
+
+    # The archive keeps the boundary fit; the canonical fit is the schedule's own starting one,
+    # so `dvc repro` of fit_etas is not silently redefined by a schedule that refits.
+    archived = sorted(
+        p.name for p in (tmp_path / "baselines" / "etas" / region.id / "fits").iterdir()
+    )
+    assert f"{boundary:%Y%m%dT%H%M%SZ}" in archived
+    canonical = load_fit(tmp_path / "baselines", region.id)
+    assert canonical.fit_cutoff == start
+
+    # run_schedule calls check_snapshot_constancy over these windows and refits before returning
+    # (schedule.py), so reaching this line is the positive path of leakage rule 4 passing on a real
+    # refit. The same windows with the refit log removed must be rejected -- otherwise the check
+    # would be vacuous on this schedule.
+    windows = [
+        WindowRecord(
+            issue_time=datetime.fromisoformat(w["issue_time"]),
+            window_end=datetime.fromisoformat(w["window_end"]),
+            forecast_id=w["forecast_id"],
+            fit_cutoff=datetime.fromisoformat(w["fit_cutoff"]),
+            parameter_snapshot_hash=w["parameter_snapshot_hash"],
+            total_expected=w["total_expected"],
+            n_target_events=w["n_target_events"],
+            n_excluded_non_earthquake=w["n_excluded_non_earthquake"],
+            n_excluded_no_mw=w["n_excluded_no_mw"],
+            n_only=w["n_only"],
+        )
+        for w in report["windows"]
+    ]
+    with pytest.raises(LeakageError, match="without a logged refit"):
+        check_snapshot_constancy(windows, [])

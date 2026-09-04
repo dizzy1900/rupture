@@ -55,6 +55,9 @@ class PyCSEPEvaluator:
     def __init__(self) -> None:
         # pycsep result objects from the last evaluate() call, per forecast id, for plotting.
         self._csep_results: dict[str, dict[TestName, Any]] = {}
+        # T/W result objects from compare(), keyed by (forecast id, benchmark id), so the paired
+        # comparison can be plotted afterwards without re-running the tests.
+        self._comparison_results: dict[tuple[str, str], dict[TestName, Any]] = {}
 
     # ------------------------------------------------------------------ conversions
     @staticmethod
@@ -245,6 +248,8 @@ class PyCSEPEvaluator:
             "evaluated_at": utc_now(),
             "evaluator_version": self.evaluator_version,
         }
+        key = (forecast.id, benchmark.id)
+        self._comparison_results.pop(key, None)
         if n_obs == 0:
             return [
                 EvaluationResult(
@@ -288,7 +293,97 @@ class PyCSEPEvaluator:
                 **common,
             )
         )
+        self._comparison_results[key] = {TestName.T: t_res, TestName.W: w_res}
         return out
+
+    def comparison_plot_bundle(
+        self,
+        forecast: ForecastGrid,
+        benchmark: ForecastGrid,
+        results: Sequence[EvaluationResult],
+        out_dir: Path,
+    ) -> list[Path]:
+        """``t-test.png`` (information gain with its CI, W-test overlaid) and ``comparison.json``.
+
+        ``docs/EVALUATION_PROTOCOL.md`` § 8 promises comparison plots in the bundle alongside the
+        consistency ones; without them a T/W verdict that decides a promotion has no visual record.
+
+        Must follow a :meth:`compare` call for the same pair on this evaluator: the pycsep result
+        objects carry the test distribution the plot needs and are not reconstructible from an
+        :class:`EvaluationResult`. When they are absent (a comparison undefined for want of target
+        events, or a bundle written by a different evaluator instance) the reason is recorded in
+        ``comparison.json`` under ``skipped`` and no plot is invented.
+        """
+        from csep import plots as csep_plots  # noqa: PLC0415 - heavy import (cartopy) kept local
+        from matplotlib import pyplot as plt  # noqa: PLC0415
+
+        out_dir = Path(out_dir)
+        out_dir.mkdir(parents=True, exist_ok=True)
+        written: list[Path] = []
+        skipped: list[dict[str, str]] = []
+        stashed = self._comparison_results.get((forecast.id, benchmark.id))
+        path = out_dir / "t-test.png"
+        if stashed is None:
+            skipped.append(
+                {
+                    "plot": path.name,
+                    "reason": (
+                        f"no pycsep comparison result for {forecast.id!r} against "
+                        f"{benchmark.id!r} on this evaluator: call compare() first, or the "
+                        "comparison was undefined (no target events)"
+                    ),
+                }
+            )
+        else:
+            t_res, w_res = stashed[TestName.T], stashed[TestName.W]
+            t_res.sim_name = forecast.model_id
+            t_res.obs_name = benchmark.model_id
+            w_res.sim_name = forecast.model_id
+            try:
+                with warnings.catch_warnings():
+                    warnings.simplefilter("ignore")
+                    ax = csep_plots.plot_comparison_test([t_res], [w_res], show=False)
+                    ax.set_title(
+                        f"{forecast.model_id} vs {benchmark.model_id} — {forecast.id}", fontsize=9
+                    )
+                    ax.get_figure().savefig(path, dpi=120, bbox_inches="tight")
+                    plt.close(ax.get_figure())
+                written.append(path)
+            except (OSError, RuntimeError, ValueError, AttributeError) as exc:
+                skipped.append({"plot": path.name, "reason": f"{type(exc).__name__}: {exc}"})
+
+        summary = {
+            "forecast_id": forecast.id,
+            "model_id": forecast.model_id,
+            "benchmark_forecast_id": benchmark.id,
+            "benchmark_model_id": benchmark.model_id,
+            "issue_time": forecast.issue_time.isoformat(),
+            "window_end": forecast.window_end.isoformat(),
+            "evaluator_version": self.evaluator_version,
+            "results": [
+                {
+                    "test": r.test_name.value,
+                    "statistic": r.statistic,
+                    "p_value": r.p_value,
+                    "passed": r.passed,
+                    "n_target_events": r.n_target_events,
+                    "notes": r.notes,
+                }
+                for r in results
+                if r.test_name in (TestName.T, TestName.W)
+            ],
+            "plots": [p.name for p in written],
+            "skipped": skipped,
+            "note": (
+                "information gain per earthquake of the forecast over the benchmark, with the "
+                "T-test confidence interval; a rate comparison, not a statement about "
+                "individual earthquakes."
+            ),
+        }
+        spath = out_dir / "comparison.json"
+        spath.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        written.append(spath)
+        return written
 
     def plot_bundle(
         self,

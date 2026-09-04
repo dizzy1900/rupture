@@ -1,0 +1,31 @@
+{
+  "source": "gem/oq-engine",
+  "source_url": "https://github.com/gem/oq-engine/tree/engine-3.26/openquake/qa_tests_data/scenario/case_1/",
+  "branch": "engine-3.26",
+  "retrieved_at": "2026-09-04T04:40:07Z",
+  "retrieved_with": "urllib (raw.githubusercontent.com)",
+  "licence": "AGPL-3.0-or-later",
+  "adapter_version": "0.1.0",
+  "description": "OpenQuake engine QA test 'scenario/case_1': one simple-fault rupture (Mw 6.5, vertical, hypocentre 0/0/6 km), three sites along 0 E, PGA with BooreAtkinson2008, truncation 1.0, maximum_distance 5 km, 102 ground-motion fields. The expected file is the engine's own gmf_data export for ses_seed=3 as shipped in the repository (branch engine-3.26). Copied verbatim; not edited. rupture's ScenarioGroundMotionJob writes random_seed, not ses_seed, so the sampled values are not reproducible from this file; it is kept as the reference distribution the run is compared against, never as an exact target.",
+  "edited_by_hand": false,
+  "files": [
+    {
+      "path": "expected/BooreAtkinson2008_gmf.csv",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/scenario/case_1/BooreAtkinson2008_gmf.csv",
+      "sha256": "bcce27cbab281d90929f6294280079f96065dc2a3c13f53758eedf5eb134d329",
+      "bytes": 2585
+    },
+    {
+      "path": "job.ini",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/scenario/case_1/job.ini",
+      "sha256": "9c6ba6e3b22f1c2b103affcf723ec743f7c1cbfc688b141bf18e4a79876a1862",
+      "bytes": 616
+    },
+    {
+      "path": "rupture_model.xml",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/qa_tests_data/scenario/case_1/rupture_model.xml",
+      "sha256": "62e2d9036062836868ae56b15eea9114566d32b40b07208b78655f1426895839",
+      "bytes": 727
+    }
+  ]
+}

@@ -26,7 +26,7 @@ import shlex
 import shutil
 import subprocess
 import uuid
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from pathlib import Path
 from typing import Any
 
@@ -78,13 +78,35 @@ class OpenQuakeDocker:
         docker: str = "docker",
         run_timeout_s: float = 3600.0,
         pull_timeout_s: float = 1800.0,
+        erf: job_builder.ErfSettings | None = None,
+        site: job_builder.SiteDepthSettings | None = None,
+        env: Mapping[str, str] | None = None,
         runner: Runner = subprocess.run,
         which: Callable[[str], str | None] = shutil.which,
     ) -> None:
+        """``erf`` and ``site`` carry the classical ``job.ini`` settings that are not fields of
+        :class:`ClassicalPSHAJob`: the ERF discretisation (rupture mesh spacing, MFD bin width,
+        area-source discretisation) and the reference basin depths.
+
+        They belong to the run rather than to the job because they trade accuracy against runtime
+        for a given engine and machine — a real source model such as ESHM20 is run at a coarser
+        discretisation for a first pass than for a published one — and because a calculation
+        reproduced from a stored job must be able to state them. Both default to the values of the
+        engine's bundled demo, which is what every run before this used implicitly.
+
+        ``env`` is passed to the container as ``-e KEY=VALUE``. The one setting that has been
+        needed so far is ``OQ_DISTRIBUTE=no``: under QEMU emulation the engine reaches "Reading
+        the source model(s) in parallel" and does not come back, while the same calculation run
+        serially finishes in about a minute. Nothing is set by default, so an amd64 run uses the
+        engine's own configuration.
+        """
         self.image = image or os.environ.get(IMAGE_ENV) or DEFAULT_IMAGE
         self.docker = docker
         self.run_timeout_s = run_timeout_s
         self.pull_timeout_s = pull_timeout_s
+        self.erf = erf or job_builder.ErfSettings()
+        self.site = site or job_builder.SiteDepthSettings()
+        self.env = dict(env or {})
         self._run = runner
         self._which = which
 
@@ -186,7 +208,9 @@ class OpenQuakeDocker:
     # ------------------------------------------------------------------ port methods
     def run_classical(self, job: ClassicalPSHAJob, work_dir: Path) -> HazardCurveSet:
         """Render, copy inputs, run ``oq engine`` + ``oq export hcurves``, parse mean curves."""
-        staged = self._stage(job, work_dir, job_builder.classical_job_ini(job))
+        staged = self._stage(
+            job, work_dir, job_builder.classical_job_ini(job, erf=self.erf, site=self.site)
+        )
         job_hash = hash_inputs(work_dir, staged)
         self._run_job_dir(work_dir, export_keys=("hcurves",))
         return self._collect_curves(
@@ -265,7 +289,12 @@ class OpenQuakeDocker:
             if not src.is_file():
                 msg = f"input file for {name!r} does not exist: {src}"
                 raise FileNotFoundError(msg)
-            shutil.copyfile(src, work_dir / name)
+            dst = work_dir / name
+            # An input may already sit in the work directory (a sites.csv written there for this
+            # run, a re-stage of the same job). Copying a file onto itself raises; it is already
+            # staged, so there is nothing to do.
+            if not (dst.exists() and src.resolve() == dst.resolve()):
+                shutil.copyfile(src, dst)
             staged.append(name)
         if isinstance(job, ClassicalPSHAJob):
             staged.extend(_copy_source_models(job.source_model_logic_tree, work_dir))
@@ -293,6 +322,7 @@ class OpenQuakeDocker:
         self, work_dir: Path, script: str, *, log_name: str, timeout_s: float
     ) -> subprocess.CompletedProcess[str]:
         name = f"rupture-oq-{uuid.uuid4().hex[:12]}"
+        env_args = [arg for k, v in sorted(self.env.items()) for arg in ("-e", f"{k}={v}")]
         argv = [
             self.docker,
             "run",
@@ -301,6 +331,7 @@ class OpenQuakeDocker:
             name,
             "-v",
             f"{work_dir.resolve()}:{CONTAINER_WORK}",
+            *env_args,
             self.image,
             "bash",
             "-c",

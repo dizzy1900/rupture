@@ -3,13 +3,31 @@
 * ``turkiye-eaf``: ESHM20 (Danciu et al. 2021), OpenQuake input files from the EFEHR GitLab
   project ``efehr/eshm20``, directory
   ``oq_computational/oq_configuration_eshm20_v12e_region_main`` (the mainland model that covers
-  Türkiye). The whole directory is 53 files, about 40 MB (measured through the GitLab files API
+  Türkiye). The whole directory is 55 files, about 40 MB (measured through the GitLab files API
   on 2026-09-03), so ``fetch_eshm20`` downloads all of it at a pinned commit into
   ``data/raw/eshm20/`` and writes ``manifest.json`` (paths, sizes, sha256, blob ids, commit,
   licence text as found in the repository ``LICENSE`` file: CC-BY 4.0 with the citation
-  requirement). The model files are DVC-tracked, not committed.
+  requirement).
+
+  **What a fresh clone has, exactly:** ``manifest.json`` only. It is committed (the ``.gitignore``
+  whitelists manifest sidecars under ``data/raw/``); the 40 MB of model files are neither
+  committed nor DVC-tracked, so ``dvc pull`` does not bring them and nothing on disk matches the
+  manifest until :func:`fetch_eshm20` is re-run against EFEHR GitLab at the recorded ``commit``.
+  The manifest is therefore the *recovery instruction and the integrity check*, not a pointer to
+  a cached copy: re-fetch, then :func:`verify_manifest` confirms every sha256 matches what was
+  first retrieved. :func:`model_present` answers "are the files here" without reading them all,
+  which is what callers and gates should branch on rather than the manifest's existence.
 * ``california`` and ``nepal-himalaya``: no openly licensed NRML model verified;
   :func:`available_models` returns ``[]`` with the gap reason referencing ADR-0008.
+
+**No clip is applied to the fetched model.** ADR-0008 says the adapter "stores the clip metadata
+for the EAF polygon"; it does not, and the manifest has no region or clip key. The whole 40 MB
+mainland directory is fetched because clipping an NRML source model is a modelling operation
+(sources straddling the boundary contribute to hazard inside it), not a file operation, and the
+region restriction belongs where it is now: on the calculation.
+``rupture.pipelines.hazard.eshm20_classical_job`` cuts the classical job to the ``turkiye-eaf``
+polygon taken from the region record, so the clip is derived from the region rather than frozen
+into a download and the two cannot disagree. ADR-0008's sentence needs correcting to match.
 
 ``parse_nrml_header`` is the pure step exercised offline on a committed real excerpt (the head
 of the ESHM20 source-model logic tree).
@@ -56,7 +74,10 @@ GAP_REASON: dict[str, str] = {
     ),
     "nepal-himalaya": (
         "no openly licensed OpenQuake source model found for the Nepal Himalaya (ADR-0008: gap; "
-        "plan: GEM mosaic licensing or a GAF+catalogue model in a new ADR)"
+        "plan: GEM mosaic licensing or a GAF+catalogue model in a new ADR). The 2026-09-03 recon "
+        "behind 'none found' is not itemised in ADR-0008: no candidate model id, licence page or "
+        "date is recorded, so a re-check cannot tell whether a candidate was rejected on "
+        "licence, on format, or was never examined, and must redo the search"
     ),
 }
 
@@ -235,6 +256,7 @@ def fetch_eshm20(
         files.append(
             {
                 "path": p,
+                "source_url": f"{PROJECT_URL}/-/raw/{commit}/{p}",
                 "local_path": str(dest.relative_to(raw_dir)),
                 "size": len(content),
                 "sha256": digest,
@@ -263,6 +285,25 @@ def fetch_eshm20(
         json.dumps(manifest, indent=2, ensure_ascii=False) + "\n", encoding="utf-8"
     )
     return manifest_path
+
+
+def model_present(raw_dir: Path = DEFAULT_RAW_DIR) -> bool:
+    """True when the manifest and both logic-tree files it names are on disk.
+
+    A committed ``manifest.json`` next to no model files is the normal state of a fresh clone, so
+    "the manifest exists" must never be read as "the model is here".
+    """
+    path = Path(raw_dir) / "manifest.json"
+    if not path.is_file():
+        return False
+    try:
+        manifest = read_manifest(raw_dir)
+    except (OSError, ValueError):  # pragma: no cover - unreadable manifest
+        return False
+    return all(
+        (Path(raw_dir) / str(manifest[key])).is_file()
+        for key in ("source_model_logic_tree", "gsim_logic_tree")
+    )
 
 
 def read_manifest(raw_dir: Path = DEFAULT_RAW_DIR) -> dict[str, Any]:

@@ -7,11 +7,23 @@
   "beta_fixed": false,
   "branching_ratio": 0.6428196811752965,
   "branching_ratio_note": null,
+  "converged_reason": "tolerance 0.001 reached",
   "coppersmith_multiplier": 100.0,
   "delta_m": 0.1,
+  "em_tolerance": 0.001,
   "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
   "iterations": 18,
-  "log_likelihood_note": "the etas package does not expose the full point-process log-likelihood at convergence; log_likelihood is null",
+  "log_likelihood_note": "space-time ETAS log-likelihood of the primary window at the fitted theta, conditional on the auxiliary catalogue; magnitudes excluded (fixed beta); no spatial boundary correction, matching the package's own EM objective. See point_process_log_likelihood and ADR-0046.",
+  "log_likelihood_terms": {
+    "background_integral": 63.76508061081213,
+    "log_likelihood": -1759.082855649649,
+    "n_sources": 214,
+    "n_targets": 147,
+    "observed_term": -1612.0835787038502,
+    "triggering_integral": 83.23419633498645
+  },
+  "max_iterations": 200,
+  "max_seconds": 1800.0,
   "mc": 3.0,
   "mc_source": "explicit mc kwarg",
   "n_hat_background": 63.75958637465879,
@@ -55,7 +67,7 @@
       5.0
     ]
   },
-  "runtime_s": 20.722,
+  "runtime_s": 7.236,
   "theta_0": {
     "a": 1.8,
     "gamma": 1.2,

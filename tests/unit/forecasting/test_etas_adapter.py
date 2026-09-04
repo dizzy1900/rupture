@@ -41,7 +41,12 @@ def test_committed_fit_is_consistent(
     assert fit_provenance["parameter_snapshot_hash"] == committed_fit.parameter_snapshot_hash
     assert fit_provenance["training_catalog_hash"] == committed_fit.training_catalog_hash
     assert committed_fit.converged is True
-    assert committed_fit.log_likelihood is None, "the package does not expose it; documented"
+    assert committed_fit.log_likelihood is not None
+    terms = committed_fit.diagnostics["log_likelihood_terms"]
+    assert terms["log_likelihood"] == pytest.approx(committed_fit.log_likelihood)
+    assert terms["observed_term"] - terms["background_integral"] - terms[
+        "triggering_integral"
+    ] == pytest.approx(committed_fit.log_likelihood)
     latest = datetime.fromisoformat(committed_fit.diagnostics["training_max_origin_time"])
     assert latest < committed_fit.fit_cutoff
 

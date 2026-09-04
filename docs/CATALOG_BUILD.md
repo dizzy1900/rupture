@@ -245,6 +245,24 @@ been published to `Region.mc` at all.
   93 % of the California catalogue's Mw values are assumed rather than measured or converted, and
   every one is identifiable by the `assumed-equivalent:` prefix in `mw_conversion`. A cited
   regional relation would be a new ADR and a rebuild.
+
+  **What that share is where it matters** (recomputed 2026-09-04 from the shipped
+  `data/catalogs/california/events.parquet`, 107 601 earthquakes):
+
+  | Slice | Events | `assumed-equivalent` | `identity` (moment) | `scordilis2006` |
+  |---|---|---|---|---|
+  | whole catalogue | 107 601 | 100 660 (93.5 %) | 2 627 | 607 |
+  | at or above the fitted Mc 2.70 | 60 103 | 56 869 (**94.6 %**) | 2 627 | 607 |
+  | at or above the target 3.95 | 3 319 | 1 588 (47.8 %) | 1 124 | 607 |
+
+  The middle row is the one to read: the published California Mc (2.70 maximum curvature, 2.60
+  stability), its b = 1.01, and every ETAS fit trained above that Mc rest on a magnitude
+  distribution that is 95 % assumption. The top row is what the whole file is; the bottom row shows
+  the assumption thinning out at the target threshold, where moment magnitudes dominate, so the
+  *scored targets* are much less affected than the *fitted rate* is. None of this is visible from
+  `Region.mc.notes` in `data/regions/california/region.json`, which records only Mw coverage and b;
+  naming the assumed share there is a one-line change in `commands/catalog.py::region_mc_decision`
+  and belongs to that file's owner.
 - **Fixed windows** merge dense cross-bulletin aftershock pairs within 16 s / 100 km; the lane
   rule protects only same-bulletin pairs. The gate verifies the algorithm's guarantee (no cross-lane
   pair within the windows survives), not that every merge is right.
