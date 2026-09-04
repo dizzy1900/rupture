@@ -1,6 +1,9 @@
-# Local development only (ADR-0016): rupture and the OpenQuake engine side by side.
+# Local development only (ADR-0016): rupture, the HTTP service and the OpenQuake engine.
 #   docker compose -f infra/docker/compose.yml build
 #   docker compose -f infra/docker/compose.yml run --rm rupture hazard check
+#   RUPTURE_API_KEYS=dev-key docker compose -f infra/docker/compose.yml up -d api
+#   curl -s localhost:8000/health | python -m json.tool
+#   curl -s -H "X-API-Key: dev-key" localhost:8000/v1/scenarios
 #   docker compose -f infra/docker/compose.yml up -d openquake   # WebUI on http://127.0.0.1:8800
 # Not used by CI (the hazard-integration job calls `docker run` through the adapter), not a
 # deployment target, and NOT YET EXERCISED (no Docker on the development machine).
@@ -29,6 +32,36 @@ services:
     working_dir: /app
     command: ["rupture", "--help"]
 
+  api:
+    # The combined FastAPI service (ADR-0045): /v1/avoided-loss and /aftershock/forecast in one
+    # process, one /health, one X-API-Key scheme.
+    build:
+      context: ../..
+      dockerfile: infra/docker/Dockerfile
+      target: api
+      args:
+        GIT_SHA: ${GIT_SHA:-dev}
+    image: rupture-api:dev
+    ports:
+      - "127.0.0.1:8000:8000"
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      # No default key: with none set every authenticated route answers 503, which is the
+      # intended behaviour. `RUPTURE_API_KEYS=dev-key docker compose up api` for local use.
+      RUPTURE_API_KEYS: ${RUPTURE_API_KEYS:-}
+      RUPTURE_REPO_ROOT: /app
+      # Issued grids on a volume, so `GET /aftershock/grid/{id}` survives a restart and would be
+      # shared if this were ever scaled past the single worker the image runs.
+      RUPTURE_AFTERSHOCK_GRID_DIR: /app/reports/grids
+    volumes:
+      - ../../src:/app/src
+      - ../../contracts:/app/contracts
+      - ../../data:/app/data
+      - rupture-grids:/app/reports/grids
+    working_dir: /app
+
   openquake:
     image: openquake/engine:3.26.2
     # Headless mode: the image's entrypoint starts the dbserver, then the WebUI on 8800.
@@ -41,3 +74,4 @@ services:
 
 volumes:
   oqdata:
+  rupture-grids:

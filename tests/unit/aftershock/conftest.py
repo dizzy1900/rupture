@@ -19,6 +19,7 @@ from rupture.services.aftershock.sequences import (
     load_sequence_catalog,
     sequence_spec,
 )
+from rupture.services.aftershock.service import LoadedSequence, load_default_sequences
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
 
@@ -46,6 +47,12 @@ def nepal_region(gorkha: SequenceSpec) -> Region:
 @pytest.fixture(scope="session")
 def gorkha_fits(gorkha: SequenceSpec) -> dict[str, FitResult]:
     return load_committed_fits(gorkha, REPO_ROOT)
+
+
+@pytest.fixture(scope="session")
+def loaded_sequences(repo_root: Path) -> dict[str, LoadedSequence]:
+    """Both committed sequences as the service loads them (catalogues, regions, fits on disk)."""
+    return load_default_sequences(repo_root)
 
 
 @pytest.fixture(scope="session")

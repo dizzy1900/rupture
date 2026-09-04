@@ -164,14 +164,31 @@ def test_coverage_end_is_after_the_longest_window(name: str, repo_root: Path) ->
 
 @pytest.mark.parametrize("name", sorted(SEQUENCES))
 def test_committed_fits_cover_every_issue_time(name: str, repo_root: Path) -> None:
+    """The three validation issue times, and the early-hours schedule points before them.
+
+    The early ones (+0, 3, 6, 12 h) were written by ``rupture aftershock refit --through 12h``;
+    before that the service could not answer any issue time in the first day except +1 h.
+    """
     spec = sequence_spec(name)
     fits = load_committed_fits(spec, repo_root)
-    assert len(fits) == 3
+    expected = {
+        spec.mainshock.origin_time + offset
+        for offset in (
+            timedelta(0),
+            timedelta(hours=1),
+            timedelta(hours=3),
+            timedelta(hours=6),
+            timedelta(hours=12),
+            timedelta(days=1),
+            timedelta(days=7),
+        )
+    }
+    assert {datetime.fromisoformat(cutoff) for cutoff in fits} == expected
     for fit in fits.values():
         assert isinstance(fit, FitResult)
         assert fit.converged is True
         assert fit.region_id == f"aftershock-{spec.mainshock.event_id}"
-        assert fit.fit_cutoff > spec.mainshock.origin_time
+        assert fit.fit_cutoff >= spec.mainshock.origin_time
         assert fit.diagnostics["beta_fixed"] is True
         branching = fit.diagnostics["branching_ratio"]
         assert branching is not None

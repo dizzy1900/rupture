@@ -8,8 +8,8 @@ else. Decisions: ADR-0016 (image + manifests), ADR-0011 and ADR-0030 (OpenQuake 
 
 | Artifact | Purpose |
 |---|---|
-| `infra/docker/Dockerfile` (+ `Dockerfile.dockerignore`) | multi-stage build of the locked `uv` environment and the `rupture` CLI on `python:3.12-slim`; non-root user; OCI labels with the git sha |
-| `infra/docker/compose.yml` | local development: `rupture` (`src/`, `contracts/`, `data/` mounted into `/app`) next to `openquake/engine:3.26.2` (named volume `oqdata`, WebUI on 127.0.0.1:8800). **Unexercised**: never brought up (no Docker here) |
+| `infra/docker/Dockerfile` (+ `Dockerfile.dockerignore`) | multi-stage build of the locked `uv` environment and the `rupture` CLI on `python:3.12-slim`; non-root user; OCI labels with the git sha. Two targets: `runtime` (default, the CLI) and `api` (the HTTP service) |
+| `infra/docker/compose.yml` | local development: `rupture` (`src/`, `contracts/`, `data/` mounted into `/app`), `api` (the service on 127.0.0.1:8000) and `openquake/engine:3.26.2` (named volume `oqdata`, WebUI on 127.0.0.1:8800). **Unexercised**: never brought up (no Docker here) |
 | `infra/jobs/*.yaml` + `schema.json` + `README.md` | five portable job manifests with `aws:` annotations, validated in the unit suite |
 | `infra/jobs/examples/turkiye-eaf-classical.json` | example `ClassicalPSHAJob` input (not run) |
 
@@ -18,6 +18,9 @@ else. Decisions: ADR-0016 (image + manifests), ADR-0011 and ADR-0030 (OpenQuake 
 - No Terraform, CDK, CloudFormation or Kubernetes manifests; no hosted platform of any kind
   (non-negotiable 6). The `aws:` blocks are annotations a deployer reads, not infrastructure code.
 - No scheduler implementation; `docs/SCHEDULER.md` (Phase 2B) describes the intended daily run.
+  The aftershock refit schedule is a command (`rupture aftershock refit`, ADR-0045) meant to be
+  run by whatever the deployment already schedules; rupture ships no scheduler and no live
+  catalogue feed to point one at.
 - No registry, no published image. The image has **not been built** on the development machine
   (no Docker); it was reviewed by hand and the CI does not build it yet.
 - No docker CLI inside the rupture image: `rupture hazard ...` requires a host with Docker.
@@ -40,13 +43,18 @@ not build it): the Dockerfile was reviewed by hand only.
 
 - Build context is the repository root; `infra/docker/Dockerfile.dockerignore` (read by BuildKit
   for this Dockerfile) keeps it to `pyproject.toml`, `uv.lock`, `README.md`, `LICENSE`, `src/`,
-  `contracts/`, `data/regions/`.
+  `contracts/`, `data/regions/`, and the two committed runtime input directories
+  `tests/fixtures/risk/` and `tests/fixtures/aftershock/` (see the wart at the end of § The HTTP
+  service).
 - Stage 1 installs `uv` from `ghcr.io/astral-sh/uv:0.11.7`, syncs dependencies from the lock
   (`--locked --no-dev`, `git` present for the pinned ETAS dependency), then installs the project.
-  Stage 2 copies the venv, `src/`, `contracts/` and `data/regions/` (tracked via
-  `data/regions/.gitkeep` until Phase 2A populates it); runs as `rupture` (uid 10001). There is
-  **no `ENTRYPOINT`**: the container command is the full argv (`rupture ...`), exactly as the job
-  manifests' `command` lists it; the default `CMD` is `rupture --help`.
+  Stage 2 (`runtime`) copies the venv, `src/`, `contracts/`, `data/regions/` (tracked via
+  `data/regions/.gitkeep` until Phase 2A populates it) and the committed runtime inputs, sets
+  `RUPTURE_REPO_ROOT=/app`, and runs as `rupture` (uid 10001). There is **no `ENTRYPOINT`**: the
+  container command is the full argv (`rupture ...`), exactly as the job manifests' `command`
+  lists it; the default `CMD` is `rupture --help`. Stage 3 (`api`, built with `--target api`) adds
+  `EXPOSE 8000`, a `HEALTHCHECK` and the uvicorn command — no extra packages: `fastapi` and
+  `uvicorn` are project dependencies already in the venv.
 - Inputs and outputs live on volumes (`/app/data`, `/app/baselines`, `/app/reports`) or come and
   go through DVC; the image contains no data and no credentials. Configuration is environment
   variables named in `.env.example` (`docs/CREDENTIALS.md`).
@@ -54,6 +62,77 @@ not build it): the Dockerfile was reviewed by hand only.
 
 The OpenQuake engine is a second, public image (`openquake/engine:3.26.2`); rupture's image drives
 it through the host's `docker` CLI and does not contain it.
+
+## The HTTP service
+
+One application serves both surfaces (ADR-0045): the avoided-loss contract (`docs/RISK.md`) and
+the aftershock forecast (`docs/AFTERSHOCK.md`), with one health endpoint, one OpenAPI document at
+`/docs` and one API-key scheme.
+
+```bash
+docker build -f infra/docker/Dockerfile --target api \
+  --build-arg GIT_SHA=$(git rev-parse HEAD) -t rupture-api:$(git rev-parse --short HEAD) .
+docker run --rm -p 8000:8000 -e RUPTURE_API_KEYS=change-me rupture-api:<sha>
+
+curl -s localhost:8000/health
+curl -s -H "X-API-Key: change-me" localhost:8000/v1/scenarios
+```
+
+Without a container: `RUPTURE_API_KEYS=change-me uv run uvicorn rupture.services.app:create_app
+--factory --host 0.0.0.0 --port 8000`, or `uv run rupture aftershock serve`.
+
+| Route | Auth | Purpose |
+|---|---|---|
+| `GET /health`, `GET /healthz` | none | liveness, and what each surface is holding. A surface that failed to load reports `status: "unavailable"` with the reason and still returns 200 |
+| `GET /v1/scenarios` | key | the scenarios a loss request may name |
+| `POST /v1/avoided-loss` | key | expected loss, and what an intervention avoids |
+| `POST /aftershock/forecast` | key | probability of at least one further event, for a sequence |
+| `GET /aftershock/grid/{grid_id}` | key | the gridded rate forecast behind a forecast |
+
+| Variable | Meaning |
+|---|---|
+| `RUPTURE_API_KEYS` | comma-separated keys accepted by both surfaces. **With none set every authenticated route answers 503** rather than serving open. `RUPTURE_RISK_API_KEYS`, `RUPTURE_AFTERSHOCK_API_KEYS` and `RUPTURE_AFTERSHOCK_API_KEY` still work per surface |
+| `RUPTURE_REPO_ROOT` | where the committed scenario, exposure and sequence inputs live; `/app` in the image |
+| `RUPTURE_AFTERSHOCK_CATALOGS` | `<name>=<catalog_dir>,<region_file>[,<fits_dir>];...` — built catalogues to serve beyond the two committed validation sequences |
+| `RUPTURE_AFTERSHOCK_GRID_DIR` | where issued grids are kept so `GET /aftershock/grid/{id}` can answer. Unset means an in-process cache of the last 16, not shared between workers |
+| `RUPTURE_AFTERSHOCK_ALLOW_REFIT` | `1` to let a request refit when no scheduled fit exists. Off by default: an EM fit takes tens of seconds |
+| `SERAC_EXPORT_DIR` | the sibling's checkout, when its live export should be used instead of the committed copy |
+
+**Sizing and operations.**
+
+- **One worker.** The image runs `uvicorn --workers 1`. The default grid store is in-process, so a
+  second worker would make `GET /aftershock/grid/{id}` 404 at random for grids another worker
+  issued. To scale out, set `RUPTURE_AFTERSHOCK_GRID_DIR` to a shared volume first.
+- **Memory** is dominated by the loaded catalogues (both committed sequence slices and their fits
+  are read at start-up) and by a forecast's stochastic continuations; 2 GB is a sensible floor and
+  has not been measured under load anywhere.
+- **Latency is not a web latency.** A forecast runs `n_simulations` stochastic continuations
+  inside the request: seconds to tens of seconds at the default 100. Set a generous proxy timeout,
+  or lower `n_simulations` per request.
+- **Keeping fits current** is `rupture aftershock refit --sequence <name>` on a schedule (cron, a
+  systemd timer, EventBridge), writing into the fits directory the service reads. The service
+  re-reads it, so no restart is needed. Nothing refits on its own.
+- **Key rotation**: keys are read from the environment on every request, so a process whose
+  environment is re-exec'd with a new `RUPTURE_API_KEYS` (or a restarted container) rotates
+  without code changes. Keep the old key in the comma-separated list until clients have moved.
+  There is no user model, no session, no rate limiting and no audit log; this is not a
+  public-internet service.
+- **Health check**: the image's `HEALTHCHECK` polls `/health`. It reports liveness, not that a
+  calculation would succeed — read `surfaces.*.status` for that.
+
+**Not verified.** The image has never been built or run (no Docker here; CI does not build it), so
+none of the above has been exercised against a running container. What is checked offline is that
+every path the service reads at run time is copied into the image and not excluded from the build
+context, and that the served factory imports
+(`tests/unit/aftershock/test_deployment_image.py`). A CI job that builds the `api` target and
+curls `/health` is the missing piece.
+
+**A known wart.** The image copies `tests/fixtures/risk/` and `tests/fixtures/aftershock/` into
+`/app` because that is where the committed runtime inputs live (the Gorkha FSP, the HAZUS and GSIM
+tables, the exposure fallback, the two ComCat sequence slices and their fits). Shipping a `tests/`
+directory in a runtime image is not right; moving those inputs under `src/rupture/risk/data/` and
+`src/rupture/services/aftershock/data/` so the wheel carries them is the fix, and it belongs to
+the owners of that model code (ADR-0045).
 
 ## Job manifests
 
@@ -98,6 +177,8 @@ same cron. Nothing in the manifests is AWS-specific outside the `aws:` block.
 ```bash
 docker compose -f infra/docker/compose.yml build
 docker compose -f infra/docker/compose.yml run --rm rupture rupture --version
+RUPTURE_API_KEYS=dev-key docker compose -f infra/docker/compose.yml up -d api
+curl -s localhost:8000/health | python -m json.tool
 docker compose -f infra/docker/compose.yml up -d openquake      # WebUI http://127.0.0.1:8800
 uv run rupture hazard demo                                       # from the host, uses docker run
 ```
@@ -111,4 +192,10 @@ The compose file mounts only `src/`, `contracts/` and `data/` (mounting the whol
 (pull the pinned engine image, `rupture hazard check`, `make validate-hazard`, `pytest
 tests/integration/hazard -m integration`, upload the work directory on failure) on manual dispatch
 and on pushes to `main`. That job sets `RUPTURE_HAZARD_REQUIRE=1`, so a Docker-unavailable skip
-fails it instead of passing silently. Building the rupture image in CI is not wired yet.
+fails it instead of passing silently.
+
+Building the rupture image in CI is **not wired yet**, and neither is the smoke test that would
+prove the `api` target serves: build `--target api`, run it with a throwaway `RUPTURE_API_KEYS`,
+curl `/health` and one authenticated route on each surface. Until that exists, the image's
+servability is a hand review plus the static checks in
+`tests/unit/aftershock/test_deployment_image.py`.

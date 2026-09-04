@@ -5,6 +5,23 @@
   "derived_from": "comcat-nepal-2005-2015-m3.8.geojson",
   "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
   "fits": {
+    "2015-04-25T06:11:25.950000+00:00": {
+      "at_bound": [
+        "log10_k0",
+        "omega"
+      ],
+      "b_value": 1.138125688070699,
+      "beta_fixed": true,
+      "branching_ratio": 0.17982160444190276,
+      "converged": true,
+      "elapsed": "0h",
+      "iterations": 6,
+      "mc": 4.4,
+      "n_events": 35,
+      "parameter_snapshot_hash": "98d3053f3c1e80c2158adf4486aafadea1a3edd92927725184e0a52bad9e80cf",
+      "runtime_s": 3.4,
+      "training_catalog_hash": "f46b5abf7573de75858269c5bb7ff38616c9179f5c87fc0b2979aab0bf2d7243"
+    },
     "2015-04-25T07:11:25.950000+00:00": {
       "at_bound": [
         "log10_k0",
@@ -21,6 +38,56 @@
       "parameter_snapshot_hash": "25f8cbcb808f483b722291564a0b0348933e368110561bbcf99417aa137eee00",
       "runtime_s": 10.7,
       "training_catalog_hash": "b52b69388a5234053e189b316f44768976c4999772b5649fe87bedbe65dd85b9"
+    },
+    "2015-04-25T09:11:25.950000+00:00": {
+      "at_bound": [
+        "log10_k0",
+        "omega"
+      ],
+      "b_value": 1.138125688070699,
+      "beta_fixed": true,
+      "branching_ratio": 0.5319599343270413,
+      "converged": true,
+      "elapsed": "3h",
+      "iterations": 19,
+      "mc": 4.4,
+      "n_events": 79,
+      "parameter_snapshot_hash": "1f581255ee6ffd32156127a8755fa4d4f31b572a042824f8dd59e4e055235288",
+      "runtime_s": 9.9,
+      "training_catalog_hash": "fbc87cedaf22686dd746f8338ed70ae37afa218ef659bcc4e75c66cd54ffdd10"
+    },
+    "2015-04-25T12:11:25.950000+00:00": {
+      "at_bound": [
+        "log10_k0",
+        "omega"
+      ],
+      "b_value": 1.138125688070699,
+      "beta_fixed": true,
+      "branching_ratio": 0.5985314531526306,
+      "converged": true,
+      "elapsed": "6h",
+      "iterations": 23,
+      "mc": 4.4,
+      "n_events": 97,
+      "parameter_snapshot_hash": "46d3468a87d7b4e6f287d7b690c82f65093ed97aa94555f02d0da62c10422c7e",
+      "runtime_s": 9.5,
+      "training_catalog_hash": "ffdeb044d26f2d2691364b261cde14eccf536ccc47172037e4b9d28c1da58f5e"
+    },
+    "2015-04-25T18:11:25.950000+00:00": {
+      "at_bound": [
+        "omega"
+      ],
+      "b_value": 1.138125688070699,
+      "beta_fixed": true,
+      "branching_ratio": 0.612385191849354,
+      "converged": true,
+      "elapsed": "12h",
+      "iterations": 24,
+      "mc": 4.4,
+      "n_events": 108,
+      "parameter_snapshot_hash": "3730c09b704a915368dbaf2e15ca1e3a6eb1774959be214ba99739b28b6cca89",
+      "runtime_s": 12.7,
+      "training_catalog_hash": "e291f452ae35644c9944645815e27823f42e28a5e86d9f293ca5cc7143921310"
     },
     "2015-04-26T06:11:25.950000+00:00": {
       "at_bound": [
@@ -61,5 +128,9 @@
   "region_id": "aftershock-us20002926",
   "sequence": "gorkha",
   "source_sha256": "7fdba62a5bd64559f6429dc4c5118313d0510709d218d85ea83af28a010e4610",
+  "updated_at": "2026-09-04T04:06:34.588020+00:00",
+  "written_by": [
+    "rupture aftershock refit"
+  ],
   "zone_radius_note": "Wells & Coppersmith (1994) subsurface rupture length x 1.5; see rupture.services.aftershock.window"
 }

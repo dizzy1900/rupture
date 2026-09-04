@@ -1,7 +1,16 @@
-# rupture deployment unit (ADR-0016): the locked uv environment plus the `rupture` CLI.
-# Build from the repository root:
+# rupture deployment unit (ADR-0016): the locked uv environment plus the `rupture` CLI, and the
+# HTTP service built on the same layers (ADR-0036).
+#
+# Two targets. The default (`runtime`) is the CLI image the job manifests use; `api` adds the port
+# and the uvicorn command for the combined FastAPI service.
+#
 #   docker build -f infra/docker/Dockerfile --build-arg GIT_SHA=$(git rev-parse HEAD) -t rupture:dev .
 #   docker run --rm rupture:dev rupture --version
+#
+#   docker build -f infra/docker/Dockerfile --target api -t rupture-api:dev .
+#   docker run --rm -p 8000:8000 -e RUPTURE_API_KEYS=changeme rupture-api:dev
+#   curl -s localhost:8000/health
+#
 # Not yet built anywhere (no Docker on the development machine, not wired in CI): reviewed by hand.
 # Context ignores are in infra/docker/Dockerfile.dockerignore (BuildKit reads <Dockerfile>.dockerignore).
 # The OpenQuake engine is NOT in this image; rupture drives the separate pinned image
@@ -58,9 +67,19 @@ COPY --from=builder --chown=rupture:rupture /app/.venv /app/.venv
 COPY --chown=rupture:rupture src/ /app/src/
 COPY --chown=rupture:rupture contracts/ /app/contracts/
 COPY --chown=rupture:rupture data/regions/ /app/data/regions/
+# Committed runtime inputs that the risk and aftershock surfaces read through RUPTURE_REPO_ROOT:
+# the Gorkha FSP and the HAZUS/GSIM/exposure tables (tests/fixtures/risk/), and the two ComCat
+# sequence slices with their ETAS fits (tests/fixtures/aftershock/). Without them
+# `scenarios.builtin()` raises on every /v1/avoided-loss request and the aftershock surface loads
+# no sequences. They live under tests/ because that is where the committed slices are (ADR-0028
+# and docs/AFTERSHOCK.md limitation 11); moving them under src/rupture/*/data/ so the wheel
+# carries them is the proper fix and belongs to the model owners, not to this Dockerfile.
+COPY --chown=rupture:rupture tests/fixtures/risk/ /app/tests/fixtures/risk/
+COPY --chown=rupture:rupture tests/fixtures/aftershock/ /app/tests/fixtures/aftershock/
 
 ENV PATH="/app/.venv/bin:$PATH" \
     PYTHONUNBUFFERED=1 \
+    RUPTURE_REPO_ROOT=/app \
     RUPTURE_GIT_SHA="${GIT_SHA}"
 
 # Inputs and outputs live on mounted volumes, never in the image (ADR-0016).
@@ -70,3 +89,18 @@ USER rupture
 # No ENTRYPOINT: the job manifests pass the full argv (`rupture ...`) as the container command,
 # and a deployer may wrap it in `sh -c '...'`.
 CMD ["rupture", "--help"]
+
+# ---------------------------------------------------------------- api
+# The same runtime layers with a port and a server command. Nothing is installed here: `uvicorn`
+# and `fastapi` are project dependencies, already in the venv above.
+FROM runtime AS api
+
+# One application, both surfaces (ADR-0036): /v1/avoided-loss and /aftershock/forecast, one
+# /health, one X-API-Key scheme. RUPTURE_API_KEYS must be set or every authenticated route
+# answers 503 -- the service refuses rather than running open.
+EXPOSE 8000
+ENV RUPTURE_SERVICE_PORT=8000
+HEALTHCHECK --interval=30s --timeout=5s --start-period=60s --retries=3 \
+  CMD ["python", "-c", "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://127.0.0.1:8000/health', timeout=4).status == 200 else 1)"]
+CMD ["uvicorn", "rupture.services.app:create_app", "--factory", \
+     "--host", "0.0.0.0", "--port", "8000", "--workers", "1"]
