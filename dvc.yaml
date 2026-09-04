@@ -1,7 +1,30 @@
 # rupture DVC pipeline. Stages are declared per test region; outputs are DVC-tracked, not git-tracked.
 # `dvc repro` needs network access (catalogue fetches). The offline gates never call it.
-# Remote: `.dvc/local-remote` is a placeholder for a fresh clone; production points at S3 via
-#   dvc remote modify local url s3://<bucket>/rupture   (see docs/ARCHITECTURE.md § Data layer)
+#
+# STATE OF THE REMOTE (2026-09-04), stated plainly because the tracking metadata below looks
+# complete and is not backed by anything a fresh clone can reach:
+#
+#   .dvc/config points `remote "local"` at the relative path `local-remote`. That directory does
+#   not exist in this repository and is git-ignored, so it is a name, not a store. Nothing has ever
+#   been pushed: `dvc status -c` lists every `data/catalogs/*` and `baselines/etas/*` output as
+#   `new`. A fresh clone therefore gets the dvc.lock hashes and no way to obtain the bytes they
+#   name; `dvc pull` fails. The only copies of the three published ETAS fits are a working tree and
+#   its .dvc/cache. docs/ETAS_BASELINE.md § Published fits is the human-readable mitigation (the
+#   parameters, diagnostics and log-likelihoods in a committed document), not a recoverable
+#   FitResult.
+#
+#   Making this real needs storage nobody has provisioned. The steps, in order, when it exists:
+#       dvc remote add -d -f store s3://<bucket>/rupture     # or gs://, azure://, ssh://
+#       dvc remote modify store <credentials per docs/CREDENTIALS.md>
+#       dvc push                                             # then commit .dvc/config
+#   Until `dvc push` has run, a release must not claim the artefacts are recoverable.
+#
+# STATE OF dvc.lock (2026-09-04): stale, and knowingly so. It records the `fit_etas` command
+# without `--max-seconds 21600`, and its `src/rupture/adapters/forecasting` dependency hash predates
+# the log-likelihood work (ADR-0036), so `dvc status` reports all three fit stages as changed. It
+# cannot be refreshed with `dvc commit` here because the outputs are not in this working tree; it
+# must be refreshed by whoever next runs `dvc repro fit_etas@<region>` with the catalogues in hand.
+# That run will also give the persisted fits the `log_likelihood` field they currently lack.
 
 vars:
   - regions: [california, nepal-himalaya, turkiye-eaf]

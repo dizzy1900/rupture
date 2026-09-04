@@ -20,6 +20,15 @@
 * ``california`` and ``nepal-himalaya``: no openly licensed NRML model verified;
   :func:`available_models` returns ``[]`` with the gap reason referencing ADR-0008.
 
+**No clip is applied to the fetched model.** ADR-0008 says the adapter "stores the clip metadata
+for the EAF polygon"; it does not, and the manifest has no region or clip key. The whole 40 MB
+mainland directory is fetched because clipping an NRML source model is a modelling operation
+(sources straddling the boundary contribute to hazard inside it), not a file operation, and the
+region restriction belongs where it is now: on the calculation.
+``rupture.pipelines.hazard.eshm20_classical_job`` cuts the classical job to the ``turkiye-eaf``
+polygon taken from the region record, so the clip is derived from the region rather than frozen
+into a download and the two cannot disagree. ADR-0008's sentence needs correcting to match.
+
 ``parse_nrml_header`` is the pure step exercised offline on a committed real excerpt (the head
 of the ESHM20 source-model logic tree).
 """
@@ -65,7 +74,10 @@ GAP_REASON: dict[str, str] = {
     ),
     "nepal-himalaya": (
         "no openly licensed OpenQuake source model found for the Nepal Himalaya (ADR-0008: gap; "
-        "plan: GEM mosaic licensing or a GAF+catalogue model in a new ADR)"
+        "plan: GEM mosaic licensing or a GAF+catalogue model in a new ADR). The 2026-09-03 recon "
+        "behind 'none found' is not itemised in ADR-0008: no candidate model id, licence page or "
+        "date is recorded, so a re-check cannot tell whether a candidate was rejected on "
+        "licence, on format, or was never examined, and must redo the search"
     ),
 }
 

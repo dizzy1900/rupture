@@ -134,7 +134,11 @@ rupture therefore does not use. Fits are reproducible through the fixed `theta_0
 
 Non-negotiable 3 requires the baseline's parameters and fit diagnostics to be published. The fits
 are outputs of the `fit_etas` DVC stages (`baselines/etas/<region>/`, DVC-tracked, not in git);
-this table is the published record. All three are at the protocol's training cutoff
+this table is the published record — and, today, the only recoverable one. The DVC remote is a
+placeholder directory that does not exist and has never been pushed to (`dvc.yaml` header), so a
+fresh clone cannot `dvc pull` these fits: the numbers below are committed prose, the artefacts are
+not committed at all. Treat the table as the record and `baselines/etas/` as a local cache until a
+real remote exists and `dvc push` has run. All three are at the protocol's training cutoff
 `2022-01-01T00:00:00Z`, use the region's published maximum-curvature Mc, and a 2-year auxiliary
 window. Every fit is also archived under `baselines/etas/<region>/fits/<cutoff>/`, so a schedule's
 refits never destroy the fit its own DVC stage declares.
