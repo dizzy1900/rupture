@@ -24,12 +24,14 @@ Rules:
 1. Magnitudes are homogenised Mw (`GLOSSARY.md` § Magnitude types). Depth is hypocentral depth
    from the winning source after homogenisation.
 2. The California threshold and depth are the RELM conventions and are not expected to change.
-3. The Nepal and Türkiye thresholds are **provisional** until the fitted Mc for each region is
-   published in `data/regions/<region>/region.json` by `rupture catalog build`. The rule for
-   setting them is: target threshold ≥ published Mc (maximum-curvature +0.2 and b-value
-   stability must both be at or below the threshold). If the published Mc is above the
-   provisional value, the threshold rises and an ADR records the change. Thresholds are never
-   lowered below Mc, and never changed after a schedule has started without an ADR.
+3. The Nepal and Türkiye thresholds were **provisional** (4.5 and 4.0) until the fitted Mc for
+   each region was published in `data/regions/<region>/region.json` by `rupture catalog build`.
+   The rule for setting them was: target threshold ≥ published Mc (maximum-curvature +0.2 and
+   b-value stability must both be at or below the threshold). **That question is now closed.**
+   The published Mc came in above both provisional values, so the thresholds rose to **4.7**
+   (Nepal) and **4.6** (Türkiye) under ADR-0019, before any schedule was run. The provisional
+   values are historical and appear nowhere in the scoring. Thresholds are never lowered below
+   Mc, and are never changed after a schedule has started without an ADR.
 4. Polygons are fixed at the time the first forecast is issued and stored with the region record.
 
 ## 2. Magnitude bins
@@ -164,23 +166,36 @@ There is no other route to promotion. The baseline's own pass rates are publishe
   issue time, horizon, target count, excluded non-earthquake count, `parameter_snapshot_hash`,
   each test's statistic/quantile/pass, and the `n_only` flag; plus aggregates: pass rate per test
   with denominator, refit log, catalogue build hash, pycsep version, seed.
-- `reports/` is not committed; schedule results that inform `RELEASE_STATUS.md` are DVC-tracked.
+- `reports/` is ignored by default, but **the evidence behind published claims is committed**:
+  `reports/protocol/<region>/eval/schedule-*.json` (the protocol runs, written with
+  `--out reports/protocol/<region>`), `reports/challenger/<region>/` (the challenger schedules and
+  the figures drawn from them), `reports/aftershock/` and the model cards. The per-forecast plot
+  bundles and target slices under `reports/protocol/<region>/eval/<forecast_id>/` are committed
+  too — 688 PNGs and 116 parquet slices — so a reader can check any single window rather than only
+  the aggregate. What is *not* committed is anything regenerable that nothing published points at.
 
 ## 12. What this protocol cannot tell you
 
-- **Short windows.** With 30-day windows and thresholds of M ≥ 4.0–4.5, many Nepal and Türkiye
-  windows contain a handful of events or none. Consistency tests on such windows have little
-  power; a high pass rate there is weak evidence.
+- **Short windows.** With 30-day windows and thresholds of M ≥ 4.6 (Türkiye) and M ≥ 4.7 (Nepal),
+  many windows contain a handful of events or none — 33 of Nepal's 55 held no target event at all.
+  Consistency tests on such windows have little power; a high pass rate there is weak evidence, and
+  a window with no target event decides nothing and is excluded from the denominator rather than
+  scored as a pass.
 - **Sparse regions.** Pass rates for `nepal-himalaya` and `turkiye-eaf` are dominated by the
   aftershock sequences of Gorkha (2015, before the cutoff) and Kahramanmaraş (2023, inside the
   schedule). The schedule tells you how ETAS behaved in and around one large sequence per region,
   not how it behaves in general.
 - **Nepal completeness.** The Nepal catalogue is thin before about 2000 and its completeness
-  varies with network changes; the provisional M ≥ 4.5 threshold is chosen for that reason. ETAS
-  parameters fitted there carry wide uncertainty, which the fit diagnostics report.
+  varies with network changes; that is why the threshold sits where it does. The published
+  estimates are Mc 4.40 by maximum curvature (+0.2) and **4.70 by b-value stability**, against a
+  4.7 target — the target is *at* the completeness limit, not comfortably above it. A further 596
+  Nepal events are reported only as ML or Md, carry `mw = None` under the `strict` magnitude
+  policy, and enter neither the Mc estimate nor any fit. ETAS parameters fitted there carry wide
+  uncertainty, which the fit diagnostics report. See `docs/CATALOG_BUILD.md`.
 - **No skill claim from consistency alone.** Passing N/M/S/L means the forecast is not rejected;
-  it does not mean the forecast is useful. Only the paired comparison speaks to skill, and only
-  once challengers exist (Prompt 2).
+  it does not mean the forecast is useful. Only the paired comparison speaks to skill. The
+  challengers now exist and have been scored under this protocol; none was promoted
+  (`reports/CHALLENGER_EVALUATION.md`).
 - **Nothing about individual events.** The protocol scores rates over cells and windows. It has
   no statement to make about any single future earthquake.
 

@@ -279,8 +279,11 @@ with its `trigger_id`, optional `horizon`, `loss_types`, `interventions`, `inter
 `AvoidedLossResponse` (`status`, `baseline` `LossResult`s, one `InterventionOutcome` per
 intervention with `avoided_expected` and `avoided_interval`, `model_ids`, `provenance`) form
 rupture's public output contract for any downstream decision layer, shipped as one envelope
-`{request, response}` in `contracts/avoided-loss.v0.json`. The computation is Prompt 2; the
-contract is published now and `rupture underwriting-check` round-trips the example request.
+`{request, response}`. The published shape is now **`contracts/avoided-loss.v1.json`**
+(`AvoidedLossRequestV1` / `AvoidedLossResponseV1`), reconciled with `serac`'s under ADR-0021;
+`avoided-loss.v0.json` remains published because a version is never withdrawn. The computation is
+implemented: `rupture underwriting-check` prices the serac Trishuli corridor against the MHT
+scenario and prints expected and avoided loss with intervals, refusing to exit 0 on a stub.
 
 **Scenario risk** — Loss for one specified rupture (magnitude, geometry, GSIM). Needs no
 time-dependent forecast. **Event-based risk** — Loss statistics over a stochastic event set
@@ -300,8 +303,9 @@ movement that can enter a catalogue as a seismic event.
 catalogued event (`event_id`, `source_catalog`), the probabilities `p_mass_movement`
 (landslide, ice avalanche, rockfall), `p_tectonic` and `p_other`, summing to 1, with the
 `classifier_id`/`classifier_version`, human-readable `evidence` and numeric `features` used.
-Interface and fixtures only in Prompt 1 (`contracts/source-type-assessment.v0.json`;
-example in `tests/contract/fixtures/serac/`).
+The contract and its fixtures are published (`contracts/source-type-assessment.v0.json`; example in
+`tests/contract/fixtures/serac/`) and rupture runs its own discriminator against them
+(`src/rupture/cascade/discriminator.py`, `rupture cascade discriminate`).
 
 ## Data formats
 

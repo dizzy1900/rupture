@@ -1,8 +1,14 @@
 # Architecture
 
 rupture does not predict earthquakes. This document describes how the system that issues and
-scores rate forecasts, computes hazard and (from Prompt 2) loss and cascades, is put together.
-Decisions are recorded in `docs/adr/`; this document explains the shape, not the rationale.
+scores rate forecasts, computes hazard, loss and cascades, and serves an operational aftershock
+forecast, is put together. Decisions are recorded in `docs/adr/`; this document explains the shape,
+not the rationale.
+
+Current as of 2026-09-03, with Prompt 1 and Prompt 2 both complete. Where the shape described here
+and the tree disagree, the tree is right: `src/rupture/validation/registry.py` is the authority on
+gates, `src/rupture/cli.py` on CLI nouns, `ls contracts/` on the published contract surface, and
+`RELEASE_STATUS.md` on what has actually run.
 
 ## 1. C4 — context
 
@@ -24,47 +30,61 @@ flowchart LR
   providers --> R
   R <--> OQ
   R <--> DVC
-  R -- "contracts/avoided-loss.v0.json<br/>contracts/*.v0.json" --> C
-  R <-. "copy schema files<br/>avoided-loss.v0.json<br/>source-type-assessment.v0.json" .-> S
+  R -- "contracts/avoided-loss.v1.json<br/>+ 18 more versioned schemas" --> C
+  R <-. "copy schema files<br/>avoided-loss.v1 · source-type-assessment.v0<br/>serac's slope-unit.v0" .-> S
 ```
 
 - rupture pulls from public catalogues and model repositories; it never pushes to them.
 - The OpenQuake engine runs in a pinned Docker container; rupture talks to it through a typed
-  adapter (job files in, CSV exports out), never by importing `openquake.*`.
+  adapter (job files in, CSV exports out), never by importing `openquake.*`. Prompt 2 added a
+  **second** ground-motion path — native GSIM implementations verified against OpenQuake's own
+  committed test vectors — because the container is amd64-only and the gates must run offline from
+  a fresh clone (ADR-0020). Both are described in § 5.
 - Downstream consumers integrate only through the versioned JSON Schemas in `contracts/`.
 - `serac` is a separate standalone repository. The two exchange schema *files*; neither is a code
-  dependency of the other. As of 2026-09-03 `serac` is empty, so rupture publishes first.
+  dependency of the other. `serac` is **not** empty: it has AOIs, and rupture consumes them through
+  a labelled fallback while waiting for a real `slope-unit.v0` export (§ 6, ADR-0027).
 
 ## 2. C4 — containers
 
 ```mermaid
 flowchart TB
-  CLI["rupture CLI (typer)<br/>catalog · forecast · evaluate · hazard · schema · validate · promote"]
-  P["pipelines/<br/>build_catalog · fit_etas · run_forecast · evaluate"]
-  A["adapters/<br/>catalogs · sources · forecasting · evaluation · hazard · storage"]
+  CLI["rupture CLI (typer)<br/>catalog · region · forecast · evaluate · hazard<br/>cascade · risk · aftershock · schema · validate<br/>promote · underwriting-check"]
+  P["pipelines/<br/>build_catalog · fit_etas · run_forecast · evaluate<br/>completeness · magnitudes · schedule · hazard · io"]
+  L["risk/ · cascade/ · models/ · services/<br/>the Prompt-2 layers"]
+  A["adapters/<br/>catalogs · sources · forecasting · evaluation · hazard<br/>groundmotion · exposure · vulnerability · cascade · storage"]
   D["domain/ + ports/<br/>pure pydantic models · Protocols"]
-  ST["storage<br/>GeoParquet (catalogues, faults)<br/>zarr (forecast grids)<br/>STAC items (forecast index)<br/>DVC (data/, baselines/)"]
+  ST["storage<br/>GeoParquet (catalogues, faults)<br/>zarr (forecast grids)<br/>STAC items (forecast index)<br/>JSONL run log · DVC (data/, baselines/)"]
   OQC["OpenQuake container"]
-  V["validation/<br/>make validate-* gates"]
+  V["validation/<br/>make validate-* gates (10)"]
+  RP["reporting/<br/>figures drawn from committed evidence"]
 
   CLI --> P --> A
+  CLI --> L --> A
   A --> D
   P --> D
+  L --> D
   A --> ST
   A --> OQC
   CLI --> V
   V --> D
+  RP --> ST
 ```
 
 | Container | Responsibility | Lives in |
 |---|---|---|
 | CLI | one entry point, `rupture ...`; one typer sub-application per noun; not-yet-implemented verbs exit 2 with the phase that delivers them | `src/rupture/cli.py`, `src/rupture/commands/<noun>.py` |
 | Pipelines | orchestration of a whole job (catalogue build, fit, issue, evaluate); pure functions over ports | `src/rupture/pipelines/` |
-| Adapters | the only code that touches the network, disk formats or Docker | `src/rupture/adapters/` |
+| Risk (F2) | ground motion → damage → loss → avoided loss, plus the FastAPI avoided-loss service | `src/rupture/risk/` (`damage`, `loss`, `avoided_loss`, `scenarios`, `exposure_schema`, `service`) |
+| Cascade (F3) | ground-failure models from published coefficients, static covariates, the mass-movement discriminator | `src/rupture/cascade/` |
+| Models | the challengers and the ensemble, and the dataset layer they share | `src/rupture/models/{challengers,data,ensemble}/` |
+| Services | operational products with an API of their own | `src/rupture/services/aftershock/` |
+| Adapters | the only code that touches the network, disk formats or Docker | `src/rupture/adapters/` (ten families, listed in § 3) |
 | Domain + ports | models and Protocols; import nothing from the layers above (import-linter) | `src/rupture/domain/`, `src/rupture/ports/` |
-| Storage | GeoParquet, zarr, STAC writers; DVC tracks the outputs | `src/rupture/adapters/storage/`, `data/`, `baselines/` |
+| Storage | GeoParquet, zarr, STAC and JSONL run-log writers; DVC tracks the outputs | `src/rupture/adapters/storage/`, `data/`, `baselines/` |
 | OpenQuake container | classical PSHA and scenario ground motion | `openquake/engine:3.26.2`, driven by `adapters/hazard/openquake_docker.py` |
 | Validation | the gates behind `make validate-*`; each a `run(...) -> GateResult` | `src/rupture/validation/` |
+| Reporting | figures for `reports/*.md`, drawn only from committed evidence; loads no model and issues no forecast | `src/rupture/reporting/` |
 
 ## 3. C4 — components: ports and adapters
 
@@ -75,12 +95,26 @@ flowchart TB
 | `ForecastModel` | `model_id`, `model_version`; `fit(catalog, region, cutoff) -> FitResult`; `forecast(history, issue_time, horizon) -> ForecastGrid`; `parameter_snapshot() -> dict` | `forecasting/etas_mizrahi.py` | 2B |
 | `Evaluator` | `evaluator_version`; `evaluate(forecast, target, tests, *, n_simulations=1000, alpha=0.05, seed=None) -> list[EvaluationResult]`; `compare(forecast, benchmark, target, *, alpha=0.05)` for paired T/W; `plot_bundle(forecast, target, results, out_dir)` | `evaluation/pycsep.py` | 2B |
 | `HazardEngine` | `engine_id`, `engine_version`; `available() -> (bool, reason)`; `run_classical(ClassicalPSHAJob, work_dir) -> HazardCurveSet`; `run_scenario(ScenarioGroundMotionJob, work_dir) -> Path`. The two typed job models live in `ports/hazard_engine.py` | `hazard/openquake_docker.py` | 2C |
-| `GridStore` | `save(grid) -> locator`; `load(forecast_id) -> ForecastGrid`; `list_ids(*, region_id, model_id)` | `storage/zarr.py`, `storage/stac.py` | 2B |
-| `Tracker` | `log(RunRecord)`; `records(*, kind, region_id)`. `RunRecord.kind` is one of `fit`, `refit`, `issue`, `evaluate`, `build_catalog`, and carries `parameter_snapshot_hash` | file-backed run log adapter under `storage/`; module name fixed when implemented | 2B |
+| `GridStore` | `save(grid) -> locator`; `load(forecast_id) -> ForecastGrid`; `list_ids(*, region_id, model_id)` | `storage/zarr_store.py`, `storage/stac.py` | 2B |
+| `Tracker` | `log(RunRecord)`; `records(*, kind, region_id)`. `RunRecord.kind` is one of `fit`, `refit`, `issue`, `evaluate`, `build_catalog`, and carries `parameter_snapshot_hash` | `storage/run_log.py` (`JsonlTracker`) | 2B |
+| `GroundMotionEngine` | `available() -> (bool, reason)`; `scenario(...) -> GroundMotionField` for one rupture at a set of sites; `supported_gsims()` — a GSIM absent from that tuple must not be requested | `groundmotion/native.py` (BC Hydro, BSSA14, verified against OpenQuake's committed vectors), `groundmotion/openquake_scenario.py` (the container path) | C2 |
+| `ExposureSource` | `load(path=None, *, portfolio_id) -> ExposurePortfolio`; fetch or fail, never synthesise silently | `exposure/serac_export.py`, `exposure/geoparquet_import.py` | C2 |
+| `VulnerabilityModel` | `fragility_for(taxonomy, imt) -> FragilityModel \| None`; `consequence_for(taxonomy)`; `portfolio_loss(...) -> ` expected loss with an interval. Returning `None` is the honest answer where no published function exists | `vulnerability/hazus.py`, `vulnerability/hydropower.py`, `vulnerability/library.py` | C2 |
+| `CascadeModel` | `evaluate(field, *, scenario_id) -> GroundFailureField`: shaking plus static conditioning factors to susceptibility | `cascade/product.py`, `cascade/reproduction.py`, `cascade/shakemap.py`, `cascade/gorkha.py` (the models themselves are in `src/rupture/cascade/models.py`) | C3 |
+| `SlopeUnitSource` | `units_for(aoi_id)`; `exposure(...) -> CascadeExposure`. Reads serac's export, or a committed fixture fallback that labels itself as one | `cascade/serac.py` | C3 |
 
 Rules enforced by import-linter (`pyproject.toml`): `domain` imports nothing from `adapters`,
-`pipelines`, `cli` or `validation`; `ports` imports only `domain`; adapter families do not import
-each other. A domain model never knows which agency or library produced its data.
+`pipelines`, `cli`, `validation`, `commands`, `risk`, `cascade`, `models` or `services`; `ports`
+imports only `domain`; and the five original adapter families (`catalogs`, `sources`,
+`forecasting`, `evaluation`, `hazard`) do not import each other. A domain model never knows which
+agency or library produced its data.
+
+**What those contracts do not cover, stated plainly.** The independence contract was written for
+five adapter families and has not been extended to `groundmotion`, `exposure`, `vulnerability`,
+`cascade` or `storage`. Nothing forbids `cascade` importing `models`, and `models` already imports
+`pipelines` — six import statements across three modules — an inward-facing model reaching into
+the orchestration layer. Both are
+recorded in `RELEASE_STATUS.md` § Known gaps; a green `lint-imports` says nothing about them.
 
 ## 4. Batch forecast lifecycle
 
@@ -132,44 +166,81 @@ refuses to overwrite a differing grid.
 ## 5. Hazard / risk lane (F0, F2)
 
 ```
-source model (NRML) + GSIM logic tree
-        │  ClassicalPSHAJob / ScenarioGroundMotionJob  (typed job → job.ini + inputs)
-        ▼
-OpenQuake engine (Docker, pinned)  ──►  hazard curves / GMFs (CSV export)
-        │  result parser
-        ▼
-HazardCurveSet                                   ┐
-        │                                        │ Prompt 2
-        ▼                                        │
-ExposurePortfolio + fragility/vulnerability ──► LossResult ──► AvoidedLossResponse
-                                                 ┘
+source model (NRML) + GSIM logic tree          ScenarioRupture (Gorkha / MHT / stochastic)
+        │  ClassicalPSHAJob                             │
+        ▼                                               ▼
+OpenQuake engine (Docker, pinned)              GroundMotionEngine
+        │  result parser                        ├─ native GSIMs (offline, verified)
+        ▼                                       └─ openquake_scenario (container)
+HazardCurveSet   (F0)                                   │
+                                                        ▼
+                        ExposurePortfolio ──► GroundMotionField
+                                │                       │
+                                ▼                       ▼
+                     VulnerabilityModel ──────► damage ──► LossResult (MoneyRange + interval)
+                                                        │
+                                                        ▼
+                                             AvoidedLossResponseV1  (F2)
+                                                  │           │
+                                                  ▼           ▼
+                                     rupture underwriting-check   FastAPI (rupture.risk.service)
 ```
 
-- **Prompt 1** delivers the adapter, the typed job builder, the parser to `HazardCurveSet`, the
-  OpenQuake bundled demo as an integration test, and ESHM20 ingestion for `turkiye-eaf`. No open
-  NRML source model has been verified for `california` or `nepal-himalaya` (ADR-0008); those are
-  recorded gaps, not silently substituted.
-- **Prompt 2** delivers F2: exposure ingestion, scenario and event-based risk through the same
-  adapter, and the avoided-loss computation. The **contract is published now**
-  (`contracts/avoided-loss.v0.json`) so that consumers can build against it; `make
-  underwriting-check` validates the request round-trip and exits non-zero "not implemented:
-  Prompt 2".
+- **F0 (Prompt 1)** delivers the adapter, the typed job builder, the parser to `HazardCurveSet`,
+  the OpenQuake bundled demo as an integration test, and ESHM20 ingestion for `turkiye-eaf`. No
+  open NRML source model has been verified for `california` or `nepal-himalaya` (ADR-0008), and
+  **no PSHA has been run for any region**; those are recorded gaps, not silently substituted.
+- **F2 (Prompt 2)** is implemented end to end: exposure ingestion (serac export or GeoParquet
+  import), a scenario ground-motion field, HAZUS and hydropower fragility with consequence
+  functions, portfolio loss with intervals, and the avoided-loss computation. It is served two
+  ways — `rupture risk run` / `rupture underwriting-check` on the CLI, and the FastAPI application
+  at `rupture.risk.service:app`, which has been exercised with `TestClient` and **never served
+  outside tests**.
+- **Two ground-motion adapters, not one** (ADR-0020). The container path cannot run on an arm64
+  host and cannot run offline, and the gates must do both, so the native GSIMs are the ones the
+  risk gate and `underwriting-check` use. They are not a reimplementation taken on trust: every
+  entry in the registry is checked against OpenQuake's own committed expected values at gate time,
+  along with the sha256 of the coefficient tables. What this means for the brief's wording is set
+  out in `RELEASE_STATUS.md` § Prompt 2 Gates: **`validate-risk` does not start the OpenQuake
+  container**; `validate-hazard` is the gate that does, and only in CI.
+- **`make underwriting-check` prices the portfolio.** It loads the serac Trishuli corridor,
+  answers an `AvoidedLossRequestV1` against the MHT scenario, and prints expected loss and avoided
+  loss with intervals, confidence tiers and provenance — exiting non-zero if any figure is missing
+  or the response is a stub. The contract it round-trips is `contracts/avoided-loss.v1.json`
+  (ADR-0021); `avoided-loss.v0.json` remains published because a version is never withdrawn.
 
 ## 6. Cascade lane and the `serac` interface (F3)
 
-F3 (Prompt 2) takes a scenario or a large observed event, runs or ingests USGS ground-failure
-models (landslide, liquefaction), overlays exposure, and reports cascade footprints. Its interface
-to the sibling `serac` repository is two file contracts:
+F3 (Prompt 2) takes a scenario or a large observed event, runs the two USGS ground-failure models
+(Nowicki Jessee 2018 for landslide, Zhu 2017 for liquefaction) from their published coefficients,
+overlays exposure, and reports cascade footprints. It never states that a slope will fail; it
+reports susceptibility and what is exposed to it.
 
-| Contract | Direction | Meaning |
+Its interface to the sibling `serac` repository is four file contracts, in both directions:
+
+| Contract | Direction | State |
 |---|---|---|
-| `contracts/source-type-assessment.v0.json` | serac → rupture (and rupture's own catalogue tagging) | for a catalogued event, the probability that it is a mass movement (landslide, ice avalanche, rockfall) rather than a tectonic rupture, with the evidence used |
-| `contracts/avoided-loss.v0.json` | rupture → consumers, shared shape with serac | expected loss with and without an intervention, with intervals, for a scenario or forecast |
+| `contracts/source-type-assessment.v0.json` | serac → rupture (and rupture's own catalogue tagging) | for a catalogued event, the probability that it is a mass movement (landslide, ice avalanche, rockfall) rather than a tectonic rupture, with the evidence used. Published by rupture first |
+| `contracts/avoided-loss.v1.json` | rupture → consumers, shared shape with serac | expected loss with and without an intervention, with intervals, for a scenario or forecast. Reconciled with serac's shape in ADR-0021; `avoided-loss.v0.json` stays published |
+| `contracts/cascade-exposure.v0.json` | rupture → consumers | slope units and assets exposed to a modelled cascade footprint, with the source of the units named |
+| serac's `contracts/slope-unit.v0.json` | serac → rupture | consumed by `SeracSlopeUnitSource` |
+
+**The slope-unit interface is live but unfed, and says so.** As of 2026-09-03 `serac` exists and
+has AOIs (`lhende-khola-trishuli`, `chamoli-rishiganga`, `blatten-lotschental`) but has exported no
+`slope-unit.v0` records and holds no DEM-derived terrain. `SeracSlopeUnitSource` resolves, in
+order: a real export under `$SERAC_EXPORT_DIR/slope-units/`, then serac's AOI build, then the
+committed byte-verbatim copy of that build under `tests/fixtures/cascade/serac/`. Routes 2 and 3
+produce a **fallback** that emits one unit per serac source-zone polygon with **every terrain
+attribute null**, because serac has no basis for them and rupture will not manufacture one. The
+fallback labels itself — `slope_unit_source` reads `serac-aoi-fallback:<aoi>`, provenance is
+`ASSUMED`, confidence is `UNQUALIFIED`, the terrain screens report **not applied**, and the record's
+notes say how many units that affected (ADR-0027). Two field types disagree between the two
+repositories' models (`glacier_cover` boolean against float, `elevation_band_m` pair against
+string); the mapping is recorded in ADR-0027 rather than hidden.
 
 Coordination is by **copying schema files** between the repositories; neither imports the other's
-code. As of 2026-09-03 the `serac` repository is empty, so rupture publishes both schemas first
-and `serac` is expected to copy them; if `serac` later publishes a differing schema, the
-reconciliation rule in ADR-0014 applies (field-compatible superset, version bump).
+code. If `serac` publishes a differing schema, the reconciliation rule in ADR-0014 applies
+(field-compatible superset, version bump) — which is what ADR-0021 did for avoided-loss.
 
 ## 7. Data layer
 
@@ -183,13 +254,23 @@ data/
   interim/    DVC   per-source parsed catalogues, fault GeoParquet
   catalogs/   DVC   homogenised catalogue per region + homogenisation log
   forecasts/  DVC   <region>/<model>/<issue>.zarr + STAC items
+tests/fixtures/   git   real slices for the Prompt-2 layers (cascade, risk, aftershock, models),
+                        including third-party source vendored verbatim with its own provenance
 baselines/
-  etas/<region>/   the persisted FitResult (fit-result.v0.json shape) + diagnostics   DVC
-contracts/    git   11 versioned JSON Schemas (exported, drift-checked): event, catalog, region,
-                    forecast-grid, fit-result, evaluation-result, hazard-curve-set,
-                    exposure-portfolio, loss-result, avoided-loss, source-type-assessment
-reports/      not committed; schedule aggregates that back RELEASE_STATUS.md are DVC-tracked
+  etas/<region>/      the persisted FitResult (fit-result.v0.json shape) + diagnostics   DVC
+  gridded/<region>/   ConvLSTM weights and normalisation state                           DVC
+  ntpp/<region>/      the neural point-process weights                                   git
+contracts/    git   19 versioned JSON Schemas (exported from the domain models,
+                    drift-checked by `make schema-check`). Run `ls contracts/` for the list;
+                    contracts/README.md describes each one and its model.
+reports/      mostly ignored, but the published evidence is committed: the model cards,
+              reports/protocol/*/eval/schedule-*.json, reports/challenger/** (the challenger
+              schedules and the figures drawn from them) and reports/aftershock/**
 ```
+
+`baselines/ntpp/` is committed while `baselines/etas/` and `baselines/gridded/` are not. That
+asymmetry is deliberate — the neural weights are the only reproducible evidence for a negative
+result, and they are small — and it is recorded in `RELEASE_STATUS.md` rather than tidied away.
 
 | Concern | Choice |
 |---|---|
@@ -206,8 +287,13 @@ binary payloads under `baselines/`.
 
 Fixtures policy: fixtures are real slices cut from real pulls (Gorkha 2015, Kahramanmaraş 2023,
 Ridgecrest 2019, and a ComCat slice containing the landslide-type entry `us7000tbwb`); each has a
-`provenance.json`; none is edited by hand; unit tests run on them with sockets disabled. See
-`docs/DATA_SOURCES.md` § Fixtures.
+`provenance.json`; none is edited by hand; unit tests run on them with sockets disabled. Some
+fixtures are third-party *source* vendored verbatim rather than data — the USGS ground-failure
+reference implementation under `tests/fixtures/cascade/usgs_groundfailure/`, renamed `.py` →
+`.py.txt` so ruff and mypy skip it, kept so every coefficient in `src/rupture/cascade/` can be
+checked against its source offline. Because those files are never edited, rupture's rules about
+the contents of rupture's own files do not apply to them; the one `TODO` in the tree is inside one
+of them. See `docs/DATA_SOURCES.md` § Fixtures and `CLAUDE.md` § Repository conventions.
 
 ## 8. Deployment
 
@@ -220,13 +306,18 @@ Ridgecrest 2019, and a ComCat slice containing the landslide-type entry `us7000t
   command, inputs/outputs (DVC paths), resources, and carries an `aws:` annotation block
   (Batch/ECS sizing, S3 paths, IAM role name) that a deployer can read and any other platform can
   ignore. Nothing in the manifests is required to run the same command locally.
-- **Scheduler:** described in `docs/SCHEDULER.md` (Phase 2B deliverable) — daily, idempotent
-  issuance with a refit calendar. It is a description, not an implementation, in Prompt 1.
-- **CI:** `.github/workflows/ci.yml` runs the offline job (ruff, mypy --strict, import-linter,
-  offline tests, language gate, contract drift) on every push and PR, and the
-  `hazard-integration` job (OpenQuake demo in Docker) on manual dispatch only until the hazard
-  adapter lands in Phase 2C, which flips it to run on pushes to `main` as well. Docker is not
-  assumed on developer machines; locally `make validate-hazard` skips with a printed reason.
+- **Scheduler:** described in `docs/SCHEDULER.md` — daily, idempotent issuance with a refit
+  calendar. It is a description, not an implementation.
+- **CI:** `.github/workflows/ci.yml` runs the **offline job** on every push and every pull request:
+  ruff, mypy --strict, import-linter, the offline test suite, and the nine gates that need neither
+  network nor Docker (`language`, `schema`, `catalog`, `etas`, `eval`, `cascade`, `risk`,
+  `aftershock`, `challengers`) plus `make underwriting-check`. Its last step compares the `GATES`
+  tuple in `src/rupture/validation/registry.py` against the gates the workflow claims to cover and
+  fails if they disagree, so a gate added without a CI step breaks the build instead of rotting.
+  The **`hazard-integration` job** (pull the pinned image, `validate-hazard`, the Docker
+  integration tests) runs on manual dispatch and on pushes to `main`, with
+  `RUPTURE_HAZARD_REQUIRE=1` so that a skip there is a failure. Docker is not assumed on developer
+  machines; locally `make validate-hazard` skips with a printed reason.
 
 ## 9. What would change if F1 skill is zero
 

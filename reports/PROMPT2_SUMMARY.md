@@ -62,13 +62,23 @@ aftershocks are not independent, and what it actually corrects is a baseline tha
 aftershock totals by two to six times. That is worth having. It is not a discovery, and under the
 promotion rule — two of three regions — it is not a promotion.
 
-**The most useful number in Prompt 2 is from the leaky ablation.** Letting a fit see across the
-cutoff buys between +0.31 and +2.16 nats per event depending on the model and region. On Nepal the
-neural challenger's leak (+0.77) *flips the sign*: a model that honestly
-loses to ETAS by 0.35 appears to win by 0.43, and its spatial pass rate moves from below the
-baseline to above it. On Türkiye the same leak barely moves the pass rates while nearly tripling
+**The most useful number in Prompt 2 is from the leaky ablation, and it is a fraction.** Leaked
+variants were run for two of the three models — the neural point process and the gridded ConvLSTM;
+none for the ensemble. Where a leaked model showed any apparent advantage over ETAS at all, the
+leakage controls removed **9 %, 63 %, 97 % and 181 %** of it. In absolute terms the fit leak is
+worth between +0.31 and +2.16 nats per event depending on the model and region.
+
+Two of those numbers deserve saying out loud. The 97 % is the gridded ConvLSTM in Türkiye: an
+apparent +2.22 nats per event over ETAS becomes +0.06 once the model may only see the past, so
+almost the whole of that advantage was an artefact of where the cutoff sat. The 181 % is the neural
+challenger in Nepal, and a fraction above 100 % means the honest model is on the *other side of
+zero*: a model that honestly loses to ETAS by 0.35 nats per event appears to win by 0.43, and its
+spatial pass rate moves from below the baseline to above it. The leak there does not exaggerate a
+win, it manufactures one. On Türkiye the same leak barely moves the pass rates while nearly tripling
 information gain, so neither diagnostic catches it alone. Leakage arrives as good news, in the
 region where the honest model is weakest, and it survives the checks a careful person would run.
+The full table, with the file and field each number comes from, and the figures drawn from it, are
+in `reports/CHALLENGER_EVALUATION.md`.
 
 ## What needs partners
 
@@ -85,7 +95,9 @@ region where the honest model is weakest, and it survives the checks a careful p
 - **Generic aftershock parameters.** The fix for the first-day under-forecast is a multi-sequence
   parameter set, which is a data-sharing problem more than a modelling one.
 - **An amd64 machine or CI.** OpenQuake cannot run on Apple Silicon in any form, so the container
-  path is proved only in CI.
+  path is proved only in CI. Everything the loss layer computes here goes through rupture's own
+  GSIM implementations, checked against OpenQuake's committed expected values rather than against
+  a running engine (ADR-0020).
 
 ## The honest one-line version
 

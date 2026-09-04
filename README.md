@@ -20,17 +20,25 @@ sentence above; `make validate-language` enforces it.
 
 ## Status
 
-This repository is at **Prompt 1: Foundations** — catalogue infrastructure, the ETAS baseline, the
-CSEP evaluation harness, the OpenQuake adapter, versioned contracts, validation gates and a release
-ledger. Read [RELEASE_STATUS.md](RELEASE_STATUS.md) for what actually runs today; it under-claims by
-design. Challenger models, the loss layer and the cascade layer are Prompt 2.
+**Prompt 1 (foundations) and Prompt 2 (challengers, loss, cascades) are both complete.** Prompt 1
+built the catalogue infrastructure, the ETAS baseline, the CSEP evaluation harness, the OpenQuake
+adapter, versioned contracts, validation gates and a release ledger. Prompt 2 added three challenger
+models and an ensemble, the loss layer, the cascade layer and an operational aftershock service.
+
+**No challenger was promoted.** That is a result, not an omission:
+[reports/CHALLENGER_EVALUATION.md](reports/CHALLENGER_EVALUATION.md) has the evidence, the figures
+and the fraction of apparent skill that vanished once the leakage controls were applied.
+
+Read [RELEASE_STATUS.md](RELEASE_STATUS.md) for what actually ran; it under-claims by design, and
+its "Known gaps" section is the honest list of what this repository cannot do.
 
 ## Quick start
 
 ```bash
 uv sync
-make validate-rupture          # offline: lint, mypy --strict, tests, language gate, contract drift
+make validate-rupture          # offline: lint, mypy --strict, tests, and all ten gates
 uv run rupture --help
+make underwriting-check        # price the serac Nepal corridor against the MHT scenario
 ```
 
 Everything under `make validate-*` runs offline from a fresh clone on committed fixtures cut from
@@ -53,11 +61,13 @@ src/rupture/
   cascade/          earthquake-triggered ground failure and slope exposure (F3)
   models/           challenger forecast models and the ensemble
   services/         operational products (the aftershock forecast service)
-  validation/       the make validate-* gates
+  validation/       the make validate-* gates (ten, listed in validation/registry.py)
+  reporting/        figures for reports/*.md, drawn only from committed evidence
   commands/         one typer sub-application per CLI noun
   cli.py            `rupture ...`
 infra/              docker/ (the deployment unit) · jobs/ (portable manifests, AWS-annotated)
-baselines/          ETAS fits per region (DVC-tracked)
+baselines/          ETAS and gridded fits per region (DVC-tracked); the NTPP weights (git-tracked)
+reports/            the published evidence: model cards, protocol and challenger schedules, figures
 ```
 
 Architecture is hexagonal: `domain/` imports nothing from `adapters/`, enforced in CI.
@@ -65,8 +75,11 @@ Architecture is hexagonal: `domain/` imports nothing from `adapters/`, enforced 
 ## Sibling project
 
 [`serac`](https://github.com/dizzy1900/serac) is a separate standalone repository. The two share
-**file contracts only** (`contracts/avoided-loss.v0.json`, `contracts/source-type-assessment.v0.json`),
-never code.
+**file contracts only** — `contracts/avoided-loss.v1.json` (reconciled shape, ADR-0021),
+`contracts/avoided-loss.v0.json` (still published), `contracts/source-type-assessment.v0.json`, and
+serac's own `slope-unit.v0.json` in the other direction — never code. serac has not exported any
+slope units yet, so rupture's cascade layer runs on a fallback that labels itself as one and leaves
+every terrain attribute null (ADR-0027).
 
 ## Licence
 

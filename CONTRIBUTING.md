@@ -29,8 +29,24 @@ make validate-rupture
 
 - Branch from `main`; keep `ruff`, `mypy --strict` and the offline suite green.
 - Network or Docker tests are marked `integration` and are opt-in (`pytest -m integration`).
-- No `TODO` without an issue reference.
+- No `TODO` without an issue reference. The one `TODO` in the tree is inside a third-party file
+  vendored verbatim (`tests/fixtures/cascade/usgs_groundfailure/jessee_2018.py.txt`), which the
+  fixture rule forbids editing; see `CLAUDE.md` § Repository conventions.
 - Commits are small and describe the *why*.
+
+### What CI runs, and when
+
+- The **offline job** runs on **every push, on any branch, and on every pull request**: ruff,
+  `mypy --strict`, import-linter, the offline test suite, the nine gates that need neither network
+  nor Docker, and `make underwriting-check`. A feature branch pushed before its pull request exists
+  gets the same signal as one pushed after; the concurrency group cancels superseded runs.
+- The **`hazard-integration` job** — pull the pinned `openquake/engine` image, run
+  `make validate-hazard`, run the Docker integration tests — runs on pushes to `main` and on manual
+  dispatch. It sets `RUPTURE_HAZARD_REQUIRE=1`, so a skip there is a failure. Locally,
+  `make validate-hazard` skips with a printed reason where Docker is absent or the host is arm64.
+- **Adding a gate means adding a CI step.** The offline job's last step compares the workflow's
+  gate list against the `GATES` tuple in `src/rupture/validation/registry.py` and fails if they
+  disagree, so a gate cannot be registered and then quietly never run.
 
 ## Licence
 
