@@ -68,7 +68,7 @@ class RunConfig:
     """When set, every field is a weighted mixture over the tree's branches, not one GSIM.
 
     ``gsim`` is then ignored for the calculation and the resulting field's own ``gsim`` field
-    names the tree. ``docs/RISK.md`` and ADR-0037 record what the shipped tree does and does not
+    names the tree. ``docs/RISK.md`` and ADR-0043 record what the shipped tree does and does not
     represent.
     """
 

@@ -1,4 +1,4 @@
-"""The GSIM logic tree: weights honoured exactly, and the tree it is not saying so (ADR-0037)."""
+"""The GSIM logic tree: weights honoured exactly, and the tree it is not saying so (ADR-0043)."""
 
 from __future__ import annotations
 

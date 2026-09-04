@@ -19,7 +19,7 @@ def test_constructing_the_hook_raises_and_says_what_it_is() -> None:
         learned.LearnedGroundFailureModel()
     message = str(excinfo.value)
     assert "documented hook" in message
-    assert "ADR-0042" in message
+    assert "ADR-0050" in message
     assert "rupture.ports.cascade.CascadeModel" in message
 
 
@@ -42,10 +42,13 @@ def test_the_contract_an_implementation_must_meet_is_explicit() -> None:
 
 
 def test_the_repository_states_it_is_not_trained_here(repo_root: Path) -> None:
-    adr = repo_root / "docs" / "adr" / "0036-learned-ground-failure-hook.md"
-    assert adr.is_file(), "the hook must be recorded as an ADR, not only in a docstring"
+    # Matched by name, not by number: ADRs written on parallel branches get renumbered when they
+    # collide at merge, and a test that pins the number breaks for a reason that is not a defect.
+    matches = sorted((repo_root / "docs" / "adr").glob("*-learned-ground-failure-hook.md"))
+    assert matches, "the hook must be recorded as an ADR, not only in a docstring"
+    adr = matches[0]
     text = adr.read_text(encoding="utf-8")
     assert "not train" in text or "not trained" in text
     cascade_doc = (repo_root / "docs" / "CASCADE.md").read_text(encoding="utf-8")
     assert "learned" in cascade_doc.lower()
-    assert "0036-learned-ground-failure-hook.md" in cascade_doc
+    assert adr.name in cascade_doc, f"CASCADE.md must point at {adr.name}"

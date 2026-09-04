@@ -1,4 +1,4 @@
-# ADR-0036: Apache-2.0 as the repository licence, GitHub Actions as the CI platform, and a gate-coverage ratchet
+# ADR-0048: Apache-2.0 as the repository licence, GitHub Actions as the CI platform, and a gate-coverage ratchet
 
 - **Status:** accepted
 - **Date:** 2026-09-03 (UTC)

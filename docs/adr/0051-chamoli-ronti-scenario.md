@@ -1,4 +1,4 @@
-# ADR-0037 — the Chamoli / Ronti scenario case: how a scenario without a published answer is built
+# ADR-0051 — the Chamoli / Ronti scenario case: how a scenario without a published answer is built
 
 - **Status:** accepted
 - **Date:** 2026-09-03
@@ -82,7 +82,7 @@ whether or not it is asserted.
 - `chamoli-rishiganga` is the AOI the Gorkha ShakeMap route **cannot** serve — it is outside that
   grid, and sampling it raised — so the two routes are visibly independent.
 - The case's receptors are the two hydropower projects serac maps there, not settlements; that
-  drove the additive `ExposedSlopeUnit.assets_below` field (ADR-0038).
+  drove the additive `ExposedSlopeUnit.assets_below` field (ADR-0052).
 - The layer's honest position is unchanged: with no static covariate sourced, this is the shaking
   response of the published models over the catchment. `docs/CASCADE.md` §3.5 and §8 say so.
 

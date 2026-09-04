@@ -206,7 +206,7 @@ def test_an_out_of_range_fraction_is_refused(portfolio: ExposurePortfolio) -> No
 def test_a_forecast_trigger_for_a_grid_that_does_not_exist_is_an_error(
     portfolio: ExposurePortfolio,
 ) -> None:
-    """A forecast trigger is implemented now (ADR-0036); a *missing* grid still fails loudly.
+    """A forecast trigger is implemented now (ADR-0042); a *missing* grid still fails loudly.
 
     What must never happen is a zero: an event-based figure with no event set behind it would be
     the guess this project refuses. See ``tests/unit/risk/test_event_based.py`` for the answered
@@ -280,7 +280,7 @@ def test_the_response_never_claims_more_than_low_confidence(
     assert response.provenance is not None
 
 
-# --------------------------------------------------------------- shutdown timing (ADR-0038)
+# --------------------------------------------------------------- shutdown timing (ADR-0044)
 SHUTDOWN: tuple[Intervention, ...] = (
     Intervention(
         id="shutdown",

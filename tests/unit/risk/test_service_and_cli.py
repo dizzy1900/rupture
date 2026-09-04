@@ -153,7 +153,7 @@ def test_the_cli_refuses_both_or_neither_trigger() -> None:
 def test_the_cli_forecast_path_exits_non_zero_when_the_grid_is_not_there(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
-    """The forecast path is implemented (ADR-0036); a grid that was never issued still fails.
+    """The forecast path is implemented (ADR-0042); a grid that was never issued still fails.
 
     ``data/forecasts/`` is DVC-tracked and empty in a fresh clone, so this is what a user who has
     not run ``rupture forecast issue`` sees: the id they asked for, where rupture looked, and the

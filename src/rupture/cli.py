@@ -19,6 +19,7 @@ from rupture.commands import (
     aftershock,
     cascade,
     catalog,
+    challenger,
     evaluate,
     forecast,
     hazard,
@@ -66,6 +67,7 @@ app.add_typer(hazard.app, name="hazard")
 app.add_typer(cascade.app, name="cascade")
 app.add_typer(risk.app, name="risk")
 app.add_typer(aftershock.app, name="aftershock")
+app.add_typer(challenger.app, name="challenger")
 
 
 def _finish(result: GateResult) -> None:

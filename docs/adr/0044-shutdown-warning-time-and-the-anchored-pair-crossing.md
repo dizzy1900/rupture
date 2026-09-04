@@ -1,4 +1,4 @@
-# ADR-0038: The automated shutdown depends on warning time, and the anchored pair crosses
+# ADR-0044: The automated shutdown depends on warning time, and the anchored pair crosses
 
 - **Status:** accepted
 - **Date:** 2026-09-03 (UTC)

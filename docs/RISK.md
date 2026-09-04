@@ -124,7 +124,7 @@ makes, so the allowlist admits exactly those two title strings and the titles ap
 
 ### The GSIM logic tree
 
-Full reasoning in **ADR-0037**. One GSIM gives an interval conditional on that GSIM being right,
+Full reasoning in **ADR-0043**. One GSIM gives an interval conditional on that GSIM being right,
 which is the narrowest assumption in a loss figure. `GsimLogicTree` (in `domain/groundmotion.py`)
 carries the epistemic alternative as weighted branches; `NativeGsimEngine.scenario_logic_tree`
 allocates realisations between them by largest remainder, so the weights are honoured **exactly**
@@ -348,7 +348,7 @@ magnitude cannot disagree and no unverified scaling relation was adopted.
 synthetic catalogues from a promoted F1 `ForecastGrid` and each sampled event becomes a
 `ScenarioRupture` through `scenarios.from_stochastic_event`. An event with a finite-fault geometry
 keeps it; an event without one becomes a **point rupture** and its notes say exactly that,
-including that the resulting loss is a lower estimate. § 6b has the numbers and ADR-0036 has the
+including that the resulting loss is a lower estimate. § 6b has the numbers and ADR-0042 has the
 sampling rule.
 
 ---
@@ -397,7 +397,7 @@ portfolio; that is a statement about concentration, not about land-use policy.
 ### The shutdown is worth nothing for the rupture that matters most
 
 `automated_shutdown` now depends on whether an alert can reach the plant before the shaking does
-(**ADR-0038**), not on a flat fraction applied everywhere. The same portfolio, the same 15 %
+(**ADR-0044**), not on a flat fraction applied everywhere. The same portfolio, the same 15 %
 assumed fraction, the same 2 000 realisations, two ruptures:
 
 | Scenario | Hypocentral distance to the 14 sites | Warning time | Avoided (USD M) |
@@ -420,7 +420,7 @@ figure returns.
 **This is the figure an underwriter prices against**, and it exists because the forecasting half of
 rupture feeds the loss half: `risk.event_set` samples synthetic catalogues from a promoted F1
 `ForecastGrid` and `risk.event_based` reduces them to an annual number and to exceedance curves
-(**ADR-0036**).
+(**ADR-0042**).
 
 The run below is real, not illustrative. The catalogue was built from ComCat, ISC and GCMT for
 `nepal-himalaya` (1976 → 2026-08-01), the ETAS baseline was fitted with a hard cutoff at
@@ -506,7 +506,7 @@ fractionally worse than its unanchored counterpart between about 0.006 g and 0.0
 0.02 % of plant value, so a synthetic year containing only very small events comes out marginally
 worse with the retrofit in place. That is a property of the published pair, not a defect; a test
 pins the crossing, the response reports the share of catalogues affected and the worst shortfall,
-and `MoneyRange` cannot be negative so the note says what the truncation at zero hid (ADR-0038).
+and `MoneyRange` cannot be negative so the note says what the truncation at zero hid (ADR-0044).
 
 ---
 
@@ -649,9 +649,9 @@ Read this section before quoting any number above.
 9. **Loss types.** Only `structural` is computed. Business interruption, contents and casualties are
    not, despite the enum carrying them.
 10. **A long-term-hazard trigger is still not implemented.** A `TriggerKind.FORECAST` request is
-    now answered (§ 6b, ADR-0036). `TriggerKind.HAZARD` returns `status = not_implemented` with a
+    now answered (§ 6b, ADR-0042). `TriggerKind.HAZARD` returns `status = not_implemented` with a
     stub `MoneyRange` and a message naming what is missing: rupture ships the engine-side
-    `event_based` job rendering and export parsing (ADR-0037) but **no long-term (F0) source model
+    `event_based` job rendering and export parsing (ADR-0043) but **no long-term (F0) source model
     for the corridor**, so there is nothing to run it on. It never returns a guess.
 11. **Only PGA is used.** The GSIMs support spectral acceleration and the code accepts `SA(T)`, but
     every fragility function shipped is defined on PGA, so no spectral loss calculation has been
@@ -667,12 +667,12 @@ Read this section before quoting any number above.
     (Chiou & Youngs 2014, Campbell & Bozorgnia 2014, Abrahamson/Silva/Kamai 2014, Idriss 2014)
     would be far wider; rupture has verified none of them, so they are named on the tree as
     excluded rather than shipped. At Rjb = 0 the shipped tree changes the corridor's answer by
-    about 1 %; at 200 km its branches span a factor of 2.7. § 2 and ADR-0037.
+    about 1 %; at 200 km its branches span a factor of 2.7. § 2 and ADR-0043.
 16. **An annual loss and a scenario loss are not comparable as they stand.** Every event of a
     sampled event set is a point rupture at 15 km depth, so the 1 000-year aggregate loss
     (USD 177 M) sits well below the Gorkha-repeat scenario loss (USD 631 M) even though the set
     contains an M 8.48. Fixing it needs a magnitude-area scaling relation and a fault-attachment
-    rule, neither of which this pass verified. § 6b and ADR-0036.
+    rule, neither of which this pass verified. § 6b and ADR-0042.
 17. **The event set's occurrence process is Poisson, not clustered.** It reproduces an ETAS grid's
     expected counts exactly and understates the variance of a clustered process, so the tail of the
     aggregate exceedance curve is tighter than the underlying process. Drawing from
@@ -685,7 +685,7 @@ Read this section before quoting any number above.
     alert latency and stopping time are all stated defaults, none published, all overridable per
     request. The model is a source-side regional alert, not a per-plant on-site sensor; an on-site
     trigger would have a shorter geometry and would look more favourable, so the reported avoided
-    loss is a lower estimate. ADR-0038.
+    loss is a lower estimate. ADR-0044.
 
 ---
 

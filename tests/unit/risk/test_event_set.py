@@ -1,4 +1,4 @@
-"""Sampling a stochastic event set from a promoted F1 forecast (ADR-0036).
+"""Sampling a stochastic event set from a promoted F1 forecast (ADR-0042).
 
 Every test here runs on the **committed real slice** of an issued ETAS ``ForecastGrid``
 (``tests/fixtures/risk/forecast/``), not on a grid the test invented, so what is exercised is the

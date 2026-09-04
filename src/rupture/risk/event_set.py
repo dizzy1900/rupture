@@ -1,4 +1,4 @@
-"""Stochastic event sets: synthetic catalogues sampled from a promoted F1 forecast (ADR-0036).
+"""Stochastic event sets: synthetic catalogues sampled from a promoted F1 forecast (ADR-0042).
 
 This is the join between rupture's two halves. F1 issues a :class:`~rupture.domain.forecast.
 ForecastGrid` — expected counts per cell per magnitude bin over a horizon. F2 prices ruptures.

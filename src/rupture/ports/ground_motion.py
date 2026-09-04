@@ -7,7 +7,7 @@ field records which one produced it.
 
 The port is **three** protocols rather than one, because the two engines are not capable of the
 same things and a single protocol would force one of them to carry a method it can only raise
-from (ADR-0037):
+from (ADR-0043):
 
 ``GroundMotionEngine``
     A scenario field for one rupture. Both adapters implement it.

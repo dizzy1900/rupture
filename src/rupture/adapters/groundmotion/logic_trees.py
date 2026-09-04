@@ -1,4 +1,4 @@
-"""The GSIM logic trees rupture ships, and an honest account of what they are not (ADR-0037).
+"""The GSIM logic trees rupture ships, and an honest account of what they are not (ADR-0043).
 
 A loss interval computed from one GSIM is conditional on that GSIM. ``docs/RISK.md`` section 8
 already shows how much model choice moves this corridor: swapping BSSA14 for the BC Hydro
@@ -54,7 +54,7 @@ reported interval does **not** contain.
 LOWER_BOUND_NOTE = (
     "the branches of this tree are three regional anelastic-attenuation variants of ONE "
     "NGA-West2 model, not independent models, so the spread across them is a LOWER BOUND on "
-    "GSIM epistemic uncertainty rather than an estimate of it (ADR-0037)"
+    "GSIM epistemic uncertainty rather than an estimate of it (ADR-0043)"
 )
 
 ACTIVE_SHALLOW_CRUST_Q = GsimLogicTree(

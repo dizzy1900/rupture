@@ -61,7 +61,7 @@ def test_the_published_anchored_pair_crosses_at_low_intensity() -> None:
     """A recorded finding, not a defect: below ~0.05 g the anchored curve is fractionally worse.
 
     HAZUS publishes the anchored and unanchored generation-facility curves for plants under
-    100 MW as a pair, and they cross. docs/RISK.md and ADR-0038 say what that does to an
+    100 MW as a pair, and they cross. docs/RISK.md and ADR-0044 say what that does to an
     avoided-loss figure computed over an event set full of small earthquakes; this test pins the
     crossing so it cannot silently move or disappear.
     """

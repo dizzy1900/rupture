@@ -1,4 +1,4 @@
-# ADR-0037: A GSIM logic tree, and the engine's event-based path
+# ADR-0043: A GSIM logic tree, and the engine's event-based path
 
 - **Status:** accepted
 - **Date:** 2026-09-03 (UTC)
@@ -83,7 +83,7 @@ exports into one field per sampled rupture with the rate each carries.
 
 `grid_source_model_nrml` is the bridge that lets the **same** `ForecastGrid` drive both routes: one
 `pointSource` per cell with an `incrementalMFD` whose rates are the grid's own, annualised, and the
-same stated geometry assumptions the native route makes (ADR-0036).
+same stated geometry assumptions the native route makes (ADR-0042).
 
 A weighted tree may not be enumerated. Enumerating a weighted GSIM tree gives realisations that are
 not equally likely, and the rate arithmetic downstream (every event of an event set carries the

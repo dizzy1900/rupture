@@ -1,4 +1,4 @@
-"""Run OpenQuake's ``event_based`` calculator on rupture's own rate model (ADR-0037).
+"""Run OpenQuake's ``event_based`` calculator on rupture's own rate model (ADR-0043).
 
 The native route (:mod:`rupture.risk.event_set`) samples a stochastic event set from a promoted
 F1 forecast in process. This test runs the **engine** over a source model built from the *same*

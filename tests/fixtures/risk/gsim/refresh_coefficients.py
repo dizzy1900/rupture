@@ -32,7 +32,7 @@ OUT = Path(__file__).resolve().parents[4] / "src" / "rupture" / "adapters" / "gr
 WANTED: dict[str, tuple[str, str, str]] = {
     "bssa14_coeffs.txt": ("gsim/boore_2014.py", "BooreEtAl2014", "COEFFS"),
     # The two regional anelastic-attenuation branches of the same model: identical equations,
-    # a different Dc3 column. They are the branches of the GSIM logic tree of ADR-0037.
+    # a different Dc3 column. They are the branches of the GSIM logic tree of ADR-0043.
     "bssa14_highq_coeffs.txt": ("gsim/boore_2014.py", "BooreEtAl2014HighQ", "COEFFS"),
     "bssa14_lowq_coeffs.txt": ("gsim/boore_2014.py", "BooreEtAl2014LowQ", "COEFFS"),
     "bchydro_sinter_coeffs.txt": (

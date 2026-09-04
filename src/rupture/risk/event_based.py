@@ -1,4 +1,4 @@
-"""Expected **annual** loss and loss exceedance curves from a stochastic event set (ADR-0036).
+"""Expected **annual** loss and loss exceedance curves from a stochastic event set (ADR-0042).
 
 A scenario answers "what does this rupture cost?". An underwriter prices against a different
 question: "what does a year cost, and how bad is the bad year?". That needs every event that

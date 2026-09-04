@@ -1,4 +1,4 @@
-# ADR-0037: A classical PSHA job is derived from the source-model manifest, not written by hand
+# ADR-0047: A classical PSHA job is derived from the source-model manifest, not written by hand
 
 - **Status:** accepted
 - **Date:** 2026-09-04 (UTC)

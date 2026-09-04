@@ -15,9 +15,9 @@ and a documented, untrained hook for a learned global model (§9).
 
 Decisions: [ADR-0026](adr/0026-usgs-ground-failure-models.md) (model choice and coefficient
 provenance), [ADR-0027](adr/0027-serac-slope-units.md) (serac integration, fixture-fallback rule,
-threshold basis), [ADR-0042](adr/0042-learned-ground-failure-hook.md) (the learned-model hook),
-[ADR-0043](adr/0043-chamoli-ronti-scenario.md) (the Chamoli / Ronti scenario case),
-[ADR-0044](adr/0044-cascade-exposure-geoparquet.md) (CascadeExposure as GeoParquet).
+threshold basis), [ADR-0050](adr/0050-learned-ground-failure-hook.md) (the learned-model hook),
+[ADR-0051](adr/0051-chamoli-ronti-scenario.md) (the Chamoli / Ronti scenario case),
+[ADR-0052](adr/0052-cascade-exposure-geoparquet.md) (CascadeExposure as GeoParquet).
 Model card: [`reports/MODEL_CARD_cascade.md`](../reports/MODEL_CARD_cascade.md)
 — tracked with `git add -f`, because `.gitignore` excludes `/reports/`; note that `make clean`
 does `rm -rf reports` and will delete it from a working tree (`git checkout reports/` restores it).
@@ -250,7 +250,7 @@ it, and the USGS has published no `ground-failure` product for this catchment. r
 no published rupture model for the Garhwal Himalaya and no Vs30 raster covering it.
 
 So the Chamoli case is a **scenario**, and it is what the scenario route is *for*
-([ADR-0043](adr/0043-chamoli-ronti-scenario.md), `src/rupture/adapters/cascade/chamoli.py`):
+([ADR-0051](adr/0051-chamoli-ronti-scenario.md), `src/rupture/adapters/cascade/chamoli.py`):
 
 | | |
 |---|---|
@@ -328,7 +328,7 @@ and is applied only to units that carry a slope — under the fallback, none of 
 hydropower projects, both hit in 2021 by an avalanche of exactly this mechanism. Calling them
 settlements would be wrong and dropping them would lose the AOI's only receptors, so
 `ExposedSlopeUnit.assets_below` carries them separately, with the same corridor-membership caveat
-([ADR-0044](adr/0044-cascade-exposure-geoparquet.md)).
+([ADR-0052](adr/0052-cascade-exposure-geoparquet.md)).
 
 ```bash
 uv run rupture cascade exposure \
@@ -342,7 +342,7 @@ source-zone centroid, above the 0.02 g screen, both terrain screens reported as 
 ### 4.1 The output format: GeoParquet with provenance
 
 `--out-parquet` writes the record as GeoParquet, one row per slope unit, EPSG:4326
-(`src/rupture/adapters/cascade/geoparquet.py`, [ADR-0044](adr/0044-cascade-exposure-geoparquet.md)).
+(`src/rupture/adapters/cascade/geoparquet.py`, [ADR-0052](adr/0052-cascade-exposure-geoparquet.md)).
 
 - **`geometry`** is the unit's footprint polygon — `ExposedSlopeUnit.polygon`, the exterior ring
   carried through from the slope-unit source. Where the source has no polygon the geometry is the
@@ -533,7 +533,7 @@ Read this section before using anything in this layer.
 
 The brief asks for a documented hook for a learned global earthquake-triggered landslide model as
 the v1 candidate, and asks that it **not** be trained. Decision:
-[ADR-0042](adr/0042-learned-ground-failure-hook.md); code: `src/rupture/cascade/learned.py`.
+[ADR-0050](adr/0050-learned-ground-failure-hook.md); code: `src/rupture/cascade/learned.py`.
 
 **rupture trains nothing here.** Nothing in this repository is fitted on a landslide inventory, no
 weights are shipped, and no learned model is scored. `LearnedGroundFailureModel` raises

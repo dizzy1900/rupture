@@ -1,4 +1,4 @@
-# ADR-0036 — One HTTP service, the grid over HTTP, and a refit schedule something actually runs
+# ADR-0045 — One HTTP service, the grid over HTTP, and a refit schedule something actually runs
 
 - **Status:** accepted
 - **Date:** 2026-09-03

@@ -1,4 +1,4 @@
-"""The engine's event-based path: job rendering and export parsing, offline (ADR-0037).
+"""The engine's event-based path: job rendering and export parsing, offline (ADR-0043).
 
 The container itself cannot run on this project's arm64 development machine, so what is tested
 here is everything either side of the container: the ``job.ini``, the source model, the GSIM

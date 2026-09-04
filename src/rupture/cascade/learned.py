@@ -3,7 +3,7 @@
 The brief asks the cascade layer to leave a hook for a learned global earthquake-triggered
 landslide model — the 2025 deep-learning generation of them — as the v1 candidate, and to **not
 train it**. This module is that hook: a contract, an unimplemented class that names it, and a
-registry entry that stays absent until someone fills it. ADR-0042 records the decision.
+registry entry that stays absent until someone fills it. ADR-0050 records the decision.
 
 Nothing in rupture is trained on landslide inventories today, and nothing here pretends to be.
 :class:`LearnedGroundFailureModel` raises :class:`NotImplementedError` on construction; the point
@@ -51,7 +51,7 @@ It does not name a paper. The brief identifies the v1 candidate as the 2025 deep
 earthquake-triggered landslide model, and rupture does not have that paper's primary source in
 hand; restating a citation it has not read would be exactly the kind of borrowed authority
 ``docs/CASCADE.md`` section 1.4 already refuses elsewhere. The implementer commits the citation,
-the weights and their licence together with the code, and ADR-0042 is superseded by the ADR that
+the weights and their licence together with the code, and ADR-0050 is superseded by the ADR that
 adopts it.
 """
 
@@ -68,7 +68,7 @@ KIND = CascadeKind.LANDSLIDE
 
 STATUS = (
     "hook only — rupture does not train, fine-tune, ship or evaluate a learned ground-failure "
-    "model. See ADR-0042 and docs/CASCADE.md section 9."
+    "model. See ADR-0050 and docs/CASCADE.md section 9."
 )
 
 REQUIRED_OF_AN_IMPLEMENTATION: tuple[str, ...] = (

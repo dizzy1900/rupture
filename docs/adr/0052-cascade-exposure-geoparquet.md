@@ -1,4 +1,4 @@
-# ADR-0038 — CascadeExposure as GeoParquet: geometry, and the caveat in the file's metadata
+# ADR-0052 — CascadeExposure as GeoParquet: geometry, and the caveat in the file's metadata
 
 - **Status:** accepted
 - **Date:** 2026-09-03

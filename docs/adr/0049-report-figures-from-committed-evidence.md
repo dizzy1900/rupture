@@ -1,4 +1,4 @@
-# ADR-0037: Report figures are rendered from committed evidence, never from a model
+# ADR-0049: Report figures are rendered from committed evidence, never from a model
 
 - **Status:** accepted
 - **Date:** 2026-09-03 (UTC)

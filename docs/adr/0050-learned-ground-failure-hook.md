@@ -1,4 +1,4 @@
-# ADR-0036 — a documented hook for a learned global ground-failure model, not trained here
+# ADR-0050 — a documented hook for a learned global ground-failure model, not trained here
 
 - **Status:** accepted
 - **Date:** 2026-09-03

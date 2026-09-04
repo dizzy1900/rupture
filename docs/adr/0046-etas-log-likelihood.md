@@ -1,4 +1,4 @@
-# ADR-0036: The ETAS log-likelihood rupture persists
+# ADR-0046: The ETAS log-likelihood rupture persists
 
 - **Status:** accepted
 - **Date:** 2026-09-04 (UTC)

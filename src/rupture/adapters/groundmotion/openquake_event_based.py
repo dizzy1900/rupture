@@ -1,4 +1,4 @@
-"""The authoritative event-based path: OpenQuake's ``event_based`` calculator (ADR-0037).
+"""The authoritative event-based path: OpenQuake's ``event_based`` calculator (ADR-0043).
 
 The scenario calculator answers "what does *this* rupture do?". The event-based calculator
 answers "what does a rate model do over an investigation time?" — it samples a stochastic event

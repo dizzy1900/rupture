@@ -1,4 +1,4 @@
-# ADR-0036: Stochastic event sets from F1, and expected annual loss
+# ADR-0042: Stochastic event sets from F1, and expected annual loss
 
 - **Status:** accepted
 - **Date:** 2026-09-03 (UTC)
@@ -100,7 +100,7 @@ ambiguity this contract could carry.
 
 `TriggerKind.HAZARD` still returns `not_implemented`, with a message that now names exactly what
 is missing: a long-term (F0) source model for the corridor. The engine-side machinery to consume
-one exists (ADR-0037); the model does not.
+one exists (ADR-0043); the model does not.
 
 ### 5. The offline fixture is a real slice
 
@@ -129,7 +129,7 @@ its parameter snapshot hash and the fact that a slice's rate is a fraction of th
 
 - **Compute AAL only through OpenQuake's `event_based` calculator.** Rejected as the *only* route:
   the engine cannot run on this project's machine (arm64), so the headline deliverable would have
-  no number. Both routes are built (ADR-0037); the native one runs.
+  no number. Both routes are built (ADR-0043); the native one runs.
 - **Report the annual-loss spread as the AAL interval.** Rejected: it is [0, 0] for a portfolio
   whose damaging years are rare, which would read as a precise zero rather than as a skewed
   distribution.

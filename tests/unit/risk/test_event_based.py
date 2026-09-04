@@ -1,4 +1,4 @@
-"""Expected annual loss, exceedance curves and event-based avoided loss (ADR-0036, ADR-0038)."""
+"""Expected annual loss, exceedance curves and event-based avoided loss (ADR-0042, ADR-0044)."""
 
 from __future__ import annotations
 
