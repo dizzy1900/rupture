@@ -14,7 +14,7 @@ Every figure below is rendered from the committed JSON evidence by
 (`src/rupture/reporting/challenger_plots.py`). That module loads no model, issues no forecast and
 refits nothing: its only inputs are the schedule files named in each caption, so a figure here
 cannot disagree with the numbers in the tables — it is those numbers, drawn. The rule, and why it
-is a rule, is ADR-0037.
+is a rule, is ADR-0049.
 
 ## The promotion rule, and what it demands
 

@@ -85,7 +85,7 @@ Recorded as ADR-0001 and ADR-0002; summarised here.
   windows are half-open `[from, to)`.
 - **Decisions are ADRs** in `docs/adr/` (index in `docs/adr/README.md`). A settled ADR is not
   relitigated in a PR; write a new ADR that supersedes it. The repository's own licence
-  (Apache-2.0) and CI platform are ADR-0036; how report figures are produced is ADR-0037.
+  (Apache-2.0) and CI platform are ADR-0048; how report figures are produced is ADR-0049.
 - **Honesty in `RELEASE_STATUS.md`.** Under-claim. If it did not run, say so, and say why.
 - No `TODO` without an issue reference. One `TODO` exists in the tree and it is not rupture's:
   `tests/fixtures/cascade/usgs_groundfailure/jessee_2018.py.txt:113`, inside the USGS reference
