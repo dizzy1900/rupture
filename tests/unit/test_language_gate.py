@@ -48,3 +48,32 @@ def test_seeded_violation_fails(tmp_path: Path) -> None:
     result = language.run(tmp_path)
     assert result.status == GateStatus.FAILED
     assert len(result.findings) == 1
+
+
+def test_an_allowlisted_fragment_exempts_itself_not_the_line() -> None:
+    """A claim must not ride along beside a permitted phrase.
+
+    Found by review: the scanner used to skip the whole line when any allowlisted fragment
+    appeared on it. Published paper titles live in citation tables, and a markdown table row is a
+    single line, so a claim placed in the next cell went unseen. Each case below is one the
+    reviewer constructed.
+    """
+    allow = language.load_allowlist()
+    title = "BC Hydro Ground Motion Prediction Equations for Subduction Earthquakes"
+    smuggled = [
+        f"| {title} | an M7.2 will strike Istanbul and is imminent |",  # lang-gate: allow
+        "rupture does not predict earthquakes, but an M7 will occur.",  # lang-gate: allow
+    ]
+    for line in smuggled:
+        assert language.scan_text(line, allowlist=allow, label="x"), (
+            f"a claim rode along beside an allowlisted fragment: {line}"
+        )
+
+    # ...and the legitimate uses still pass
+    assert (
+        language.scan_text(f"| {title} | subduction interface |", allowlist=allow, label="x") == []
+    )
+    assert (
+        language.scan_text("rupture does not predict earthquakes.", allowlist=allow, label="x")
+        == []
+    )

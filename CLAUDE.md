@@ -158,8 +158,7 @@ one starts. A qa-reviewer finding must be fixed before the next merge.
 
 - `predict` and every derivative (`-s`, `-ed`, `-ing`, `-ion(s)`, `-or(s)`, `-ive`, `-ability`);
 - `early warning` / `early-warning` used as a capability (rupture is not an EEW system);
-- the deterministic phrasings `will occur`, `will strike`, `will hit`, `will happen`, `imminent`,
-  `next big one`.
+- the deterministic phrasings `will occur`, `will strike`, `will hit`, `will happen`, `imminent`, `next big one`.
 
 Use *forecast*, *rate*, *expected count*, *probability of exceedance*. The only permitted
 exceptions are the exact fragments in `src/rupture/validation/banned_language_allowlist.txt`:

@@ -10,10 +10,12 @@ challenger at all, so this gate checks the machinery before it checks the scores
 2. **Dataset builders raise on post-cutoff events** rather than filtering them, because a silent
    filter hides the bug that supplied them.
 3. **Every persisted challenger fit is honest**: it converged, its training data ends strictly
-   before its cutoff, its weights reproduce ``parameter_snapshot_hash``, and its branching ratio is
-   below 1 (a supercritical fit cannot be simulated to termination).
+   before its cutoff (compared as instants, never as strings), it carries a non-empty
+   ``parameter_snapshot_hash`` so a silent retrain is visible, and its branching ratio is below 1
+   (a supercritical fit cannot be simulated to termination).
 4. **Hyperparameters were frozen before scoring**: a ``hyperparameters.json`` sits beside each fit,
-   its validation window ends at or before the hard cutoff, and the fit's config hash matches it.
+   its validation window ends at or before the hard cutoff, and where both record one, the fit's
+   config hash equals the frozen one.
 5. **No leaky artefact is masquerading as a result**: anything produced by a deliberately leaky
    ablation carries a leaky model id and never appears under ``baselines/``.
 
@@ -88,6 +90,22 @@ def _blocked_splits_are_time_forward() -> list[str]:
     return findings
 
 
+def _instant(value: object) -> datetime | None:
+    """Parse an ISO timestamp to an instant.
+
+    Timestamps must never be compared as strings here. The same instant is written both
+    ``2022-01-01T00:00:00Z`` and ``2022-01-01T00:00:00+00:00``, and ``'+'`` sorts below ``'Z'``,
+    so a string comparison silently passes the exact case this check exists to catch: training
+    that runs right up to its own cutoff.
+    """
+    if not isinstance(value, str) or not value:
+        return None
+    try:
+        return datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError:
+        return None
+
+
 def _fit_is_honest(path: Path) -> list[str]:
     fit: dict[str, Any] = json.loads(path.read_text(encoding="utf-8"))
     where = path.parent.name
@@ -96,7 +114,8 @@ def _fit_is_honest(path: Path) -> list[str]:
         findings.append(f"{where}: fit did not converge and must not be used")
     cutoff = fit.get("fit_cutoff", "")
     latest = (fit.get("diagnostics") or {}).get("training_max_origin_time")
-    if latest and cutoff and str(latest) >= str(cutoff):
+    cutoff_at, latest_at = _instant(cutoff), _instant(latest)
+    if cutoff_at is not None and latest_at is not None and latest_at >= cutoff_at:
         findings.append(f"{where}: training reaches its cutoff ({latest} >= {cutoff})")
     branching = (fit.get("diagnostics") or {}).get("branching_ratio")
     if branching is not None and branching >= 1.0:
@@ -107,9 +126,22 @@ def _fit_is_honest(path: Path) -> list[str]:
     hyper = path.parent / "hyperparameters.json"
     if hyper.exists():
         chosen = json.loads(hyper.read_text(encoding="utf-8"))
-        end = str(chosen.get("validation_end", ""))
-        if end and cutoff and end > str(cutoff):
+        end_at = _instant(chosen.get("validation_end"))
+        if end_at is not None and cutoff_at is not None and end_at > cutoff_at:
             findings.append(f"{where}: hyperparameters were chosen on data after the cutoff")
+        # The frozen config must be the one the fit actually used, or "frozen before scoring"
+        # means nothing: a config chosen on validation and then quietly changed would pass.
+        declared = chosen.get("config_hash") or chosen.get("chosen_config_hash")
+        used = fit.get("config_hash") or (fit.get("diagnostics") or {}).get("config_hash")
+        if declared and used and str(declared) != str(used):
+            findings.append(
+                f"{where}: the fit's config hash ({used}) is not the frozen one ({declared})"
+            )
+    snapshot = fit.get("parameter_snapshot_hash")
+    if not snapshot or not str(snapshot).strip("0"):
+        findings.append(
+            f"{where}: no usable parameter_snapshot_hash, so a silent retrain is invisible"
+        )
     return findings
 
 

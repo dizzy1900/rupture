@@ -67,14 +67,26 @@ def iter_files(root: Path) -> Iterable[Path]:
 
 
 def scan_text(text: str, *, allowlist: list[str], label: str) -> list[str]:
-    """Return findings for one text blob. Allowlisted fragments suppress a hit on that line."""
+    """Return findings for one text blob.
+
+    An allowlisted fragment exempts **only itself**, not the line it sits on. That distinction is
+    the whole security of this gate: allowlisting a line would let a claim ride along beside a
+    permitted phrase, and the permitted phrases are published paper titles that live in citation
+    tables, where a markdown row is a single line. So each fragment is removed from the line and
+    the remainder is scanned. The inline marker is different by design: it exempts a whole line,
+    and it is only for test strings that must spell out a violation.
+    """
     findings: list[str] = []
     compiled = [(re.compile(pat, re.IGNORECASE), why) for pat, why in BANNED_PATTERNS]
     for lineno, line in enumerate(text.splitlines(), start=1):
-        if INLINE_ALLOW_MARKER in line or any(frag in line for frag in allowlist):
+        if INLINE_ALLOW_MARKER in line:
             continue
+        remainder = line
+        for frag in allowlist:
+            if frag in remainder:
+                remainder = remainder.replace(frag, " ")
         for rx, why in compiled:
-            if rx.search(line):
+            if rx.search(remainder):
                 findings.append(f"{label}:{lineno}: {why}: {line.strip()[:120]}")
                 break
     return findings

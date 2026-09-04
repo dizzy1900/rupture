@@ -32,6 +32,10 @@ Trained on the real regional catalogues at the protocol cutoff `2022-01-01`, sco
 55-window schedule, and compared against ETAS run through the **same** schedule (no refits, 100
 continuations for both) so the comparison is symmetric.
 
+The ETAS rows here are a **matched re-run** — no refits, 100 continuations, same as the challenger —
+so the comparison is symmetric. They differ from the published baseline of record in
+`docs/BASELINE_RESULTS.md`, which uses yearly refits and 1000 continuations. Both are stated.
+
 | Region | Model | N | M | S | L | CL |
 |---|---|---|---|---|---|---|
 | `turkiye-eaf` | NTPP | 53/55 | 28/29 | 18/29 | 23/29 | 23/29 |
@@ -119,7 +123,7 @@ and Nepal is a loss.
 The Türkiye ensemble is the only thing in this project that beat ETAS on a protocol metric, so it
 received the most scrutiny, not the least. Four checks were run against it:
 
-- **Is it an artefact of the log floor?** No. Zero of 283 target events fell in a floored cell.
+- **Is it an artefact of the log floor?** No. Zero of 283 target events fell in a floored cell (283 spans both regions: Türkiye's 217 plus Nepal's 66).
 - **Is it the tempering arithmetic rather than the model?** No. Flattening the challenger's spatial
   field to uniform collapses the gain to +0.032 and drives the weights to 0.99/0.01, so the gain
   comes from the smoothed-seismicity field.

@@ -38,7 +38,29 @@ in its own voice. Each entry names the work in a comment.
 - rupture cites its sources by name, which is the minimum a reviewer expects.
 - The allowlist grows by two entries, each traceable to a specific paper.
 - The gate keeps its teeth where they matter: any *new* sentence that claims rupture forecasts
-  individual earthquakes still fails, because these entries match only the exact published titles.
+  individual earthquakes still fails, because an allowlisted fragment now exempts **only itself**.
+
+## Correction (2026-09-03, same day)
+
+The consequence above was **false when written**, and a review caught it. The scanner skipped the
+*entire line* on which an allowlisted fragment appeared, so a claim could ride along beside a
+permitted phrase. The reviewer demonstrated it: a markdown table row containing a permitted paper
+title, followed on the same line by a sentence making a deterministic claim about a named city,
+passed the gate. Citation tables are exactly where these titles live, and a table row is one line, so the
+attack was not hypothetical.
+
+This defect predated ADR-0034 — the single permitted sentence had the same effect — but ADR-0034
+doubled the exposure while asserting it had not.
+
+`scan_text` now removes each allowlisted fragment from the line and scans the remainder, so a
+fragment exempts itself and nothing else. The four bypasses the reviewer constructed are all
+caught, and legitimate citations still pass. The inline marker `# lang-gate: allow` deliberately
+keeps whole-line semantics, because it exists for test strings that must spell out a violation.
+
+Making the check strict immediately caught rupture's own documentation of the banned list in
+`CLAUDE.md`, which had been riding on the loose behaviour. Those entries are now exact strings
+rather than line prefixes. That is the gate working, and it is the argument for strictness: the
+loose version was hiding something on the day it was written.
 
 ## Alternatives considered
 

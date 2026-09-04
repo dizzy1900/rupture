@@ -19,7 +19,7 @@ sourcing) through a Main Himalayan Thrust M8.5 scenario and prints:
 
 Two ground-motion models are implemented natively and **verified against OpenQuake's own published
 test vectors**: the BC Hydro subduction-interface model reproduces 22,400 reference values to
-within 5 parts in 10 million with exact standard deviations, and BSSA14 to within 0.00067 % at its
+within 5 parts in a billion (4.9e-07 %) with exact standard deviations, and BSSA14 to within 0.00067 % at its
 tabulated periods (1.8 % worst case at interpolated ones, which is the same discrepancy OpenQuake
 itself carries).
 

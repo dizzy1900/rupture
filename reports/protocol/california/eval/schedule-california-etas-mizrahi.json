@@ -11,44 +11,45 @@
   },
   "model_id": "etas-mizrahi",
   "model_version": "etas-3.0.0+097f08b",
-  "n_issued": 1,
-  "n_scored": 1,
+  "n_issued": 6,
+  "n_scored": 6,
   "not_scored": [],
-  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes.",
+  "note": "Pass means not rejected at alpha; it is not a skill claim. rupture does not predict earthquakes. Regenerated from the committed per-window result bundles after the schedule was stopped at six windows; see docs/BASELINE_RESULTS.md for why.",
   "pass_rates": {
     "CL": {
       "denominator_rule": "windows with >= 1 target event",
-      "passed": 1,
+      "passed": 6,
       "rate": 1.0,
-      "scored": 1
+      "scored": 6
     },
     "L": {
       "denominator_rule": "windows with >= 1 target event",
-      "passed": 1,
+      "passed": 6,
       "rate": 1.0,
-      "scored": 1
+      "scored": 6
     },
     "M": {
       "denominator_rule": "windows with >= 1 target event",
-      "passed": 1,
+      "passed": 6,
       "rate": 1.0,
-      "scored": 1
+      "scored": 6
     },
     "N": {
       "denominator_rule": "all evaluated windows",
-      "passed": 1,
+      "passed": 6,
       "rate": 1.0,
-      "scored": 1
+      "scored": 6
     },
     "S": {
       "denominator_rule": "windows with >= 1 target event",
-      "passed": 1,
+      "passed": 6,
       "rate": 1.0,
-      "scored": 1
+      "scored": 6
     }
   },
   "pycsep_version": "0.8.0",
   "refits": [],
+  "regenerated_at": "2026-09-04T00:00:53.522540+00:00",
   "region_id": "california",
   "schedule": {
     "alpha": 0.05,
@@ -70,14 +71,9 @@
   },
   "windows": [
     {
-      "fit_cutoff": "2022-01-01T00:00:00+00:00",
       "forecast_id": "etas-mizrahi-california-20220101T000000Z-30d",
-      "issue_time": "2022-01-01T00:00:00+00:00",
-      "n_excluded_no_mw": 1,
-      "n_excluded_non_earthquake": 0,
-      "n_only": false,
+      "issue_time": "2022-01-01T00:00:00Z",
       "n_target_events": 4,
-      "parameter_snapshot_hash": "72e2f58edb6005a3018a4cf175247240ec58cfb398b4cdaeceb16abab439c420",
       "tests": {
         "CL": {
           "passed": true,
@@ -115,8 +111,222 @@
           "statistic": -26.324226867307882
         }
       },
-      "total_expected": 5.663195287920713,
-      "window_end": "2022-01-31T00:00:00+00:00"
+      "window_end": "2022-01-31T00:00:00Z"
+    },
+    {
+      "forecast_id": "etas-mizrahi-california-20220131T000000Z-30d",
+      "issue_time": "2022-01-31T00:00:00Z",
+      "n_target_events": 1,
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.9,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.306117733490893
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.996,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -10.306117733490893
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.681,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.075434771012286
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9955557235966287,
+          "quantile_low": 0.02851509165707445,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.856,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.503927804834325
+        }
+      },
+      "window_end": "2022-03-02T00:00:00Z"
+    },
+    {
+      "forecast_id": "etas-mizrahi-california-20220302T000000Z-30d",
+      "issue_time": "2022-03-02T00:00:00Z",
+      "n_target_events": 2,
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.919,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.2964811132162
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.96,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -16.2964811132162
+        },
+        "M": {
+          "passed": true,
+          "quantile": 1.0,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.123345105676517
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.963722260000555,
+          "quantile_low": 0.11414494048646784,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.815,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.540944004709816
+        }
+      },
+      "window_end": "2022-04-01T00:00:00Z"
+    },
+    {
+      "forecast_id": "etas-mizrahi-california-20220401T000000Z-30d",
+      "issue_time": "2022-04-01T00:00:00Z",
+      "n_target_events": 2,
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.12,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -24.481578890714452
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.874,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -24.481578890714452
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.58,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -5.1920618977234625
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9583274147038379,
+          "quantile_low": 0.12775288894586614,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.086,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -18.757600796265358
+        }
+      },
+      "window_end": "2022-05-01T00:00:00Z"
+    },
+    {
+      "forecast_id": "etas-mizrahi-california-20220501T000000Z-30d",
+      "issue_time": "2022-05-01T00:00:00Z",
+      "n_target_events": 1,
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.67,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.458088305746575
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.984,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -11.458088305746575
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.545,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -3.2891781294216806
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.992413588715836,
+          "quantile_low": 0.04461869369201446,
+          "statistic": 1.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.644,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -6.872944927091756
+        }
+      },
+      "window_end": "2022-05-31T00:00:00Z"
+    },
+    {
+      "forecast_id": "etas-mizrahi-california-20220531T000000Z-30d",
+      "issue_time": "2022-05-31T00:00:00Z",
+      "n_target_events": 2,
+      "tests": {
+        "CL": {
+          "passed": true,
+          "quantile": 0.472,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.83397610316903
+        },
+        "L": {
+          "passed": true,
+          "quantile": 0.901,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -20.83397610316903
+        },
+        "M": {
+          "passed": true,
+          "quantile": 0.864,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -4.5508318224953
+        },
+        "N": {
+          "passed": true,
+          "quantile": null,
+          "quantile_high": 0.9479388108566875,
+          "quantile_low": 0.15281269493707525,
+          "statistic": 2.0
+        },
+        "S": {
+          "passed": true,
+          "quantile": 0.333,
+          "quantile_high": null,
+          "quantile_low": null,
+          "statistic": -15.908604606570666
+        }
+      },
+      "window_end": "2022-06-30T00:00:00Z"
     }
   ]
 }

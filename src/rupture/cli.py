@@ -188,7 +188,10 @@ def underwriting_check(
     figure is missing or the response is not a real answer, so a green run means numbers were
     actually produced — not that the code path executed.
     """
-    source = SeracExposureSource()
+    # repo_root matters: without it the loader can only read a serac checkout next door, so this
+    # command would pass on a developer machine that happens to have one and fail on every fresh
+    # clone. With it, the committed fixture (byte-identical to serac's export) is the fallback.
+    source = SeracExposureSource(repo_root=REPO_ROOT)
     portfolio_obj = source.load(portfolio_id=portfolio)
     request = AvoidedLossRequestV1(
         request_id="underwriting-check",

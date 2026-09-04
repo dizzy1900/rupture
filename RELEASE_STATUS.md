@@ -36,7 +36,7 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
 | C1b gridded ConvLSTM | validated | same schedule, same targets. **Not promotable** |
 | Log-linear ensemble | validated | beats ETAS on information gain in Türkiye only (+0.335/event); the rule needs 2 of 3 regions. **Not promoted** |
 | Leaky ablation | validated | +0.31 to +2.16 nats/event across the three models; on Nepal the NTPP leak (+0.77) flips the sign of the result |
-| C2 ground motion (native GSIMs) | validated | BC Hydro reproduces OpenQuake's 22,400 reference values to 5e-7 %, stddev exact; BSSA14 to 0.00067 % at tabulated periods |
+| C2 ground motion (native GSIMs) | validated | BC Hydro reproduces OpenQuake's 22,400 reference values to 5e-7 %, stddev exact; BSSA14 to 0.00067 % at tabulated periods. **These are measured, not ratcheted**: the tests assert the looser registry tolerances (0.01 % / 2 %), so a regression to 0.009 % would pass silently |
 | C2 exposure, vulnerability, loss, avoided loss | validated | the serac Trishuli corridor priced end to end; `make underwriting-check` prints USD 675.2M [361.6–996.5M] expected, retrofit avoiding USD 45.0M [32.2–54.5M] |
 | C2 FastAPI service | working | tested with `TestClient`; **never served outside tests** |
 | C3 ground failure (Nowicki Jessee 2018, Zhu 2017) | validated | against the real USGS product for Gorkha: liquefaction r = 0.45, landslide r = 0.16, both biased low |
@@ -72,4 +72,10 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
   is null** on every ETAS fit because upstream does not expose it.
 - **`baselines/ntpp/` is committed while `baselines/etas/` and `baselines/gridded/` are not.** The
   neural weights are the only reproducible evidence for a negative result and are small; the
-  asymmetry is deliberate and noted here rather than tidied away.
+  asymmetry is deliberate and noted here rather than tidied away. **The gridded and ensemble
+  *fits* are therefore not retained** — their *scores* are, in
+  `reports/challenger/<region>/schedule-<region>-challengers.json`, which is committed.
+- **No import-linter contract governs the four Prompt 2 packages relative to each other.** `domain`
+  and `ports` are protected from all of them, but nothing stops `cascade` importing `models`, and
+  `models` already imports `pipelines` in four places — an inward-facing model reaching into the
+  orchestration layer. Unforbidden, and it should not be.

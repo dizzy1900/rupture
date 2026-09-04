@@ -19,8 +19,9 @@ htmlcov/
 # `/reports/*` rather than `/reports/`: git cannot re-include a path whose parent directory is
 # excluded, so ignoring the directory itself made every negation below inert.
 /reports/*
-# ...but the schedule aggregates are the published evidence behind docs/BASELINE_RESULTS.md,
-# and reports/ is otherwise untracked while the DVC remote is a local placeholder.
+# ...but the schedule aggregates are the published evidence behind docs/BASELINE_RESULTS.md and
+# reports/CHALLENGER_EVALUATION.md, and reports/ is otherwise untracked while the DVC remote is a
+# local placeholder. `make clean` removes only ignored files here, so tracked evidence survives it.
 !/reports/protocol/
 !/reports/protocol/*/
 !/reports/protocol/*/eval/

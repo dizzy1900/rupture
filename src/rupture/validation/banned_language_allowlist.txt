@@ -18,9 +18,8 @@ The word "predict" and its derivatives are banned
 **Early warning**
 # CLAUDE.md spells out the banned list itself (the list is not a claim).
 `predict` and every derivative
-used as a capability (rupture is not an EEW system)
-the deterministic phrasings
-`next big one`.
+`early warning` / `early-warning` used as a capability (rupture is not an EEW system)
+the deterministic phrasings `will occur`, `will strike`, `will hit`, `will happen`, `imminent`, `next big one`.
 # Term of art: the traditional expansion of the acronym GMPE, quoted once in the glossary so
 # readers can map it to the GSIM vocabulary rupture and OpenQuake use. Not a capability claim.
 Ground-motion prediction equation
