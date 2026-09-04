@@ -31,6 +31,10 @@ OUT = Path(__file__).resolve().parents[4] / "src" / "rupture" / "adapters" / "gr
 # local file name -> (module path under hazardlib/, class name, attribute name)
 WANTED: dict[str, tuple[str, str, str]] = {
     "bssa14_coeffs.txt": ("gsim/boore_2014.py", "BooreEtAl2014", "COEFFS"),
+    # The two regional anelastic-attenuation branches of the same model: identical equations,
+    # a different Dc3 column. They are the branches of the GSIM logic tree of ADR-0037.
+    "bssa14_highq_coeffs.txt": ("gsim/boore_2014.py", "BooreEtAl2014HighQ", "COEFFS"),
+    "bssa14_lowq_coeffs.txt": ("gsim/boore_2014.py", "BooreEtAl2014LowQ", "COEFFS"),
     "bchydro_sinter_coeffs.txt": (
         "gsim/abrahamson_2015.py",
         "AbrahamsonEtAl2015SInter",

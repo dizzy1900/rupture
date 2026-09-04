@@ -12,24 +12,32 @@ Everything below was run in this worktree. Where something did not run, it says 
 
 ```
 serac export ──┐
-               ├─▶ ExposurePortfolio ──┐
+GEM export   ──┤──▶ ExposurePortfolio ─┐
 user import  ──┘                       │
-                                       ├─▶ risk.loss ──▶ MoneyRange (+ interval)
-ScenarioRupture ──▶ GroundMotionEngine ┤                       │
-   (Gorkha / MHT / stochastic)         │                       ▼
-                                       └─▶ VulnerabilityModel  risk.avoided_loss
-                                            (HAZUS + assumed)        │
-                                                                     ▼
-                                          AvoidedLossResponseV1 ──▶ CLI / FastAPI
+                                       ├─▶ risk.loss ────────▶ per-event MoneyRange
+ScenarioRupture ──▶ GroundMotionEngine ┤                              │
+   (Gorkha / MHT)                      ├─▶ VulnerabilityModel         │
+                                       │    (HAZUS + assumed)         │
+F1 ForecastGrid ──▶ risk.event_set ────┤                              │
+   (promoted ETAS)   (rates + events)  └─▶ risk.event_based ──▶ ANNUAL MoneyRange
+                                                              + exceedance curves
+                                                                      │
+                                                                      ▼
+                                            risk.avoided_loss ──▶ AvoidedLossResponseV1
+                                                                      │
+                                                                      ▼
+                                                                CLI / FastAPI
 ```
 
 | Layer | Module | Port |
 |---|---|---|
-| Exposure | `adapters/exposure/{serac_export,geoparquet_import}.py` | `ports/exposure.py` |
+| Exposure | `adapters/exposure/{serac_export,geoparquet_import,gem_global}.py` | `ports/exposure.py` |
 | Valuation | `adapters/exposure/valuation.py` | — |
-| Ground motion | `adapters/groundmotion/{native,openquake_scenario}.py` | `ports/ground_motion.py` |
+| Ground motion | `adapters/groundmotion/{native,openquake_scenario,openquake_event_based}.py` | `ports/ground_motion.py` |
+| GSIM logic trees | `adapters/groundmotion/logic_trees.py` | `domain/groundmotion.py` |
 | Vulnerability | `adapters/vulnerability/{hazus,hydropower,library}.py` | `ports/vulnerability.py` |
-| Damage / loss | `risk/{damage,loss}.py` | — |
+| Damage / loss | `risk/{damage,loss,curves}.py` | — |
+| Event sets / annual loss | `risk/{event_set,event_based}.py` | — |
 | Avoided loss | `risk/avoided_loss.py` | contract `avoided-loss.v1.json` |
 | Scenarios | `risk/scenarios.py` | — |
 | Service | `risk/service.py` | — |
@@ -76,6 +84,8 @@ sha256 per file, licence AGPL-3.0-or-later) and are re-fetched by
 | `AbrahamsonEtAl2015SInter` (BC Hydro interface, central ΔC1) | `BCHYDRO_SINTER_CENTRAL_*` | 22 400 | **4.9e-07 %** | **0 % (exact)** | 0.01 % / 0.01 % |
 | `BooreEtAl2014` (BSSA14, global Q, no basin, sof) | `BSSA_2014_{MEAN,TOTAL_STD,INTER_STD,INTRA_STD}` | 70 200 | **1.759 %** | **0.0167 %** | 2.0 % / 0.1 % |
 | `BooreEtAl2014(sof=False)` (unspecified mechanism) | `BSSA_2014_NOSOF_*` | 23 400 | **1.759 %** | **0.0167 %** | 2.0 % / 0.1 % |
+| `BooreEtAl2014HighQ` (high-Q Δc3: China, Turkey) | `BSSA_2014_HIGHQ_*` | 70 200 | **1.759 %** | **0.0167 %** | 2.0 % / 0.1 % |
+| `BooreEtAl2014LowQ` (low-Q Δc3: Italy, Japan) | `BSSA_2014_LOWQ_*` | 70 200 | **1.759 %** | **0.0167 %** | 2.0 % / 0.1 % |
 
 The BSSA14 mean figure needs a sentence, because 1.76 % is much larger than the others and it would
 be easy to leave that unexplained. The reference table lists 39 intensity measures; the committed
@@ -111,6 +121,52 @@ makes, so the allowlist admits exactly those two title strings and the titles ap
   "NGA-West2 Equations for Predicting PGA, PGV, and 5% Damped PSA for Shallow Crustal Earthquakes"
 - Abrahamson, Gregor & Addo (2016), doi:10.1193/051712EQS188MR:
   "BC Hydro Ground Motion Prediction Equations for Subduction Earthquakes"
+
+### The GSIM logic tree
+
+Full reasoning in **ADR-0037**. One GSIM gives an interval conditional on that GSIM being right,
+which is the narrowest assumption in a loss figure. `GsimLogicTree` (in `domain/groundmotion.py`)
+carries the epistemic alternative as weighted branches; `NativeGsimEngine.scenario_logic_tree`
+allocates realisations between them by largest remainder, so the weights are honoured **exactly**
+rather than in expectation, and the OpenQuake adapter writes the same object as
+`gsim_logic_tree.xml` so the two engines cannot drift apart. `RunConfig.gsim_logic_tree` threads it
+through every path in the risk layer.
+
+rupture ships one runnable tree, `rupture-asc-bssa14-q-v0`:
+
+| Branch | GSIM | Weight | What it stands for |
+|---|---|---|---|
+| `global-q` | `BooreEtAl2014` | 1/3 (**assumed**) | the model's default global anelastic attenuation, Δc3 = 0 |
+| `high-q` | `BooreEtAl2014HighQ` | 1/3 (**assumed**) | the paper's high-Q adjustment (China, Turkey): less loss with distance |
+| `low-q` | `BooreEtAl2014LowQ` | 1/3 (**assumed**) | the paper's low-Q adjustment (Italy, Japan): more loss with distance |
+
+**What this tree is not.** Its three branches are regional variants of **one** NGA-West2 model, not
+independent models. A national or regional PSHA tree for active shallow crust carries several
+independent NGA-West2 models — Chiou & Youngs 2014, Campbell & Bozorgnia 2014, Abrahamson, Silva &
+Kamai 2014, Idriss 2014 — which differ far more from one another. rupture has implemented and
+verified none of those four, so they are named in the tree's own `excluded` field rather than
+shipped as branch names it cannot run. **The spread this tree produces is a lower bound on GSIM
+epistemic uncertainty, not an estimate of it.** The weights are `assumed`: no published weighting of
+the Q-region choice for the Himalaya was found, and equal weights say "rupture cannot choose", not
+"these are equally right".
+
+**And it barely moves this corridor, for an instructive reason.** The Δc3 adjustment is an
+anelastic-attenuation term that only bites with distance, and the corridor sits at Rjb = 0 under a
+shallow thrust:
+
+| Site distance from the Gorkha plane | `BooreEtAl2014` | `HighQ` | `LowQ` | Spread |
+|---|---|---|---|---|
+| the corridor (Rjb = 0) | 0.4925 g | 0.4974 g | 0.4881 g | **1.02x** |
+| ~70 km east | 0.2541 g | 0.2640 g | 0.2455 g | 1.08x |
+| ~120 km east | 0.1219 g | 0.1367 g | 0.1100 g | 1.24x |
+| ~170 km east | 0.0582 g | 0.0743 g | 0.0468 g | 1.59x |
+| ~220 km east | 0.0317 g | 0.0464 g | 0.0226 g | 2.06x |
+| ~270 km east | 0.0184 g | 0.0309 g | 0.0116 g | **2.68x** |
+
+So for the corridor the tree changes the Gorkha-repeat expected loss from USD 631.4 M to
+USD 622.3 M and *narrows* the 90 % interval by 1 %. Do not read a corridor interval as including
+GSIM uncertainty: at Rjb = 0, with these three branches, there is almost none to include. This is
+§ 8 item 1 seen from another angle, and the fix is the same — an independent second model.
 
 ### Distances
 
@@ -167,6 +223,40 @@ The export carries no site condition. Every site is **assumed** Vs30 = 760 m/s (
 rock), recorded in each asset's `attributes["vs30_basis"]` and in the portfolio's provenance notes.
 Himalayan powerhouses are commonly founded on rock or thin alluvium, so this is not unreasonable,
 but it certainly understates amplification at any soil site, and it is an assumption.
+
+### GEM's Global Exposure Model, and why none of it is here
+
+Full reasoning in **ADR-0039**. The brief asked for exposure from GEM's global model *where openly
+licensed*. The licence was read and it fails.
+
+| | |
+|---|---|
+| GEM Global **Exposure** Model (`github.com/gem/global_exposure_model`) | **CC BY-NC-SA 4.0** (read from `LICENSE.txt`, 2026-09-03) |
+| GEM Global **Vulnerability** Model (`github.com/gem/global_vulnerability_model`) | **CC BY-NC-SA 4.0** (same) |
+| rupture | Apache-2.0 |
+
+CC BY-NC-SA is not an open licence under the Open Definition or the OSI: NonCommercial restricts a
+field of use and ShareAlike would propagate to derived works. So **rupture redistributes none of
+it** — no fixture, no slice, no derived table, and a unit test asserts the absence rather than
+trusting the rule. `validate-risk` therefore does not exercise this adapter against real data.
+
+What rupture does ship is the loader, because a consumer who has completed GEM's licence request
+should not also have to write one. `GemExposureSource` reads a copy the consumer already holds, in
+the OpenQuake exposure CSV format GEM distributes the disaggregated model in
+(`id, lon, lat, taxonomy, number, structural, ...`); it never fetches and never caches, and the
+portfolio's provenance carries GEM's licence and attribution. `fetch_summary` covers only the
+*public* summary tables (`Exposure_Summary_Adm0/Adm1/Taxonomy.csv`), prints the licence before
+writing, and writes outside the repository; those tables carry no coordinates, so they can be
+reported but cannot become a portfolio, and `read_summary` refuses to pretend otherwise.
+
+**The second half of the requirement is declined and stays open.** Pairing GEM exposure with a
+building-class fragility set needs an openly licensed one. GEM's own vulnerability database is
+CC BY-NC-SA; HAZUS 5.1's general building-stock tables are openly licensed but are not among the
+blocks committed under `tests/fixtures/risk/vulnerability/hazus51/`, and rupture will not transcribe
+them from memory. A GEM portfolio imported today is therefore reported **wholly unmodelled**, asset
+by asset, with the reason — the same treatment the corridor's bridge, border post and settlements
+already get. Committing the HAZUS building tables the way the six existing tables were committed is
+the work that unblocks it.
 
 ### User-supplied portfolios
 
@@ -254,10 +344,12 @@ see §8.
 from the resulting area and a 5 m average slip via Hanks & Kanamori (1979), so geometry and
 magnitude cannot disagree and no unverified scaling relation was adopted.
 
-**Stochastic event sets.** `scenarios.from_stochastic_event` is the hook the forecasting layer plugs
-an ETAS catalogue into. An event with a finite-fault geometry keeps it; an event without one becomes
-a point rupture and its notes say exactly that, including that the resulting loss is a lower
-estimate. The event sets themselves are not in C2.
+**Stochastic event sets.** These are now built, not merely hooked: `risk.event_set` samples whole
+synthetic catalogues from a promoted F1 `ForecastGrid` and each sampled event becomes a
+`ScenarioRupture` through `scenarios.from_stochastic_event`. An event with a finite-fault geometry
+keeps it; an event without one becomes a **point rupture** and its notes say exactly that,
+including that the resulting loss is a lower estimate. § 6b has the numbers and ADR-0036 has the
+sampling rule.
 
 ---
 
@@ -302,40 +394,183 @@ HAZUS curves put most plants in extensive or complete damage — anchoring buys 
 and little at 0.5 g. The **exclusion** avoids 39 % because Upper Trishuli-1 is 40 % of the
 portfolio; that is a statement about concentration, not about land-use policy.
 
+### The shutdown is worth nothing for the rupture that matters most
+
+`automated_shutdown` now depends on whether an alert can reach the plant before the shaking does
+(**ADR-0038**), not on a flat fraction applied everywhere. The same portfolio, the same 15 %
+assumed fraction, the same 2 000 realisations, two ruptures:
+
+| Scenario | Hypocentral distance to the 14 sites | Warning time | Avoided (USD M) |
+|---|---|---|---|
+| Gorkha 2015 repeat | 56 – 75 km | **+1 to +6 s** at all 14 | **52.6** |
+| MHT M8.5 hypothetical | 29 – 41 km, 10 km deep | **−3 to −7 s** at all 14 | **0.0** |
+
+The corridor sits on top of the Main Himalayan Thrust. For the rupture it most needs to worry
+about, the S wave arrives before a source-side alert plus the machinery's own stopping time could
+have acted, so the measure avoids exactly nothing and the model now says so. All four timing
+parameters (`trigger_g` 0.05 g, `s_wave_km_s` 3.5, `latency_s` 5, `stopping_time_s` 10) are
+**assumed**, none is a published figure, and all four are request parameters: a consumer with a
+faster plant and a faster alert (1 s and 1 s) puts all 14 sites back in time, and the avoided
+figure returns.
+
+---
+
+## 6b. Expected annual loss, from a real ETAS forecast
+
+**This is the figure an underwriter prices against**, and it exists because the forecasting half of
+rupture feeds the loss half: `risk.event_set` samples synthetic catalogues from a promoted F1
+`ForecastGrid` and `risk.event_based` reduces them to an annual number and to exceedance curves
+(**ADR-0036**).
+
+The run below is real, not illustrative. The catalogue was built from ComCat, ISC and GCMT for
+`nepal-himalaya` (1976 → 2026-08-01), the ETAS baseline was fitted with a hard cutoff at
+2022-01-01 (772 events above Mc 4.4, converged, branching ratio 0.69), and the grid was issued at
+2026-08-01 over a 1-year horizon: **2 079 cells × 43 magnitude bins, 8.69 expected events at
+M ≥ 4.7 per year**.
+
+| | |
+|---|---|
+| Event set | 1 000 synthetic catalogue-years, M ≥ 5.0, seed 20260903 |
+| Events sampled | **4 216**, summed rate **4.216 /yr**, largest sampled magnitude M 8.48 |
+| Ground motion | `BooreEtAl2014` PGA, `native_gsim`, 40 realisations per event |
+| Years with no modelled loss | 1.7 % |
+| Assumption-dependent share | 20 % |
+| **Expected annual loss** | **USD 4 416 057 /yr** [3 450 701 – 5 471 865] = **0.291 % of portfolio value per year** |
+
+The interval on the AAL is a percentile bootstrap of the mean over the 1 000 catalogue-years — it
+is *how well the event set pins the number down*, **not** the spread of annual loss. The spread of
+annual loss is the exceedance curve, and confusing the two is the standard way an annual-loss
+figure misleads. The `basis` string on the figure says this, and a test asserts the sentence is
+there.
+
+| Return period | Aggregate exceedance (annual total, USD M) | Occurrence exceedance (single event, USD M) |
+|---|---|---|
+| 2 yr | 0.0 | 0.0 |
+| 5 yr | 0.7 | 0.9 |
+| 10 yr | 5.7 | 6.2 |
+| 20 yr | 19.4 | 19.6 |
+| 50 yr | 43.3 | 52.7 |
+| 100 yr | 82.3 | 92.9 |
+| 200 yr | 116.6 | 152.2 |
+| 500 yr | 163.8 | 245.1 |
+| **1 000 yr** | **177.1** | **326.7** |
+
+Nothing beyond 1 000 years is reported, because 1 000 catalogue-years is what this event set
+resolves; extrapolating would be reading a rare loss off the single worst sampled year.
+
+**Read the caveats before quoting the number.** In roughly descending order of how much they move
+it:
+
+1. **Every sampled event is a point rupture at 15 km depth.** rupture does not manufacture a fault
+   plane from a magnitude (ADR-0025). This is why the 1 000-year aggregate loss (USD 177 M) is well
+   *below* the Gorkha-repeat scenario loss (USD 631 M) even though the event set contains an
+   M 8.48: a point source 15 km down is far weaker at the site than a finite thrust plane the
+   corridor sits on. The scenario figures and this curve are **not** directly comparable, and the
+   annual figure is a lower estimate because of it.
+2. **The ETAS grid's rate is treated as constant over the year.** A time-dependent forecast decays;
+   annualising it says "if this rate persisted". Read the annual figure as a rate-equivalent, not
+   as a statement about the coming year.
+3. **Occurrence within a catalogue is Poisson**, which reproduces the grid's expected counts
+   exactly and understates the variance of a clustered process — so the tail of the aggregate curve
+   is *tighter* than the underlying process.
+4. **Events below M 5.0 are not sampled**, which makes the figure a lower estimate by an amount a
+   caller can bound by lowering the threshold and re-running.
+5. Everything in § 8 that applies to a scenario loss applies here too: five of fourteen assets
+   unpriced, cascade components zero, no spatial correlation, assumed value shares.
+
+Magnitudes within a bin follow a Gutenberg-Richter density using the region's **fitted** b-value
+(1.138, Aki 1965 MLE from the region's own Mc estimate), not an assumed one.
+
+**Reproducing it needs network**, because `data/forecasts/` is DVC-tracked and empty in a fresh
+clone:
+
+```bash
+uv run rupture catalog build --region nepal-himalaya --from 1976-01-01 --to 2026-08-01
+uv run rupture forecast fit --model etas --region nepal-himalaya --cutoff 2022-01-01T00:00:00Z
+uv run rupture forecast issue --model etas --region nepal-himalaya --horizon 1y \
+    --issue 2026-08-01T00:00:00Z
+```
+
+The **offline** tests run instead on a committed **real slice** of that same grid — the 156 cells
+around the corridor, counts carried through unchanged, under
+`tests/fixtures/risk/forecast/` with a `provenance.json` naming the parent grid, its fit cutoff and
+its parameter snapshot hash. A slice's rate is a fraction of the region's, so an annual loss from
+it is not the corridor's annual loss; it proves the F1→F2 join runs offline on real forecast
+output.
+
+**Avoided annual loss** is the catalogue-by-catalogue difference against the same events and the
+same ground-motion realisations (ADR-0025's shared-realisation rule, carried into the event-based
+path). One finding worth recording: over an event set full of small earthquakes, the retrofit is
+*not* uniformly beneficial. HAZUS's anchored generation-facility curve for plants under 100 MW is
+fractionally worse than its unanchored counterpart between about 0.006 g and 0.051 g, by at most
+0.02 % of plant value, so a synthetic year containing only very small events comes out marginally
+worse with the retrofit in place. That is a property of the published pair, not a defect; a test
+pins the crossing, the response reports the share of catalogues affected and the worst shortfall,
+and `MoneyRange` cannot be negative so the note says what the truncation at zero hid (ADR-0038).
+
 ---
 
 ## 7. How to run it
+
+`rupture risk ...` and `rupture validate risk` are **registered and working**: `cli.py` carries
+`app.add_typer(risk.app, name="risk")` and `"risk"` is in the `GATES` tuple of
+`validation/registry.py`. (An earlier draft of this section said otherwise and was wrong; the
+`python -m rupture.commands.risk ...` form still works and does the same thing.)
 
 ```bash
 uv sync
 
 # the gate: offline, no Docker, no network
-make validate-risk
+make validate-risk          # or: uv run rupture validate risk
 
-# the loss and the avoided loss, with intervals
-uv run python -m rupture.commands.risk run --scenario gorkha-2015-repeat --realisations 2000
-uv run python -m rupture.commands.risk run --scenario mht-m8-hypothetical \
+# a scenario: the loss and the avoided loss, with intervals
+uv run rupture risk run --scenario gorkha-2015-repeat --realisations 2000
+uv run rupture risk run --scenario mht-m8-hypothetical \
     --gsim AbrahamsonEtAl2015SInter --allow-tectonic-mismatch
-uv run python -m rupture.commands.risk run --portfolio my_portfolio.parquet \
+uv run rupture risk run --portfolio my_portfolio.parquet \
     --scenario gorkha-2015-repeat --interventions measures.json --json
 
-uv run python -m rupture.commands.risk scenarios
-uv run python -m rupture.commands.risk gsims
+# a forecast: expected ANNUAL loss from a stochastic event set (§ 6b)
+# needs the grid to have been issued first; data/forecasts/ is DVC-tracked and empty in a clone
+uv run rupture risk run --forecast etas-mizrahi-nepal-himalaya-20260801T000000Z-365d
+
+uv run rupture risk scenarios
+uv run rupture risk gsims
 
 # use the sibling's live export instead of the committed copy
-SERAC_EXPORT_DIR=../serac uv run python -m rupture.commands.risk run --scenario gorkha-2015-repeat
+SERAC_EXPORT_DIR=../serac uv run rupture risk run --scenario gorkha-2015-repeat
 
-# the container path (amd64 only; skips locally with a printed reason)
+# the container paths, scenario and event_based (amd64 only; skip locally with a printed reason)
 make test-integration
 ```
 
-> **For the architect:** `rupture risk ...` and `rupture validate risk` are the conventional entry
-> points and both are two lines away. `src/rupture/cli.py` needs
-> `app.add_typer(risk.app, name="risk")` (and `risk` in the `from rupture.commands import ...`
-> line), and `src/rupture/validation/registry.py` needs `"risk"` in `GATES`. The gate module is
-> already the conventional shape — `validation/risk.py` exposing `run(repo_root) -> GateResult` —
-> so nothing else changes. Until then `mk/risk.mk` invokes it as
-> `python -m rupture.validation.risk`, which behaves identically.
+> **For the architect**, three requests, none of them blocking:
+>
+> 1. `rupture risk run --forecast` prints `scenario: <id>` and a per-event framing for what is now
+>    an **annual** figure. `commands/risk.py` should label the forecast path as such and print the
+>    exceedance curve, which `avoided_loss.respond_with_detail` returns alongside the response.
+> 2. The event-set knobs (`n_catalogues`, `min_magnitude`, `catalogue_duration_years`,
+>    `n_gm_realisations`) are function parameters with stated defaults and are not exposed as CLI
+>    options; the CLI therefore always runs 500 catalogue-years.
+> 3. `avoided-loss.v1` has no field for an expected-annual-loss curve. The AAL is returned in
+>    `baseline_total` with a `basis` that says which window it covers, and the exceedance curve is
+>    returned out of band by `respond_with_detail`. A **v1.1** adding
+>    `annual_expected_loss: MoneyRange | None` and `exceedance_curve` (additive, per ADR-0013)
+>    would let a consumer read it from the contract. Likewise `ground-motion-field.v0` has no field
+>    for a GSIM logic-tree id, so a mixed field records the tree in `notes` and in its provenance.
+>
+> And four stale claims outside this document that say the opposite of what the code does, left
+> here rather than edited from a parallel worktree:
+>
+> - the module docstring of `src/rupture/commands/risk.py` still says the sub-application "is not
+>   wired into `cli.py` yet". It is (`app.add_typer(risk.app, name="risk")`).
+> - `mk/risk.mk`'s header comment says the same, and the recipe invokes
+>   `python -m rupture.validation.risk` rather than the now-available `$(RUN) rupture validate risk`.
+> - the `Makefile` help text for `underwriting-check` says it "exits non-zero: not implemented
+>   (Prompt 2)". It exits **zero** and prints a loss and an avoided loss with intervals.
+> - `RELEASE_STATUS.md` records forecast and long-term-hazard triggers as not implemented. The
+>   forecast trigger is implemented (§ 6b); the hazard trigger is still not, for the reason in
+>   § 8 item 10.
 
 ### Deployment
 
@@ -400,15 +635,24 @@ Read this section before quoting any number above.
 7. **No spatial correlation of intra-event residuals.** They are drawn independently per site, which
    is OpenQuake's default too, and it **narrows** the portfolio interval relative to a correlated
    field. The intervals above are therefore optimistic about how tight they are.
-8. **Cascade components are not modelled.** Landslide, liquefaction and ice-rock avalanche appear in
-   every decomposition as an explicit `0.0` with a note, so the zero cannot be read as "modelled and
-   small". This is the seam C3 fills, and in a Himalayan gorge the landslide contribution is
-   unlikely to be small.
+8. **Cascade components are still not modelled, and this pass did not change that.** Landslide,
+   liquefaction and ice-rock avalanche appear in every decomposition as an explicit `0.0` with a
+   note, so the zero cannot be read as "modelled and small". In a Himalayan gorge the landslide
+   contribution is unlikely to be small. Wiring the C3 seam was considered and **declined** here
+   for a specific reason: `GroundFailureField` (contract `ground-failure-field.v0`) gives a
+   *probability of failure per cell*, not a permanent ground deformation, and HAZUS's permanent-
+   ground-deformation fragility curves are defined on displacement in inches. The two do not join
+   without either (a) the HAZUS PGD tables committed as fixtures the way Tables 7-9, 8-29, 8-31,
+   8-32, 11-10 and 11-18 were, plus a sourced probability-to-displacement relation, or (b) an
+   invented conditional damage ratio. (b) would be a fabricated model wearing a decomposition's
+   clothes, so nothing was wired. The explicit zero and its note remain the honest report.
 9. **Loss types.** Only `structural` is computed. Business interruption, contents and casualties are
    not, despite the enum carrying them.
-10. **Forecast and long-term-hazard triggers are not implemented.** A `TriggerKind.FORECAST` or
-    `HAZARD` request returns `status = not_implemented` with a stub `MoneyRange` and a message
-    saying what is missing. It never returns a guess.
+10. **A long-term-hazard trigger is still not implemented.** A `TriggerKind.FORECAST` request is
+    now answered (§ 6b, ADR-0036). `TriggerKind.HAZARD` returns `status = not_implemented` with a
+    stub `MoneyRange` and a message naming what is missing: rupture ships the engine-side
+    `event_based` job rendering and export parsing (ADR-0037) but **no long-term (F0) source model
+    for the corridor**, so there is nothing to run it on. It never returns a guess.
 11. **Only PGA is used.** The GSIMs support spectral acceleration and the code accepts `SA(T)`, but
     every fragility function shipped is defined on PGA, so no spectral loss calculation has been
     run.
@@ -416,7 +660,32 @@ Read this section before quoting any number above.
 13. **Vs30 is assumed everywhere.** §3.
 14. **`ScenarioGroundMotionJob` cannot carry a site model**, so the engine adapter renders its own
     `job.ini` rather than reusing `job_builder.scenario_job_ini`. That duplication would disappear if
-    the port gained a `site_model_file`; it is a port change and belongs to the architect.
+    the port gained a `site_model_file`; it is a port change and belongs to the architect. The
+    event-based adapter renders its own `job.ini` for the same reason.
+15. **The shipped GSIM logic tree is a lower bound on model uncertainty, not an estimate of it.**
+    Its three branches are Q-region variants of one NGA-West2 model. A tree with independent models
+    (Chiou & Youngs 2014, Campbell & Bozorgnia 2014, Abrahamson/Silva/Kamai 2014, Idriss 2014)
+    would be far wider; rupture has verified none of them, so they are named on the tree as
+    excluded rather than shipped. At Rjb = 0 the shipped tree changes the corridor's answer by
+    about 1 %; at 200 km its branches span a factor of 2.7. § 2 and ADR-0037.
+16. **An annual loss and a scenario loss are not comparable as they stand.** Every event of a
+    sampled event set is a point rupture at 15 km depth, so the 1 000-year aggregate loss
+    (USD 177 M) sits well below the Gorkha-repeat scenario loss (USD 631 M) even though the set
+    contains an M 8.48. Fixing it needs a magnitude-area scaling relation and a fault-attachment
+    rule, neither of which this pass verified. § 6b and ADR-0036.
+17. **The event set's occurrence process is Poisson, not clustered.** It reproduces an ETAS grid's
+    expected counts exactly and understates the variance of a clustered process, so the tail of the
+    aggregate exceedance curve is tighter than the underlying process. Drawing from
+    `etas.simulation` instead of from binned expected counts would fix it; it needs the forecasting
+    adapter to expose simulated catalogues, which it does not today.
+18. **rupture ships no building-class fragility**, so GEM exposure (and any general portfolio)
+    imports but prices at zero, asset by asset, with the reason. The blocking item is a sourced
+    fragility set, not the exposure. § 3 and ADR-0039.
+19. **The shutdown's timing parameters are four more assumptions.** Trip threshold, S-wave speed,
+    alert latency and stopping time are all stated defaults, none published, all overridable per
+    request. The model is a source-side regional alert, not a per-plant on-site sensor; an on-site
+    trigger would have a shorter geometry and would look more favourable, so the reported avoided
+    loss is a lower estimate. ADR-0038.
 
 ---
 
@@ -439,3 +708,18 @@ Read this section before quoting any number above.
 
 It pins the committed exposure fixture, so pointing `SERAC_EXPORT_DIR` elsewhere cannot change its
 answer. A test corrupts a fixture digest in a copied tree and asserts the gate fails.
+
+Check 2 now covers **five** GSIMs, the two logic-tree branches included (§ 2).
+
+**What the gate does not yet cover, and a request to the gate's owner.** The annual-loss path is
+exercised by the offline unit tests (`tests/unit/risk/test_event_set.py`,
+`test_event_based.py`) against the committed real ForecastGrid slice, but not by `validate-risk`
+itself. Three checks would close that, all offline and all fast on the committed slice:
+
+1. sample an event set from `tests/fixtures/risk/forecast/trishuli-corridor-slice.json` and assert
+   the summed occurrence rate matches the slice's own rate within Poisson error;
+2. run `event_based.run_event_based` over it and assert the AAL is finite and positive, that its
+   interval is ordered, and that no exceedance point exceeds the resolvable return period;
+3. assert the slice still matches the sha256 its `provenance.json` records (the same check
+   `_check_fixture_digests` already does for the GSIM and HAZUS fixtures — the forecast directory
+   just needs adding to its list).

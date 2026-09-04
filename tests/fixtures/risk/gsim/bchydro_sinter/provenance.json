@@ -1,7 +1,7 @@
 {
   "source": "gem/oq-engine",
   "ref": "engine-3.26",
-  "retrieved_at": "2026-09-03T20:06:25.991777Z",
+  "retrieved_at": "2026-09-04T03:59:39.071800Z",
   "licence": "AGPL-3.0-or-later",
   "notes": "OpenQuake's own committed GSIM expected-value tables, carried unmodified as verification fixtures for rupture's native_gsim adapter (ADR-0020).",
   "files": [

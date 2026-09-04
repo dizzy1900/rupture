@@ -19,16 +19,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from dataclasses import field as dataclass_field
+from types import EllipsisType
 
 from rupture.adapters.groundmotion import NativeGsimEngine
 from rupture.adapters.vulnerability import HydropowerVulnerability, money_range
 from rupture.adapters.vulnerability.hydropower import VALUE_SHARE_ASSUMPTION
 from rupture.domain.avoided_loss_v1 import AssetLoss, HazardComponent
-from rupture.domain.groundmotion import GroundMotionField, Site
+from rupture.domain.groundmotion import GroundMotionField, GsimLogicTree, Site
 from rupture.domain.hazard import ScenarioRupture
 from rupture.domain.loss import ExposurePortfolio, LossType, TriggerKind
 from rupture.domain.money import ConfidenceTier, ModelProvenance, MoneyRange
-from rupture.ports.ground_motion import GroundMotionEngine
+from rupture.ports.ground_motion import GroundMotionEngine, LogicTreeGroundMotionEngine
 from rupture.risk import damage as dmg
 
 DEFAULT_VS30 = 760.0
@@ -63,6 +64,13 @@ class RunConfig:
     interval_level: float = 0.9
     default_vs30: float = DEFAULT_VS30
     allow_tectonic_mismatch: bool = False
+    gsim_logic_tree: GsimLogicTree | None = None
+    """When set, every field is a weighted mixture over the tree's branches, not one GSIM.
+
+    ``gsim`` is then ignored for the calculation and the resulting field's own ``gsim`` field
+    names the tree. ``docs/RISK.md`` and ADR-0037 record what the shipped tree does and does not
+    represent.
+    """
 
 
 @dataclass(frozen=True, slots=True)
@@ -118,6 +126,51 @@ def sites_for(
     return tuple(out)
 
 
+LOGIC_TREE_UNSUPPORTED = (
+    "a GSIM logic tree was requested but this ground-motion engine cannot evaluate one; "
+    "use NativeGsimEngine or the OpenQuake adapter"
+)
+
+
+def ground_motion(
+    engine: GroundMotionEngine,
+    rupture: ScenarioRupture,
+    sites: tuple[Site, ...],
+    cfg: RunConfig,
+    *,
+    n_realisations: int | None = None,
+    seed: int | EllipsisType | None = ...,
+) -> GroundMotionField:
+    """One field for ``rupture``, from a single GSIM or from ``cfg.gsim_logic_tree``.
+
+    Every path in the risk layer goes through here, so a run configured with a logic tree gets
+    one everywhere rather than in whichever module remembered to ask.
+    """
+    n = cfg.n_realisations if n_realisations is None else n_realisations
+    use_seed = cfg.seed if isinstance(seed, EllipsisType) else seed
+    if cfg.gsim_logic_tree is None:
+        return engine.scenario(
+            rupture,
+            sites,
+            imt=cfg.imt,
+            gsim=cfg.gsim,
+            n_realisations=n,
+            truncation_level=cfg.truncation_level,
+            seed=use_seed,
+        )
+    if not isinstance(engine, LogicTreeGroundMotionEngine):
+        raise LossError(LOGIC_TREE_UNSUPPORTED)
+    return engine.scenario_logic_tree(
+        rupture,
+        sites,
+        tree=cfg.gsim_logic_tree,
+        imt=cfg.imt,
+        n_realisations=n,
+        truncation_level=cfg.truncation_level,
+        seed=use_seed,
+    )
+
+
 def run_scenario(
     portfolio: ExposurePortfolio,
     rupture: ScenarioRupture,
@@ -131,15 +184,7 @@ def run_scenario(
     eng = engine or NativeGsimEngine(strict_tectonic_region=not cfg.allow_tectonic_mismatch)
     model = vulnerability or HydropowerVulnerability()
     sites = sites_for(portfolio, default_vs30=cfg.default_vs30)
-    gmf = eng.scenario(
-        rupture,
-        sites,
-        imt=cfg.imt,
-        gsim=cfg.gsim,
-        n_realisations=cfg.n_realisations,
-        truncation_level=cfg.truncation_level,
-        seed=cfg.seed,
-    )
+    gmf = ground_motion(eng, rupture, sites, cfg)
     return aggregate(
         portfolio,
         gmf,

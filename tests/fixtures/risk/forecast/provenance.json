@@ -1,0 +1,32 @@
+{
+  "source": "rupture.forecast.issue (etas-mizrahi)",
+  "source_url": null,
+  "retrieved_at": "2026-09-04T04:12:09.592379Z",
+  "licence": "Apache-2.0 (rupture); derived from the ComCat/ISC/GCMT catalogue build",
+  "parent_grid_id": "etas-mizrahi-nepal-himalaya-20260801T000000Z-365d",
+  "region_id": "nepal-himalaya",
+  "model_id": "etas-mizrahi",
+  "model_version": "etas-3.0.0+097f08b",
+  "fit_cutoff": "2022-01-01T00:00:00+00:00",
+  "issue_time": "2026-08-01T00:00:00+00:00",
+  "training_catalog_hash": "ee624a98462e165c9d31e726f3db401124e116897f628aacddbcda5b94126e0f",
+  "parameter_snapshot_hash": "bcd6f66f8bb373913b1886da0bcb0ecab7e58d16e0ed1a2b5ad645b2aa36de49",
+  "bbox": [
+    84.7,
+    27.5,
+    85.9,
+    28.6
+  ],
+  "cells_kept": 156,
+  "cells_in_parent": 2079,
+  "parent_total_expected": 8.6930305896262,
+  "slice_total_expected": 0.7738112737522432,
+  "notes": "A real slice of a real issued ForecastGrid, not a synthesised one. The parent grid was issued from the ETAS baseline fitted with a hard cutoff at fit_cutoff; no event at or after that cutoff reached the fit. The slice's rates are a fraction of the region's, so an annual loss computed from it is not the corridor's annual loss.",
+  "files": [
+    {
+      "file": "trishuli-corridor-slice.json",
+      "sha256": "f7432be816ac98c58c0e76d1a9a4c35dcab4a3c374a16581e94c6f4553c06285",
+      "bytes": 153048
+    }
+  ]
+}
