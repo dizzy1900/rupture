@@ -29,6 +29,8 @@ The order of the verbs is the order they must be run in, and each refuses to ski
 from __future__ import annotations
 
 import json
+import logging
+import sys
 from datetime import timedelta
 from pathlib import Path
 from typing import Annotated
@@ -62,6 +64,14 @@ ntpp_app = typer.Typer(
     no_args_is_help=True,
 )
 app.add_typer(ntpp_app, name="ntpp")
+protocol_app = typer.Typer(
+    help=(
+        "The gridded challenger (C1b) and the log-linear ensemble, run over the protocol "
+        "schedule. rupture does not predict earthquakes."
+    ),
+    no_args_is_help=True,
+)
+app.add_typer(protocol_app, name="protocol")
 # A second challenger registers its own sub-app on the line below; do not edit anything above.
 
 MODELS = {"ntpp": MODEL_ID, MODEL_ID: MODEL_ID}
@@ -208,11 +218,34 @@ def schedule(  # noqa: PLR0917 - typer options
     eval_simulations: Annotated[int, typer.Option("--eval-simulations")] = 1000,
     seed: Annotated[int, typer.Option("--seed")] = 20220101,
     refit: Annotated[str, typer.Option("--refit", help="yearly or none.")] = "none",
+    benchmark_simulations: Annotated[
+        int | None,
+        typer.Option(
+            "--benchmark-simulations",
+            help="Continuations for the ETAS benchmark; defaults to --simulations, "
+            "which is what makes the paired comparison symmetric.",
+        ),
+    ] = None,
     compare_etas: Annotated[
         bool, typer.Option("--compare-etas/--no-compare-etas", help="Run the paired T/W tests.")
     ] = True,
+    evaluate_benchmark: Annotated[
+        bool,
+        typer.Option(
+            "--evaluate-benchmark/--no-evaluate-benchmark",
+            help="Also score the benchmark's own consistency tests on the same target slices, "
+            "so both pass-rate columns come from one run. Condition 1 of the promotion rule "
+            "needs them; off, the verdict cannot be computed.",
+        ),
+    ] = True,
 ) -> None:
-    """Run the pseudo-prospective schedule; by default compare with ETAS window by window."""
+    """Run the pseudo-prospective schedule; by default compare with ETAS window by window.
+
+    The benchmark is scored in the same run by default. That is what produced the committed
+    ``benchmark_pass_rates`` in ``reports/protocol/<region>/eval/schedule-<region>-ntpp.json``,
+    and it is the only way the two pass-rate columns are known to come from the same grids, the
+    same target slices and the same simulation budget.
+    """
     if refit not in {"yearly", "none"}:
         typer.echo("rupture challenger ntpp schedule: --refit must be 'yearly' or 'none'", err=True)
         raise typer.Exit(1)
@@ -237,9 +270,10 @@ def schedule(  # noqa: PLR0917 - typer options
         forecasts_dir=data_dir / "forecasts",
         reports_dir=reports_dir,
         benchmark=benchmark,
+        evaluate_benchmark=evaluate_benchmark and benchmark is not None,
         refit="yearly" if refit == "yearly" else "none",
         n_simulations=simulations,
-        benchmark_simulations=simulations,
+        benchmark_simulations=benchmark_simulations or simulations,
         eval_simulations=eval_simulations,
         seed=seed,
         mc=persisted.mc,
@@ -249,7 +283,10 @@ def schedule(  # noqa: PLR0917 - typer options
         typer.echo(f"  {name}: {detail['passed']}/{detail['scored']}")
     if compare_etas:
         typer.echo(f"  vs etas: {json.dumps(report['comparison_summary'], sort_keys=True)}")
-    typer.echo(json.dumps(promotion_verdict(report), indent=2, sort_keys=True))
+    # The verdict is only meaningful against the benchmark's own pass rates from this same run;
+    # passing None would fail condition 1 for want of a comparison, not for want of skill.
+    verdict = promotion_verdict(report, report.get("benchmark_pass_rates"))
+    typer.echo(json.dumps(verdict, indent=2, sort_keys=True))
     typer.echo(f"-> {report['report_path']}")
 
 
@@ -271,14 +308,25 @@ def ablate(  # noqa: PLR0917 - typer options
     eval_simulations: Annotated[int, typer.Option("--eval-simulations")] = 1000,
     seed: Annotated[int, typer.Option("--seed")] = 20220101,
 ) -> None:
-    """Run the deliberately leaky variants and print what the leaks bought. Never a result."""
+    """Run the deliberately leaky variants and print what the leaks bought. Never a result.
+
+    The ETAS benchmark is loaded and scored here too, and the two leaky runs share one benchmark
+    cache: the ablation's whole content is *differences* from the honest run's comparison against
+    ETAS, so a run without the benchmark produces no ``information_gain_vs_etas`` at all, and two
+    runs against separately simulated benchmark grids would carry the benchmark's Monte Carlo
+    noise into the difference alongside the leak.
+    """
     from rupture.models.challengers.ntpp.ablation import (  # noqa: PLC0415 - heavy, and rarely run
         LEAKY_BANNER,
         run_ablations,
+        write_ablation_report,
     )
 
     catalogue, region_record = _load(region, catalog, data_dir)
     persisted, _ = load_saved_fit(baselines_dir, region)
+    etas_fit = load_etas_fit(baselines_dir, region)
+    benchmark = MizrahiETAS(auxiliary_years=etas_fit.diagnostics.get("auxiliary_years", 2.0))
+    benchmark.load_fit(etas_fit, region_record)
     typer.echo(LEAKY_BANNER, err=True)
     result = run_ablations(
         catalogue,
@@ -294,12 +342,15 @@ def ablate(  # noqa: PLR0917 - typer options
         baselines_dir=baselines_dir,
         forecasts_dir=data_dir / "forecasts",
         reports_dir=reports_dir,
+        benchmark=benchmark,
+        benchmark_cache={},
         n_simulations=simulations,
         eval_simulations=eval_simulations,
         seed=seed,
     )
     for name in ("tuning_leak", "fit_leak"):
         typer.echo(f"{name}: {json.dumps(result[name]['delta'], indent=2, sort_keys=True)}")
+    typer.echo(f"-> {write_ablation_report(result, reports_dir, region)}")
 
 
 def _record(kind: str, region: str, result: FitResult) -> RunRecord:
@@ -317,6 +368,51 @@ def _record(kind: str, region: str, result: FitResult) -> RunRecord:
             "log_likelihood": result.log_likelihood,
             "config_hash": result.diagnostics.get("config_hash"),
         },
+    )
+
+
+@protocol_app.command("run")
+def protocol_run(
+    region: Annotated[str, typer.Option("--region", help="Region id (data/regions/<id>).")],
+    repo: Annotated[Path, typer.Option("--repo", help="Repository root.")] = Path("."),
+    skip_ablation: Annotated[
+        bool,
+        typer.Option(
+            "--skip-ablation/--with-ablation",
+            help="Skip the deliberately leaky gridded fit. It is never a result, but it is what "
+            "the discipline's value is measured with, so it is on by default.",
+        ),
+    ] = False,
+) -> None:
+    """Reproduce `reports/challenger/<region>/schedule-<region>-challengers.json`, end to end.
+
+    Hyperparameter search, the weight-fitting block, the test fit, the 55-window schedule for both
+    the gridded challenger and the ensemble, and the leaky ablation — the stages of
+    ``rupture.models.ensemble.protocol_runner``, which every committed C1b and ensemble number
+    came from. Each stage caches to disk, so a run is resumable; a full region is hours, not
+    minutes.
+
+    This exists because the committed evidence behind a promotion verdict must be regenerable
+    through the repository's own entry points. It was previously reachable only as
+    ``python -m rupture.models.ensemble.protocol_runner``, a module path that appears in no
+    Makefile and no command table.
+    """
+    from rupture.models.ensemble.protocol_runner import (  # noqa: PLC0415 - torch, and hours long
+        Paths,
+        run_region,
+    )
+
+    logging.basicConfig(
+        level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s", stream=sys.stdout
+    )
+    report = run_region(region, Paths(repo.resolve()), skip_ablation=skip_ablation)
+    for model_id, block in sorted((report.get("models") or {}).items()):
+        promotion = block.get("promotion") or {}
+        met = promotion.get("promotable_in_this_region")
+        typer.echo(f"{model_id}: both conditions met in {region} = {met}")
+    typer.echo(
+        "A region verdict is not a promotion: the rule needs two of three regions, and "
+        "`make validate-challengers` recomputes it over every committed region."
     )
 
 

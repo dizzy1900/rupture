@@ -62,6 +62,8 @@ Both are argued in ADR-0032 and covered by unit tests.
 See `docs/CHALLENGER_ENSEMBLE.md` § 5 for the full tables, and
 `reports/challenger/<region>/schedule-<region>-challengers.json` for every window.
 
+**Promotion status: not promoted.** This line is machine-read by `make validate-challengers`, which recomputes protocol section 10 from the committed evidence (ADR-0040) and fails if this card and the rule disagree.
+
 **Not promoted.** Both promotion conditions are met in `turkiye-eaf` and neither in
 `nepal-himalaya`; protocol § 10 requires two of three regions, and `california` was not run.
 
@@ -101,6 +103,21 @@ windows and a handful of target events per region; a geometric pool is intoleran
 by construction, which is what the floor bounds; and where the ensemble improves on the baseline's
 count forecast it is doing so by shrinking the baseline toward a near-static climatology, which is
 a calibration correction rather than new information.
+
+Two more that bear on how much the verdict is worth:
+
+- **The pool that was evaluated is `{etas, gridded}` only.** `LogLinearEnsemble` takes any
+  component mapping, and the neural challenger now lives in the same tree, but no
+  `{etas, ntpp}` or `{etas, ntpp, gridded}` result exists: fitting the weights and rescoring the
+  schedule is hours of compute per region and was not run. The brief's "a log-linear mixture of
+  ETAS and any challenger" is therefore demonstrated in code and evaluated for one challenger.
+  Recorded as an open gap, not closed by assertion.
+- **`california` was never run for this model either**, and could not have produced a pass while
+  the published Californian ETAS schedule is 6 windows against the 12 consecutive that condition 1
+  requires. This is the one model where an unevaluated region could otherwise have changed the
+  verdict — one Türkiye pass plus a Californian pass would be the two regions § 10 asks for — so
+  the arithmetic is stated rather than left implicit, and `make validate-challengers` recomputes
+  it.
 
 ## Ethical and operational notes
 

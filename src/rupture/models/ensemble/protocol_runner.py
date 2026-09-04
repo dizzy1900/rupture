@@ -41,7 +41,6 @@ from pathlib import Path
 from typing import Any
 
 import numpy as np
-from scipy import stats
 
 from rupture.adapters.evaluation.pycsep import PyCSEPEvaluator
 from rupture.adapters.forecasting.etas_mizrahi import MizrahiETAS
@@ -66,6 +65,14 @@ from rupture.models.ensemble.loglinear import (
     LogLinearEnsemble,
     observed_counts,
     poisson_log_likelihood,
+)
+from rupture.models.promotion import (
+    MIN_CONSECUTIVE_WINDOWS,
+    longest_consecutive_run,
+    pass_rate_table,
+    pooled_paired_test,
+    pooling_terms,
+    region_verdict,
 )
 from rupture.pipelines.evaluate import target_slice
 from rupture.pipelines.io import load_catalog, load_region
@@ -327,37 +334,8 @@ def score_window(
         comparison = evaluator.compare(grid, benchmark, target)
         row["comparison"] = {r.test_name.value: _summary(r) for r in comparison}
         row["benchmark_model_id"] = benchmark.model_id
-        row["pooling"] = _pooling_terms(evaluator, grid, benchmark, target)
+        row["pooling"] = pooling_terms(evaluator, grid, benchmark, target)
     return row
-
-
-def _pooling_terms(
-    evaluator: PyCSEPEvaluator,
-    grid: ForecastGrid,
-    benchmark: ForecastGrid,
-    target: Catalog,
-) -> dict[str, Any]:
-    """The per-window quantities the schedule-wide paired T-test needs (Rhoades et al. 2011).
-
-    ``log_rates`` are the forecast rates in the cell-magnitude bin of each observed target event,
-    logged; ``n_forecast`` is the window's total expected count. Pooling these across windows is
-    what turns pycsep's per-window paired test into the "over those windows" test the promotion
-    rule asks for.
-    """
-    g1 = evaluator.to_gridded_forecast(grid)
-    g2 = evaluator.to_gridded_forecast(benchmark)
-    csep_catalog, _ = evaluator.to_csep_catalog(target, g1, grid)
-    rates1, n1 = g1.target_event_rates(csep_catalog, scale=False)
-    rates2, n2 = g2.target_event_rates(csep_catalog, scale=False)
-    with np.errstate(divide="ignore"):
-        log1 = np.log(np.asarray(rates1, dtype=np.float64))
-        log2 = np.log(np.asarray(rates2, dtype=np.float64))
-    return {
-        "log_rates": [float(v) for v in log1],
-        "benchmark_log_rates": [float(v) for v in log2],
-        "n_forecast": float(n1),
-        "benchmark_n_forecast": float(n2),
-    }
 
 
 def _summary(r: EvaluationResult) -> dict[str, Any]:
@@ -539,7 +517,7 @@ def uniform_component_ablation(
                 "issue_time": t.isoformat(),
                 "n_target_events": int(observed_counts(target, grid).sum()),
                 "total_expected": grid.total_expected(),
-                "pooling": _pooling_terms(evaluator, grid, benchmark, target),
+                "pooling": pooling_terms(evaluator, grid, benchmark, target),
             }
         )
     return {
@@ -561,13 +539,19 @@ def promotion_decision(
     challenger: dict[str, Any],
     etas: dict[str, Any],
     pooled: dict[str, Any],
-    n_windows: int,
+    windows: Sequence[dict[str, Any]],
+    *,
+    model_id: str,
+    region_id: str,
+    step: timedelta = HORIZON,
+    per_window: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
-    """Protocol section 10, evaluated for one region. Two of three regions is decided elsewhere.
+    """Protocol § 10 for one region, delegated to the single encoding in ``models.promotion``.
 
-    Condition 1: the challenger passes N, M, S and L at a rate at least the baseline's, over at
-    least twelve consecutive 30-day windows. Condition 2: it beats the baseline in the paired
-    T-test at alpha with positive information gain per event over those windows.
+    This function used to hold its own reading of the rule, which differed from the neural
+    challenger's. ADR-0040 reconciled them; what is left here is the plumbing that turns this
+    runner's report shapes into the rule's arguments — in particular, the *consecutive* window run
+    is counted from the schedule's own issue times rather than assumed from its length.
     """
     if not etas.get("available"):
         return {
@@ -576,127 +560,17 @@ def promotion_decision(
             "promotable_in_this_region": False,
             "reason": "no published ETAS schedule to compare against",
         }
-    per_test = {}
-    for test in ("N", "M", "S", "L"):
-        mine = challenger[test]["rate"]
-        theirs = etas["pass_rates"][test]["rate"]
-        per_test[test] = {
-            "challenger": mine,
-            "etas": theirs,
-            "at_least_etas": bool(mine is not None and theirs is not None and mine >= theirs),
-        }
-    condition_1 = n_windows >= 12 and all(v["at_least_etas"] for v in per_test.values())
-    condition_2 = bool(
-        pooled.get("decided")
-        and pooled.get("t_test_beats_benchmark")
-        and (pooled.get("information_gain_per_event") or 0.0) > 0.0
+    consecutive = longest_consecutive_run([w["issue_time"] for w in windows], step)
+    verdict = region_verdict(
+        region_id=region_id,
+        model_id=model_id,
+        challenger_rates=pass_rate_table({"pass_rates": challenger}),
+        baseline_rates=pass_rate_table(etas),
+        consecutive_windows=consecutive,
+        pooled=pooled,
+        per_window=per_window,
     )
-    return {
-        "windows": n_windows,
-        "condition_1_pass_rates": {"met": bool(condition_1), "per_test": per_test},
-        "condition_2_paired_t_test": {
-            "met": condition_2,
-            "information_gain_per_event": pooled.get("information_gain_per_event"),
-            "ig_lower": pooled.get("ig_lower"),
-            "p_value": pooled.get("p_value"),
-            "w_test_p_value": pooled.get("w_test_p_value"),
-            "w_test_agrees": pooled.get("w_test_beats_benchmark"),
-            "reason": pooled.get("reason"),
-        },
-        "promotable_in_this_region": bool(condition_1 and condition_2),
-        "note": (
-            "Promotion also requires both conditions in at least two of the three test regions; "
-            "that is decided across regions, not here. A pass rate is not a skill claim."
-        ),
-    }
-
-
-def pooled_paired_test(
-    windows: Sequence[dict[str, Any]], *, alpha: float = 0.05, exclude: frozenset[str] = frozenset()
-) -> dict[str, Any]:
-    """The paired T-test and W-test over the whole schedule, not one window at a time.
-
-    The promotion rule (protocol section 10, condition 2) asks whether the challenger beats ETAS
-    in the paired T-test *over* at least twelve consecutive windows. pycsep's ``paired_t_test``
-    scores one window, and on a 30-day window with one or two target events it has almost no
-    power. This pools every window's target events into a single test, using the same statistic
-    (Rhoades et al. 2011, equations 17 and 18) that pycsep implements per window: the information
-    gain is ``(sum(log lambda_A - log lambda_B) - (N_A - N_B)) / N`` over all events and all
-    windows, with N_A and N_B the summed forecast counts, and the Student-t interval is taken on
-    the per-event differences.
-    """
-    log_a: list[float] = []
-    log_b: list[float] = []
-    n_a = 0.0
-    n_b = 0.0
-    used = 0
-    for w in windows:
-        pooling = w.get("pooling")
-        if not pooling or w["issue_time"] in exclude:
-            continue
-        used += 1
-        n_a += float(pooling["n_forecast"])
-        n_b += float(pooling["benchmark_n_forecast"])
-        log_a.extend(float(v) for v in pooling["log_rates"])
-        log_b.extend(float(v) for v in pooling["benchmark_log_rates"])
-    n_obs = len(log_a)
-    base = {
-        "windows_pooled": used,
-        "windows_excluded": sorted(exclude),
-        "target_events": n_obs,
-        "total_forecast": n_a,
-        "benchmark_total_forecast": n_b,
-        "alpha": alpha,
-        "statistic": "Rhoades et al. 2011 information gain per event, pooled over the schedule",
-    }
-    if n_obs < 2:
-        return {**base, "decided": False, "reason": "fewer than two target events in the schedule"}
-    diff = np.asarray(log_a, dtype=np.float64) - np.asarray(log_b, dtype=np.float64)
-    if not np.all(np.isfinite(diff)):
-        n_infinite = int(np.sum(~np.isfinite(diff)))
-        return {
-            **base,
-            "decided": False,
-            "reason": (
-                f"{n_infinite} target event(s) fell in a bin one forecast gave zero rate, so the "
-                f"log-rate difference is not finite; the pooled test is undefined"
-            ),
-        }
-    information_gain = float((diff.sum() - (n_a - n_b)) / n_obs)
-    first = float((diff**2).sum() / (n_obs - 1))
-    second = float(diff.sum() ** 2 / (n_obs**2 - n_obs))
-    variance = first - second
-    if variance <= 0.0:
-        return {**base, "decided": False, "reason": "zero variance in the per-event differences"}
-    std = float(np.sqrt(variance))
-    t_statistic = information_gain / (std / float(np.sqrt(n_obs)))
-    t_critical = float(stats.t.ppf(1.0 - alpha / 2.0, n_obs - 1))
-    half = t_critical * std / float(np.sqrt(n_obs))
-    p_value = float(2.0 * stats.t.sf(abs(t_statistic), df=n_obs - 1))
-    median_value = (n_a - n_b) / n_obs
-    try:
-        w_p: float | None = float(
-            stats.wilcoxon(
-                diff - median_value, alternative="two-sided", zero_method="wilcox"
-            ).pvalue
-        )
-    except ValueError:  # every difference equals the median: the signed-rank test is undefined
-        w_p = None
-    return {
-        **base,
-        "decided": True,
-        "information_gain_per_event": information_gain,
-        "ig_lower": information_gain - half,
-        "ig_upper": information_gain + half,
-        "t_statistic": t_statistic,
-        "t_critical": t_critical,
-        "p_value": p_value,
-        "t_test_beats_benchmark": bool(information_gain - half > 0.0),
-        "w_test_p_value": w_p,
-        "w_test_beats_benchmark": (
-            bool(w_p < alpha and information_gain > 0.0) if w_p is not None else None
-        ),
-    }
+    return {"windows": len(windows), "min_consecutive_windows": MIN_CONSECUTIVE_WINDOWS, **verdict}
 
 
 def pooled_information_gain(
@@ -930,7 +804,10 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
                     pass_rates(gridded_windows),
                     etas_published,
                     pooled_paired_test(gridded_windows),
-                    len(schedule),
+                    gridded_windows,
+                    model_id="gridded-convlstm",
+                    region_id=region.id,
+                    per_window=comparison_summary(gridded_windows),
                 ),
                 "windows": gridded_windows,
             },
@@ -944,7 +821,10 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
                     pass_rates(ensemble_windows),
                     etas_published,
                     pooled_paired_test(ensemble_windows),
-                    len(schedule),
+                    ensemble_windows,
+                    model_id="ensemble-loglinear",
+                    region_id=region.id,
+                    per_window=comparison_summary(ensemble_windows),
                 ),
                 "windows": ensemble_windows,
             },

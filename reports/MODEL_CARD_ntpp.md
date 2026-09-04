@@ -10,7 +10,7 @@ of any individual future earthquake, and no such statement can be derived from i
 | Version | `ntpp-0.1.0+torch-2.14.0` |
 | Type | marked spatio-temporal Hawkes process with neural kernel shapes |
 | Role | **challenger** to the ETAS baseline (`etas-mizrahi`), not an operational model |
-| Status | **not promoted**, in either region it was run on (`turkiye-eaf`, `nepal-himalaya`). Evidence in `docs/CHALLENGER_NTPP.md` and `reports/protocol/<region>/eval/` |
+| Promotion status | **not promoted** — in either region it was run on (`turkiye-eaf`, `nepal-himalaya`); `california` was never fitted. Evidence in `docs/CHALLENGER_NTPP.md` and `reports/protocol/<region>/eval/`. This row is machine-read by `make validate-challengers`, which recomputes protocol section 10 from that evidence (ADR-0040) and fails if the card and the rule disagree |
 | Licence | Apache-2.0 (this repository) |
 | Owner | rupture contributors |
 | Written | 2026-09-03 (UTC) |
@@ -128,6 +128,17 @@ apparently winning one. **Ablation figures are never results** and are labelled
 - Behaviour for a mainshock larger than anything in training is bounded by feature clipping rather
   than learned. That is a deliberate safety property, and it means the model has nothing
   informative to say about such an event beyond the ETAS-form productivity law.
+- **`california` was never fitted**, so this model was evaluated in two regions of the protocol's
+  three. The likelihood is quadratic in event count and California's pre-cutoff slice holds 55,828
+  events; the run was not attempted rather than approximated. It is recorded as an open gap in
+  `RELEASE_STATUS.md`, and it is why condition 3 of the promotion rule was unreachable here — the
+  verdict rests on two regions, both of which the model lost.
+- **No number in this card is comparable to a published EarthquakeNPP figure.** The benchmark's
+  conventions were followed where they apply (`docs/CHALLENGER_NTPP.md` § 2), but its seven
+  datasets are all Californian, its horizon is rolling 24 hours against this protocol's 30 days,
+  and its thresholds and split dates are its own. What agrees is the *finding* — a neural point
+  process losing to ETAS, and losing on the spatial component. Nothing here belongs in its table,
+  and a reader should not place it there.
 
 ## Ethical and practical considerations
 

@@ -38,9 +38,19 @@ from rupture.domain import (
     Region,
     TestName,
     format_horizon,
+    parse_horizon,
     utc_now,
 )
 from rupture.models.challengers.ntpp.adapter import NeuralTPPForecaster, save_fit
+from rupture.models.promotion import (
+    MIN_CONSECUTIVE_WINDOWS,
+    MIN_REGIONS,
+    longest_consecutive_run,
+    pass_rate_table,
+    pooled_paired_test,
+    pooling_terms,
+    region_verdict,
+)
 from rupture.pipelines.evaluate import DEFAULT_TESTS, evaluate_forecast, target_slice
 from rupture.pipelines.run_forecast import history_for
 from rupture.pipelines.schedule import (
@@ -55,8 +65,9 @@ from rupture.pipelines.schedule import (
 from rupture.ports import RunRecord, Tracker
 
 CONSISTENCY: tuple[TestName, ...] = DEFAULT_TESTS
-MIN_PROMOTION_WINDOWS = 12  # protocol § 10 condition 1
-MIN_PROMOTION_REGIONS = 2  # protocol § 10 condition 3
+#: Aliases: the values live in ``rupture.models.promotion`` and are named here for the CLI.
+MIN_PROMOTION_WINDOWS = MIN_CONSECUTIVE_WINDOWS  # protocol § 10 condition 1
+MIN_PROMOTION_REGIONS = MIN_REGIONS  # protocol § 10 condition 3
 
 
 @dataclass
@@ -77,6 +88,9 @@ class ChallengerWindow:
     comparison: dict[str, dict[str, Any]] = field(default_factory=dict)
     #: the benchmark's own consistency tests on the same target slice, when asked for
     benchmark_tests: dict[str, dict[str, Any]] = field(default_factory=dict)
+    #: per-event log rates for both models, which the schedule-pooled paired T-test needs
+    #: (ADR-0040 condition 2). ``None`` when there was no benchmark to pair against.
+    pooling: dict[str, Any] | None = None
 
     def as_dict(self) -> dict[str, Any]:
         return {
@@ -93,6 +107,7 @@ class ChallengerWindow:
             "tests": self.tests,
             "comparison": self.comparison,
             "benchmark_tests": self.benchmark_tests,
+            "pooling": self.pooling,
         }
 
 
@@ -299,6 +314,7 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
             tracker=tracker,
         )
         benchmark_grid: ForecastGrid | None = None
+        pooling: dict[str, Any] | None = None
         comparison: list[EvaluationResult] = []
         benchmark_results: list[EvaluationResult] = []
         if benchmark is not None:
@@ -309,6 +325,7 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
             if benchmark_cache is not None and cached is None:
                 benchmark_cache[issue] = benchmark_grid
             comparison = evaluator.compare(grid, benchmark_grid, target, alpha=alpha)
+            pooling = pooling_terms(evaluator, grid, benchmark_grid, target)
             if evaluate_benchmark:
                 benchmark_results = evaluate_forecast(
                     benchmark_grid,
@@ -344,6 +361,7 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
                 tests={r.test_name.value: _summary(r) for r in results},
                 comparison={r.test_name.value: _summary(r) for r in comparison},
                 benchmark_tests={r.test_name.value: _summary(r) for r in benchmark_results},
+                pooling=pooling,
             )
         )
 
@@ -385,6 +403,12 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
             pass_rates(windows, tests, attribute="benchmark_tests") if evaluate_benchmark else None
         ),
         "comparison_summary": comparison_summary(windows),
+        # Condition 2 of the promotion rule (ADR-0040): one paired T-test over every target event
+        # in the schedule, not a tally of per-window tests. Recorded here so the verdict is
+        # recomputable from the committed report alone.
+        "pooled_paired_test": (
+            pooled_paired_test([w.as_dict() for w in windows]) if benchmark is not None else None
+        ),
         "refits": [
             {
                 "boundary": r.boundary.isoformat(),
@@ -489,86 +513,30 @@ def _log_issue(
 def promotion_verdict(
     challenger: dict[str, Any], baseline_pass_rates: dict[str, Any] | None = None
 ) -> dict[str, Any]:
-    """Apply protocol § 10 mechanically to one region's report and say what failed.
+    """Apply protocol § 10 to one region's report, through the single encoding in ``promotion``.
 
-    Conditions, all of which must hold in at least two of the three protocol regions:
+    This function once held its own reading of condition 2 — a strict majority of per-window
+    T-test wins — which differed from the ensemble runner's pooled test. ADR-0040 settled the
+    reading (the pooled test over the schedule's target events, because "over those windows" is
+    one test, and a 30-day window here holds one or two target events); what remains here is the
+    plumbing from this report's shapes to the rule's arguments.
 
-    1. the challenger's N/M/S/L pass rates are at or above ETAS's, over at least 12 consecutive
-       30-day windows;
-    2. it beats ETAS in the paired T-test at alpha with positive information gain per event.
-
-    This function judges a single region and returns the per-condition detail. Deciding the
-    two-of-three requirement needs reports from more than one region, which is the architect's job
-    in ``reports/CHALLENGER_EVALUATION.md``.
+    ``baseline_pass_rates`` is the ETAS pass-rate table to compare against. Passing ``None`` is
+    not a favourable default: every test then has no comparable rate and condition 1 fails.
     """
-    rates = challenger.get("pass_rates", {})
-    comparison = challenger.get("comparison_summary", {})
-    n_scored = int(challenger.get("n_scored", 0))
-    enough_windows = n_scored >= MIN_PROMOTION_WINDOWS
-    per_test: dict[str, Any] = {}
-    condition_1 = enough_windows
-    for test in ("N", "M", "S", "L"):
-        mine = rates.get(test, {}).get("rate")
-        theirs = (baseline_pass_rates or {}).get(test, {}).get("rate")
-        ok = None if (mine is None or theirs is None) else bool(mine >= theirs)
-        per_test[test] = {"challenger": mine, "baseline": theirs, "at_or_above": ok}
-        if ok is not True:
-            condition_1 = False
-    gain = comparison.get("mean_information_gain_per_event")
-    t_wins = int(comparison.get("t_test_wins", 0))
-    t_windows = int(comparison.get("windows_compared", 0))
-    w_wins = int(comparison.get("w_test_wins", 0))
-    w_windows = int(comparison.get("w_test_windows", 0))
-    # "Beats ETAS in the paired T-test with positive information gain over those windows" is read
-    # as: positive mean gain per event AND the T-test won in more windows than it lost. Winning a
-    # single window out of ten is not beating a baseline, and the looser reading — any win plus a
-    # positive mean — is exactly the reading a challenger's author wants to believe.
-    condition_2 = bool(gain is not None and gain > 0.0 and t_windows > 0 and t_wins * 2 > t_windows)
-    reasons: list[str] = []
-    if not enough_windows:
-        reasons.append(
-            f"only {n_scored} scored window(s); the rule needs >= {MIN_PROMOTION_WINDOWS} "
-            "consecutive 30-day windows"
-        )
-    for test, detail in per_test.items():
-        if detail["at_or_above"] is None:
-            reasons.append(f"{test}-test: no comparable baseline pass rate available")
-        elif not detail["at_or_above"]:
-            reasons.append(
-                f"{test}-test pass rate {detail['challenger']} is below the baseline's "
-                f"{detail['baseline']}"
-            )
-    if not condition_2:
-        reasons.append(
-            f"paired T-test: won {t_wins} of {t_windows} window(s) where it is defined, mean "
-            f"information gain per event {gain}"
-        )
-    # Protocol § 10: the W-test is reported alongside the T-test and disagreement is flagged.
-    w_disagrees = bool(w_windows and w_wins * 2 <= w_windows and condition_2)
-    if w_disagrees:
-        reasons.append(
-            f"W-test disagrees with the T-test: won {w_wins} of {w_windows} window(s). The T-test "
-            "follows the mean per-event log-rate difference and the W-test its median, so this "
-            "says a minority of events were placed much better and the majority worse"
-        )
-    return {
-        "region_id": challenger.get("region_id"),
-        "promotable_in_this_region": bool(condition_1 and condition_2),
-        "condition_1_pass_rates": condition_1,
-        "condition_2_paired_t": condition_2,
-        "w_test_disagrees": w_disagrees,
-        "t_test_wins": t_wins,
-        "t_test_windows": t_windows,
-        "w_test_wins": w_wins,
-        "w_test_windows": w_windows,
-        "mean_information_gain_per_event": gain,
-        "n_scored_windows": n_scored,
-        "min_windows_required": MIN_PROMOTION_WINDOWS,
-        "regions_required": MIN_PROMOTION_REGIONS,
-        "per_test": per_test,
-        "reasons_not_promotable": reasons,
-        "note": (
-            "condition 3 (at least two of three regions) cannot be decided from one region's "
-            "report; the architect assembles it across regions"
-        ),
-    }
+    schedule = challenger.get("schedule") or {}
+    step = parse_horizon(str(schedule.get("step") or "30d"))
+    consecutive = longest_consecutive_run(
+        [w.get("issue_time") for w in challenger.get("windows") or []], step
+    )
+    verdict = region_verdict(
+        region_id=str(challenger.get("region_id") or ""),
+        model_id=str(challenger.get("model_id") or ""),
+        challenger_rates=pass_rate_table(challenger),
+        baseline_rates=pass_rate_table({"pass_rates": baseline_pass_rates or {}}),
+        consecutive_windows=consecutive,
+        pooled=challenger.get("pooled_paired_test"),
+        per_window=challenger.get("comparison_summary"),
+        baseline_label=str(challenger.get("benchmark_model_id") or "etas-mizrahi"),
+    )
+    return {"n_scored_windows": int(challenger.get("n_scored", 0)), **verdict}

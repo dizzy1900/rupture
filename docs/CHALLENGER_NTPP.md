@@ -113,6 +113,29 @@ work was undertaken against.
 | Information gain as a difference in mean log-likelihood per event | via the pycsep paired T-test against ETAS |
 | CSEP-style consistency tests alongside the likelihood | N/M/S/L/CL through the existing `PyCSEPEvaluator` |
 
+### What is *not* comparable, and it matters
+
+**No number in this document can be placed beside a published EarthquakeNPP table.** The
+conventions above put the two in the same *frame*; they do not make the numbers commensurable, and
+saying otherwise would be the more flattering error. Three reasons, any one of which is
+sufficient:
+
+1. **Different catalogues.** The benchmark's seven datasets are all Californian (ComCat_25,
+   SCEDC_20/25, White, SaltonSea, SanJac, WHITE_06). rupture fitted `turkiye-eaf` and
+   `nepal-himalaya`, and **California was never fitted** (§ 8 and `reports/MODEL_CARD_ntpp.md`
+   say why: the likelihood is quadratic in event count and California's training slice holds
+   55,828 events). There is no shared test set anywhere.
+2. **Different test windows and thresholds**, because the split dates and Mc are the benchmark's
+   per-dataset ones, and rupture's are `EVALUATION_PROTOCOL.md` § 1's.
+3. **Different quantities.** Their tables are per-event `nll`, `tll` and `sll` over a rolling
+   24-hour horizon; the promotion rule here scores 30-day windows.
+
+What *is* comparable is the qualitative finding, and it agrees: the challenger loses to ETAS, and
+it loses on the spatial component (§ 6). That is a replication of the benchmark's conclusion on
+different data, not a placement in its league table. Producing one number that could sit in that
+table would mean running one of their Californian configurations, which is recorded as an
+open gap rather than approximated.
+
 ### Departed from, and why
 
 | Departure | Reason |
@@ -159,10 +182,15 @@ the cutoff and the same history at every issue time.
 
 ADR-0022 decision 4, with the frozen record as the evidence.
 
-- **Grid: 4 candidates** — `hidden ∈ {8, 16}` × `weight_decay ∈ {0, 10⁻³}`. Deliberately small: a
-  fold fit on these catalogues costs a minute or more, and a wide search on a few hundred training
-  events buys variance rather than skill. Every extra trial is another chance to launder a lucky
-  fold into a "chosen" configuration.
+- **Grid: 4 candidates** — `hidden ∈ {8, 16}` × `weight_decay ∈ {0, 10⁻³}`, which is
+  `DEFAULT_GRID` in `models/challengers/ntpp/train.py`. Deliberately small: a fold fit on these
+  catalogues costs a minute or more, and a wide search on a few hundred training events buys
+  variance rather than skill. Every extra trial is another chance to launder a lucky fold into a
+  "chosen" configuration. `DEFAULT_GRID` previously described a sixteen-candidate space that no
+  committed record could have come from, so re-running `select` would have searched somewhere else
+  than the frozen configuration came from; the grid in the code is now the grid that ran, the
+  frozen record carries a `grid` key saying what was searched, and `make validate-challengers`
+  fails if the committed search code cannot reproduce the committed record's candidates.
 - **Folds: 2 blocked time-forward** splits over the catalogue start → 2022-01-01, from
   `rupture.models.data.blocked_splits`. Every validation index is strictly later than every
   training index; the splitter API has no shuffle parameter and the module imports no random
@@ -315,11 +343,30 @@ wins L. Lower `alpha` is the mechanism: the challenger under-weights the M7.8 as
 | 2 — beats ETAS in the paired T-test with positive information gain | **fails**: won 1 of 10 windows | **fails**: won 1 of 9, mean gain −0.346 |
 | 3 — holds in ≥ 2 of 3 regions | unreachable: `california` was not fitted | unreachable |
 
-Condition 2 is read as *positive mean gain **and** wins in more than half the windows where the
-test is defined*. The looser reading — any win plus a positive mean — passes Türkiye on one window
-out of ten, and it is exactly the reading a challenger's author wants to believe. The rule was
-tightened after seeing that, in the direction that makes promotion harder, and the raw win counts
-are in the verdict so the reading can be checked.
+Against the **published** ETAS baseline of record rather than this run's matched re-run, condition
+1 fails in both regions too — Türkiye on S (0.62 vs 0.69) and L (0.79 vs 0.90), Nepal on N (0.909
+vs 0.927) and S (0.55 vs 0.73). The verdict does not depend on which ETAS run is used, and
+`make validate-challengers` fails if it ever does.
+
+#### How condition 2 is read, and the reading that changed (ADR-0040)
+
+The table above records the reading in force when the run was made: *positive mean gain **and**
+wins in more than half the windows where the per-window test is defined*. That reading was chosen
+here because the looser one — any win plus a positive mean — passes Türkiye on one window in ten.
+
+It is **no longer the rule**. The ensemble was being judged under a different reading of the same
+sentence (a single paired test pooled over the schedule), and one sentence cannot mean two things
+and still be a pre-registered rule. ADR-0040 settled it on the pooled test, for reasons argued
+there from the protocol's wording and from statistical power rather than from any outcome — and it
+does not change this verdict, because **condition 1 fails in both regions** under either baseline,
+which is enough on its own.
+
+What the change does cost here is honesty about what can be recomputed: the committed NTPP
+schedule reports record per-window comparisons but not the per-event log rates a pooled test needs,
+so **condition 2 is not recomputable from them**. `make validate-challengers` prints that in as
+many words rather than assuming either answer. `run_ntpp_schedule` now records the pooling terms,
+so the next run of the command in § 10 is decidable; the committed
+`promotion-<region>-ntpp.json` files are left as the pre-ADR-0040 record of what was run.
 
 ## 7. The leaky ablation
 
@@ -466,14 +513,40 @@ uv run python -m rupture.commands.challenger ntpp select --region <r> \
 uv run python -m rupture.commands.challenger ntpp fit --region <r> \
     --cutoff 2022-01-01T00:00:00Z --auxiliary-years 2.0
 uv run python -m rupture.commands.challenger ntpp schedule --region <r> \
-    --from 2022-01-01T00:00:00Z --to 2026-08-01T00:00:00Z --step 30d --horizon 30d
+    --from 2022-01-01T00:00:00Z --to 2026-08-01T00:00:00Z --step 30d --horizon 30d \
+    --simulations 100 --eval-simulations 1000 --reports-dir reports/protocol/<r>
 uv run python -m rupture.commands.challenger ntpp ablate --region <r> \
     --from 2022-01-01T00:00:00Z --to 2026-08-01T00:00:00Z \
-    --honest-report reports/eval/schedule-<r>-ntpp.json
+    --simulations 100 --eval-simulations 1000 --reports-dir reports/protocol/<r> \
+    --honest-report reports/protocol/<r>/eval/schedule-<r>-ntpp.json
 ```
 
 (`rupture challenger ...` once `src/rupture/cli.py` registers the sub-app; see the note at the top
 of `src/rupture/commands/challenger.py`.)
+
+The options are the ones the committed evidence was produced with, and three of them used not to
+be reachable from these verbs at all:
+
+- `--reports-dir reports/protocol/<r>` puts the schedule JSON where the committed one is. The
+  default would write `reports/eval/`.
+- `--simulations 100` is what was run — a CPU budget, applied to the challenger and to the ETAS
+  benchmark alike (`--benchmark-simulations` defaults to it, and a differing budget would make
+  the paired comparison asymmetric).
+- `--evaluate-benchmark` is **on by default** and is what produces the `benchmark_pass_rates`
+  block the committed reports carry. Condition 1 of the promotion rule is a comparison of pass
+  rates; without that block there is nothing to compare against from the same run. It was
+  previously not passed by the verb at all, so re-running the documented command produced a
+  report shaped differently from the committed one — the gap this section now closes.
+- `ablate` now loads the ETAS baseline itself, shares one benchmark cache between the two leaky
+  runs, and writes `reports/protocol/<r>/eval/ablations-<r>-ntpp.json` in the shape that is
+  committed. Without the benchmark the ablation has no `information_gain_vs_etas` to report, which
+  is most of what an ablation is for.
+
+A caveat that belongs here rather than in a footnote: the ETAS rows *inside* the NTPP reports are
+this matched 100-continuation re-run, not the published baseline of record (yearly refits, 1000
+continuations) in `docs/BASELINE_RESULTS.md`. `make validate-challengers` recomputes condition 1
+under **both** and fails if they disagree; on the committed evidence they do not — the challenger
+falls short of ETAS under either (ADR-0040 decision 6).
 
 One trap worth knowing: `evaluate_forecast` is idempotent per *target slice hash*, and the
 evaluation bundle is keyed by the forecast id, which is built from the **model id**. Re-running a

@@ -23,6 +23,7 @@ downstream. Leaky fits are never persisted to ``baselines/``.
 
 from __future__ import annotations
 
+import json
 from collections.abc import Sequence
 from datetime import datetime, timedelta
 from pathlib import Path
@@ -342,4 +343,38 @@ def _delta(honest: dict[str, Any], leaky: dict[str, Any]) -> dict[str, Any]:
         "honest": sum(w["total_expected"] for w in honest.get("windows", [])),
         "leaky": sum(w["total_expected"] for w in leaky.get("windows", [])),
     }
+    return out
+
+
+def write_ablation_report(
+    result: dict[str, Any],
+    reports_dir: Path,
+    region_id: str,
+    *,
+    label: str = "ntpp",
+) -> Path:
+    """Write ``ablations-<region>-<label>.json`` — the committed shape, not the whole run.
+
+    :func:`run_ablations` returns each leaky variant's *entire* schedule report nested under
+    ``report``. Committing that would duplicate the two ``schedule-<region>-ntpp-ABLATION-*.json``
+    files it already wrote, so what is written here is what a reader needs to judge the ablation:
+    the leaky variant's pass rates, its comparison against ETAS, how many windows were scored, and
+    the deltas from the honest run. This is the shape of the files committed on 2026-09-03; the
+    driver that wrote them was not in the tree, which is why it is here now.
+    """
+    trimmed: dict[str, Any] = {}
+    for key, value in result.items():
+        if not isinstance(value, dict) or "report" not in value:
+            trimmed[key] = value
+            continue
+        report = value["report"]
+        trimmed[key] = {
+            **{k: v for k, v in value.items() if k != "report"},
+            "pass_rates": report.get("pass_rates"),
+            "comparison_summary": report.get("comparison_summary"),
+            "n_scored": report.get("n_scored"),
+        }
+    out = Path(reports_dir) / "eval" / f"ablations-{region_id}-{label}.json"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text(json.dumps(trimmed, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return out

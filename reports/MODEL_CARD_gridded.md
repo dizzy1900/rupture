@@ -63,6 +63,8 @@ is derived in part from the SHA-256 of the trained weights, so it changes whenev
 See `docs/CHALLENGER_GRIDDED.md` § 6 for the full tables, and
 `reports/challenger/<region>/schedule-<region>-challengers.json` for every window.
 
+**Promotion status: not promoted.** This line is machine-read by `make validate-challengers`, which recomputes protocol section 10 from the committed evidence (ADR-0040) and fails if this card and the rule disagree.
+
 **Not promoted.** Over 55 pseudo-prospective 30-day windows per region, against the published ETAS
 baseline on identical targets:
 
@@ -70,6 +72,12 @@ baseline on identical targets:
 |---|---|---|---|---|---|---|
 | `nepal-himalaya` | 0.89 (ETAS 0.93) | 0.95 (0.95) | 0.86 (0.73) | 0.59 (0.77) | 0.95 (0.86) | **-0.62** [-1.10, -0.14] |
 | `turkiye-eaf` | 0.89 (0.91) | 0.97 (0.93) | 0.72 (0.69) | 0.69 (0.90) | 0.79 (0.86) | **+0.06** [-0.30, +0.42] |
+
+`california` was not run for this model. It could not have changed the verdict: the model fails
+both conditions in both evaluated regions, so the two regions protocol § 10 requires are already
+out of reach — and the published Californian ETAS schedule is 6 windows against the 12 consecutive
+that condition 1 compares over. `make validate-challengers` recomputes all of this from the
+committed evidence and prints the same arithmetic.
 
 Neither promotion condition is met in either region. The challenger wins the spatial test in both
 regions and loses the likelihood test in both; the Türkiye information gain is positive only
