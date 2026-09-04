@@ -9,6 +9,13 @@ forecasts* than the operational ETAS baseline under the protocol fixed in
 Written 2026-09-03. Covers all three challengers: the neural temporal point process (C1a), the
 gridded deep model (C1b) and the log-linear ensemble. **None is promoted.**
 
+Every figure below is rendered from the committed JSON evidence by
+`uv run python -m rupture.reporting.challenger_plots`
+(`src/rupture/reporting/challenger_plots.py`). That module loads no model, issues no forecast and
+refits nothing: its only inputs are the schedule files named in each caption, so a figure here
+cannot disagree with the numbers in the tables — it is those numbers, drawn. The rule, and why it
+is a rule, is ADR-0037.
+
 ## The promotion rule, and what it demands
 
 A challenger is promotable only if, across the pseudo-prospective schedule:
@@ -80,6 +87,11 @@ This is the concrete answer to "why not just use random k-fold". Leakage does no
 It arrives as good news, in the region where the honest model is weakest, and it survives the
 checks a careful person would run.
 
+Stated as the brief asks — as a *fraction* of apparent skill rather than as a difference — the
+Türkiye fit leak accounts for **63 % of the apparent gain**, and the Nepal fit leak for **181 %**:
+all of it, and the sign as well. The full accounting across all three models is in
+§ "What fraction of the apparent skill was leakage" below.
+
 ## C1b — gridded deep model, and the ensemble
 
 One ConvLSTM layer (about 5,200 parameters) over causal lookback frames of rasterised counts plus
@@ -118,6 +130,40 @@ target events was used as well:
 ensemble meets both conditions in Türkiye and only there; the rule requires two of three regions,
 and Nepal is a loss.
 
+## The schedule, window by window
+
+The tables above are pooled. Pooling is what the promotion rule scores, but it hides the shape of
+the evidence, and the shape is the argument: a pooled mean carried by two windows out of fifty-five
+is not the same object as a pooled mean carried by fifty.
+
+![Per-window information gain against ETAS, turkiye-eaf](challenger/turkiye-eaf/ig-per-window-turkiye-eaf.png)
+
+![Per-window information gain against ETAS, nepal-himalaya](challenger/nepal-himalaya/ig-per-window-nepal-himalaya.png)
+
+*Per-window information gain per target event against ETAS, all three challengers, with the target
+count of each window underneath (log scale). Circles mark the windows where the paired T-test
+decides a win. Windows holding no target event decide nothing and are not drawn. Source:
+`reports/challenger/<region>/schedule-<region>-challengers.json` and
+`reports/protocol/<region>/eval/schedule-<region>-ntpp.json`.*
+
+Three things are visible here that no table shows. The target counts are dominated by one bar —
+Kahramanmaraş, 160 events in the window issued 2023-01-26 — and everything else in Türkiye is one
+or two events. The per-window gains swing across ±5 nats and cross zero constantly, which is what
+"1 T-test win in 10 windows" looks like from the inside. And the ensemble (green) is visibly the
+flattest of the three: it deviates least from ETAS, which is consistent with what it turns out to
+be doing — correcting a calibration error rather than adding information.
+
+![Cumulative consistency-test passes, turkiye-eaf](challenger/turkiye-eaf/pass-rates-turkiye-eaf.png)
+
+![Cumulative consistency-test passes, nepal-himalaya](challenger/nepal-himalaya/pass-rates-nepal-himalaya.png)
+
+*Cumulative count of windows passed, per consistency test, for each challenger against the matched
+ETAS re-run. Promotion condition 1 — "pass rates at or above ETAS's in each region" — is read off
+the end of each line: a challenger line finishing below the dashed ETAS line fails that test. The
+x-axis counts only windows that decided the test in question, which is why the N panel runs to 55
+and the rest stop at 29 (Türkiye) and 22 (Nepal). A pass means a test did not reject at the 0.05
+significance level; it is not a skill claim.*
+
 ### The one positive result, and why it is not a promotion
 
 The Türkiye ensemble is the only thing in this project that beat ETAS on a protocol metric, so it
@@ -135,16 +181,78 @@ And the honest characterisation of what was won: the gain is a **calibration cor
 baseline that over-forecasts aftershock totals by two to six times**, not new information about
 where or when earthquakes occur. That is worth having and it is not a discovery.
 
-The leaky ablation on the ensemble buys **+2.16 nats per event** in Türkiye — about 6.4 times the
-largest honest gain anywhere in this evaluation — and **+0.31** in Nepal. Across all three models
-the leak is worth between +0.31 and +2.16 nats per event; every figure in this paragraph is in
-`reports/challenger/<region>/schedule-<region>-challengers.json`, which is committed so a reader
-can check it.
+**No leaky variant of the ensemble was run.** The leak figure that sits next to this schedule —
+**+2.16 nats per event** in Türkiye, about 6.4 times the largest honest gain anywhere in this
+evaluation, and **+0.31** in Nepal — belongs to the **gridded ConvLSTM**: it is the difference
+between a gridded fit whose cutoff is the schedule end and the honest one, recorded as
+`leaky_ablation` in `reports/challenger/<region>/schedule-<region>-challengers.json` with
+`what: "a gridded fit whose cutoff is the schedule end…"`. An earlier revision of this document
+attributed it to the ensemble; that was wrong, and it mattered, because the ensemble is the one
+model here with a positive result and pinning the largest leak on it misstates both. Across the two
+models that were leaked at all — NTPP and gridded — the fit leak is worth between +0.31 and +2.16
+nats per event. Every figure in this paragraph is in the committed JSON, so a reader can check it.
 
 The gridded model does train (11.1 % and 3.7 % held-out likelihood improvement over its untrained
 state) but learns a near-static spatial correction: after a month containing 160 events its
 forecast total moves 4.4 %, where the ETAS baseline's moves 56-fold. It is, in effect, a smoothed
 seismicity map that does not respond to a sequence.
+
+## What fraction of the apparent skill was leakage
+
+The brief asks for this as a fraction, not as a difference, so here it is as a fraction. The
+quantity is
+
+> fraction removed = (leaked information gain − honest information gain) ÷ leaked information gain
+
+computed per model and region, in nats per target event against ETAS, from the committed evidence.
+It is only meaningful where the leaked variant showed an advantage over ETAS in the first place;
+where the leaked variant still *loses* to ETAS there is no apparent skill to remove, and the cell
+says so rather than reporting a ratio of two negative numbers.
+
+| Model | Region | Leak | Leaked IG/event | Honest IG/event | Fraction of apparent skill removed |
+|---|---|---|---|---|---|
+| NTPP | `turkiye-eaf` | fit across the cutoff | +1.074 | +0.394 | **63 %** |
+| NTPP | `turkiye-eaf` | hyperparameters tuned on the test window | +0.430 | +0.394 | **9 %** |
+| NTPP | `nepal-himalaya` | fit across the cutoff | +0.429 | −0.346 | **181 %** — all of it, and the sign |
+| NTPP | `nepal-himalaya` | hyperparameters tuned on the test window | −0.195 | −0.346 | n/a: the leaked variant still loses to ETAS |
+| gridded ConvLSTM | `turkiye-eaf` | fit at the schedule end | +2.219 | +0.059 | **97 %** |
+| gridded ConvLSTM | `nepal-himalaya` | fit at the schedule end | −0.308 | −0.622 | n/a: the leaked variant still loses to ETAS |
+| log-linear ensemble | both | — | — | +0.335 / −0.079 | no leaked ensemble variant was run |
+
+Sources, field by field: NTPP rows are
+`reports/protocol/<region>/eval/ablations-<region>-ntpp.json` →
+`<leak>.delta.information_gain_vs_etas.{honest,leaky}`. Gridded rows are
+`reports/challenger/<region>/schedule-<region>-challengers.json` → `leaky_ablation`, where the
+leaked and honest gains against ETAS are `(poisson_log_likelihood[leaky|honest] −
+poisson_log_likelihood[etas]) / target_events`; that arithmetic reproduces
+`models["gridded-convlstm"].pooled_paired_test.information_gain_per_event` to every printed digit
+(0.058714603109 in Türkiye, −0.621536823702 in Nepal), which is the check that the ablation and the
+schedule are the same run rather than two runs that happen to sit in one file. The ensemble row's
+honest values are
+`models["ensemble-loglinear"].pooled_paired_test.information_gain_per_event`.
+
+**The headline, under-claimed:** in the four cases where a leaked model had any apparent advantage
+over ETAS to lose, the leakage controls removed **9 %, 63 %, 97 % and 181 %** of it. The two large
+ones are fit leaks — a model allowed to fit across its own scoring window. The 97 % is the starkest:
+the gridded ConvLSTM's apparent +2.22 nats per event over ETAS in Türkiye is +0.06 once it may only
+see the past, which is to say almost the whole of it was an artefact of the cutoff. The 181 % is the
+most dangerous, because a fraction above 100 % means the honest model is on the other side of zero:
+in Nepal the leak does not exaggerate a win, it manufactures one.
+
+![Leakage: honest against leaked, turkiye-eaf](challenger/turkiye-eaf/leakage-turkiye-eaf.png)
+
+![Leakage: honest against leaked, nepal-himalaya](challenger/nepal-himalaya/leakage-nepal-himalaya.png)
+
+*Left panel: the cumulative log-likelihood advantage over ETAS of the honest gridded fit against the
+leaked one, window by window. In Türkiye the two separate almost entirely at the Kahramanmaraş
+window — the leaked fit had seen it — and never reconverge. Right panel: the NTPP's information gain
+under each leak against its honest value, annotated with the fraction the controls remove. Neither
+leaked series is a result, and no promotion decision uses one.*
+
+The reason this is the most useful number in the project is that it is the one thing here that
+generalises. The challengers' scores are about these models, these regions and these 55 windows. The
+fraction above is about what a leaked evaluation would have told you, and nothing in it is specific
+to a neural network.
 
 ## What a reader should take from this
 
@@ -155,5 +263,7 @@ seismicity map that does not respond to a sequence.
 - The one metric that was beaten — Türkiye ensemble information gain — was beaten by correcting
   the baseline's over-forecasting of aftershock totals, on an interval whose independence
   assumption does not hold. It is reported, and it is not a promotion.
-- The value of the anti-leakage engineering is now a number, not an assertion: on Nepal it is the
-  difference between a challenger that loses and one that appears to win.
+- The value of the anti-leakage engineering is now a number, not an assertion: leakage controls
+  removed 9 %, 63 %, 97 % and 181 % of the apparent skill in the four cases where a leaked model had
+  any to lose, and on Nepal that is the difference between a challenger that loses and one that
+  appears to win.

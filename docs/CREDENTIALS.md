@@ -4,10 +4,18 @@
 fresh clone with no `.env` file, no network and no credentials. Every variable below is optional
 and only affects online pulls, the DVC remote or the OpenQuake image tag.
 
-No paid API is used anywhere in Prompt 1. ComCat, ISC, GCMT, GEM Global Active Faults and ESHM20
-are all free public services or downloads; the OpenQuake engine image is public on Docker Hub.
-The non-negotiable "ask before downloads > 5 GB or paid API calls" (CLAUDE.md) is not triggered
-by anything in this phase; `docs/DATA_SOURCES.md` lists sizes.
+**No paid API is used anywhere in rupture**, in Prompt 1 or Prompt 2. ComCat, ISC, GCMT, GEM Global
+Active Faults, ESHM20 and the USGS ground-failure repository are all free public services or
+downloads; the OpenQuake engine image is public on Docker Hub. The non-negotiable "ask before
+downloads > 5 GB or paid API calls" (CLAUDE.md) has not been triggered by anything so far;
+`docs/DATA_SOURCES.md` lists sizes.
+
+One optional variable is not a credential but a path: **`SERAC_EXPORT_DIR`** (default `../serac`)
+points at a checkout of the sibling `serac` repository, read by
+`adapters/exposure/serac_export.py` and `adapters/cascade/serac.py`. Nothing requires it — both
+fall back to committed fixtures, and `validate-risk` and `validate-cascade` pin those fixtures
+deliberately, so a gate result never depends on what happens to sit in a sibling directory. It is
+not listed in `.env.example`.
 
 ## How `.env` is loaded
 

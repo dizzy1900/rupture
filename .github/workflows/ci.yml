@@ -1,18 +1,21 @@
 name: ci
 
+# The brief asks for ruff, mypy --strict and the offline suite "on push and PR", so `push` is not
+# narrowed to a branch: a contributor who pushes a feature branch before opening a pull request
+# gets the same signal as one who opens it first. The concurrency group below cancels superseded
+# runs on the same ref, so the cost of that is one cancelled run, not a queue.
 on:
   push:
-    branches: [main]
   pull_request:
   workflow_dispatch:
 
 concurrency:
-  group: ci-${{ github.ref }}
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
   offline:
-    name: lint · typecheck · offline tests · language gate
+    name: lint · typecheck · offline tests · every offline gate
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
@@ -40,12 +43,56 @@ jobs:
         run: make validate-etas
       - name: Evaluation gate (incl. the negative leakage tests)
         run: make validate-eval
+      # The four Prompt 2 gates. Every one of them runs offline from committed evidence and takes
+      # seconds (cascade 2 s, risk 2 s, aftershock 7 s, challengers 2 s on an M-series laptop), so
+      # there is no reason for them to be hand-run only — and a gate that is only ever run by hand
+      # is a gate that rots. `validate-hazard` is the one gate not here: it needs the pinned
+      # OpenQuake container, and it has its own job below.
+      - name: Cascade gate
+        run: make validate-cascade
+      - name: Risk gate (ground motion → loss → avoided loss)
+        run: make validate-risk
+      - name: Aftershock gate
+        run: make validate-aftershock
+      - name: Challenger gate (leakage controls, fit honesty)
+        run: make validate-challengers
+      - name: Underwriting check (the serac corridor, priced end to end)
+        run: make underwriting-check
+      # A ratchet, not a formality: if someone registers a gate in
+      # src/rupture/validation/registry.py and does not wire it into this workflow, this step
+      # fails and names it. Without it the gate list here drifts silently from the code, which is
+      # the failure the qa-reviewer role holds a veto over.
+      - name: Every registered gate is wired into CI
+        run: |
+          uv run python - <<'PY'
+          import sys
+          from rupture.validation.registry import GATES
+
+          # Gates with a step in this workflow. `hazard` runs in the hazard-integration job.
+          covered = {
+              "language", "schema", "catalog", "etas", "eval",
+              "cascade", "risk", "aftershock", "challengers",
+              "hazard",
+          }
+          missing = [g for g in GATES if g not in covered]
+          if missing:
+              sys.exit(
+                  "these registered gates have no CI step: "
+                  + ", ".join(missing)
+                  + " — add one to .github/workflows/ci.yml and list it in `covered`"
+              )
+          stale = sorted(covered.difference(GATES))
+          if stale:
+              sys.exit("CI claims to cover gates that are not registered: " + ", ".join(stale))
+          print(f"all {len(GATES)} registered gates are wired into CI")
+          PY
 
   hazard-integration:
     name: OpenQuake demo in pinned Docker image
     # Docker is available on ubuntu runners; it is not assumed on developer machines.
-    # Runs on manual dispatch and on pushes to main (Phase 2C, ADR-0030). Pull requests keep the
-    # offline job only; `make validate-hazard` skips with a printed reason where Docker is absent.
+    # Runs on manual dispatch and on pushes to main (Phase 2C, ADR-0030). Pull requests and
+    # feature-branch pushes keep the offline job only; `make validate-hazard` skips with a printed
+    # reason where Docker is absent.
     runs-on: ubuntu-latest
     timeout-minutes: 60
     if: github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/main')
