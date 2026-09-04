@@ -203,11 +203,32 @@ def test_an_out_of_range_fraction_is_refused(portfolio: ExposurePortfolio) -> No
         )
 
 
-def test_a_forecast_trigger_says_not_implemented_rather_than_guessing(
+def test_a_forecast_trigger_for_a_grid_that_does_not_exist_is_an_error(
+    portfolio: ExposurePortfolio,
+) -> None:
+    """A forecast trigger is implemented now (ADR-0036); a *missing* grid still fails loudly.
+
+    What must never happen is a zero: an event-based figure with no event set behind it would be
+    the guess this project refuses. See ``tests/unit/risk/test_event_based.py`` for the answered
+    case.
+    """
+    response = avoided_loss.respond(
+        _request(portfolio, trigger_kind=TriggerKind.FORECAST, trigger_id="etas-nepal-30d"),
+        repo_root=REPO_ROOT,
+        grids={},
+        config=CONFIG,
+    )
+    assert response.status is ResponseStatus.ERROR
+    assert response.message is not None
+    assert "no ForecastGrid" in response.message
+    assert response.baseline_total is None
+
+
+def test_a_long_term_hazard_trigger_still_says_what_it_would_need(
     portfolio: ExposurePortfolio,
 ) -> None:
     response = avoided_loss.respond(
-        _request(portfolio, trigger_kind=TriggerKind.FORECAST, trigger_id="etas-nepal-30d"),
+        _request(portfolio, trigger_kind=TriggerKind.HAZARD, trigger_id="nepal-psha"),
         repo_root=REPO_ROOT,
         config=CONFIG,
     )
@@ -215,7 +236,7 @@ def test_a_forecast_trigger_says_not_implemented_rather_than_guessing(
     assert response.provenance_kind is ModelProvenance.STUB
     assert response.confidence is ConfidenceTier.UNQUALIFIED
     assert response.message is not None
-    assert "does not implement" in response.message
+    assert "ships no long-term source model" in response.message
     assert response.baseline_total is not None
     assert response.baseline_total.best == 0.0
 
@@ -257,3 +278,81 @@ def test_the_response_never_claims_more_than_low_confidence(
     assert response.confidence is ConfidenceTier.LOW
     assert response.assumptions
     assert response.provenance is not None
+
+
+# --------------------------------------------------------------- shutdown timing (ADR-0038)
+SHUTDOWN: tuple[Intervention, ...] = (
+    Intervention(
+        id="shutdown",
+        kind=InterventionKind.AUTOMATED_SHUTDOWN,
+        description="trip the units on a strong-motion trigger",
+    ),
+)
+TIMING_CONFIG = loss_module.RunConfig(n_realisations=60, seed=20260903)
+
+
+def test_the_shutdown_avoids_nothing_when_the_alert_cannot_arrive_in_time(
+    portfolio: ExposurePortfolio,
+) -> None:
+    """The MHT sits under the corridor: there is no time to trip, and the model must say so.
+
+    This is the finding the flat 15 % fraction hid. For the Gorkha-repeat rupture, whose
+    hypocentre is 56-75 km from the corridor, the trip has 1-6 s to spare and the measure is worth
+    something; for the MHT hypothetical, whose hypocentre is 29-41 km away and 10 km down, the S
+    wave arrives before the trip could have acted and the measure is worth exactly nothing.
+    """
+    near = avoided_loss.respond(
+        _request(portfolio, SHUTDOWN, trigger_id="mht-m8-hypothetical"),
+        repo_root=REPO_ROOT,
+        config=TIMING_CONFIG,
+    )
+    far = avoided_loss.respond(
+        _request(portfolio, SHUTDOWN, trigger_id="gorkha-2015-repeat"),
+        repo_root=REPO_ROOT,
+        config=TIMING_CONFIG,
+    )
+    assert near.status is ResponseStatus.OK
+    assert far.status is ResponseStatus.OK
+    assert near.interventions[0].avoided_vs_baseline.best == 0.0
+    assert (far.interventions[0].avoided_vs_baseline.best or 0.0) > 0.0
+    joined = " ".join(near.interventions[0].assumptions)
+    assert "ASSUMED shutdown trigger" in joined
+    assert "0 of 14 sites" in joined
+
+
+def test_the_shutdown_trigger_parameters_are_request_parameters(
+    portfolio: ExposurePortfolio,
+) -> None:
+    """A consumer with a faster alert and a faster plant can say so, and the answer changes."""
+    fast = (
+        Intervention(
+            id="shutdown",
+            kind=InterventionKind.AUTOMATED_SHUTDOWN,
+            description="trip the units on a strong-motion trigger",
+            parameters={"latency_s": 1.0, "stopping_time_s": 1.0, "trigger_g": 0.01},
+        ),
+    )
+    response = avoided_loss.respond(
+        _request(portfolio, fast, trigger_id="mht-m8-hypothetical"),
+        repo_root=REPO_ROOT,
+        config=TIMING_CONFIG,
+    )
+    assert (response.interventions[0].avoided_vs_baseline.best or 0.0) > 0.0
+    assert "14 of 14 sites" in " ".join(response.interventions[0].assumptions)
+
+
+def test_a_negative_trigger_parameter_is_refused(portfolio: ExposurePortfolio) -> None:
+    bad = (
+        Intervention(
+            id="shutdown",
+            kind=InterventionKind.AUTOMATED_SHUTDOWN,
+            description="trip",
+            parameters={"latency_s": -1.0},
+        ),
+    )
+    with pytest.raises(avoided_loss.AvoidedLossError, match="positive number"):
+        avoided_loss.respond(
+            _request(portfolio, bad),
+            repo_root=REPO_ROOT,
+            config=loss_module.RunConfig(n_realisations=10, seed=1),
+        )

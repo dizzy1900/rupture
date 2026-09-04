@@ -150,13 +150,20 @@ def test_the_cli_refuses_both_or_neither_trigger() -> None:
     assert both.exit_code != 0
 
 
-def test_the_cli_forecast_path_exits_non_zero_saying_why(
+def test_the_cli_forecast_path_exits_non_zero_when_the_grid_is_not_there(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
+    """The forecast path is implemented (ADR-0036); a grid that was never issued still fails.
+
+    ``data/forecasts/`` is DVC-tracked and empty in a fresh clone, so this is what a user who has
+    not run ``rupture forecast issue`` sees: the id they asked for, where rupture looked, and the
+    command that would produce it. Never a zero.
+    """
     monkeypatch.setenv("SERAC_EXPORT_DIR", str(REPO_ROOT / "does-not-exist"))
     result = CliRunner().invoke(
         risk_cli.app,
-        ["run", "--forecast", "etas-nepal-30d", "--realisations", str(SMALL_RUN)],
+        ["run", "--forecast", "no-such-forecast-grid", "--realisations", str(SMALL_RUN)],
     )
     assert result.exit_code == 1
-    assert "not_implemented" in result.stdout
+    assert "no ForecastGrid" in result.stdout
+    assert "rupture forecast issue" in result.stdout

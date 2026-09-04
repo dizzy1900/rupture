@@ -28,6 +28,8 @@ from rupture.adapters.groundmotion.base import FloatArray, GsimContext, GsimResu
 from rupture.adapters.groundmotion.imt import PGA, Imt
 
 COEFFS_FILE = "bssa14_coeffs.txt"
+HIGH_Q_COEFFS_FILE = "bssa14_highq_coeffs.txt"
+LOW_Q_COEFFS_FILE = "bssa14_lowq_coeffs.txt"
 
 M_REF = 4.5
 R_REF = 1.0
@@ -127,10 +129,14 @@ class BooreEtAl2014:
     requires_distances: tuple[str, ...] = ("rjb",)
     requires_site_parameters: tuple[str, ...] = ("vs30",)
 
+    coefficients_file: str = COEFFS_FILE
+    base_name: str = "BooreEtAl2014"
+    anelastic_region: str = "global"
+
     def __init__(self, *, sof: bool = True) -> None:
         self.sof = sof
-        self.name = "BooreEtAl2014" if sof else "BooreEtAl2014(sof=False)"
-        self._coeffs = coeffs.load(COEFFS_FILE)
+        self.name = self.base_name if sof else f"{self.base_name}(sof=False)"
+        self._coeffs = coeffs.load(self.coefficients_file)
 
     def supports(self, imt: Imt) -> bool:
         return self._coeffs.supports(imt)
@@ -151,3 +157,26 @@ class BooreEtAl2014:
         tau = np.full_like(ctx.vs30, _tau(c, ctx.mag))
         phi = _phi(c, ctx.mag, ctx.rjb, ctx.vs30)
         return GsimResult(mean_ln=mean_ln, tau=tau, phi=phi, sigma=np.sqrt(tau**2 + phi**2))
+
+
+class BooreEtAl2014HighQ(BooreEtAl2014):
+    """BSSA14 with the paper's high-Q anelastic-attenuation adjustment (China, Turkey).
+
+    Identical equations; the only difference is the ``Dc3`` column of the coefficient table,
+    which is the regional adjustment to the anelastic term of equation 3. OpenQuake carries the
+    same three variants as separate classes (``BooreEtAl2014``, ``BooreEtAl2014HighQ``,
+    ``BooreEtAl2014LowQ``), each with its own committed expected values, so each is verified here
+    the same way.
+    """
+
+    coefficients_file: str = HIGH_Q_COEFFS_FILE
+    base_name: str = "BooreEtAl2014HighQ"
+    anelastic_region: str = "high-Q (China, Turkey)"
+
+
+class BooreEtAl2014LowQ(BooreEtAl2014):
+    """BSSA14 with the paper's low-Q anelastic-attenuation adjustment (Italy, Japan)."""
+
+    coefficients_file: str = LOW_Q_COEFFS_FILE
+    base_name: str = "BooreEtAl2014LowQ"
+    anelastic_region: str = "low-Q (Italy, Japan)"

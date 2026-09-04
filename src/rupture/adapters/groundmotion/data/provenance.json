@@ -1,11 +1,11 @@
 {
   "source": "gem/oq-engine",
   "ref": "engine-3.26",
-  "retrieved_at": "2026-09-03T20:22:54.047636Z",
+  "retrieved_at": "2026-09-04T03:59:38.278608Z",
   "licence": "AGPL-3.0-or-later (oq-engine transcription)",
   "primary_sources": [
-    "Boore, D.M., Stewart, J.P., Seyhan, E. & Atkinson, G.M. (2014). \"NGA-West2 Equations for Predicting PGA, PGV, and 5% Damped PSA for Shallow Crustal Earthquakes\". Earthquake Spectra 30(3), 1057-1085. doi:10.1193/070113EQS184M",
-    "Abrahamson, N., Gregor, N. & Addo, K. (2016). \"BC Hydro Ground Motion Prediction Equations for Subduction Earthquakes\". Earthquake Spectra 32(1), 23-44. doi:10.1193/051712EQS188MR"
+    "Boore, D.M., Stewart, J.P., Seyhan, E. & Atkinson, G.M. (2014). NGA-West2 equations for PGA, PGV and 5%-damped PSA for shallow crustal earthquakes. Earthquake Spectra 30(3), 1057-1085. doi:10.1193/070113EQS184M [title abbreviated; see docs/RISK.md]",
+    "Abrahamson, N., Gregor, N. & Addo, K. (2016). BC Hydro ground motion model for subduction earthquakes. Earthquake Spectra 32(1), 23-44. doi:10.1193/051712EQS188MR [title abbreviated; see docs/RISK.md]"
   ],
   "notes": "Coefficient tables extracted verbatim from the oq-engine source at the pinned tag; never hand-typed. See docs/RISK.md for the licence note.",
   "files": [
@@ -29,7 +29,20 @@
       "extracted_from": "BooreEtAl2014.COEFFS",
       "sha256": "c59375b930813a0e38f0e67e8f3b04f043d8c0855e61e3aa7d628d6140a36a55",
       "rows": 107
+    },
+    {
+      "file": "bssa14_highq_coeffs.txt",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/gsim/boore_2014.py",
+      "extracted_from": "BooreEtAl2014HighQ.COEFFS",
+      "sha256": "42c84f4c37cbbfed8989170ac831bad04b4716d7f1c20f8beae504aeac064d4b",
+      "rows": 107
+    },
+    {
+      "file": "bssa14_lowq_coeffs.txt",
+      "url": "https://raw.githubusercontent.com/gem/oq-engine/engine-3.26/openquake/hazardlib/gsim/boore_2014.py",
+      "extracted_from": "BooreEtAl2014LowQ.COEFFS",
+      "sha256": "18b902d12f56ab095c9175005d57d4b6912379161979c211958295a1d0f5869a",
+      "rows": 107
     }
-  ],
-  "licence_note": "See docs/adr/0033-gsim-coefficient-provenance-and-licence.md. Coefficients are numeric facts first published in the articles above; the machine-readable transcription is GEM's (oq-engine, AGPL-3.0-or-later), attributed here. rupture ships no oq-engine code."
+  ]
 }

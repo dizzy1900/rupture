@@ -14,7 +14,11 @@ from pathlib import Path
 from rupture.adapters.groundmotion import verification
 from rupture.adapters.groundmotion.base import Gsim
 from rupture.adapters.groundmotion.bchydro import AbrahamsonEtAl2015SInter
-from rupture.adapters.groundmotion.bssa14 import BooreEtAl2014
+from rupture.adapters.groundmotion.bssa14 import (
+    BooreEtAl2014,
+    BooreEtAl2014HighQ,
+    BooreEtAl2014LowQ,
+)
 
 FIXTURE_REL = Path("tests") / "fixtures" / "risk" / "gsim"
 
@@ -42,6 +46,14 @@ def _bssa14() -> Gsim:
 
 def _bssa14_no_sof() -> Gsim:
     return BooreEtAl2014(sof=False)
+
+
+def _bssa14_high_q() -> Gsim:
+    return BooreEtAl2014HighQ()
+
+
+def _bssa14_low_q() -> Gsim:
+    return BooreEtAl2014LowQ()
 
 
 def _bchydro_sinter() -> Gsim:
@@ -80,6 +92,34 @@ ENTRIES: tuple[GsimEntry, ...] = (
         mean_tolerance_percent=2.0,
         stddev_tolerance_percent=0.1,
         notes="unspecified mechanism (e0)",
+    ),
+    GsimEntry(
+        name="BooreEtAl2014HighQ",
+        build=_bssa14_high_q,
+        directory="bssa14",
+        tables={
+            verification.MEAN: "BSSA_2014_HIGHQ_MEAN.csv",
+            verification.TOTAL: "BSSA_2014_HIGHQ_TOTAL_STD.csv",
+            verification.INTER: "BSSA_2014_HIGHQ_INTER_STD.csv",
+            verification.INTRA: "BSSA_2014_HIGHQ_INTRA_STD.csv",
+        },
+        mean_tolerance_percent=2.0,
+        stddev_tolerance_percent=0.1,
+        notes="high-Q anelastic attenuation (China, Turkey); a branch of the GSIM logic tree",
+    ),
+    GsimEntry(
+        name="BooreEtAl2014LowQ",
+        build=_bssa14_low_q,
+        directory="bssa14",
+        tables={
+            verification.MEAN: "BSSA_2014_LOWQ_MEAN.csv",
+            verification.TOTAL: "BSSA_2014_LOWQ_TOTAL_STD.csv",
+            verification.INTER: "BSSA_2014_LOWQ_INTER_STD.csv",
+            verification.INTRA: "BSSA_2014_LOWQ_INTRA_STD.csv",
+        },
+        mean_tolerance_percent=2.0,
+        stddev_tolerance_percent=0.1,
+        notes="low-Q anelastic attenuation (Italy, Japan); a branch of the GSIM logic tree",
     ),
     GsimEntry(
         name="AbrahamsonEtAl2015SInter",

@@ -22,7 +22,12 @@ from rupture.adapters.groundmotion import imt as imt_module
 from rupture.adapters.groundmotion import registry
 from rupture.adapters.groundmotion.base import GsimContext
 from rupture.domain.common import Provenance, sha256_hex, utc_now
-from rupture.domain.groundmotion import GroundMotionEngineId, GroundMotionField, Site
+from rupture.domain.groundmotion import (
+    GroundMotionEngineId,
+    GroundMotionField,
+    GsimLogicTree,
+    Site,
+)
 from rupture.domain.hazard import ScenarioRupture
 
 ADAPTER_VERSION = __version__
@@ -111,6 +116,82 @@ class NativeGsimEngine:
                 ),
             ),
             notes=note,
+        )
+
+    def scenario_logic_tree(
+        self,
+        rupture: ScenarioRupture,
+        sites: tuple[Site, ...],
+        *,
+        tree: GsimLogicTree,
+        imt: str = "PGA",
+        n_realisations: int = 1,
+        truncation_level: float = 3.0,
+        seed: int | None = None,
+    ) -> GroundMotionField:
+        """A field whose realisations are shared between the branches of ``tree`` by weight.
+
+        The allocation is deterministic (:meth:`GsimLogicTree.allocation`), so the weights are
+        honoured exactly rather than in expectation, and each branch is sampled with its own
+        derived seed so the mixed field is reproducible. The resulting field's ``gsim`` names the
+        **tree**, not a model, and its ``notes`` list the branches and how many realisations each
+        received: a reader must never mistake a mixed field for a single-model one.
+        """
+        counts = tree.allocation(n_realisations)
+        rows: list[tuple[float, ...]] = []
+        branch_notes: list[str] = []
+        for offset, (branch, count) in enumerate(zip(tree.branches, counts, strict=True)):
+            model = registry.build(branch.gsim)
+            measure = imt_module.parse(imt)
+            if not model.supports(measure):
+                msg = f"{branch.gsim} is not defined for {measure}"
+                raise NativeGsimError(msg)
+            self._tectonic_note(rupture, model.tectonic_region, branch.gsim)
+            result = model.compute(self.context(rupture, sites), measure)
+            values = self._sample(
+                result.mean_ln,
+                result.tau,
+                result.phi,
+                n_realisations=count,
+                truncation_level=truncation_level,
+                seed=None if seed is None else seed + 1_000_003 * (offset + 1),
+            )
+            rows.extend(tuple(float(v) for v in row) for row in values)
+            branch_notes.append(f"{branch.id}={branch.gsim} w={branch.weight:.4g} n={count}")
+
+        computed_at = utc_now()
+        measure = imt_module.parse(imt)
+        field_id = _field_id(rupture.id, tree.id, str(measure), n_realisations, seed)
+        return GroundMotionField(
+            id=field_id,
+            scenario_id=rupture.id,
+            imt=str(measure),
+            sites=sites,
+            values=tuple(rows),
+            engine=GroundMotionEngineId.NATIVE_GSIM,
+            engine_version=self.engine_version,
+            gsim=f"logic-tree:{tree.id}",
+            rupture_id=rupture.id,
+            truncation_level=truncation_level,
+            random_seed=seed,
+            computed_at=computed_at,
+            provenance=Provenance(
+                source=self.engine_id,
+                source_url=None,
+                retrieved_at=computed_at,
+                sha256=sha256_hex(
+                    rupture.canonical_json() + "|" + tree.canonical_json() + "|" + field_id
+                ),
+                licence=LICENCE,
+                adapter_version=ADAPTER_VERSION,
+                notes=f"GSIM logic tree {tree.describe()}",
+            ),
+            notes=(
+                "MIXED FIELD: realisations are shared between logic-tree branches by weight - "
+                + "; ".join(branch_notes)
+                + f". Tree provenance: {tree.provenance.value} weights."
+                + (f" {tree.notes}" if tree.notes else "")
+            ),
         )
 
     def context(self, rupture: ScenarioRupture, sites: tuple[Site, ...]) -> GsimContext:
