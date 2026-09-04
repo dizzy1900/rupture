@@ -5,6 +5,7 @@ name: build-catalog
 description: >-
   Merge public catalogues (ComCat, ISC, ISC-GEM, GCMT) for one region, homogenise magnitudes,
   estimate Mc and write the GeoParquet catalogue plus the homogenisation log. Network required.
+status: run
 image: ${RUPTURE_IMAGE}
 command:
   - rupture
@@ -30,6 +31,13 @@ resources:
   cpu: 2
   memory_gib: 8
   timeout_minutes: 180
+  core_hours_estimate: 0.5
+  core_hours_basis: guess
+  core_hours_note: >-
+    Guess. No catalogue build has been timed. The job is dominated by paginated FDSN/ComCat/GCMT
+    requests and by whatever rate limit the far end applies, not by local arithmetic, so the CPU
+    cost is small and the wall clock is the risk; 0.5 core-hours is the order of magnitude for one
+    region over a ~50-year span. Time `rupture catalog build` once and this becomes measured.
   gpu: none
 schedule:
   cron: "30 02 1 * *"

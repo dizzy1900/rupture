@@ -1,0 +1,83 @@
+# rupture job manifest (schema: infra/jobs/schema.json, ADR-0016). Placeholders: <r> region id,
+# <from> start of the training span (UTC). The validation end and the cutoff are pinned to the
+# protocol's first issue time, 2022-01-01T00:00:00Z (ADR-0015, docs/CHALLENGER_NTPP.md § 10):
+# `ntpp select` refuses a validation end after the cutoff, which is the leakage guard.
+#
+# `command` uses the module form because src/rupture/cli.py has not mounted the challenger
+# sub-app; it becomes `rupture challenger ntpp select ...` on the day it does. See
+# infra/jobs/README.md and the note at the top of src/rupture/commands/challenger.py.
+manifest_version: "0"
+name: select-ntpp
+description: >-
+  Hyperparameter selection for the neural temporal point-process challenger: score all 16
+  configurations of the default grid on blocked time-forward folds that end at or before the
+  cutoff, and freeze the winner to baselines/ntpp/<r>/hyperparameters.json. This is the first half
+  of full training; train-ntpp.yaml fits the frozen configuration.
+status: run
+image: ${RUPTURE_IMAGE}
+command:
+  - python
+  - -m
+  - rupture.commands.challenger
+  - ntpp
+  - select
+  - --region
+  - <r>
+  - --from
+  - <from>
+  - --validation-end
+  - "2022-01-01T00:00:00Z"
+  - --cutoff
+  - "2022-01-01T00:00:00Z"
+  - --auxiliary-years
+  - "2.0"
+inputs:
+  - path: data/catalogs/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/catalogs/<r>
+    kind: dvc
+  - path: data/regions/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/data/regions/<r>
+    kind: source
+outputs:
+  - path: baselines/ntpp/<r>
+    remote: ${RUPTURE_DVC_REMOTE_URL}/baselines/ntpp/<r>
+    kind: dvc
+    note: >-
+      hyperparameters.json — the frozen selection record and the trial table. Committed to git for
+      the two run regions rather than pushed (RELEASE_STATUS.md explains the asymmetry).
+resources:
+  cpu: 4
+  memory_gib: 8
+  timeout_minutes: 120
+  core_hours_estimate: 0.3
+  core_hours_basis: extrapolated
+  core_hours_note: >-
+    Extrapolated from a timed anchor fit, not measured as this job. The committed fixture fit
+    (tests/fixtures/models/ntpp-fit-2019-07-01, 214 events after Mc filtering, 538 epochs) takes
+    7.4 CPU-seconds on an arm64 laptop. The default grid is 2x2x2x2 = 16 candidates over 2 blocked
+    folds = 32 fits on training spans shorter than the full one, which puts the search at a few
+    hundred CPU-seconds; 0.3 core-hours leaves room for the larger Nepal catalogue. Nothing timed
+    a real selection run because neither the schedule reports nor the run log record elapsed time
+    — see the note in infra/jobs/README.md on what would make this measured.
+  gpu: none
+schedule: null
+env:
+  - RUPTURE_DVC_REMOTE_URL
+  - AWS_REGION
+aws:
+  service: batch-fargate
+  region: ${AWS_REGION}
+  batch:
+    job_definition_name: rupture-select-ntpp
+    vcpus: 4
+    memory_mib: 8192
+    attempts: 1
+    timeout_seconds: 7200
+    compute_environment_note: >-
+      CPU-only torch; the model is ~5k parameters and the training signal a few hundred events, so
+      a GPU buys nothing. No network needed after the catalogue is staged.
+  s3:
+    bucket_env: RUPTURE_DVC_REMOTE_URL
+    prefix: baselines/ntpp/
+  iam_role_name: rupture-batch-job-role
+  log_group: /rupture/batch/select-ntpp

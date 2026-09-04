@@ -5,6 +5,7 @@ name: fit-etas
 description: >-
   Fit the ETAS baseline for one region on the catalogue strictly before the cutoff and persist the
   FitResult with diagnostics to baselines/etas/<r>/. Offline once the catalogue is pulled.
+status: run
 image: ${RUPTURE_IMAGE}
 command:
   - rupture
@@ -32,6 +33,14 @@ resources:
   cpu: 4
   memory_gib: 16
   timeout_minutes: 360
+  core_hours_estimate: 0.2
+  core_hours_basis: extrapolated
+  core_hours_note: >-
+    Extrapolated from the Turkiye 55-window ETAS schedule (reports/protocol/schedule-turkiye-eaf.log
+    tail: 3317.65 s user + 93.29 s system = 0.95 core-hours on an arm64 laptop), which contained 4
+    yearly refits alongside 55 issuances; the refits are a minority of that total, so one fit of a
+    ~400-event training span is well under 0.2 core-hours. Not timed in isolation. California's
+    much longer history is untested and would be larger.
   gpu: none
 schedule: null
 env:
