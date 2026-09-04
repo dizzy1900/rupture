@@ -1,4 +1,4 @@
-"""The rupture HTTP service: both surfaces, one application (ADR-0036).
+"""The rupture HTTP service: both surfaces, one application (ADR-0045).
 
     uvicorn rupture.services.app:create_app --factory --host 0.0.0.0 --port 8000
 

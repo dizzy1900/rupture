@@ -15,7 +15,7 @@ public-internet service.
 
 The routes live on a router (:func:`build_router`) so the combined service in
 :mod:`rupture.services.app` can serve them alongside the aftershock forecast in one process, one
-OpenAPI document and one key scheme (ADR-0036). ``create_app()`` and the module-level ``app``
+OpenAPI document and one key scheme (ADR-0045). ``create_app()`` and the module-level ``app``
 remain for a deployment that wants the risk surface alone.
 """
 

@@ -33,7 +33,7 @@ services:
     command: ["rupture", "--help"]
 
   api:
-    # The combined FastAPI service (ADR-0036): /v1/avoided-loss and /aftershock/forecast in one
+    # The combined FastAPI service (ADR-0045): /v1/avoided-loss and /aftershock/forecast in one
     # process, one /health, one X-API-Key scheme.
     build:
       context: ../..

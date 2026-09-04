@@ -105,7 +105,7 @@ diagnostics into that directory's `provenance.json`. A cutoff later than now —
 catalogue's coverage — is refused with the reason printed, never fitted on whatever data happens
 to be there. This is what a cron entry, a systemd timer or a scheduled job runs; a serving process
 re-reads the fits directory, so a fit written while it is up is served by the next request without
-a restart (ADR-0036).
+a restart (ADR-0045).
 
 The service does **not** refit inside a request. An EM fit takes tens of seconds and grows with
 the sequence, so a request whose scheduled cutoff has no fit answers 503 naming the cutoff and the
@@ -315,7 +315,7 @@ inside a request).
 
 ### HTTP
 
-**One service, both surfaces** (ADR-0036). `uvicorn rupture.services.app:create_app --factory`
+**One service, both surfaces** (ADR-0045). `uvicorn rupture.services.app:create_app --factory`
 serves the aftershock forecast and the avoided-loss contract in one process, with one `/health`,
 one OpenAPI document at `/docs`, and one `X-API-Key` scheme. This is what the `api` target of
 `infra/docker/Dockerfile` runs; `docs/DEPLOYMENT.md` § The HTTP service has the deploy notes. The
@@ -430,7 +430,7 @@ fail when a forecast scores badly — a gate that did would be a gate against re
 9. **Depth is ignored** beyond the region's depth filter: the forecast is two-dimensional.
 10. **Committed fits, and no live feed.** The refit schedule is now executed by
     `rupture aftershock refit` and the service picks up what it writes without a restart (§ 2,
-    ADR-0036), but what it refits is a committed slice: rupture has **no live catalogue feed**, so
+    ADR-0045), but what it refits is a committed slice: rupture has **no live catalogue feed**, so
     nothing keeps a sequence current on its own. Against the committed slices the schedule is
     fitted out to +12 h; +2 d to +30 d are unfitted and answer 503 until someone runs the command.
     Wiring the runner to a feed, and to a scheduler, is a deployment's job and has not been done

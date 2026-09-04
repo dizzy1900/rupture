@@ -22,7 +22,7 @@ Three routes:
 This module builds a router (:func:`build_router`) and a standalone application around it
 (:func:`create_app`). The combined service in :mod:`rupture.services.app` includes the same
 router next to the avoided-loss one, so the two surfaces are one process, one OpenAPI document
-and one API-key scheme (ADR-0036).
+and one API-key scheme (ADR-0045).
 
 Authentication is an API key in the ``X-API-Key`` header and nothing else, by design: this
 service is meant to sit behind whatever the deployment already has. Keys come from

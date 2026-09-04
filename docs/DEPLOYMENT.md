@@ -18,7 +18,7 @@ else. Decisions: ADR-0016 (image + manifests), ADR-0011 and ADR-0030 (OpenQuake 
 - No Terraform, CDK, CloudFormation or Kubernetes manifests; no hosted platform of any kind
   (non-negotiable 6). The `aws:` blocks are annotations a deployer reads, not infrastructure code.
 - No scheduler implementation; `docs/SCHEDULER.md` (Phase 2B) describes the intended daily run.
-  The aftershock refit schedule is a command (`rupture aftershock refit`, ADR-0036) meant to be
+  The aftershock refit schedule is a command (`rupture aftershock refit`, ADR-0045) meant to be
   run by whatever the deployment already schedules; rupture ships no scheduler and no live
   catalogue feed to point one at.
 - No registry, no published image. The image has **not been built** on the development machine
@@ -65,7 +65,7 @@ it through the host's `docker` CLI and does not contain it.
 
 ## The HTTP service
 
-One application serves both surfaces (ADR-0036): the avoided-loss contract (`docs/RISK.md`) and
+One application serves both surfaces (ADR-0045): the avoided-loss contract (`docs/RISK.md`) and
 the aftershock forecast (`docs/AFTERSHOCK.md`), with one health endpoint, one OpenAPI document at
 `/docs` and one API-key scheme.
 
@@ -132,7 +132,7 @@ curls `/health` is the missing piece.
 tables, the exposure fallback, the two ComCat sequence slices and their fits). Shipping a `tests/`
 directory in a runtime image is not right; moving those inputs under `src/rupture/risk/data/` and
 `src/rupture/services/aftershock/data/` so the wheel carries them is the fix, and it belongs to
-the owners of that model code (ADR-0036).
+the owners of that model code (ADR-0045).
 
 ## Job manifests
 
