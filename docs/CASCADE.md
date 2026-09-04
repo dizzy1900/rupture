@@ -6,14 +6,19 @@ failures.** Every record in this layer carries that caveat in its own payload
 models say where ground failure is more or less likely given shaking and terrain, fitted to
 inventories of past earthquakes. They do not say that a particular slope, road or parcel fails.
 
-Layer C3 has four parts: two USGS ground-failure models, a validation against the real published
-USGS product for 2015 Gorkha, a co-seismic ice/rock avalanche exposure overlay built on the
-sibling `serac`'s slope units, and the client side of the `SourceTypeAssessment` discriminator
-contract shared with `serac`.
+Layer C3 has six parts: two USGS ground-failure models; a reproduction of the real published USGS
+product for 2015 Gorkha; a scenario case over the Ronti / Chamoli region, which is the layer's
+non-ShakeMap route and has no published answer to check against (§3.5); a co-seismic ice/rock
+avalanche exposure overlay built on the sibling `serac`'s slope units, published as GeoParquet
+(§4.1); the client side of the `SourceTypeAssessment` discriminator contract shared with `serac`;
+and a documented, untrained hook for a learned global model (§9).
 
 Decisions: [ADR-0026](adr/0026-usgs-ground-failure-models.md) (model choice and coefficient
 provenance), [ADR-0027](adr/0027-serac-slope-units.md) (serac integration, fixture-fallback rule,
-threshold basis). Model card: [`reports/MODEL_CARD_cascade.md`](../reports/MODEL_CARD_cascade.md)
+threshold basis), [ADR-0042](adr/0042-learned-ground-failure-hook.md) (the learned-model hook),
+[ADR-0043](adr/0043-chamoli-ronti-scenario.md) (the Chamoli / Ronti scenario case),
+[ADR-0044](adr/0044-cascade-exposure-geoparquet.md) (CascadeExposure as GeoParquet).
+Model card: [`reports/MODEL_CARD_cascade.md`](../reports/MODEL_CARD_cascade.md)
 — tracked with `git add -f`, because `.gitignore` excludes `/reports/`; note that `make clean`
 does `rm -rf reports` and will delete it from a working tree (`git checkout reports/` restores it).
 
@@ -231,7 +236,53 @@ unbounded above and rupture does not carry them. The report says so rather than 
 
 ```bash
 uv run rupture validate cascade                 # the gate; offline
-uv run python -m rupture.commands.cascade reproduce --out reports/cascade/gorkha.json
+uv run rupture cascade reproduce --out reports/cascade/gorkha.json
+```
+
+### 3.5 The second region — Chamoli / Ronti, and what it is *not*
+
+The brief names two validation regions. Gorkha is a reproduction against a published answer.
+Chamoli is not, and the difference has to be stated before the numbers.
+
+**The 2021 Chamoli disaster was not earthquake-triggered.** It was a rock and ice avalanche from
+the north face of Ronti Peak, on 7 February 2021. No earthquake preceded it, no ShakeMap exists for
+it, and the USGS has published no `ground-failure` product for this catchment. rupture also holds
+no published rupture model for the Garhwal Himalaya and no Vs30 raster covering it.
+
+So the Chamoli case is a **scenario**, and it is what the scenario route is *for*
+([ADR-0043](adr/0043-chamoli-ronti-scenario.md), `src/rupture/adapters/cascade/chamoli.py`):
+
+| | |
+|---|---|
+| Rupture | a **HYPOTHETICAL** 25 x 25 km patch of the Main Himalayan Thrust decollement, top at 10 km, centred beneath serac's `chamoli-rishiganga` extent. Dip 7 deg, strike 293 deg, rake 101 deg, adopted from the central-Nepal MHT geometry and stated as an adoption |
+| Magnitude | **Mw 6.66, computed** from that area and 0.6 m average slip through Hanks & Kanamori (1979) — an output of the geometry, not an input |
+| Window | 79.570–79.860 E, 30.270–30.553 N at 1/240 deg — the union of serac's AOI footprints and its two exposed assets, buffered by 0.06 deg. No coordinate is typed in by hand |
+| Ground motion | `BooreEtAl2014` through the native GSIM engine, verified against OpenQuake's own expected values ([ADR-0020](adr/0020-ground-motion-two-adapters.md)); median field, one realisation |
+| Vs30 | **760 m/s assumed at every site** (NEHRP B/C). rupture holds no Vs30 raster here and does not manufacture a spatially varying one |
+
+Numbers on the committed inputs: median PGA **0.4274 g** (0.2547–0.4274 over the window), median
+PGV **36.06 cm/s** (21.33–36.06), 4 899 cells. Landslide areal coverage **0.0015–0.0033**, mean
+0.0031, and — as everywhere else in this layer — **unconditioned**: no static covariate is sourced
+here either, so this is the shaking response of the published model, not a susceptibility map.
+
+The liquefaction model masks **every cell**. 760 m/s is above Zhu's `vs30max` of 620, so the model
+declines to speak about a rock-site mountain catchment. That is the right answer for this setting,
+it is asserted by the gate rather than worked around, and it is the one mask in this layer that
+demonstrably fires.
+
+**What this case establishes, and what it does not.** It establishes that the scenario route runs
+end to end — a documented rupture, a verified GSIM, both models, the slope-unit overlay, the
+GeoParquet output — over the region the brief names, and it gives the gate checks that can fail: a
+unit error in either intensity measure, an unwired mask, a lost caveat, an exposure record that
+silently fell back to the Gorkha ShakeMap. It establishes **no** agreement with a published
+product, because there is none to agree with. It is not evidence that the models are right in the
+Garhwal Himalaya, and no number in §3.5 should be quoted as if it were.
+
+```bash
+uv run rupture cascade scenario                             # the rupture and its assumptions
+uv run rupture cascade run --scenario chamoli-ronti-mht-hypothetical --model landslide
+uv run rupture cascade exposure --aoi chamoli-rishiganga \
+    --scenario chamoli-ronti-mht-hypothetical --out-parquet reports/cascade/chamoli.parquet
 ```
 
 ---
@@ -272,13 +323,39 @@ and is applied only to units that carry a slope — under the fallback, none of 
 (`timure`, `syabrubesi`, `betrawati` for Langtang). serac's asset records carry no elevation, so
 "below" is corridor membership and not a verified elevation relation; the record's `notes` say so.
 
+**`settlements_below` is not the only receptor.** serac maps **no settlement at all** in
+`chamoli-rishiganga`: the assets it carries there are the Rishi Ganga and Tapovan Vishnugad
+hydropower projects, both hit in 2021 by an avalanche of exactly this mechanism. Calling them
+settlements would be wrong and dropping them would lose the AOI's only receptors, so
+`ExposedSlopeUnit.assets_below` carries them separately, with the same corridor-membership caveat
+([ADR-0044](adr/0044-cascade-exposure-geoparquet.md)).
+
 ```bash
-uv run python -m rupture.commands.cascade exposure \
-    --aoi lhende-khola-trishuli --scenario us20002926 --pga-threshold 0.02
+uv run rupture cascade exposure \
+    --aoi lhende-khola-trishuli --scenario us20002926 --pga-threshold 0.02 \
+    --out-parquet reports/cascade/langtang.parquet
 ```
 
 Output on the committed fixtures: 1 slope unit, PGA sampled from the Gorkha ShakeMap at the
 source-zone centroid, above the 0.02 g screen, both terrain screens reported as not applied.
+
+### 4.1 The output format: GeoParquet with provenance
+
+`--out-parquet` writes the record as GeoParquet, one row per slope unit, EPSG:4326
+(`src/rupture/adapters/cascade/geoparquet.py`, [ADR-0044](adr/0044-cascade-exposure-geoparquet.md)).
+
+- **`geometry`** is the unit's footprint polygon — `ExposedSlopeUnit.polygon`, the exterior ring
+  carried through from the slope-unit source. Where the source has no polygon the geometry is the
+  representative point the PGA was sampled at; where it has neither, the geometry is **null**, not
+  invented.
+- Scalar unit fields are columns of the same name; `settlements_below`, `assets_below` and
+  `source_refs` are `*_json` strings, as in the catalogue writer.
+- The **record-level fields and the caveat are Parquet key-value metadata** under `rupture:`:
+  scenario, AOI, kind, threshold, slope-unit source, shaking source, provenance tier, confidence
+  tier, `computed_at`, notes, unit counts, the susceptibility `label`, and `rupture:statement`. A
+  consumer that opens only the schema still sees what the file is and is not.
+- The round trip is exact — `read_cascade_exposure(write_cascade_exposure(x)) == x` — and the gate
+  asserts it every run for both the Gorkha and the Chamoli records.
 
 ---
 
@@ -314,20 +391,47 @@ the accounting says exactly that rather than reporting a zero that looks like ag
 ## 6. CLI
 
 ```
-rupture cascade run       --scenario <id> --model landslide|liquefaction
-rupture cascade exposure  --aoi <id> --scenario <id> --pga-threshold <g>
+rupture cascade cases
+rupture cascade scenario  [--out FILE]
+rupture cascade run       --scenario <id> --model landslide|liquefaction [--out FILE]
+rupture cascade run       --grid-xml <grid.xml> [--stride N] [--magnitude M]
+rupture cascade run       --pgv-field <gmf.json> [--pga-field <gmf.json>] [--magnitude M]
+rupture cascade exposure  --aoi <id> --scenario <id> [--pga-threshold <g>]
+                          [--pga-field <gmf.json> | --grid-xml <grid.xml>]
+                          [--out FILE] [--out-parquet FILE]
+rupture cascade fetch-shakemap --event <comcat id> --out-dir <dir> [--url URL]   # network
 rupture cascade reproduce [--model ...] [--out FILE]
 rupture cascade discriminate --catalog <geojson> [--export-dir <serac>] [--threshold p]
 ```
 
-**Registration caveat.** `src/rupture/cli.py` is the architect's file and does not yet mount the
-cascade sub-application. Until it does, run these as
-`uv run python -m rupture.commands.cascade <verb> ...`. The one-line change needed is
-`app.add_typer(cascade.app, name="cascade")` plus the import. `rupture validate cascade` works
-today, because gates resolve through `validation/registry.py`.
+`src/rupture/cli.py` mounts the sub-application, so `rupture cascade ...` works directly
+(`python -m rupture.commands.cascade ...` still works and is equivalent).
 
-`rupture cascade run` is wired offline only for `--scenario us20002926`; any other scenario needs
-a ground-motion field this layer cannot yet locate and exits 2 saying so, rather than inventing one.
+### 6.1 The four input routes
+
+`src/rupture/adapters/cascade/cases.py` holds them, and `rupture cascade cases` lists the two that
+run offline from committed inputs. Nothing in the layer manufactures shaking; a request that cannot
+be satisfied exits 1 and names what would satisfy it.
+
+| Route | How to reach it | What it is |
+|---|---|---|
+| `committed-shakemap` | `--scenario us20002926` | the committed slice of the published Gorkha ShakeMap Atlas grid |
+| `scenario-gsim` | `--scenario chamoli-ronti-mht-hypothetical` | a documented hypothetical rupture through the verified native GSIM (§3.5) |
+| `shakemap-grid-xml` | `--grid-xml <path>` | any real ShakeMap `grid.xml` on disk, parsed by `read_grid_xml`; `--stride N` subsamples a large grid |
+| `supplied-field` | `--pgv-field` / `--pga-field` | a `ground-motion-field.v0` JSON from anywhere else in rupture (the loss layer's scenario calculation, an OpenQuake run) |
+
+For a real event rupture does not already carry:
+
+```bash
+uv run rupture cascade fetch-shakemap --event us6000jllz --out-dir data/raw/shakemap/us6000jllz
+uv run rupture cascade run --grid-xml data/raw/shakemap/us6000jllz/grid.xml --model landslide
+```
+
+`fetch-shakemap` reads the USGS event API, takes the preferred `shakemap` product's
+`download/grid.xml`, and writes it beside a `provenance.json` recording the URL, retrieval time,
+sha256 and licence. It fetches or fails: an event with no ShakeMap product, or a response that is
+not a grid, raises and writes nothing. It is the only networked verb in this layer, and the offline
+tests exercise every path in it with an injected fetcher.
 
 ## 7. Gate
 
@@ -343,10 +447,20 @@ offline and checks:
 5. a `CascadeExposure` validates against `contracts/cascade-exposure.v0.json` and a
    `GroundFailureField` against `contracts/ground-failure-field.v0.json`;
 6. every emitted probability is finite and in `[0, 1]`;
-7. every emitted record still carries the susceptibility caveat.
+7. every emitted record still carries the susceptibility caveat;
+8. **the scenario route** (§3.5): the Chamoli rupture is marked hypothetical; the median PGA is
+   inside `[0.02, 2.0]` g and the median PGV inside `[1, 300]` cm/s — bands chosen so that a
+   units error cannot pass, not as a claim about the ground motion; the landslide field is finite
+   and still declares its static covariates incomplete; the Zhu `vs30max` mask zeroes every cell at
+   the assumed rock Vs30; the exposure's `shaking_source` is the GSIM field and not the Gorkha
+   ShakeMap; the downstream assets and the footprint polygon survive;
+9. **the GeoParquet round trip** is exact for both the Gorkha and the Chamoli exposure records, and
+   the file's key-value metadata still carries the susceptibility label.
 
 The `unconditioned` agreement is **reported, never asserted**. A gate that asserted a poor number
-would make the poor number look intentional; a gate that hid it would be worse.
+would make the poor number look intentional; a gate that hid it would be worse. The same rule
+applies to every scenario number in check 8: the observed values are printed each run, and only the
+bands and the structural facts are asserted.
 
 ---
 
@@ -370,18 +484,29 @@ Read this section before using anything in this layer.
    the link round trip. There is no independent falsifiable check on the landslide coefficients
    comparable to the liquefaction admissibility band, because the lithology and land-cover terms
    are unbounded above.
-5. **One event, one window.** The reproduction is Gorkha only, over 84.0–86.5 E / 26.3–28.0 N.
-   Nothing here says how the implementation behaves for a different tectonic setting, magnitude
-   range, or ShakeMap version.
+5. **One event, one window — and one scenario with no answer to check against.** The reproduction
+   against a published product is Gorkha only, over 84.0–86.5 E / 26.3–28.0 N. The second region
+   the brief names, Chamoli / Ronti, is a **scenario**: the 2021 disaster there was not
+   earthquake-triggered, no ShakeMap and no published ground-failure product exist for the
+   catchment, and rupture holds no published rupture model or Vs30 raster for the Garhwal
+   Himalaya. §3.5 runs the scenario route end to end over that region and asserts what can fail;
+   it establishes no agreement with any published product, and its numbers must not be quoted as
+   validation. Nothing here says how the implementation behaves for a different tectonic setting,
+   magnitude range, or ShakeMap version.
 6. **The interaction sign is unresolved** (§1.4). If the operational `+0.01` is wrong, the
    landslide model is wrong wherever slope is sourced — which is nowhere today, so it currently
    changes nothing, and it will matter the moment slope arrives.
 7. **Uncertainty is not propagated.** The USGS publishes a standard-deviation raster per model and
    rupture computes none. `GroundFailureCell` has no uncertainty field and the layer makes no
    interval claim.
-8. **The exposure product is one polygon.** Until serac exports `slope-unit.v0`, the co-seismic
-   avalanche layer for an AOI is a single source-zone unit with null terrain and both terrain
-   screens unapplied. It demonstrates the contract; it is not an inventory.
+8. **The exposure product is one polygon per AOI.** Until serac exports `slope-unit.v0`, the
+   co-seismic avalanche layer for an AOI is a single source-zone unit with null terrain and both
+   terrain screens unapplied — for `lhende-khola-trishuli` and for `chamoli-rishiganga` alike. It
+   demonstrates the contract and now carries real geometry into a GeoParquet a GIS can overlay; it
+   is still not an inventory, and the "glacierised steep slope units" filter the mechanism is
+   about **cannot fire on any real unit** until serac publishes terrain attributes. rupture holds
+   no copy of serac's `slope-unit.v0` schema under `contracts/` either, so the export parser is
+   written against an uncommitted contract.
 9. **`settlements_below` means corridor membership**, not a verified elevation relation (§4).
 10. **The threshold is a screening device.** 0.02 g is the floor of a published *landslide* model,
     applied to an *ice/rock avalanche* mechanism for want of anything better. It is not a release
@@ -392,3 +517,50 @@ Read this section before using anything in this layer.
 12. **Aggregate statistics are not reproduced.** The USGS publishes aggregate hazard (km²) and
     population exposure per event. rupture computes neither, so its output cannot be compared to
     the product's alert levels.
+13. **The scenario rupture is hypothetical in every parameter.** Its geometry is adopted from
+    central Nepal, its extent and depth are modelling choices, its Vs30 is one assumed reference
+    value, and its magnitude — though computed rather than chosen — is computed from assumed
+    inputs. `hypothetical=True` and the assumption list travel in the record. It is not a forecast
+    and not a statement that an event of this size occurs beneath that catchment.
+14. **No learned model is trained, shipped or scored.** §9 is a hook and nothing more.
+15. **`fetch-shakemap` has not been run against the live USGS API in this environment.** Its URL
+    selection, provenance record and every failure path are exercised offline with an injected
+    fetcher; the networked call itself is untested here.
+
+---
+
+## 9. The learned-model hook — documented, not trained
+
+The brief asks for a documented hook for a learned global earthquake-triggered landslide model as
+the v1 candidate, and asks that it **not** be trained. Decision:
+[ADR-0042](adr/0042-learned-ground-failure-hook.md); code: `src/rupture/cascade/learned.py`.
+
+**rupture trains nothing here.** Nothing in this repository is fitted on a landslide inventory, no
+weights are shipped, and no learned model is scored. `LearnedGroundFailureModel` raises
+`NotImplementedError` on construction, and the reserved id `learned_global_landslide_v1` is
+deliberately **absent** from `MODEL_CLASSES` and `ALIASES`, so `build()` refuses it. A registered
+stub returning zeros would be an untrained model shipping with a susceptibility record attached.
+
+What an implementation owes, asserted by `tests/unit/cascade/test_learned_hook.py`:
+
+1. satisfy `rupture.ports.cascade.CascadeModel` — `model_id`, `model_version`, `source_refs`, and
+   `evaluate(field, *, scenario_id) -> GroundFailureField`;
+2. emit a `GroundFailureField` whose cells are in `[0, 1]`, whose `provenance` names the weights
+   (source, URL, sha256, licence), and whose `notes` still carry the susceptibility label;
+3. name every covariate it consumes — `rupture.cascade.covariates`' rule is unchanged: sourced with
+   provenance, or absent and declared. Silent imputation is not admissible;
+4. ship or fetch weights with provenance; weights are data and obey the data rules;
+5. obey [ADR-0022](adr/0022-leakage-engineering-for-learned-models.md) **if it is fitted or
+   fine-tuned in this repository** — training events disjoint from scoring events, half-open
+   cutoffs, the assertion in the test that fits it. (Evaluating a model fitted elsewhere carries no
+   cutoff, which is why the two incumbents carry none.);
+6. be scored by the same code on the same targets — `adapters.cascade.reproduction` against the
+   published Gorkha rasters and `adapters.cascade.chamoli` on the scenario route — and report the
+   same comparisons;
+7. be registered under its own id, and take the `landslide` alias only after it beats the incumbent
+   on those targets.
+
+**rupture does not name the paper.** The brief identifies the candidate as the 2025 deep-learning
+earthquake-triggered landslide model; this implementation does not have its primary source and will
+not restate a citation it has not read — the same rule §1.4 applies to the interaction sign. The
+implementer commits the citation, the weights and the licence with the code.

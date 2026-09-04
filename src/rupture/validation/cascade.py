@@ -21,6 +21,18 @@ What it checks, and what each check is worth:
    ``contracts/ground-failure-field.v0.json``.
 6. **Probabilities.** Every emitted probability is finite and in ``[0, 1]``.
 7. **Label.** Every emitted record still carries the susceptibility caveat.
+8. **The scenario route (Chamoli / Ronti).** The non-ShakeMap half of the layer's input contract:
+   a documented hypothetical rupture beneath serac's ``chamoli-rishiganga`` AOI, through the
+   verified native GSIM, into both ground-failure models and the slope-unit overlay. There is no
+   published product for this region to compare against and the gate does not pretend otherwise
+   (see :mod:`rupture.adapters.cascade.chamoli`); what it asserts is what can actually fail —
+   the rupture is marked hypothetical, the fields land in a stated plausible band rather than a
+   factor of 100 out, the Vs30 mask fires where the assumed site condition says it must, the
+   exposure is driven by the GSIM field and not silently by the Gorkha ShakeMap, and every
+   caveat survives.
+9. **GeoParquet round trip.** The exposure record written by
+   :func:`rupture.adapters.cascade.geoparquet.write_cascade_exposure` reads back equal, with its
+   label and provenance in the file's key-value metadata.
 """
 
 from __future__ import annotations
@@ -28,13 +40,19 @@ from __future__ import annotations
 import hashlib
 import json
 import re
+import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
 
 import jsonschema
 import numpy as np
 
-from rupture.adapters.cascade import gorkha
+from rupture.adapters.cascade import chamoli, gorkha
+from rupture.adapters.cascade.geoparquet import (
+    exposure_metadata,
+    read_cascade_exposure,
+    write_cascade_exposure,
+)
 from rupture.adapters.cascade.reproduction import Comparison
 from rupture.adapters.cascade.serac import (
     DEFAULT_PGA_THRESHOLD_G,
@@ -44,7 +62,9 @@ from rupture.adapters.cascade.serac import (
 from rupture.adapters.catalogs.comcat import parse_comcat_geojson
 from rupture.cascade import coefficients as coef
 from rupture.cascade import discriminator
+from rupture.cascade.coefficients import ZHU_2017_GENERAL
 from rupture.domain import contracts
+from rupture.domain.cascade import CascadeExposure, GroundFailureField
 from rupture.domain.catalog import Bounds, Catalog
 from rupture.domain.common import Provenance
 from rupture.domain.event import EventType
@@ -71,6 +91,20 @@ value is always printed, so a drift shows up even while the gate passes.
 """
 
 SUSCEPTIBILITY_MARKER = "susceptibility"
+
+SCENARIO_PGA_BAND_G = (0.02, 2.0)
+"""Plausible band for the median PGA of the Chamoli scenario, in g.
+
+Not a validation of the ground motion — the GSIM is verified against OpenQuake's own expected
+values elsewhere (ADR-0020) — but a band a units error cannot survive. A moderate rupture directly
+beneath the site cannot give a median below 2 %g (the floor the landslide model itself declines to
+evaluate under) and 2 g would be far outside anything a GSIM of this class returns at this
+magnitude. Reporting the observed value every run means a drift is visible while the gate passes.
+"""
+
+SCENARIO_PGV_BAND_CM_S = (1.0, 300.0)
+"""Same idea for PGV, cm/s. The Zhu clip is 150 cm/s and the Nowicki Jessee clip 211 cm/s, so a
+value above 300 would mean the field was handed over in the wrong unit."""
 
 
 def catalog_from_comcat_geojson(path: Path) -> Catalog:
@@ -210,6 +244,163 @@ def _check_coefficient_provenance(repo_root: Path, findings: list[str]) -> bool:
             )
             ok = False
     return ok
+
+
+def _check_scenario_route(
+    repo_root: Path, findings: list[str]
+) -> tuple[CascadeExposure | None, GroundFailureField | None, bool]:
+    """The Chamoli / Ronti scenario route: GSIM shaking, both models, the slope-unit overlay.
+
+    Returns the exposure record and the landslide field it produced, so the caller can put them
+    through the contract and the GeoParquet round trip, plus whether anything failed.
+    """
+    ok = True
+    rupture_model = chamoli.scenario_rupture(repo_root)
+    window = chamoli.aoi_window(repo_root)
+    findings.append(
+        f"scenario {rupture_model.id}: Mw {rupture_model.magnitude:.2f}, "
+        f"hypothetical={rupture_model.hypothetical}, window "
+        f"{window.min_longitude:.3f}-{window.max_longitude:.3f} E / "
+        f"{window.min_latitude:.3f}-{window.max_latitude:.3f} N at {window.cell_size_deg:.6f} deg"
+    )
+    findings.append(
+        "scenario: no published ground-failure product exists for this region, so nothing here "
+        "is compared against a published answer; what is asserted is the route, the bands and "
+        "the caveats (docs/CASCADE.md section 3.5)"
+    )
+    if not rupture_model.hypothetical:
+        findings.append(
+            f"{rupture_model.id} is not marked hypothetical; rupture holds no published rupture "
+            f"model for this catchment and must not imply one"
+        )
+        ok = False
+
+    pgv_field, pga_field = chamoli.ground_motion_fields(
+        repo_root, window=window, rupture=rupture_model
+    )
+    pga_values = pga_field.median()
+    pgv_values = pgv_field.median()
+    pga_median = float(np.median(pga_values))
+    pgv_median = float(np.median(pgv_values))
+    findings.append(
+        f"scenario shaking ({pga_field.engine.value} / {pga_field.gsim}): median PGA "
+        f"{pga_median:.4f} g (range {pga_values.min():.4f}-{pga_values.max():.4f}), median PGV "
+        f"{pgv_median:.3f} cm/s (range {pgv_values.min():.3f}-{pgv_values.max():.3f}), "
+        f"{len(pga_field.sites)} sites at an assumed Vs30 of {chamoli.ASSUMED_VS30_M_S:g} m/s"
+    )
+    if not SCENARIO_PGA_BAND_G[0] <= pga_median <= SCENARIO_PGA_BAND_G[1]:
+        findings.append(
+            f"scenario median PGA {pga_median:.4f} g is outside the plausible band "
+            f"{SCENARIO_PGA_BAND_G}; a unit or a geometry is wrong"
+        )
+        ok = False
+    if not SCENARIO_PGV_BAND_CM_S[0] <= pgv_median <= SCENARIO_PGV_BAND_CM_S[1]:
+        findings.append(
+            f"scenario median PGV {pgv_median:.3f} cm/s is outside the plausible band "
+            f"{SCENARIO_PGV_BAND_CM_S}; a unit is wrong"
+        )
+        ok = False
+
+    landslide = chamoli.model_for("landslide", cell_size_deg=window.cell_size_deg).evaluate(
+        pgv_field,
+        scenario_id=chamoli.SCENARIO_ID,
+        pga_field=pga_field,
+        magnitude=rupture_model.magnitude,
+    )
+    coverage = np.array([c.probability for c in landslide.cells], dtype=np.float64)
+    findings.append(
+        f"scenario landslide field: {coverage.size} cells, areal coverage "
+        f"{coverage.min():.4f}-{coverage.max():.4f} (mean {coverage.mean():.4f}), "
+        f"UNCONDITIONED — no static covariate is sourced here either"
+    )
+    if not np.all(np.isfinite(coverage)) or coverage.min() < 0.0 or coverage.max() > 1.0:
+        findings.append("scenario landslide coverage is not finite in [0, 1]")
+        ok = False
+    if "INCOMPLETE" not in (landslide.notes or ""):
+        findings.append(
+            "the scenario landslide field stopped declaring its static covariates incomplete"
+        )
+        ok = False
+
+    liquefaction = chamoli.model_for(
+        ZHU_2017_GENERAL.model_id, cell_size_deg=window.cell_size_deg
+    ).evaluate(
+        pgv_field,
+        scenario_id=chamoli.SCENARIO_ID,
+        pga_field=pga_field,
+        magnitude=rupture_model.magnitude,
+    )
+    liquefaction_coverage = np.array([c.probability for c in liquefaction.cells], dtype=np.float64)
+    expected_mask = f"mask vs30_m_s: {liquefaction_coverage.size} cells zeroed"
+    findings.append(
+        f"scenario liquefaction field: every cell masked by vs30max at the assumed rock Vs30 "
+        f"(max coverage {liquefaction_coverage.max():.4f}) — the published model declining to "
+        f"speak about a rock-site mountain catchment, which is the right answer here"
+    )
+    if liquefaction_coverage.max() != 0.0 or expected_mask not in (liquefaction.notes or ""):
+        findings.append(
+            f"the Zhu vs30max mask did not fire on the scenario route: expected "
+            f"'{expected_mask}', max coverage {liquefaction_coverage.max()}"
+        )
+        ok = False
+
+    source = SeracSlopeUnitSource(repo_root=repo_root)
+    exposure = source.exposure(
+        pga_field,
+        aoi_id=chamoli.AOI_ID,
+        pga_threshold_g=DEFAULT_PGA_THRESHOLD_G,
+        scenario_id=chamoli.SCENARIO_ID,
+    )
+    findings.append(
+        f"scenario exposure: {len(exposure.units)} slope unit(s) for {exposure.aoi_id} from "
+        f"{exposure.slope_unit_source}; {exposure.n_exceeding} above "
+        f"{exposure.pga_threshold_g:g} g; receptors below: "
+        f"{', '.join(exposure.units[0].assets_below) if exposure.units else 'none'}"
+    )
+    if exposure.shaking_source != pga_field.id or exposure.scenario_id != chamoli.SCENARIO_ID:
+        findings.append(
+            f"the scenario exposure was not driven by the scenario field: shaking_source "
+            f"{exposure.shaking_source!r}, scenario {exposure.scenario_id!r}"
+        )
+        ok = False
+    if not any(u.assets_below for u in exposure.units):
+        findings.append(
+            "the scenario exposure lost the downstream assets serac maps for this AOI (the two "
+            "hydropower projects); the mechanism's receptors are the point of the record"
+        )
+        ok = False
+    if not all(u.polygon for u in exposure.units):
+        findings.append(
+            "a scenario exposure unit carries no footprint polygon, so the GeoParquet output "
+            "would have nothing to overlay"
+        )
+        ok = False
+    return exposure, landslide, ok
+
+
+def _check_geoparquet(exposure: CascadeExposure, findings: list[str]) -> bool:
+    """Write the exposure as GeoParquet and read it back; it must be the same record."""
+    with tempfile.TemporaryDirectory(prefix="rupture-cascade-gate-") as tmp:
+        path = write_cascade_exposure(exposure, Path(tmp) / "cascade_exposure.parquet")
+        size = path.stat().st_size
+        metadata = exposure_metadata(path)
+        restored = read_cascade_exposure(path)
+    if restored != exposure:
+        findings.append(
+            "the CascadeExposure GeoParquet round trip is not exact; the written file is not the "
+            "record"
+        )
+        return False
+    if SUSCEPTIBILITY_MARKER not in metadata.get("rupture:label", ""):
+        findings.append("the GeoParquet key-value metadata lost the susceptibility label")
+        return False
+    findings.append(
+        f"GeoParquet: {len(exposure.units)} unit row(s), {size} bytes, EPSG:4326, round trip "
+        f"exact; metadata carries scenario {metadata.get('rupture:scenario_id')}, threshold "
+        f"{metadata.get('rupture:pga_threshold_g')} g, source "
+        f"{metadata.get('rupture:slope_unit_source')} and the susceptibility label"
+    )
+    return True
 
 
 def run(repo_root: Path) -> GateResult:  # noqa: PLR0912, PLR0915
@@ -394,6 +585,27 @@ def run(repo_root: Path) -> GateResult:  # noqa: PLR0912, PLR0915
     if SUSCEPTIBILITY_MARKER not in exposure.label:
         findings.append("the cascade exposure lost its susceptibility label")
         failed = True
+
+    # ------------------------------------------------- the scenario route + GeoParquet output
+    scenario_exposure, scenario_field, scenario_ok = _check_scenario_route(repo_root, findings)
+    failed |= not scenario_ok
+    if scenario_field is not None:
+        jsonschema.validate(
+            scenario_field.model_dump(mode="json"),
+            contracts.schema_for("ground-failure-field.v0.json"),
+        )
+        findings.append(
+            "scenario ground-failure field: validates against "
+            "contracts/ground-failure-field.v0.json"
+        )
+    if scenario_exposure is not None:
+        jsonschema.validate(
+            scenario_exposure.model_dump(mode="json"),
+            contracts.schema_for("cascade-exposure.v0.json"),
+        )
+        findings.append("scenario exposure: validates against contracts/cascade-exposure.v0.json")
+        failed |= not _check_geoparquet(scenario_exposure, findings)
+    failed |= not _check_geoparquet(exposure, findings)
 
     return GateResult(
         name=GATE_NAME,

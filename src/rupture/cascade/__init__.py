@@ -13,11 +13,15 @@ Layout:
     Static conditioning factors, and the rule that an unavailable covariate is a declared gap.
 ``models``
     Nowicki Jessee et al. (2018) landslide and Zhu et al. (2017) liquefaction.
-``exposure``
-    Overlay of a scenario ground-motion field on slope units, for the co-seismic ice/rock
-    avalanche mechanism.
+``learned``
+    The documented, deliberately unimplemented hook for a learned global model (ADR-0042).
 ``discriminator``
     Client for the ``SourceTypeAssessment`` file contract shared with the sibling ``serac``.
+
+The exposure overlay is **not** in this package: it needs serac's files, so it lives with the
+adapters, in ``rupture.adapters.cascade.serac`` (units and the overlay),
+``rupture.adapters.cascade.chamoli`` (the scenario case) and
+``rupture.adapters.cascade.geoparquet`` (the published output format).
 """
 
 from rupture.cascade.coefficients import (

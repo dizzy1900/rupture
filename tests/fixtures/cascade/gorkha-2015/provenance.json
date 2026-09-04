@@ -11,7 +11,7 @@
   },
   "licence": "public-domain (USGS)",
   "adapter_version": "0.1.0",
-  "rule": "never edited by hand; regenerate with `rupture cascade refresh-fixtures` and re-record provenance",
+  "rule": "never edited by hand; re-cut from the source URLs recorded per file below with the window in window_4326, and re-record every sha256. rupture ships no offline command that can regenerate these slices: the parent ShakeMap grid and ground-failure rasters are network products. `rupture cascade fetch-shakemap --event us20002926` refetches the parent grid.xml; the two coverage slices are cut from the published GeoTIFFs by hand.",
   "why": "Offline slices of the real USGS ShakeMap and the real USGS ground-failure product for Gorkha, so the reproduction comparison in docs/CASCADE.md and the validate-cascade gate run with no network. The CSVs carry the original cell values verbatim; nothing is interpolated, smoothed or synthesised.",
   "retrieved_at": "2026-09-03T20:16:15+00:00",
   "window_4326": {

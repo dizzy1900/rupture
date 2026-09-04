@@ -24,7 +24,7 @@
     },
     "ExposedSlopeUnit": {
       "additionalProperties": false,
-      "description": "A slope unit flagged as shaken above a threshold. Fields mirror serac's `slope-unit.v0`.",
+      "description": "A slope unit flagged as shaken above a threshold. Fields mirror serac's `slope-unit.v0`.\n\nThe unit carries its own footprint (`polygon`, an exterior ring in EPSG:4326) so a\n:class:`CascadeExposure` can be written as GeoParquet and overlaid in a GIS. `polygon` is\nempty when the slope-unit source carries no geometry, which is a statement about the source,\nnot a licence to invent one. `representative_longitude` / `representative_latitude` are the\npoint at which `pga_g` was actually sampled.",
       "properties": {
         "id": {
           "title": "Id",
@@ -109,6 +109,53 @@
           "default": null,
           "title": "Area M2"
         },
+        "polygon": {
+          "default": [],
+          "description": "Exterior ring of the unit's footprint, (lon, lat) degrees, EPSG:4326.",
+          "items": {
+            "maxItems": 2,
+            "minItems": 2,
+            "prefixItems": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "number"
+              }
+            ],
+            "type": "array"
+          },
+          "title": "Polygon",
+          "type": "array"
+        },
+        "representative_longitude": {
+          "anyOf": [
+            {
+              "maximum": 180.0,
+              "minimum": -180.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Representative Longitude"
+        },
+        "representative_latitude": {
+          "anyOf": [
+            {
+              "maximum": 90.0,
+              "minimum": -90.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Representative Latitude"
+        },
         "pga_g": {
           "description": "Ground motion received at the unit.",
           "minimum": 0.0,
@@ -125,6 +172,15 @@
             "type": "string"
           },
           "title": "Settlements Below",
+          "type": "array"
+        },
+        "assets_below": {
+          "default": [],
+          "description": "Ids of the non-settlement assets the slope-unit source maps in the same corridor (hydropower, roads, bridges). Corridor membership, not a verified elevation relation.",
+          "items": {
+            "type": "string"
+          },
+          "title": "Assets Below",
           "type": "array"
         },
         "source_refs": {
@@ -191,6 +247,19 @@
       "description": "Where the inventory came from, e.g. serac export.",
       "title": "Slope Unit Source",
       "type": "string"
+    },
+    "shaking_source": {
+      "anyOf": [
+        {
+          "type": "string"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Id of the GroundMotionField the PGA was sampled from: a published ShakeMap grid or a GSIM-computed scenario field. Null only for a record built before this field existed.",
+      "title": "Shaking Source"
     },
     "provenance": {
       "$ref": "#/$defs/ModelProvenance",
