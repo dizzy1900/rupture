@@ -14,7 +14,8 @@ Decisions: ADR-0008 (source models per region), ADR-0011 (pinned image), ADR-003
 | `adapters/hazard/openquake_docker.py` — `OpenQuakeDocker` (`HazardEngine`) | working offline with an injected fake `docker`; the real container path is verified in CI, not on this machine (see "Why the gate skips on Apple Silicon") |
 | `run_bundled_demo`, `validate-hazard`, `rupture hazard demo` | **verified in CI**: the demo ran through the adapter in `openquake/engine:3.26.2` on `ubuntu-latest` (run 33744626791, 2026-09-03; gate 86 s, integration test 85 s) with `RUPTURE_HAZARD_REQUIRE=1` so a skip would have failed the job |
 | `run_scenario` | implemented from the manual; no test or CI run exercises it |
-| `rupture hazard classical` + `infra/jobs/examples/turkiye-eaf-classical.json` | code complete; the ESHM20 job has **not** been run and its input file names are unconfirmed |
+| `run_classical` on a rupture-rendered `job.ini` | **exercised against the real engine in CI**: `tests/integration/hazard/test_openquake_classical.py` runs the engine's own QA case `classical/case_01` through `ClassicalPSHAJob` → `job_builder` → container → `result_parser` and checks the PoEs against GEM's committed baseline. Before it, no ini rupture rendered had ever been read by OpenQuake — only the bundled demo's own ini had. |
+| `pipelines.hazard.eshm20_classical_job` — ESHM20 → runnable `ClassicalPSHAJob` | working; both logic-tree paths and the provenance come from `data/raw/eshm20/manifest.json`, the region cut from the `turkiye-eaf` polygon. Verified offline to resolve all 51 source-model files the ESHM20 logic tree names. The PSHA itself has **not** been run. |
 | California, Nepal PSHA | gaps (ADR-0008): no openly licensed NRML model verified |
 
 ## Design
@@ -63,6 +64,14 @@ reference_vs30_value, reference_depth_to_2pt5km_per_sec = 5.0, reference_depth_t
 source_model_logic_tree_file, gsim_logic_tree_file, investigation_time,
 intensity_measure_types_and_levels` (JSON dict), `truncation_level, maximum_distance`;
 `[output] export_dir = out, mean = true, hazard_maps = false, uniform_hazard_spectra = false`.
+
+The `[erf]` and basin-depth `[site_params]` values are not fields of `ClassicalPSHAJob` — they
+trade accuracy against runtime for a given engine and machine rather than describing the hazard
+question — so they are settings of the **runner**: `OpenQuakeDocker(erf=ErfSettings(...),
+site=SiteDepthSettings(...))`. Both default to the bundled demo's values, which is what every run
+before they were configurable used implicitly. A real source model such as ESHM20 is expected to
+need a coarser `rupture_mesh_spacing` / `area_source_discretization` for a first pass than for a
+published run; whichever is used is visible in the staged `job.ini` and inside `job_hash`.
 
 Scenario (`calculation_mode = scenario`): `[geometry] sites_csv`; `[rupture] rupture_model_file,
 rupture_mesh_spacing = 2.0`; `[site_params]` as above; `[calculation] intensity_measure_types,
@@ -140,32 +149,83 @@ The work directory holds `job.ini`, the demo inputs, `out/hazard_curve-mean-*.cs
 `hazard-curve-set.json` and `oq.log`. `RUPTURE_HAZARD_WORK_DIR` makes the gate keep its work
 directory (CI uses this for artifact upload).
 
-## A coarse classical PSHA for `turkiye-eaf` from ESHM20 — what it needs (not run)
+## A coarse classical PSHA for `turkiye-eaf` from ESHM20 (built, not run)
 
-`infra/jobs/examples/turkiye-eaf-classical.json` is the `ClassicalPSHAJob`:
-a 0.2° grid (`region_grid_spacing_km = 20.0`, about 0.2° at 36–40° N) over the bounding box
-`POLYGON((35.5 35.5, 42.0 35.5, 42.0 40.0, 35.5 40.0, 35.5 35.5))` — an approximation of the
-East Anatolian Fault zone from Karlıova to the Hatay region, to be replaced by the bounding box of
-the `turkiye-eaf` polygon in `data/regions/` once merged — `investigation_time_years = 50`,
-PGA / SA(0.3) / SA(1.0), `maximum_distance_km = 300`, full logic-tree enumeration.
+ESHM20 is the one region with a verified openly licensed OpenQuake model (ADR-0008). The job that
+uses it is **derived from the fetched model, not written by hand**:
+
+```python
+from rupture.pipelines import hazard
+from rupture.pipelines.io import load_region
+
+job = hazard.eshm20_classical_job(load_region("data/regions/turkiye-eaf"))
+hazard.write_classical_job(job, "reports/hazard/turkiye-eaf/job.json")
+```
+
+`eshm20_classical_job` reads `data/raw/eshm20/manifest.json` — the file
+`adapters/sources/openquake_sources.py` writes when it fetches — and takes both logic-tree paths,
+the pinned commit, the licence and the citation from it. It cannot name a file the adapter did not
+produce, which is the failure it exists to prevent: the earlier hand-written example pointed at
+`data/raw/oq_sources/eshm20/source_model_logic_tree.xml` and `gmm_logic_tree.xml`, a directory that
+never existed, and two documents repeated the wrong names. The real paths are
+
+```
+data/raw/eshm20/oq_computational/oq_configuration_eshm20_v12e_region_main/
+    source_model_logic_tree_eshm20_model_v12e.xml
+    gmpe_complete_logic_tree_5br.xml
+```
+
+and that logic tree names 51 further source-model XML files under `source_models/`, which the
+runner stages by their relative names.
+
+The region is the **`turkiye-eaf` polygon itself** (the eight-vertex EAF corridor), not a bounding
+box: OpenQuake's `region` key takes an arbitrary simple polygon, and a bounding box would compute
+hazard over sites the region record does not claim. Defaults: 20 km grid, 50-year investigation
+time, PGA / SA(0.3) / SA(1.0), `maximum_distance_km = 300`, full logic-tree enumeration.
 
 To run it:
 
-1. `adapters/sources/openquake_sources.py` (catalog-engineer, ADR-0008) fetches the ESHM20
-   source model and logic-tree NRML files under `data/raw/oq_sources/eshm20/` with provenance.
-   The example points at `source_model_logic_tree.xml` and `gmm_logic_tree.xml` in that
-   directory; **these names are placeholders** until the adapter's output is known — set them to
-   the real file names (the ESHM20 release ships one source-model logic tree and one GMM logic
-   tree, each referencing further XML files that the adapter copies by their relative names).
-2. `uv run rupture hazard classical --job infra/jobs/examples/turkiye-eaf-classical.json
-   --work-dir reports/hazard/turkiye-eaf` on a machine with Docker. ESHM20's full logic tree is
-   large; expect hours, not minutes, at this resolution and consider
+1. Fetch the model (network, ~40 MB): `openquake_sources.fetch_eshm20()`. A fresh clone has only
+   the committed `manifest.json`; the NRML files are neither committed nor DVC-tracked, so this
+   step is required and `verify_manifest()` then confirms every sha256 against what was first
+   retrieved.
+2. `pipelines.hazard.missing_classical_inputs(job)` must be empty — `run_classical` refuses
+   before starting a container otherwise.
+3. `uv run rupture hazard classical --job reports/hazard/turkiye-eaf/job.json --work-dir
+   reports/hazard/turkiye-eaf` on a machine with Docker (amd64). ESHM20's full logic tree is
+   large; expect hours, not minutes, at this resolution, and consider
    `number_of_logic_tree_samples > 0` for a first pass (an ADR if it becomes the published run).
-3. The result is `reports/hazard/turkiye-eaf/hazard-curve-set.json` conforming to
+4. The result is `reports/hazard/turkiye-eaf/hazard-curve-set.json` conforming to
    `contracts/hazard-curve-set.v0.json`.
 
-This has **not** been run in Prompt 1. Nepal and California have no openly licensed NRML model
-(ADR-0008); no PSHA is produced for them and no substitute model is used.
+**This has not been run.** What has been verified, offline on a clone with the model fetched, is
+that the job resolves every one of the 53 files it names and renders a `job.ini` the builder
+accepts; what has been verified in CI is that a rupture-rendered classical `job.ini` of the same
+shape is accepted by the engine and reproduces GEM's own QA answer (see below). No engine has read
+the ESHM20 ini itself. Nepal and California have no openly licensed NRML model (ADR-0008); no PSHA
+is produced for them and no substitute model is used.
+
+`infra/jobs/examples/turkiye-eaf-classical.json` and `infra/jobs/oq-classical.yaml` still carry the
+old placeholder paths; correcting them belongs to the owner of `infra/`, and the generated job
+above is the authoritative description in the meantime.
+
+## The classical path against the real engine
+
+`tests/integration/hazard/test_openquake_classical.py` (CI job `hazard-integration`) builds a
+`ClassicalPSHAJob` from `tests/fixtures/hazard/qa_classical_case_01` — GEM's own QA case: one point
+source, four sites, `investigation_time = 1.0`, three levels for PGA and SA(0.1) — runs it through
+`OpenQuakeDocker.run_classical` and compares the parsed `HazardCurveSet` with the `expected/` curves
+shipped in `gem/oq-engine`. It therefore checks the whole rupture-authored half at once: the key
+names, the geometry, the JSON `intensity_measure_types_and_levels`, staging the source models the
+logic tree names, the export key, and the CSV parse back.
+
+One difference from the fixture's own `job.ini` is deliberate: the fixture lists four inline
+`sites`, while `ClassicalPSHAJob` takes a `sites_csv`. The CSV is written **headerless**
+(`lon,lat,depth` per line) because the engine keeps the depth column on that path and drops it when
+a `lon` header is present; the QA sites sit at -0.1 km and a site 100 m higher moves the near-source
+PoEs by about a per cent, more than the 1e-3 relative tolerance the test uses. The runner is
+constructed with the fixture's own ERF and site settings so that any difference in the curves is a
+difference in what rupture rendered.
 
 ## Fixtures
 
