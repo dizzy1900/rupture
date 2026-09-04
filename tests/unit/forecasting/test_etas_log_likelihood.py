@@ -2,7 +2,7 @@
 
 The brief requires the log-likelihood to be persisted with the parameters and diagnostics. The
 ``etas`` package exposes only the EM's expected complete-data objective, so the adapter assembles
-the observed-data likelihood itself (``point_process_log_likelihood``, ADR-0036). These tests are
+the observed-data likelihood itself (``point_process_log_likelihood``, ADR-0046). These tests are
 the evidence that the assembly is the right one; they do not merely check that a float is stored.
 
 Everything here runs offline on the committed ComCat slice.

@@ -38,7 +38,7 @@ never re-parametrised.
   `theta_0`, the etas commit.
 
 `log_likelihood` is the space-time ETAS log-likelihood of the primary window at the fitted
-parameters (ADR-0036). The `etas` package exposes only the EM's expected complete-data objective —
+parameters (ADR-0046). The `etas` package exposes only the EM's expected complete-data objective —
 a Q function defined relative to the current responsibilities, so not comparable across cut-offs or
 regions — but every piece of the observed-data likelihood is produced by its own expectation step,
 and `point_process_log_likelihood` assembles them:
@@ -53,7 +53,7 @@ LL = sum_i (zeta_i + 1) log lambda(t_i, x_i, y_i)  -  mu * area * T  -  sum_j (x
 `background_integral`, `triggering_integral`) with `n_targets` and `n_sources`, so a reader can see
 which part of a fit moved. What the number is conditional on — the auxiliary catalogue, fixed
 `beta` (no magnitude term), and no spatial boundary correction, matching the package's own EM
-objective — is in ADR-0036; two values are comparable when the region, `mc`, `delta_m` and window
+objective — is in ADR-0046; two values are comparable when the region, `mc`, `delta_m` and window
 agree, and not otherwise. At an EM optimum `background_integral + triggering_integral` equals the
 completeness-weighted target count, which is the sharpest check on the assembly and is asserted in
 `tests/unit/forecasting/test_etas_log_likelihood.py`.
@@ -173,7 +173,7 @@ refits never destroy the fit its own DVC stage declares.
 `omega` is the Omori exponent offset (`p = 1 + omega`); `beta = b ln 10`.
 
 The log-likelihood row was **not** produced by a refit. These three fits were made on 2026-09-03,
-before ADR-0036, and their `fit_result.json` files on disk still carry `log_likelihood: null`. The
+before ADR-0046, and their `fit_result.json` files on disk still carry `log_likelihood: null`. The
 values above were computed on 2026-09-04 with `MizrahiETAS.log_likelihood(catalog)`, which rebuilds
 each fit's own window from its diagnostics, runs one expectation step at the stored parameters and
 **refuses unless the reconstructed training slice hashes to the fit's `training_catalog_hash`** — so
@@ -214,7 +214,7 @@ converged fit used `--max-seconds 21600`.
   forecast with pre-sequence parameters. The fixture shows this: fitted to mid-2019, the model
   puts ~1.2 events at M ≥ 3.95 on the 30 days that contain Ridgecrest (123 observed); the N-test
   fails, as it should.
-- **The log-likelihood has no spatial boundary correction and no magnitude term** (ADR-0036), so
+- **The log-likelihood has no spatial boundary correction and no magnitude term** (ADR-0046), so
   it ranks fits of the same region, `mc` and window against each other and nothing else. It is not
   a model-selection score against a challenger: paired comparison is the evaluator's T- and W-tests
   on gridded rates (ADR-0010).

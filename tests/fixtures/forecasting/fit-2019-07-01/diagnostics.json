@@ -13,7 +13,7 @@
   "em_tolerance": 0.001,
   "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
   "iterations": 18,
-  "log_likelihood_note": "space-time ETAS log-likelihood of the primary window at the fitted theta, conditional on the auxiliary catalogue; magnitudes excluded (fixed beta); no spatial boundary correction, matching the package's own EM objective. See point_process_log_likelihood and ADR-0036.",
+  "log_likelihood_note": "space-time ETAS log-likelihood of the primary window at the fitted theta, conditional on the auxiliary catalogue; magnitudes excluded (fixed beta); no spatial boundary correction, matching the package's own EM objective. See point_process_log_likelihood and ADR-0046.",
   "log_likelihood_terms": {
     "background_integral": 63.76508061081213,
     "log_likelihood": -1759.082855649649,

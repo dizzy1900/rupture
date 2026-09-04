@@ -21,7 +21,7 @@
 #
 # STATE OF dvc.lock (2026-09-04): stale, and knowingly so. It records the `fit_etas` command
 # without `--max-seconds 21600`, and its `src/rupture/adapters/forecasting` dependency hash predates
-# the log-likelihood work (ADR-0036), so `dvc status` reports all three fit stages as changed. It
+# the log-likelihood work (ADR-0046), so `dvc status` reports all three fit stages as changed. It
 # cannot be refreshed with `dvc commit` here because the outputs are not in this working tree; it
 # must be refreshed by whoever next runs `dvc repro fit_etas@<region>` with the catalogues in hand.
 # That run will also give the persisted fits the `log_likelihood` field they currently lack.

@@ -99,7 +99,7 @@ EM_TOLERANCE = 0.001  # the package's convergence criterion (summed absolute par
 LL_NOTE = (
     "space-time ETAS log-likelihood of the primary window at the fitted theta, conditional on "
     "the auxiliary catalogue; magnitudes excluded (fixed beta); no spatial boundary correction, "
-    "matching the package's own EM objective. See point_process_log_likelihood and ADR-0036."
+    "matching the package's own EM objective. See point_process_log_likelihood and ADR-0046."
 )
 
 
@@ -180,7 +180,7 @@ def point_process_log_likelihood(calc: Any) -> LogLikelihood:
     (:func:`etas.inversion.neg_log_likelihood`), which is the Q function of the current
     responsibilities and is not comparable across catalogues or cut-offs. What is computed here is
     the ordinary observed-data log-likelihood of the marked point process, built from exactly the
-    conditional intensity the package's own expectation step uses (ADR-0036)::
+    conditional intensity the package's own expectation step uses (ADR-0046)::
 
         lambda(t, x, y) = mu + sum_{j: t_j < t} (xi_j + 1) g(t - t_j, r_ij, m_j)
 
