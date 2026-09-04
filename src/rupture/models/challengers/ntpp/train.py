@@ -38,10 +38,16 @@ HYPERPARAMETERS_FILE = "hyperparameters.json"
 #: The candidate grid. Small on purpose: with a few hundred training events, a wide search buys
 #: variance, not skill, and every extra trial is another chance to launder a lucky fold into a
 #: "chosen" configuration.
+#:
+#: This is the grid that was actually searched for the committed fits — four candidates over
+#: capacity and regularisation, with the temporal basis and background bandwidth left at their
+#: defaults (`baselines/ntpp/<region>/hyperparameters.json` records all four trials). It was once
+#: a sixteen-candidate grid that no committed record could have come from, which made the frozen
+#: evidence unreproducible from the search code; the search that ran is now the search that is
+#: written down. A different grid is passed explicitly to :func:`candidate_configs` and lands in
+#: the frozen record through :attr:`Selection.grid`, so the record always says what was searched.
 DEFAULT_GRID: dict[str, tuple[Any, ...]] = {
     "hidden": (8, 16),
-    "n_time_basis": (4, 8),
-    "background_sigma_km": (5.0, 15.0),
     "weight_decay": (0.0, 1e-3),
 }
 
@@ -147,6 +153,23 @@ class Selection:
     def chosen_hash(self) -> str:
         return self.chosen.config_hash()
 
+    @property
+    def grid(self) -> dict[str, list[Any]]:
+        """The search space, read back off the trials rather than off whatever grid was passed.
+
+        Recording the *argument* would let the record and the search disagree; reading it off the
+        candidates that were actually scored cannot. Every setting that varied across the trials
+        appears here with the values it took.
+        """
+        space: dict[str, list[Any]] = {}
+        configs = [t.config.to_dict() for t in self.trials]
+        for key in sorted({k for c in configs for k in c}):
+            values = [c.get(key) for c in configs]
+            distinct = sorted({v for v in values if v is not None}, key=repr)
+            if len(distinct) > 1:
+                space[key] = distinct
+        return space
+
     def to_dict(self) -> dict[str, Any]:
         return {
             "chosen": self.chosen.to_dict(),
@@ -158,6 +181,7 @@ class Selection:
             "hard_cutoff": self.hard_cutoff.isoformat(),
             "selected_at": self.selected_at.isoformat(),
             "splits": [s.to_dict() for s in self.splits],
+            "grid": self.grid,
             "trials": [t.to_dict() for t in self.trials],
             "rule": (
                 "hyperparameters chosen only on windows ending at or before the hard cutoff "

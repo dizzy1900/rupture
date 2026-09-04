@@ -33,6 +33,7 @@ from rupture.models.challengers.ntpp.schedule import (
     promotion_verdict,
 )
 from rupture.models.challengers.ntpp.train import select_config
+from rupture.models.promotion import pooled_paired_test
 from tests.fixtures.models.loader import FIT_CUTOFF, MC, load_ntpp_fit, load_ntpp_weights
 
 HORIZON = timedelta(days=30)
@@ -40,9 +41,31 @@ FEW = 2
 
 
 def _window(
-    index: int, *, passed: bool, targets: int = 3, gain: float = 0.1, t_passed: bool | None = True
+    index: int,
+    *,
+    passed: bool,
+    targets: int = 3,
+    gain: float = 0.1,
+    t_passed: bool | None = True,
+    advantage: float | None = None,
 ) -> ChallengerWindow:
+    """One scored window.
+
+    ``advantage`` is the challenger's per-event log-rate advantage over the benchmark, recorded as
+    the pooling terms the schedule-pooled paired T-test consumes (ADR-0040). A small deterministic
+    spread is added across events because a test on identical differences has no variance and is
+    undefined — which is itself the behaviour :func:`pooled_paired_test` reports.
+    """
     issue = FIT_CUTOFF + timedelta(days=30 * index)
+    pooling = None
+    if advantage is not None:
+        offsets = [0.05 * (j - targets / 2) for j in range(targets)]
+        pooling = {
+            "log_rates": [advantage + o for o in offsets],
+            "benchmark_log_rates": [0.0 for _ in offsets],
+            "n_forecast": 1.0,
+            "benchmark_n_forecast": 1.0,
+        }
     tests = {
         t.value: {"passed": (passed if targets else None) if t != CsepTest.N else passed}
         for t in (CsepTest.N, CsepTest.M, CsepTest.S, CsepTest.L, CsepTest.CL)
@@ -63,6 +86,7 @@ def _window(
             CsepTest.T.value: {"passed": t_passed, "statistic": gain, "p_value": 0.01},
             CsepTest.W.value: {"passed": t_passed, "statistic": 1.0, "p_value": 0.02},
         },
+        pooling=pooling,
     )
 
 
@@ -106,64 +130,107 @@ def test_comparison_summary_averages_the_information_gain() -> None:
 
 def test_a_short_schedule_cannot_be_promoted_however_good_it_looks() -> None:
     """Protocol § 10 condition 1 has a window count, and it is not negotiable by good scores."""
-    report = _report([_window(i, passed=True) for i in range(4)])
+    report = _report([_window(i, passed=True, advantage=1.0) for i in range(4)])
     verdict = promotion_verdict(report, _baseline_rates(0.0))
     assert verdict["promotable_in_this_region"] is False
     assert any(str(MIN_PROMOTION_WINDOWS) in reason for reason in verdict["reasons_not_promotable"])
 
 
+def test_windows_must_be_consecutive_not_merely_numerous() -> None:
+    """A run of 12, not a count of 12: a schedule with a hole has not run twelve in a row.
+
+    Fourteen windows with the seventh missing has a longest run of seven. Counting rows would call
+    that fourteen and promote on a schedule that never ran twelve windows in a row.
+    """
+    windows = [_window(i, passed=True, advantage=1.0) for i in range(15) if i != 7]
+    verdict = promotion_verdict(_report(windows), _baseline_rates(0.0))
+    assert verdict["condition_1_pass_rates"]["consecutive_windows"] == 7
+    assert verdict["promotable_in_this_region"] is False
+    assert any("consecutive window" in r for r in verdict["reasons_not_promotable"])
+
+
 def test_a_pass_rate_below_the_baseline_fails_condition_one() -> None:
-    report = _report([_window(i, passed=i % 2 == 0) for i in range(14)])
+    report = _report([_window(i, passed=i % 2 == 0, advantage=1.0) for i in range(14)])
     verdict = promotion_verdict(report, _baseline_rates(1.0))
-    assert verdict["condition_1_pass_rates"] is False
-    assert verdict["per_test"]["S"]["at_or_above"] is False
-    assert any("below the baseline" in reason for reason in verdict["reasons_not_promotable"])
+    assert verdict["condition_1_pass_rates"]["met"] is False
+    assert verdict["condition_1_pass_rates"]["per_test"]["S"]["at_least_etas"] is False
+    assert any("below ETAS" in reason for reason in verdict["reasons_not_promotable"])
 
 
 def test_a_negative_information_gain_fails_condition_two() -> None:
-    report = _report([_window(i, passed=True, gain=-0.5, t_passed=False) for i in range(14)])
+    report = _report([_window(i, passed=True, advantage=-0.5) for i in range(14)])
     verdict = promotion_verdict(report, _baseline_rates(0.0))
-    assert verdict["condition_1_pass_rates"] is True
-    assert verdict["condition_2_paired_t"] is False
+    assert verdict["condition_1_pass_rates"]["met"] is True
+    assert verdict["condition_2_paired_t_test"]["met"] is False
     assert verdict["promotable_in_this_region"] is False
 
 
-def test_winning_a_minority_of_windows_does_not_beat_the_baseline() -> None:
-    """A positive mean gain driven by one window is not "beats ETAS in the paired T-test"."""
-    windows = [_window(0, passed=True, gain=20.0, t_passed=True)]
-    windows += [_window(i, passed=True, gain=-0.1, t_passed=False) for i in range(1, 14)]
-    report = _report(windows)
-    assert report["comparison_summary"]["mean_information_gain_per_event"] > 0.0
-    verdict = promotion_verdict(report, _baseline_rates(0.0))
-    assert verdict["t_test_wins"] == 1
-    assert verdict["t_test_windows"] == 14
-    assert verdict["condition_2_paired_t"] is False
-    assert any("won 1 of 14" in r for r in verdict["reasons_not_promotable"])
+def test_the_pooled_test_decides_condition_two_not_a_tally_of_windows() -> None:
+    """ADR-0040: "over those windows" is one test over every target event, not a vote per window.
 
-
-def test_a_w_test_disagreement_is_flagged_when_the_t_test_would_pass() -> None:
-    windows = [_window(i, passed=True, gain=0.5, t_passed=True) for i in range(14)]
-    for w in windows:  # the W-test contradicts the T-test in every window
-        w.comparison["W"]["passed"] = False
+    Here the per-window T-test is recorded as lost in thirteen of fourteen windows while every
+    window's events are in fact placed better than the benchmark's. Under the old per-window
+    majority reading this failed; under the rule as encoded it passes, and the tally is still
+    reported so a reader can see the disagreement.
+    """
+    windows = [_window(i, passed=True, t_passed=False, advantage=1.0) for i in range(14)]
+    windows[0].comparison["T"]["passed"] = True
     verdict = promotion_verdict(_report(windows), _baseline_rates(0.0))
-    assert verdict["condition_2_paired_t"] is True
-    assert verdict["w_test_disagrees"] is True
-    assert any("W-test disagrees" in r for r in verdict["reasons_not_promotable"])
+    assert verdict["condition_2_paired_t_test"]["met"] is True
+    assert verdict["condition_2_paired_t_test"]["per_window_tally"]["t_test_wins"] == 1
+    assert verdict["promotable_in_this_region"] is True
+
+
+def test_an_interval_that_spans_zero_is_not_a_win() -> None:
+    """A positive mean whose interval includes zero has not beaten anything."""
+    windows = [_window(i, passed=True, advantage=(2.0 if i == 0 else -0.1)) for i in range(14)]
+    verdict = promotion_verdict(_report(windows), _baseline_rates(0.0))
+    pooled = verdict["condition_2_paired_t_test"]
+    assert pooled["information_gain_per_event"] > 0.0
+    assert pooled["ig_lower"] < 0.0
+    assert pooled["met"] is False
+
+
+def test_condition_two_is_undecidable_rather_than_passed_without_pooling_terms() -> None:
+    """Evidence that cannot decide the condition fails it, and says which one it could not decide.
+
+    The committed NTPP schedules are exactly this case: they record per-window comparisons but no
+    per-event log rates, so the pooled test cannot be recomputed from them.
+    """
+    verdict = promotion_verdict(
+        _report([_window(i, passed=True) for i in range(14)]), _baseline_rates(0.0)
+    )
+    assert verdict["condition_2_paired_t_test"]["decidable"] is False
+    assert verdict["condition_2_paired_t_test"]["met"] is False
+    assert verdict["promotable_in_this_region"] is False
+
+
+def test_a_w_test_disagreement_is_flagged_when_the_t_test_passes() -> None:
+    """§ 10 asks for the W-test alongside; it warns, it does not veto."""
+    windows = [_window(i, passed=True, advantage=1.0) for i in range(14)]
+    report = _report(windows)
+    report["pooled_paired_test"]["w_test_beats_benchmark"] = False
+    verdict = promotion_verdict(report, _baseline_rates(0.0))
+    assert verdict["condition_2_paired_t_test"]["met"] is True
+    assert verdict["condition_2_paired_t_test"]["w_test_disagrees"] is True
+    assert verdict["promotable_in_this_region"] is True  # a warning, never a veto
+    assert any("W-test disagrees" in w for w in verdict["warnings"])
 
 
 def test_a_missing_baseline_is_reported_rather_than_assumed_favourable() -> None:
     verdict = promotion_verdict(_report([_window(i, passed=True) for i in range(14)]), None)
-    assert verdict["condition_1_pass_rates"] is False
-    assert all(v["at_or_above"] is None for v in verdict["per_test"].values())
-    assert any("no comparable baseline" in r for r in verdict["reasons_not_promotable"])
+    assert verdict["condition_1_pass_rates"]["met"] is False
+    assert all(
+        v["at_least_etas"] is None for v in verdict["condition_1_pass_rates"]["per_test"].values()
+    )
+    assert any("no comparable pass rate" in r for r in verdict["reasons_not_promotable"])
 
 
 def test_the_verdict_never_decides_the_two_of_three_region_rule_alone() -> None:
     verdict = promotion_verdict(
         _report([_window(i, passed=True) for i in range(14)]), _baseline_rates(0.0)
     )
-    assert verdict["regions_required"] == 2
-    assert "cannot be decided from one region" in verdict["note"]
+    assert "decided across regions, not here" in verdict["note"]
 
 
 # ---------------------------------------------------------------------- ablations
@@ -229,12 +296,16 @@ def test_selection_refuses_a_validation_window_past_the_cutoff(
 
 
 def _report(windows: list[ChallengerWindow]) -> dict[str, Any]:
+    rows = [w.as_dict() for w in windows]
     return {
         "region_id": "california-fixture",
+        "model_id": "ntpp-neural-hawkes",
         "n_scored": len(windows),
+        "schedule": {"step": "30d"},
         "pass_rates": pass_rates(windows),
         "comparison_summary": comparison_summary(windows),
-        "windows": [w.as_dict() for w in windows],
+        "pooled_paired_test": pooled_paired_test(rows),
+        "windows": rows,
     }
 
 

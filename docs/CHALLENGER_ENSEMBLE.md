@@ -143,10 +143,28 @@ Protocol § 10, applied:
   a 95 % lower bound of +0.267; the pooled W-test agrees. Promotable in this region.
 - `nepal-himalaya`: condition 1 **not met** (N 0.91 < 0.93, L 0.68 < 0.77); condition 2 **not met**
   (gain -0.079, interval spans zero). Not promotable here.
-- `california`: not run.
+- `california`: **not run**, and — as things stand — not runnable to a pass. Condition 1 compares
+  the challenger's pass rates against ETAS's *over the same schedule*, and California's published
+  ETAS schedule is 6 windows, half of the 12 consecutive windows condition 1 requires (it was
+  stopped deliberately; `RELEASE_STATUS.md` says why and that it is resumable). Until that
+  schedule is extended, no model can pass there, whatever it scores.
 
-**Condition 3 requires both conditions in at least two of the three regions. One of two regions
-passed. The ensemble is recorded as not promoted.**
+**Condition 3 requires both conditions in at least two of the three regions. One of three regions
+passed, one failed, and one was not evaluated. The ensemble is recorded as not promoted.**
+
+This is the one place in the project where an unevaluated region could have mattered: one pass plus
+a second from California would be two of three. It could not have happened with a 6-window
+baseline, and `make validate-challengers` says so mechanically rather than leaving a reader to work
+it out — it recomputes the whole rule from the committed evidence, names `california` as not
+evaluated, and states whether running it could have changed the verdict.
+
+The reading of condition 2 used here — one paired T-test pooled over the schedule — is the one
+ADR-0040 settled on for every challenger, after finding that the neural challenger was being judged
+under a per-window-majority reading of the same sentence. Under the per-window reading Türkiye's
+2 wins in 10 decidable windows would not meet condition 2 and this region would fail as well. The
+ADR argues the choice from the protocol's wording and from the power of a test on a window holding
+one or two events, and records that it does not change any published verdict: with or without
+Türkiye, one region is not two.
 
 ### What the ensemble is actually doing
 

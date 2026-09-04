@@ -206,10 +206,20 @@ Protocol § 10, applied:
   (gain -0.62, upper bound below zero). Not promotable here.
 - `turkiye-eaf`: condition 1 **not met** (N 0.89 < 0.91, L 0.69 < 0.90); condition 2 **not met**
   (interval spans zero). Not promotable here.
-- `california`: not run.
+- `california`: **not run**, and not runnable to a pass as things stand: condition 1 compares pass
+  rates against ETAS over the same schedule, and California's published ETAS schedule is 6 windows
+  against the 12 consecutive ones condition 1 requires (`RELEASE_STATUS.md` says why it was stopped
+  there and that it is resumable).
 
 **The gridded challenger is recorded as not promoted.** There is no route to promotion that this
-result leaves open.
+result leaves open: it fails both conditions in both evaluated regions, so even a Californian pass
+could not reach the two regions § 10 requires.
+
+Condition 2 is read here as ADR-0040 settled it — one paired T-test pooled over the schedule's
+target events, rather than a tally of per-window tests. Both readings reject this model in both
+regions. `make validate-challengers` recomputes all of it from
+`reports/challenger/<region>/schedule-<region>-challengers.json` and fails if this document and the
+rule ever disagree.
 
 ### What the fit actually produced
 
