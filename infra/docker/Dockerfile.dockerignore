@@ -8,6 +8,16 @@
 !src/
 !contracts/
 !data/regions/
+# The committed runtime inputs the service reads through RUPTURE_REPO_ROOT (see the Dockerfile:
+# the risk scenario/exposure/GSIM/vulnerability tables and the two aftershock sequence slices).
+# Re-including a nested path needs each parent walked back in, hence the ladder: `!tests` then
+# `tests/*` then the two directories that are wanted. The rest of tests/ stays out of the context.
+!tests
+tests/*
+!tests/fixtures
+tests/fixtures/*
+!tests/fixtures/risk/
+!tests/fixtures/aftershock/
 **/__pycache__/
 **/*.pyc
 **/.DS_Store

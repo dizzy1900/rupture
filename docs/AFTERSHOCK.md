@@ -89,23 +89,62 @@ model whose stochastic continuations do not terminate. With b fixed, every fit b
 sub-critical. `FitResult.diagnostics['beta_fixed']` records which was done. Simulated magnitudes
 are additionally capped at `Region.magnitude_max` (8.95).
 
+### Running the schedule
+
+The schedule is executed by a command, not by the service:
+
+```
+rupture aftershock refit --sequence gorkha --through 30d      # fit every due cutoff
+rupture aftershock refit --sequence gorkha --dry-run          # list what is due, fit nothing
+rupture aftershock refit --catalog <dir> --region <file> --mainshock <id> --out <fits dir>
+```
+
+It walks +0, 1, 3, 6, 12 h then daily to `--through`, skips any cutoff that already has a fit
+(unless `--force`), and writes `<fits>/<cutoff>/fit_result.json` as each one completes, merging the
+diagnostics into that directory's `provenance.json`. A cutoff later than now — or later than the
+catalogue's coverage — is refused with the reason printed, never fitted on whatever data happens
+to be there. This is what a cron entry, a systemd timer or a scheduled job runs; a serving process
+re-reads the fits directory, so a fit written while it is up is served by the next request without
+a restart (ADR-0036).
+
+The service does **not** refit inside a request. An EM fit takes tens of seconds and grows with
+the sequence, so a request whose scheduled cutoff has no fit answers 503 naming the cutoff and the
+command that produces it. `create_app(allow_refit=True)` (or
+`RUPTURE_AFTERSHOCK_ALLOW_REFIT=1`) overrides that where a slow request is acceptable.
+
 ### Fits actually used
 
 | sequence | cutoff | training events | b | branching ratio | parameters on a bound |
 |---|---|---|---|---|---|
+| gorkha | +0 h | 35 | 1.138 (fixed) | 0.180 | `log10_k0`, `omega` |
 | gorkha | +1 h | 56 | 1.138 (fixed) | 0.346 | `log10_k0`, `omega` |
+| gorkha | +3 h | 79 | 1.138 (fixed) | 0.532 | `log10_k0`, `omega` |
+| gorkha | +6 h | 97 | 1.138 (fixed) | 0.599 | `log10_k0`, `omega` |
+| gorkha | +12 h | 108 | 1.138 (fixed) | 0.612 | `omega` |
 | gorkha | +1 d | 123 | 1.138 (fixed) | 0.646 | `omega` |
 | gorkha | +7 d | 166 | 1.138 (fixed) | 0.681 | — |
+| kahramanmaras | +0 h | 94 | 1.026 (fixed) | 0.942 | — |
 | kahramanmaras | +1 h | 116 | 1.026 (fixed) | 0.847 | — |
+| kahramanmaras | +3 h | 150 | 1.026 (fixed) | 0.773 | — |
+| kahramanmaras | +6 h | 179 | 1.026 (fixed) | 0.776 | — |
+| kahramanmaras | +12 h | 236 | 1.026 (fixed) | 0.744 | — |
 | kahramanmaras | +1 d | 303 | 1.026 (fixed) | 0.732 | — |
 | kahramanmaras | +7 d | 446 | 1.026 (fixed) | 0.811 | — |
 
-All six converged. The two Gorkha fits with `omega` on its inversion bound have Omori `p = 2.0`,
-the fastest decay the package allows — an artefact of fitting the temporal kernel on a few hours
-of a sequence, and part of why those forecasts are too low (§ 4). They are reported, not hidden;
-the gate prints them.
+All fourteen converged and all are sub-critical; the tightest is Kahramanmaraş at +0 h (0.942),
+the zone's pre-mainshock parameters. The Gorkha fits with `omega` on its inversion bound have
+Omori `p = 2.0`, the fastest decay the package allows — an artefact of fitting the temporal kernel
+on a few hours of a sequence, and part of why those forecasts are too low (§ 4). They are
+reported, not hidden; the gate prints them.
 
-Regenerate with `uv run python -m tests.fixtures.aftershock.make_fits` (about four minutes).
+The six fits at +1 h, +1 d and +7 d were written by
+`uv run python -m tests.fixtures.aftershock.make_fits`; the eight early-hours fits by
+`rupture aftershock refit --sequence <name> --through 12h` (about a minute per sequence). The two
+routes produce the same thing: re-running the refit command over the +1 h cutoff reproduced the
+committed fit's `parameter_snapshot_hash` and `training_catalog_hash` exactly.
+
+**+2 d to +30 d are not fitted** for these two sequences — 27 more EM fits each, for issue times
+nothing currently scores. A request for one of them answers 503 naming the command above.
 
 ---
 
@@ -262,31 +301,40 @@ catalogue dominated by converted `mb`.**
 
 ```
 rupture aftershock forecast --mainshock us20002926 --horizon 7d --issue 2015-04-26T06:11:26Z
+rupture aftershock refit --sequence gorkha --through 30d
 rupture aftershock validate --sequence gorkha
 rupture aftershock serve --host 127.0.0.1 --port 8000
 ```
 
-The sub-application is `src/rupture/commands/aftershock.py`. Until the architect mounts it in
-`src/rupture/cli.py` (one line: `app.add_typer(aftershock.app, name="aftershock")`) it is run as
-`uv run python -m rupture.commands.aftershock <verb>`, which takes exactly the same options.
+The sub-application is `src/rupture/commands/aftershock.py`, mounted in `src/rupture/cli.py`.
 `forecast` accepts `--catalog <dir> --region <file>` to use a built catalogue instead of the
-committed slice, and `--grid-out <path>` to write the `ForecastGrid` behind the summary.
+committed slice, and `--grid-out <path>` to write the `ForecastGrid` behind the summary. `refit`
+is § 2. `serve` runs the combined service by default (`--surface aftershock` for this surface
+alone, with `--catalog/--region` to add a built catalogue and `--allow-refit` to permit refitting
+inside a request).
 
 ### HTTP
 
-`src/rupture/services/aftershock/service.py`; build with `create_app()`, serve with
-`uvicorn rupture.services.aftershock.service:create_app --factory`.
+**One service, both surfaces** (ADR-0036). `uvicorn rupture.services.app:create_app --factory`
+serves the aftershock forecast and the avoided-loss contract in one process, with one `/health`,
+one OpenAPI document at `/docs`, and one `X-API-Key` scheme. This is what the `api` target of
+`infra/docker/Dockerfile` runs; `docs/DEPLOYMENT.md` § The HTTP service has the deploy notes. The
+aftershock surface alone is still available as
+`uvicorn rupture.services.aftershock.service:create_app --factory`, on the same paths.
 
-- `GET /healthz` — no authentication. Reports the model id, the loaded sequences, whether a key is
-  configured, and the Poisson assumption.
-- `POST /aftershock/forecast` — requires the `X-API-Key` header, matched against
-  `RUPTURE_AFTERSHOCK_API_KEY`. With no key configured the route answers **503**, never open.
-  Body: `mainshock_id` **or** an explicit `mainshock` object (`origin_time`, `latitude`,
-  `longitude`, `magnitude`, optional `depth_km`), plus `sequence`, `issue_time`, `horizon`
-  (`1d` / `7d` / `30d`), optional `n_simulations`. Returns an `AftershockForecast`.
-  An issue time whose scheduled fit cutoff has no persisted fit is refused with **503** naming
-  the cutoff: an EM fit takes minutes and is not run inside a request. `create_app(allow_refit=
-  True)` turns that off where a slow request is acceptable.
+| Route | Auth | Purpose |
+|---|---|---|
+| `GET /health`, `GET /healthz` | none | liveness; the loaded sequences, the fits on disk, where grids are kept, whether a key is configured, and the Poisson assumption |
+| `POST /aftershock/forecast` | `X-API-Key` | issue a forecast for a sequence |
+| `GET /aftershock/grid/{grid_id}` | `X-API-Key` | the `ForecastGrid` behind an issued forecast |
+| `GET /v1/scenarios`, `POST /v1/avoided-loss` | `X-API-Key` | the loss surface (`docs/RISK.md`) |
+
+Keys come from `RUPTURE_API_KEYS` (both surfaces) or `RUPTURE_AFTERSHOCK_API_KEY(S)`, compared in
+constant time. **With no key configured the authenticated routes answer 503**, never open.
+
+`POST /aftershock/forecast` takes `mainshock_id` **or** an explicit `mainshock` object
+(`origin_time`, `latitude`, `longitude`, `magnitude`, optional `depth_km`), plus `sequence`,
+`issue_time`, `horizon` (`1d` / `7d` / `30d`) and optional `n_simulations`:
 
 ```json
 {
@@ -296,11 +344,23 @@ committed slice, and `--grid-out <path>` to write the `ForecastGrid` behind the 
 }
 ```
 
-The response body is the published contract `contracts/aftershock-forecast.v0.json` (exported
-from the domain model by the architect in Prompt 2 Wave 1); a unit test validates a real response
-against it. The application is self-contained and mounts nothing. The avoided-loss service
-(`src/rupture/risk/service.py`) is a separate application; whoever assembles the deployment can
-mount both.
+The response body is the published contract `contracts/aftershock-forecast.v0.json`; a unit test
+validates a real response against it. An issue time whose scheduled fit cutoff has no persisted
+fit is refused with **503** naming the cutoff and the refit command (§ 2).
+
+`GET /aftershock/grid/{grid_id}` returns the gridded rate forecast behind a response, keyed by its
+`forecast_grid_id`, as `contracts/forecast-grid.v0.json`. **This is the route to use for anything
+that depends on location** (§ 6): the ladder in the forecast is a statement about the whole zone —
+a circle 218 km across for an M7.8. Grids are kept as they are issued, never recomputed on fetch,
+so an id the process never issued is a 404. By default they are held in a bounded in-process cache
+(the last 16), which is **not shared between uvicorn workers**; set
+`RUPTURE_AFTERSHOCK_GRID_DIR` to a directory to share them across workers and restarts. The image
+serves with one worker for exactly this reason.
+
+Which catalogues are served is configuration, not code:
+`RUPTURE_AFTERSHOCK_CATALOGS="<name>=<catalog_dir>,<region_file>[,<fits_dir>];..."` adds built
+catalogue directories to (or replaces) the two committed validation sequences. A malformed entry
+refuses to start rather than serving fewer sequences than it was told to.
 
 ### Gate
 
@@ -328,7 +388,8 @@ fail when a forecast scores badly — a gate that did would be a gate against re
   this model*, over the stated window and inside the stated circle.
 - Use the shape of the decay — the ratio between the 1-day, 7-day and 30-day numbers — to reason
   about how long elevated rates persist.
-- Use the gridded `ForecastGrid` (not the zone-wide ladder) for anything that depends on location.
+- Use the gridded `ForecastGrid` (not the zone-wide ladder) for anything that depends on location:
+  `GET /aftershock/grid/{forecast_grid_id}` over HTTP, or `--grid-out` from the CLI (§ 5).
 - Take the M-1 and M rungs at face value as *small* probabilities, while remembering § 4.2: for
   these two sequences they were too small.
 
@@ -367,9 +428,13 @@ fail when a forecast scores badly — a gate that did would be a gate against re
    for a subduction megathrust, a swarm, or a moderate mainshock.
 8. **Monte-Carlo noise** of order 10 % on the triggered component at 100 continuations (§ 3).
 9. **Depth is ignored** beyond the region's depth filter: the forecast is two-dimensional.
-10. **Committed fits, not live ones.** The gate and the offline service use fits regenerated by a
-    script. In a real deployment the refit schedule would run against a live catalogue feed, which
-    rupture does not have.
+10. **Committed fits, and no live feed.** The refit schedule is now executed by
+    `rupture aftershock refit` and the service picks up what it writes without a restart (§ 2,
+    ADR-0036), but what it refits is a committed slice: rupture has **no live catalogue feed**, so
+    nothing keeps a sequence current on its own. Against the committed slices the schedule is
+    fitted out to +12 h; +2 d to +30 d are unfitted and answer 503 until someone runs the command.
+    Wiring the runner to a feed, and to a scheduler, is a deployment's job and has not been done
+    anywhere.
 11. **The offline catalogues live under `tests/fixtures/aftershock/`** rather than
     `data/catalogs/`, because the DVC-tracked catalogues were not present in this worktree. The
     slices are byte-exact ComCat responses with recorded provenance and digests, and

@@ -54,8 +54,9 @@ def test_healthz_needs_no_key_and_reports_what_is_loaded(client: TestClient) -> 
     assert body["sequences"] == ["gorkha", "kahramanmaras"]
     assert body["api_key_configured"] is True
     assert body["allow_refit"] is False
-    assert len(body["fits_loaded"]["gorkha"]) == 3
+    assert len(body["fits_loaded"]["gorkha"]) == 7  # +0, 1, 3, 6, 12 h, +1 d, +7 d
     assert "Poisson" in body["poisson_assumption"]
+    assert body["grid_store"]
 
 
 def test_forecast_without_a_key_is_unauthorised(client: TestClient, gorkha: SequenceSpec) -> None:
@@ -196,6 +197,19 @@ def test_an_unscheduled_issue_time_is_refused_rather_than_refitting_in_a_request
     response = client.post("/aftershock/forecast", json=body, headers={API_KEY_HEADER: KEY})
     assert response.status_code == 503
     assert "no persisted fit" in response.json()["detail"]
+
+
+def test_an_early_hours_issue_time_is_served_from_the_scheduled_fit(
+    client: TestClient, gorkha: SequenceSpec
+) -> None:
+    """+3 h used to 503: only +1 h, +1 d and +7 d had fits. `rupture aftershock refit` closed it."""
+    issue = gorkha.mainshock.origin_time + timedelta(hours=3)
+    body = _body(gorkha) | {"issue_time": issue.isoformat()}
+    response = client.post("/aftershock/forecast", json=body, headers={API_KEY_HEADER: KEY})
+    assert response.status_code == 200, response.text
+    forecast = AftershockForecast.model_validate(response.json())
+    assert forecast.elapsed == timedelta(hours=3)
+    assert "fit cutoff 2015-04-25T09:11:25.950000+00:00" in (forecast.notes or "")
 
 
 def test_an_explicit_mainshock_is_accepted(client: TestClient, gorkha: SequenceSpec) -> None:

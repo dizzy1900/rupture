@@ -5,6 +5,20 @@
   "derived_from": "comcat-turkiye-2013-2023-m3.8.geojson",
   "etas_commit": "097f08b69a4f06f9c38d14799dedfbd4543144e3",
   "fits": {
+    "2023-02-06T01:17:34.342000+00:00": {
+      "at_bound": [],
+      "b_value": 1.0255402361529682,
+      "beta_fixed": true,
+      "branching_ratio": 0.9418692771491134,
+      "converged": true,
+      "elapsed": "0h",
+      "iterations": 32,
+      "mc": 4.3,
+      "n_events": 94,
+      "parameter_snapshot_hash": "9d93de98cb7c6466ae1967d75e61120ca674b45c9f69d71574d5be1eaf71eb4e",
+      "runtime_s": 16.9,
+      "training_catalog_hash": "ed9a7f60bd37f2c196bfdff7f9a14bd4c034f3c28ae71bd83e4b0548ec188e72"
+    },
     "2023-02-06T02:17:34.342000+00:00": {
       "at_bound": [],
       "b_value": 1.0255402361529682,
@@ -18,6 +32,48 @@
       "parameter_snapshot_hash": "10f0cc607e5da2fd5293329c03bf2bcf551e35ba87b86709a3b5d9d937fbeef4",
       "runtime_s": 28.6,
       "training_catalog_hash": "6b67bb3de6d3d3cdb7733bbc7b1152728680fbe28beb3b08ef3871f4cdf7f7a8"
+    },
+    "2023-02-06T04:17:34.342000+00:00": {
+      "at_bound": [],
+      "b_value": 1.0255402361529682,
+      "beta_fixed": true,
+      "branching_ratio": 0.7730108853806466,
+      "converged": true,
+      "elapsed": "3h",
+      "iterations": 24,
+      "mc": 4.3,
+      "n_events": 150,
+      "parameter_snapshot_hash": "38d93adeb54f74de41c48b5efa2266bdd4921b9700e690f47d47be6c5f5f54c9",
+      "runtime_s": 13.4,
+      "training_catalog_hash": "ef02597d02971cb1896f6930a7106bdd2ea5556529646ca12dca1a8fbc8f3fed"
+    },
+    "2023-02-06T07:17:34.342000+00:00": {
+      "at_bound": [],
+      "b_value": 1.0255402361529682,
+      "beta_fixed": true,
+      "branching_ratio": 0.7760081609814931,
+      "converged": true,
+      "elapsed": "6h",
+      "iterations": 31,
+      "mc": 4.3,
+      "n_events": 179,
+      "parameter_snapshot_hash": "22346ad2c7452b4172ba8258ff07c192249b996b9e7e1cf23581bb431c774a65",
+      "runtime_s": 18.9,
+      "training_catalog_hash": "d15976d8917548f646fcdedca7675b656cf0da5115910fc7b2dfa211adcd018b"
+    },
+    "2023-02-06T13:17:34.342000+00:00": {
+      "at_bound": [],
+      "b_value": 1.0255402361529682,
+      "beta_fixed": true,
+      "branching_ratio": 0.7435671320242753,
+      "converged": true,
+      "elapsed": "12h",
+      "iterations": 16,
+      "mc": 4.3,
+      "n_events": 236,
+      "parameter_snapshot_hash": "e319e0a07f8095b9ea083df90cb34bf8bcb2916a79d2e88fba21daad6a2fd479",
+      "runtime_s": 9.1,
+      "training_catalog_hash": "fc292ff9d851835441b47cc50186bae9572fa324aa328dec8bb21cc6f0b9d11e"
     },
     "2023-02-07T01:17:34.342000+00:00": {
       "at_bound": [],
@@ -56,5 +112,9 @@
   "region_id": "aftershock-us6000jllz",
   "sequence": "kahramanmaras",
   "source_sha256": "bf01ef853dd87ec0a6913b9fb75a80a904cc3fa3c8e8739829b3cb853d20d8ef",
+  "updated_at": "2026-09-04T04:07:39.105697+00:00",
+  "written_by": [
+    "rupture aftershock refit"
+  ],
   "zone_radius_note": "Wells & Coppersmith (1994) subsurface rupture length x 1.5; see rupture.services.aftershock.window"
 }
