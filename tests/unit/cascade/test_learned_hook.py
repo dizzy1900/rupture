@@ -19,7 +19,7 @@ def test_constructing_the_hook_raises_and_says_what_it_is() -> None:
         learned.LearnedGroundFailureModel()
     message = str(excinfo.value)
     assert "documented hook" in message
-    assert "ADR-0036" in message
+    assert "ADR-0042" in message
     assert "rupture.ports.cascade.CascadeModel" in message
 
 

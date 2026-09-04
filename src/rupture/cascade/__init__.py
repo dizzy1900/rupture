@@ -14,7 +14,7 @@ Layout:
 ``models``
     Nowicki Jessee et al. (2018) landslide and Zhu et al. (2017) liquefaction.
 ``learned``
-    The documented, deliberately unimplemented hook for a learned global model (ADR-0036).
+    The documented, deliberately unimplemented hook for a learned global model (ADR-0042).
 ``discriminator``
     Client for the ``SourceTypeAssessment`` file contract shared with the sibling ``serac``.
 
