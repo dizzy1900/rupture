@@ -1,6 +1,6 @@
 # infra/jobs — portable job manifests
 
-rupture does not predict earthquakes. These manifests describe how its batch jobs run at scale;
+These manifests describe how rupture's batch jobs run at scale;
 they are documentation-grade (ADR-0016), validated for shape by
 `tests/unit/hazard/test_job_manifests.py` against [`schema.json`](schema.json), and not required
 by anything that runs locally: every `command` is an invocation you can also run with `uv run`.

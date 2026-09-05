@@ -42,3 +42,15 @@ likelihood_test, conditional_likelihood_test, paired_t_test, w_test}` and plotti
   risk and no value; a reviewer would ask why.
 - **Pin to a range (`>=0.8`).** Rejected: a minor release could change simulation details and
   silently alter pass rates.
+
+## Amendment (2026-09-04)
+
+- **[ADR-0055](0055-hypothesis-sum-type-and-scorer-registry.md)** makes this the scorer for one
+  hypothesis arm rather than for all evaluation: `RateForecast` and `SimulatedCatalogues` keep this
+  adapter unchanged, while alarm, hazard-function and state-estimate claims are scored elsewhere.
+  Nothing already scored is rescored differently.
+- **[ADR-0061](0061-interoperate-with-csep-do-not-fork.md)** confirms the adopt-do-not-rebuild
+  reasoning above and extends it: new evaluation code that CSEP could use is written to be
+  upstreamed to pyCSEP rather than kept here.
+- The repository has moved: pyCSEP is now `cseptesting/pycsep`; `SCECCode/pycsep` redirects. The
+  distribution name and the `pycsep==0.8.0` pin are unchanged.

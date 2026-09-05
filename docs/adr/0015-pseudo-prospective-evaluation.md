@@ -47,3 +47,20 @@ records the decision and its reasons.
 - **Fully retrospective fit on the whole catalogue.** Rejected: no skill claim can rest on it.
 - **Refit before every window.** Not rejected as a future variant, but it multiplies compute and
   must still be logged per window; the yearly default is the documented baseline behaviour.
+
+## Amendment (2026-09-04)
+
+Two later ADRs change how this one must be read; neither relitigates it.
+
+- **[ADR-0054](0054-latency-aware-observation-sources.md) extends the leakage rule.** This ADR's
+  rule — forecasts are issued using only events with `origin_time < issue_time` — compares *origin*
+  times, which is the time a phenomenon occurred, not the time its recorded value became available.
+  A model reading a 2026-revised magnitude at a 2019 issue time satisfies every assertion here.
+  Under ADR-0054 an evaluation must also assert that every value read has an `available_time`
+  strictly before the issue time — half-open, as every other window in this repository is — and
+  every number produced under this protocol until that assertion exists is an upper bound on what
+  the same model would have scored in real time. **No such assertion exists today**; it is the
+  `validate-replay` gate, which is designed and unbuilt.
+- **[ADR-0057](0057-prospective-open-benchmark.md) supplies the strong form.** Pseudo-prospective
+  replay stays the protocol for historical data and is unchanged. It is no longer the strongest
+  protocol available, and results now carry which of the two produced them.

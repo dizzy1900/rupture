@@ -1,13 +1,93 @@
 # RELEASE_STATUS
 
 This ledger says what actually ran, and under-claims by
-design. Last updated 2026-09-03.
+design. Last updated 2026-09-04.
 
-**Phase:** Prompt 1 (foundations) and Prompt 2 (challengers, loss, cascades) both complete.
+**Phase:** Prompt 1 (foundations) and Prompt 2 (challengers, loss, cascades) both complete. The
+project was re-aimed at earthquake prediction on 2026-09-04; **that re-aim changed documents and
+one gate, and changed no scientific result.** See § The re-aim.
 
 Maturity: `not started` · `scaffold` (structure, no behaviour) · `stub` (runs, exits
 "not implemented") · `working` (offline tests pass) · `validated` (ran on real data; the result is
 recorded, whatever it was).
+
+## The re-aim (2026-09-04)
+
+Rupture was built over two phases as a probabilistic seismic forecasting and cascade-loss system,
+under a rule set whose first non-negotiable was "no prediction claims" and which enforced a
+banned-word gate on `predict`. The owner removed that positioning on 2026-09-04. Rupture is now an
+open research project on earthquake prediction. This section records what that did and — more
+importantly for a ledger — what it did not.
+
+### What actually changed in the tree
+
+| Change | Commit | State |
+|---|---|---|
+| The `language` gate and its creed removed | `b641034` | done. `src/rupture/validation/language.py`, its allowlist, its tests, the `validate-language` target, its CI step and its entry in `registry.GATES` and the CI gate-drift check are gone. The creed sentence was stripped from 38 source files; where it was a data value in artefact metadata it was replaced by a scope statement about the artefact. `make validate-rupture` green with **nine** gates; 945 offline tests pass |
+| CLAUDE.md rewritten: seven non-negotiables → nine principles | `c2fdd49` | done. Pre-registration, adversarial baselines generalised beyond ETAS, and negative-results-as-deliverables are new; the banned-word list is replaced by the substance rule "quantify or qualify" |
+| `docs/RESEARCH_LANDSCAPE.md` written | working tree | new, 1,393 lines. The evidence base: fourteen research lines, the closed doors, an evidence-status vocabulary that adds the `negative-result` category, and the citation rules |
+| `docs/ARCHITECTURE.md` rewritten as Part I (design) / Part II (what exists) | working tree | done. **Part I is not built.** Every module in it is labelled "not built" in prose, in the container table and in the C4 diagrams |
+| ADRs 0053–0062 added; 0009, 0010, 0015, 0019, 0022, 0034 and 0040 amended | working tree | done. Numbering starts at 0053 because 0051 and 0052 already existed |
+| `CONTRIBUTING.md` and `README.md` rewritten | working tree | done |
+
+### What did not change
+
+**Every maturity row in the two tables below is unchanged, and no result was re-run.** The
+catalogues, the ETAS fits, the 116 scored windows, the challenger schedules, the leaky ablations,
+the GSIM verification, the Gorkha reproduction and the aftershock fits are the same artefacts, at
+the same commits, with the same numbers. The re-aim was a change of target and of vocabulary. It
+was not a change of evidence, and nothing in this ledger got better because the project became more
+ambitious.
+
+Deliberately kept and re-argued rather than relaxed: the leakage controls, the fitted-baseline
+requirement, no fabricated data, and provenance on every record. Those are the machinery by which a
+prediction claim earns belief. The repository's own leaky ablation — +0.31 to +2.16 nats/event of
+manufactured skill — is the argument for keeping them, and it is stronger for a prediction project
+than for a forecasting one.
+
+### What the new architecture means for what is built
+
+`docs/ARCHITECTURE.md` Part I proposes a spine built on latency-aware observation sources, a
+hypothesis sum type and a scorer registry. **None of it exists.** Checked against `src/` on
+2026-09-04:
+
+| Proposed | Present in `src/`? |
+|---|---|
+| `ObservationSource[T].available_as_of(t)` | no. `src/rupture/ports/` holds ten port modules and none is an observation source; the time-slicing primitive is `Catalog.before(cutoff)` (`src/rupture/domain/catalog.py:131`), which filters on origin time and knows nothing about when a record became available |
+| `available_time` distinct from `valid_time` on every observation | no. `Provenance.retrieved_at` is rupture's fetch time, not the value's publication time, and `leakage.py` (50 lines) compares only `origin_time` — so every existing leakage assertion would pass on a model reading a 2026-revised magnitude at a 2019 issue time |
+| `Vintage` / a vintaged data store / `catalog.as_of(t)` | no |
+| `CompletenessField`, Mc(x, t) as a field | no. Mc is a scalar per region, estimated from the catalogue itself |
+| `Hypothesis` sum type (`RateForecast` \| `SimulatedCatalogues` \| `AlarmSet` \| `HazardFunction` \| `StateEstimate`) | no. `ForecastGrid` is the only output shape |
+| `Scorer` registry with mandatory baselines, power and minimum detectable effect | no. Scoring is the pyCSEP N/M/S/L/CL path plus paired T- and W-tests; no test result in this repository reports its statistical power |
+| Alarm scoring (Molchan, area skill score, probability gain against a clustering-aware reference) | no |
+| ETAS-I as a fitted baseline | no. The pinned `lmizrahi/etas@097f08b6` ships the incompleteness machinery and the adapter calls one of its factors, but `baselines/` holds plain ETAS only and nothing in the tree fits ETAS-I |
+| Pre-registration enforced by `git merge-base --is-ancestor` (ADR-0056) | no. Pre-registration today is convention plus the challenger pipeline's `select`-before-`fit` hyperparameter freeze. Note also that the CI checkout runs at default depth, and `git merge-base --is-ancestor` exits 128 rather than 1 on a shallow clone, so the gate could not run in CI today even if it existed |
+| floatCSEP containerisation / registration in a live CSEP experiment | no |
+| The `asof`, `prereg` and evidence/licence gates named in ADRs 0054, 0056, 0058 and 0062 | no. No `src/rupture/validation/<name>.py`, no `mk/<name>.mk`, no CI step, no entry in the workflow's `covered` set |
+
+### What the roadmap has not started
+
+`docs/ROADMAP.md` landed in the working tree on 2026-09-04 and is 1,284 lines: nine research tracks
+(T1–T9), each with a failure criterion, plus the tracks Rupture is explicitly not running and a
+programme scorecard at 12, 24 and 60 months. **Nothing in it has an owner, a schedule or a costing**
+— § 13 item 1 of that document says so in those words — and the scorecard has no mechanism that
+causes its questions to be asked.
+
+Of the ten ranked openings the review produced — the as-of layer, the geodetic adjudication and its
+detectability harness, Mc as a field, the predictability budget, beating ETAS-I, prospective slow-slip
+timing, the non-cascading foreshock census, the global pick reanalysis, fault-state assimilation and
+a below-catalogue multimodal model — **none has been started.** No line of code, no fixture, no
+pre-registration file. The re-aim produced a target, a map and a design. It has not yet produced an
+experiment.
+
+Two claims that underwrite the whole programme are hypotheses and are recorded as such rather than
+as findings. First, that latency leakage is material: nobody has measured (final-data skill − as-of
+skill) for a set of published models, and if that difference sits inside bootstrap noise everywhere
+then the as-of layer should be demoted from an evaluation requirement to a data-engineering
+convenience. Second, that an external contributor exists at all: ADR-0053 records the review's
+objection that "predict earthquakes" as a public framing may repel the community whose adjudication
+confers legitimacy, and makes it falsifiable — if after twelve months no external group has
+submitted a hypothesis and no testing centre has adopted the as-of API, the objection was right.
 
 ## Prompt 1 — foundations
 
@@ -15,7 +95,7 @@ recorded, whatever it was).
 |---|---|---|
 | Repository, CI, tooling | validated | `uv`, ruff, `mypy --strict`, import-linter. The **offline job** — lint, typecheck, the offline suite and the language, contract, catalogue, ETAS and evaluation gates — has been green on every push. The **bootstrap commit's overall check was red**: `d67a25d` wired the Docker `hazard-integration` job to run on pushes to `main` before any hazard adapter existed, so `validate-hazard` failed once; `42dcd28` narrowed the trigger and every push from `a6a4dce` onward is green. Two further runs show as cancelled by the concurrency group. The claim is "the offline job green on every push", not "CI green on every push" |
 | Governance docs, 37 ADRs at this commit | validated | the evaluation protocol was committed **before** any model in this repository was fitted (protocol 02:43, first ETAS adapter 03:26) |
-| Language gate | validated | passes tree-wide; a seeded violation fails it; ADR-0034 admits published paper titles so sources can be cited by name |
+| Language gate | **removed 2026-09-04** | it did pass tree-wide while it existed, and a seeded violation failed it. It was deleted with the positioning it enforced (`b641034`); ADR-0034 is superseded by ADR-0053. Nine gates remain |
 | Domain + 19 contracts | validated | drift-checked in CI; `avoided-loss.v1` reconciles with the sibling `serac` and is proven by tests that parse serac-shaped payloads |
 | Catalogues (ComCat, ISC, GCMT) | validated | three built 1976→2026: California 110,766 events, Türkiye 7,038, Nepal 2,728 |
 | ISC-GEM adapter | working | parser only; the download is form-gated and was never fetched, so no ISC-GEM data is in any build |
@@ -42,10 +122,37 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
 | C3 ground failure (Nowicki Jessee 2018, Zhu 2017) | validated | against the real USGS product for Gorkha: liquefaction r = 0.45, landslide r = 0.16, both biased low |
 | C3 cascade exposure + discriminator client | working | serac has published no slope-unit export yet, so terrain screens report **not applied** |
 | C4 aftershock service | validated | Gorkha and Kahramanmaraş at +1 h, +1 d, +7 d. **Under-forecasts the first day 3–12×** |
-| Gates | validated | 10 gates (`registry.GATES`). `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the other nine PASSED; `promote` refuses without a named approver. Nine run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
+| Gates | validated | **9 gates** (`registry.GATES`) since the `language` gate was removed on 2026-09-04; the timings below were measured when there were ten and have not been re-measured. `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the rest PASSED; `promote` refuses without a named approver. Eight run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
 | Evidence and figures | validated | `reports/CHALLENGER_EVALUATION.md` carries six figures — per-window information gain, cumulative pass rates, and honest-against-leaked — rendered from the committed schedule JSON by `python -m rupture.reporting.challenger_plots`, which loads no model and issues no forecast |
 
 ## Known gaps
+
+Documentation drift found while re-aiming the project, recorded rather than silently fixed, because
+each of these belongs to a file another owner is editing:
+
+- **CLAUDE.md § Make targets is stale.** It says the `GATES` tuple holds ten and names `language`
+  first; `src/rupture/validation/registry.py` holds nine and the same file's own CI paragraph says
+  nine. CLAUDE.md's rule is that the tuple wins, so the tuple wins — but the prose should be fixed.
+- **CLAUDE.md § CLI verbs is wrong about the challenger pipeline.** It says the noun is "**Not
+  mounted on `rupture`**" and must be reached through `python -m`. `src/rupture/cli.py:70` does
+  `app.add_typer(challenger.app, name="challenger")`, and `rupture challenger --help` works.
+- **ADR-0057 accepts operating a prospective board and `docs/ROADMAP.md` has no track for it.**
+  The ADR is `accepted` and carries a twelve-month failure criterion; the roadmap's § 8 explains
+  the decision and its § 13 item 11 records that nothing schedules, staffs or costs it. Until a
+  track exists, ADR-0053's third falsification condition and ADR-0057's own failure criterion are
+  stated against something nobody plans to switch on, so neither can fire in either direction.
+- **`mk/risk.mk` invokes `python -m rupture.validation.risk` directly**, with a comment saying the
+  gate is not registered. It is: `risk` is in `GATES` and `rupture validate risk` runs it. The
+  fragment and its comment are stale, though the gate does run.
+- **The citation rules are enforced by prose, not by CI.** ADR-0058 fixes an evidence-status
+  vocabulary and forbids citing a `rebutted` or `contested` work without its rebuttal in the same
+  sentence; nothing checks it. A machine-readable bibliography with status tags would make that
+  mechanical and does not exist.
+- **No result in this repository reports its statistical power** or a minimum detectable effect,
+  which ADR-0055 makes mandatory for anything published after it. Every number already in this
+  ledger predates that rule and none has been recomputed under it.
+
+The scientific gaps, unchanged by the re-aim:
 
 - **No challenger was promoted.** The one metric beaten (Türkiye ensemble information gain) rests
   on an interval that assumes independent events, and corrects a baseline over-forecast rather than

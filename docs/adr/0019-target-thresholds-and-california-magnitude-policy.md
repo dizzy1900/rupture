@@ -59,3 +59,12 @@ the catalogue, and an ETAS fit or a target set built from it would be meaningles
   Deferred: none was verified in time, and CSEP practice provides a defensible interim.
 - **Time-varying Mc** (`etas` supports `mc='var'`). Deferred to Prompt 2; it changes the fit, not
   the target rule.
+
+## Amendment (2026-09-04)
+
+[ADR-0060](0060-completeness-as-a-field.md) makes completeness a field Mc(x, t) with uncertainty
+rather than a scalar per region. The target-threshold policy recorded here is unchanged and still
+follows the published Mc; what changes is that `Region.mc` becomes a derived summary of the field,
+and where the two disagree the field is authoritative. Nepal's target sitting *at* its completeness
+limit — 4.40 by maximum curvature and 4.70 by b-value stability against a 4.7 target — is the
+worked example of what the scalar costs.

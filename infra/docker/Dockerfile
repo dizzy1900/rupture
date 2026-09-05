@@ -48,7 +48,7 @@ FROM ${PYTHON_IMAGE} AS runtime
 ARG GIT_SHA=unknown
 ARG BUILD_DATE=unknown
 LABEL org.opencontainers.image.title="rupture" \
-      org.opencontainers.image.description="Probabilistic seismic forecasting and cascade-loss model. rupture does not predict earthquakes." \
+      org.opencontainers.image.description="Open research on earthquake predictability: forecasting, scoring and cascade loss." \
       org.opencontainers.image.source="https://github.com/dizzy1900/rupture" \
       org.opencontainers.image.licenses="Apache-2.0" \
       org.opencontainers.image.revision="${GIT_SHA}" \

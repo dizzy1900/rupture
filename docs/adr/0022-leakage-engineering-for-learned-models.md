@@ -44,3 +44,20 @@ that beats ETAS because of a subtle leak is worse than no challenger at all.
   good news, which is exactly when reviewers relax.
 - **Allow random k-fold for hyperparameters only.** Rejected: catalogue events are strongly
   autocorrelated in time and space, so a random split leaks through aftershock sequences.
+
+## Amendment (2026-09-04)
+
+Three later ADRs extend these rules for the prediction programme. The six decisions above are
+unchanged.
+
+- **[ADR-0054](0054-latency-aware-observation-sources.md)** adds a leakage class these rules cannot
+  express. Rule 2's strictly causal feature windows filter on the time a datum *refers to*; latency
+  leakage is reading a value that did not exist yet at that time, in the revision it has today.
+- **[ADR-0056](0056-preregistration-by-git-ancestry.md)** puts a machine behind rule 4: a frozen
+  hyperparameter configuration recorded before scoring is to be verified by git ancestry rather
+  than asserted in a file the author dated. **That runner does not exist yet** — today rule 4 rests
+  on the challenger pipeline's `select`-before-`fit` ordering, which is a real constraint and not a
+  proof of ordering against the test data.
+- **[ADR-0059](0059-reference-baseline-set.md)** fixes which baseline a comparison must use, per
+  task. Rule 6's leaky ablation keeps its role and its numbers: **+0.31 to +2.16 nats per event** of
+  manufactured skill, and a −0.346 nats-per-event Nepal loss turned into a +0.429 apparent win.

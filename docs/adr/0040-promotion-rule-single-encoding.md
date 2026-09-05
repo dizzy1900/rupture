@@ -120,3 +120,11 @@ satisfy without ever having twelve consecutive ones.
   which the protocol's own preamble requires ("changes to any numbered rule require an ADR that
   states what was known at the time of the change"). A one-line cross-reference from § 10 to this
   ADR is owed and is the only edit that document needs.
+
+## Amendment (2026-09-04)
+
+[ADR-0059](0059-reference-baseline-set.md) does not change this rule or its single encoding. It
+changes what "the baseline of record" resolves to for a given task: plain ETAS for catalogue rate
+forecasting at or above completeness, ETAS-I as an additional mandatory reference wherever
+sub-completeness events are used, and task-specific references for the alarm, hazard-function and
+state-estimate arms of [ADR-0055](0055-hypothesis-sum-type-and-scorer-registry.md).

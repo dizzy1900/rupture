@@ -69,3 +69,12 @@ although upstream declares `seismostats` only in its optional `hermes` extra. ru
 declares `seismostats>=1.0` (PyPI) as a runtime dependency so the module imports cleanly. The
 interim import shim that preceded this decision was removed once the dependency was declared; see
 ADR-0018.
+
+## Amendment (2026-09-04)
+
+[ADR-0059](0059-reference-baseline-set.md) keeps this package as the baseline of record for
+catalogue rate forecasting at or above completeness, and adds a second mandatory reference for any
+claim that uses sub-completeness events: **ETAS-I**, the incompleteness-aware variant (Mizrahi,
+Nandan & Wiemer 2021), which no machine-learning paper in the surveyed literature has used as a
+comparator. ETAS-I has never been run in this repository, so every existing rupture number is a
+comparison against plain ETAS only.

@@ -5,7 +5,7 @@ build-backend = "hatchling.build"
 [project]
 name = "rupture"
 version = "0.1.0"
-description = "Probabilistic seismic forecasting and cascade-loss model. rupture does not predict earthquakes."
+description = "Open research on earthquake predictability: forecasting, scoring and cascade loss."
 readme = "README.md"
 license = "Apache-2.0"
 requires-python = ">=3.12,<3.13"

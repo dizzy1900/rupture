@@ -1,8 +1,9 @@
 # ADR-0034: The banned-language allowlist admits published paper titles
 
-- **Status:** superseded on 2026-09-04 by the removal of the banned-language gate (see the
-  Supersession note at the end of this file). Retained as the record of a decision that was
-  correct while the gate existed.
+- **Status:** superseded on 2026-09-04 by
+  [ADR-0053](0053-rupture-targets-earthquake-prediction.md), which removed the banned-language gate
+  (see the Supersession note at the end of this file). Retained as the record of a decision that
+  was correct while the gate existed.
 - **Date:** 2026-09-03 (UTC)
 
 ## Context
@@ -72,10 +73,12 @@ loose version was hiding something on the day it was written.
   a place where claims could hide.
 
 
-## Supersession (2026-09-04)
+## Supersession (2026-09-04) — by [ADR-0053](0053-rupture-targets-earthquake-prediction.md)
 
 The banned-language gate was removed when Rupture was re-aimed at earthquake prediction as an open
-research target, so the problem this ADR solved no longer exists: published titles need no
+research target ([ADR-0053](0053-rupture-targets-earthquake-prediction.md) records the re-aim, what
+was removed with the gate and what was deliberately kept), so the problem this ADR solved no longer
+exists: published titles need no
 allowlist because there is no list. The reasoning is kept because it was right about something that
 outlived the gate — **a citation attributes a statement to its author and is not a claim in
 Rupture's own voice** — and that distinction is now carried by CLAUDE.md § How Rupture writes about
