@@ -1,54 +1,135 @@
-# CLAUDE.md — working rules for rupture
+# CLAUDE.md — working rules for Rupture
 
-rupture does not predict earthquakes.
+**Rupture is an open research project on earthquake prediction.**
 
-rupture is a standalone, open-source probabilistic seismic forecasting and cascade-loss model
-(`github.com/dizzy1900/rupture`). It has no parent organisation, no internal platform and no
-inherited conventions; the conventions are defined here and in `docs/adr/`. Its only sibling is
-`serac` (`github.com/dizzy1900/serac`), consumed through published file contracts, never as a code
-dependency. Every agent and contributor working in this tree is bound by this file.
+Rupture exists to measure how far the predictability of earthquakes can be pushed, using every
+computational, statistical and machine-learning method that can be honestly scored. It is a
+standalone, open-source repository (`github.com/dizzy1900/rupture`) built for geophysicists,
+computational researchers, AI engineers and ML researchers to work in together. It has no parent
+organisation and no inherited conventions; the conventions are defined here and in `docs/adr/`.
+Its only sibling is `serac` (`github.com/dizzy1900/serac`), consumed through published file
+contracts, never as a code dependency. Every contributor and every agent working in this tree is
+bound by this file.
 
-## What rupture is and is not
+## The ambition, stated plainly
 
-Deterministic prediction of the time, place and magnitude of individual earthquakes has no
-scientifically accepted method, and rupture will never claim one. rupture issues rate-based,
-gridded forecasts and scores them against the operational ETAS baseline under time-forward,
-likelihood-based tests in the manner of CSEP.
+Whether earthquakes can be predicted is an open empirical question. The mainstream position — that
+deterministic short-term prediction has never been demonstrated — is a statement about the
+historical record, and that record was made with far less data, far less compute and far worse
+methods than exist now. "Nobody has done it" was never the same claim as "it cannot be done", and
+the field has spent thirty years treating the two as interchangeable.
 
-| Layer | Question answered | Method (settled) |
-|---|---|---|
-| F0 Long-term hazard | What is the exceedance probability of ground motion at a site over 50 years? | PSHA via OpenQuake engine, GEM source models and GMPEs |
-| F1 Time-dependent seismicity forecast | Given the catalogue to date, what is the rate of M ≥ m events per cell over the next day / week / month / year? | ETAS (operational baseline); challenger models gated by CSEP tests |
-| F2 Ground motion → loss | For a scenario or forecast, what is expected loss to a portfolio, and what is avoided by an intervention? | OpenQuake scenario/event-based risk; fragility and consequence functions; published avoided-loss contract |
-| F3 Triggered cascades | What does a large event trigger — landslides, co-seismic ice avalanches, liquefaction — and where? | USGS ground-failure models; exposure overlays; shared discriminator with `serac` |
+Rupture treats predictability as **a quantity to be measured, not a question to be argued about**:
+how much probability gain over the best available baseline is achievable, at what lead time, for
+what magnitude range, from what observations. That framing is what makes the ambition tractable.
+A project asking "can earthquakes be predicted?" has no way to make progress. A project asking
+"does adding continuous GNSS strain to the feature set move information gain at 7-day lead in
+California, and by how much?" has a research programme, a null result worth publishing, and a
+positive result nobody can wave away.
 
-Prompt 1 built the foundations: catalogue infrastructure, the ETAS baseline, the CSEP evaluation
-harness, the OpenQuake adapter, contracts and gates. Prompt 2 built the challenger models, the loss
-layer (F2), the cascade layer (F3) and the operational aftershock service. **Both are complete as
-of 2026-09-03**; `RELEASE_STATUS.md` is the authority on what actually ran, and this file is the
-authority on the rules. No challenger was promoted, which is a result and not an omission.
+`docs/ROADMAP.md` is the research programme. `docs/RESEARCH_LANDSCAPE.md` is the evidence it was
+built from — what has been tried, what worked, what failed and why. Read the landscape before
+proposing a direction; a large fraction of the obvious ideas were tried between 1975 and 2000 and
+the reasons they failed are usually still true.
 
-## Non-negotiables
+## Principles
 
-The seven items below are the brief's non-negotiables (`rupture-prompt-1-foundations.md`, section
-"Non-negotiables"), reproduced word for word inside the blockquotes. **The brief itself is not
-committed to this repository**, so the reproduction cannot be diffed against a source from inside a
-clone; that is a limitation of this file, stated here rather than glossed. Everything outside a
-blockquote — the make-target notes, the cross-references — is rupture's own editorial and is not
-part of the quoted rule. An earlier revision of this file mixed the two, which is exactly the drift
-verbatim reproduction exists to prevent.
+These bind every contributor and every agent. They are not modesty and they are not hedging — they
+are the machinery that lets an ambitious claim survive contact with the field. Every prediction
+claim that has collapsed in this field's history collapsed on one of these points, and none of them
+collapsed for lack of ambition.
 
-1. > **No prediction claims.**
+1. **Aim at prediction; publish only what you scored.** Rupture's target is prediction and it says
+   so in its own voice, without euphemism. What it will not do is *assert* a result it has not
+   measured. Every claim in this repository carries the protocol that produced it, the baseline it
+   beat, and the data it was scored on. A claim without those three is not a finding, it is a
+   hypothesis, and it is labelled as one.
 
-   Deterministic prediction of the time, place and magnitude of individual earthquakes has no
-   scientifically accepted method, and rupture will never claim one (see "What rupture is and is
-   not" above). `make validate-language` greps for banned phrasing.
-2. > **No leakage.** All forecast evaluation is time-forward (pseudo-prospective) with a hard cut; any data after the cut is unavailable to the model. Assert this in tests with catalogue timestamps.
-3. > **ETAS is a first-class citizen**, not a straw man. It must be fitted properly (magnitude of completeness, time-varying if warranted, region-specific) and its parameters and fit diagnostics published.
-4. > **No fabricated data.** Adapters fetch or fail loudly; unit tests run offline on committed fixtures; unknowns are null.
-5. > **Provenance on every record** (source, retrieval time, checksum, licence). Catalogue homogenisation steps are logged per event.
-6. > **Self-contained repo conventions**: no private repo, internal package or hosted platform is a dependency. Define and document rupture's own conventions: DVC-versioned `data/` and `baselines/`, `src/validation/`, Makefile `validate-*`, `promote`, `underwriting-check`, honest `RELEASE_STATUS.md`, a plain Docker image as the deployment unit, and portable job manifests in `infra/jobs/*.yaml` (AWS-annotated) for scaled runs. Downstream consumers integrate through the versioned JSON Schemas in `contracts/`.
-7. > **Ask before downloads > 5 GB or paid API calls.** Credentials via `.env`; documented in `docs/CREDENTIALS.md`.
+2. **No leakage — this is the load-bearing rule.** All evaluation is time-forward with a hard cut;
+   no data at or after the cut is reachable by a model, a feature, a hyperparameter choice or a
+   preprocessing step. Assert it in tests against real catalogue timestamps, not in prose.
+   This repository holds its own evidence for why: the deliberately leaky ablation in
+   `reports/CHALLENGER_EVALUATION.md` manufactures **+0.31 to +2.16 nats/event** of apparent skill
+   and turns a −0.346 information-gain *loss* on Nepal into a +0.429 apparent *win*. Leakage does
+   not produce small errors. It produces exactly the result you were hoping for, which is why it is
+   invisible from the inside. A prediction project needs this machinery more than a forecasting
+   project does, not less: the more interesting the claim, the more it will be attacked here first.
+
+3. **Baselines are adversaries, not straw men.** Every claim is scored against the strongest
+   available baseline for its task, properly fitted and published with its diagnostics — ETAS for
+   catalogue-rate forecasting, and for an alarm-based claim, a random alarm set matched on alarm
+   rate and spatial footprint. A model that beats a badly-fitted baseline has demonstrated nothing.
+   Where a baseline beats a Rupture model, that is the published result.
+
+4. **Pre-register.** An experiment declares its hypothesis, region, magnitude range, lead time,
+   alarm rate and scoring rule in a committed file *before* it touches the test data. Git is the
+   timestamp; anyone can verify from the history that the hypothesis preceded the result. This is
+   the single thing an open project can do that a closed lab cannot easily do, and it converts
+   "we found an effect" into "we predicted an effect and then found it".
+
+5. **No fabricated data.** Adapters fetch or fail loudly. No adapter returns synthesised rows, no
+   test passes on data it invented, unknowns are null. Synthetic data from a physics simulator is
+   permitted and welcome as *training* input, and is labelled as synthetic everywhere it appears.
+
+6. **Provenance on every record** (source, retrieval time, checksum, licence). Homogenisation and
+   preprocessing steps are logged per record.
+
+7. **Negative results are deliverables.** A line that was pursued properly and failed, published
+   with the evidence, is a contribution to this repository and to the field — it is the thing the
+   literature is worst at supplying and the thing that stops the next person burning a year.
+   `RELEASE_STATUS.md` is the ledger and it under-claims by design.
+
+8. **Self-contained repo conventions.** No private repo, internal package or hosted platform is a
+   dependency. DVC-versioned `data/` and `baselines/`, `src/rupture/validation/` gates, Makefile
+   `validate-*`, `promote`, honest `RELEASE_STATUS.md`, a plain Docker image as the deployment
+   unit, portable job manifests in `infra/jobs/*.yaml`. Downstream consumers integrate through the
+   versioned JSON Schemas in `contracts/`.
+
+9. **Ask before downloads > 5 GB or paid API calls.** Credentials via `.env`; documented in
+   `docs/CREDENTIALS.md`.
+
+## How Rupture writes about results
+
+There is no banned-word list. It was removed on 2026-09-04 along with the positioning it enforced;
+`predict`, `prediction` and `predictability` are the project's own vocabulary and are used without
+apology. What replaces the word gate is a stricter obligation on *substance*:
+
+- **Quantify or qualify.** "Model X improves on ETAS" is not publishable here. "Model X gains
+  0.11 ± 0.04 nats/event over ETAS across 22 pseudo-prospective 30-day windows in California,
+  paired T-test p = 0.03" is. If the number does not exist yet, the sentence says "untested".
+- **Name the baseline and the protocol** in the same breath as the claim.
+- **Distinguish claim, replication and rebuttal** when citing others. `docs/RESEARCH_LANDSCAPE.md`
+  tags every cited work with its evidence status, and a work with a published rebuttal is never
+  cited without it.
+- **An operational claim is a different claim.** Rupture is a research repository. Nothing in it
+  is an alert system, and artefacts say so in their metadata, because the failure mode of a
+  research forecast escaping into an operational channel is measured in lives rather than in
+  reputations.
+
+## What is built today
+
+Rupture did not start as a prediction project. Two earlier phases built a probabilistic seismic
+forecasting and cascade-loss system, and that work is the foundation the prediction programme
+stands on rather than something to be discarded:
+
+| Layer | Question it answers | Method | State |
+|---|---|---|---|
+| F0 Long-term hazard | Exceedance probability of ground motion at a site over 50 years | PSHA via OpenQuake; verified native GSIMs | built |
+| F1 Time-dependent rate forecast | Rate of M ≥ m events per cell over the next day / week / month / year | ETAS baseline; three challengers and an ensemble, CSEP-scored | built; no challenger beat ETAS |
+| F2 Ground motion → loss | Expected and avoided loss to a portfolio | OpenQuake scenario and event-based risk; published avoided-loss contract | built |
+| F3 Triggered cascades | What a large event triggers, and where | USGS ground-failure models; shared discriminator with `serac` | built |
+
+Two things about that inheritance matter for what comes next. The **evaluation harness, leakage
+controls, catalogue infrastructure and provenance machinery transfer directly** — they are the most
+valuable thing in the repository and the hardest part to rebuild. The **architecture does not**:
+every port is catalogue-shaped, and a catalogue is a lossy summary that has already thrown away the
+continuous observations where the most promising prediction signals in the literature live. See
+`docs/ARCHITECTURE.md` for the re-architecture that fixes this and `docs/ROADMAP.md` for what it
+is in service of.
+
+`RELEASE_STATUS.md` remains the authority on what actually ran. No challenger beat ETAS under the
+pseudo-prospective protocol, which is a published negative result and, under principle 7, a
+deliverable.
 
 ## Repository conventions
 
@@ -107,7 +188,6 @@ after `uv sync`.
 | `typecheck` | mypy --strict |
 | `test` | offline unit + contract suite (sockets disabled) |
 | `test-integration` | opt-in: network / Docker tests |
-| `validate-language` | banned-phrase scan (rupture does not predict earthquakes) |
 | `validate-catalog` | catalogue schema, provenance, Mc present, no duplicates, landslide events retained |
 | `validate-etas` | ETAS fit diagnostics present, parameters plausible, forecast sums finite |
 | `validate-eval` | CSEP harness runs on fixtures; leakage assertion passes |
@@ -138,7 +218,6 @@ How the gates are wired:
   yet report `NOT_IMPLEMENTED`, exit 2 and name the phase that delivers them. `make schema-check`
   runs the same drift check as the `schema` gate through `rupture schema export --check`.
 - The `validate-rupture` aggregate depends on `$(VALIDATE_GATES)`, initialised to
-  `validate-language schema-check`; the Makefile then does `-include mk/*.mk`. Phase-2 gates
   register themselves by dropping a `mk/<name>.mk` file containing
   `VALIDATE_GATES += validate-<name>`; they do not edit the Makefile itself, so several parallel
   worktrees can each add a gate without merge conflicts. A gate whose *name* is new to the
@@ -195,7 +274,7 @@ over this table**; where an option list here is shorter than the module's, read 
 | risk owner | C2 `src/rupture/risk/`, the ground-motion, exposure and vulnerability adapter families, `docs/RISK.md` | worktree `../rupture-wt-risk`. **No role name for this owner is recorded anywhere in the tree**; it is left unnamed here rather than invented |
 | `cascade-engineer` | C3 `src/rupture/cascade/`, `adapters/cascade/`, `docs/CASCADE.md` | worktree `../rupture-wt-cascade`; named in `registry.PHASE_FOR_GATE` |
 | `ops-forecaster` | C4 `src/rupture/services/aftershock/`, `docs/AFTERSHOCK.md` | worktree `../rupture-wt-aftershock`; named in `registry.PHASE_FOR_GATE` |
-| `qa-reviewer` | read-only review after each merge and before push | **veto** on: leakage (any path where post-cutoff events reach a fit or forecast), banned language, fabricated or synthetic data presented as real, network access in `tests/unit`, silent skips, docs that disagree with code, an over-claiming `RELEASE_STATUS.md` |
+| `qa-reviewer` | read-only review after each merge and before push | **veto** on: leakage (any path where post-cutoff data reaches a fit, a feature, a hyperparameter choice or a preprocessing step), a result published without its protocol and baseline, an experiment scored against a pre-registration written after the fact, fabricated or synthetic data presented as real, network access in `tests/unit`, silent skips, docs that disagree with code, an over-claiming `RELEASE_STATUS.md` |
 
 Worktree rule: parallel agents work in separate `git worktree`s branched from the same commit,
 each with its own `uv` venv, and touch only their own subtrees plus their own tests, docs and
@@ -203,31 +282,6 @@ each with its own `uv` venv, and touch only their own subtrees plus their own te
 pre-sectioned so additions are append-only. Merges are real merges (not `format-patch`), performed
 serially by `architect`, and `make validate-rupture` is run after **each** merge before the next
 one starts. A qa-reviewer finding must be fixed before the next merge.
-
-## Banned language
-
-`make validate-language` (`src/rupture/validation/language.py`) scans every `.py .md .json .yaml
-.yml .toml .txt .cfg .ini` file in the tree, case-insensitively, for:
-
-- `predict` and every derivative (`-s`, `-ed`, `-ing`, `-ion(s)`, `-or(s)`, `-ive`, `-ability`);
-- `early warning` / `early-warning` used as a capability (rupture is not an EEW system);
-- the deterministic phrasings `will occur`, `will strike`, `will hit`, `will happen`, `imminent`, `next big one`.
-
-Use *forecast*, *rate*, *expected count*, *probability of exceedance*. The only permitted
-exceptions are the exact fragments in `src/rupture/validation/banned_language_allowlist.txt`:
-the sentence "rupture does not predict earthquakes", the definitional sentence quoted in
-"What rupture is and is not" above, the gate's own vocabulary, the lines of this banned list
-itself, the two glossary headings that define what rupture is not, and the traditional expansion
-of the acronym GMPE as a term of art (rupture itself says GSIM). **An allowlisted fragment exempts
-only itself, not the line it sits on**: the gate deletes each matching fragment from the line and
-re-scans what is left, so a banned claim cannot ride along beside an allowlisted sentence in the
-same markdown table row. A fragment must therefore sit on one line to match at all. Do not extend
-the allowlist without an ADR. The inline marker
-`# lang-gate: allow` exempts a single line and is for test strings that must spell out a
-violation; it is never used in docs, model
-outputs or identifiers.
-
-CSEP's full name contains a banned word; refer to it by acronym.
 
 ## Data, credentials and money
 

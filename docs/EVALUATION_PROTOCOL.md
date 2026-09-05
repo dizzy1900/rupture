@@ -4,7 +4,7 @@
 issued.** This document fixes the regions, thresholds, grid, horizons, tests, significance levels,
 schedule, leakage rules and promotion rule *in advance*, so that no choice below can be tuned to
 make a result look better. Changes to any numbered rule require an ADR that states what was known
-at the time of the change. rupture does not predict earthquakes; this protocol is how it scores
+at the time of the change. this protocol is how it scores
 the rate forecasts it does issue.
 
 The protocol follows CSEP practice for gridded rate forecasts (Schorlemmer et al. 2007;

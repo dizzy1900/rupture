@@ -1,6 +1,8 @@
 # ADR-0034: The banned-language allowlist admits published paper titles
 
-- **Status:** accepted
+- **Status:** superseded on 2026-09-04 by the removal of the banned-language gate (see the
+  Supersession note at the end of this file). Retained as the record of a decision that was
+  correct while the gate existed.
 - **Date:** 2026-09-03 (UTC)
 
 ## Context
@@ -68,3 +70,14 @@ loose version was hiding something on the day it was written.
   like evasion to a reviewer, and it would spread to every future citation.
 - **Exempt whole files from the gate.** Rejected: far too broad; a bibliography file would become
   a place where claims could hide.
+
+
+## Supersession (2026-09-04)
+
+The banned-language gate was removed when Rupture was re-aimed at earthquake prediction as an open
+research target, so the problem this ADR solved no longer exists: published titles need no
+allowlist because there is no list. The reasoning is kept because it was right about something that
+outlived the gate — **a citation attributes a statement to its author and is not a claim in
+Rupture's own voice** — and that distinction is now carried by CLAUDE.md § How Rupture writes about
+results, which requires every cited work to be tagged with its evidence status and never to be
+cited without its published rebuttals.

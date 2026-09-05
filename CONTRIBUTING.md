@@ -1,6 +1,6 @@
 # Contributing to rupture
 
-rupture does not predict earthquakes. Every contribution is held to the non-negotiables in
+Every contribution is held to the non-negotiables in
 [CLAUDE.md](CLAUDE.md); read them first.
 
 ## Setup
@@ -12,8 +12,9 @@ make validate-rupture
 
 ## Rules of the road
 
-1. **Language.** The word "predict" and its derivatives are banned from docs, identifiers and outputs
-   (`make validate-language`). Use *forecast*.
+1. **Quantify or qualify.** *Predict* and *prediction* are ordinary vocabulary here. What is not
+   permitted is an unquantified claim: name the number, the baseline and the protocol in the same
+   breath, or label the statement untested. See CLAUDE.md § How Rupture writes about results.
 2. **No leakage.** Anything that fits or issues a forecast must only see events with
    `origin_time < cutoff`. Tests assert this on real timestamps.
 3. **No fabricated data.** Adapters fetch or fail loudly. Unit tests run offline on committed

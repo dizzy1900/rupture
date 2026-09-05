@@ -1,6 +1,6 @@
 # Glossary
 
-rupture does not predict earthquakes. This glossary fixes the vocabulary used in the code, the
+This glossary fixes the vocabulary used in the code, the
 contracts and the documentation. Where a term has a settled meaning in the CSEP or engineering
 seismology literature, rupture uses that meaning; the references at the end are the sources.
 
@@ -15,11 +15,16 @@ magnitude class in a given space–time cell, issued at a stated *issue time* fo
 *horizon*, computed only from information available before the issue time. Forecasts are
 probabilistic and are scored against what subsequently happened. rupture issues forecasts.
 
-**Prediction** — A deterministic statement that a specific event (time, place, magnitude) is
-going to happen.
-Deterministic prediction of the time, place and magnitude of individual earthquakes has no scientifically accepted method.
-rupture makes no statement of this kind, its outputs carry no such field, and
-`make validate-language` fails the build if the word appears outside the allowlisted sentences.
+**Prediction** — A statement, made in advance, that an event in a specified magnitude range will
+occur in a specified region within a specified time window, at a probability high enough to act on.
+The boundary with *forecast* is one of degree, not of kind: a forecast that concentrates enough
+probability in a small enough space-time-magnitude volume is a prediction. Rupture treats the
+distinction as a **measurable quantity** — probability gain over the best baseline, at a stated
+lead time and alarm rate — rather than as a category. See `docs/ROADMAP.md`.
+
+No method for short-term deterministic prediction has been demonstrated to the satisfaction of the
+field, and Rupture claims none. It aims at moving the measurable quantity, and reports where it
+does and does not.
 
 **Early warning** — Alerting people in the seconds between rupture onset (detected by
 seismometers) and the arrival of strong shaking at their location. It is an engineering
@@ -241,8 +246,8 @@ via the OpenQuake engine (Pagani et al. 2014).
 
 **GMPE / GSIM** — An empirical model of the distribution of a ground-motion intensity measure
 given magnitude, distance, site and mechanism. OpenQuake calls it a ground-shaking intensity model
-(GSIM); the older acronym GMPE expands to a phrase containing a banned word, so rupture uses
-**GSIM** throughout the code and documentation and writes "GMPE" only as the bare acronym.
+(GSIM), expanding the older acronym GMPE as *ground-motion prediction equation*. Rupture uses
+**GSIM** throughout the code for consistency with OpenQuake, not for any other reason.
 
 **IML (intensity measure level)** — A value of an intensity measure type (e.g. PGA in g,
 SA(1.0 s) in g, PGV in cm/s).
@@ -337,7 +342,7 @@ by space, time and links; rupture writes one STAC item per issued forecast via p
 - Rhoades, D. A. et al. (2011). Efficient testing of earthquake forecasting models. *Acta Geophysica*.
 - Savran, W. H. et al. (2022). pyCSEP: a Python toolkit for earthquake forecast developers. *Seismological Research Letters*.
 - Schorlemmer, D. et al. (2007). Earthquake likelihood model testing. *Seismological Research Letters*.
-- Schorlemmer, D. et al. (2018). The CSEP achievements-and-priorities paper. *Seismological Research Letters* (title contains a banned word and is not reproduced here).
+- Schorlemmer, D., Werner, M. J., Marzocchi, W., Jordan, T. H., Ogata, Y., Jackson, D. D., et al. (2018). The Collaboratory for the Study of Earthquake Predictability: Achievements and Priorities. *Seismological Research Letters* 89(4), 1305-1313.
 - Scordilis, E. M. (2006). Empirical global relations converting MS and mb to moment magnitude. *Journal of Seismology*.
 - Storchak, D. A. et al. (2013). Public release of the ISC-GEM Global Instrumental Earthquake Catalogue (1900–2009). *Seismological Research Letters*; and Storchak, D. A. et al. (2015), *Physics of the Earth and Planetary Interiors*.
 - Styron, R. & Pagani, M. (2020). The GEM Global Active Faults Database. *Earthquake Spectra*.

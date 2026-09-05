@@ -1,6 +1,6 @@
 # Deployment
 
-rupture does not predict earthquakes. This document describes the deployment unit (one plain
+This document describes the deployment unit (one plain
 Docker image), the portable job manifests, and how to point them at AWS Batch/ECS or anything
 else. Decisions: ADR-0016 (image + manifests), ADR-0011 and ADR-0030 (OpenQuake engine image).
 

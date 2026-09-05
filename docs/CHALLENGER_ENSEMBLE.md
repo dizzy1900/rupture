@@ -1,6 +1,6 @@
 # The log-linear ensemble
 
-**rupture does not predict earthquakes.** The ensemble pools the expected-count grids of the ETAS
+The ensemble pools the expected-count grids of the ETAS
 baseline and one or more challengers into a single expected-count grid on the same lattice and
 magnitude bins, and is scored under the same protocol as its components.
 

@@ -1,6 +1,6 @@
 # Challenger C1a — a neural temporal point process
 
-**rupture does not predict earthquakes.** This document reports how one learned model scored
+This document reports how one learned model scored
 against the ETAS baseline under `EVALUATION_PROTOCOL.md`. It is a record of rate forecasts and
 their test outcomes, not a claim about any future event.
 

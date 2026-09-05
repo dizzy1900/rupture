@@ -1,6 +1,6 @@
 # Catalogue build
 
-rupture does not predict earthquakes. This document describes how `rupture catalog build` turns
+This document describes how `rupture catalog build` turns
 public bulletins into one homogenised, provenance-complete catalogue per test region, what the
 rules are (settled in ADR-0017), how the offline and online runs are invoked, what the real runs
 produced, and what the known limitations are.

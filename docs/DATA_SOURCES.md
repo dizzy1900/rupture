@@ -1,6 +1,6 @@
 # Data sources
 
-rupture does not predict earthquakes. Everything it does starts from public catalogues, fault
+Everything it does starts from public catalogues, fault
 databases and source models listed here. Every record ingested from any of them carries a
 provenance record (`source`, `source_url`, `retrieved_at`, `sha256`, `licence`,
 `adapter_version`); unknown values are `null`. Adapters fetch or fail loudly; none synthesises

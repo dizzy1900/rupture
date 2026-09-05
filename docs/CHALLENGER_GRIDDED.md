@@ -1,6 +1,6 @@
 # C1b — the gridded spatio-temporal challenger
 
-**rupture does not predict earthquakes.** This model issues expected counts of events per cell per
+This model issues expected counts of events per cell per
 magnitude bin over a horizon, on the same lattice and the same magnitude bins as the ETAS
 baseline, and it is scored under the protocol fixed in `EVALUATION_PROTOCOL.md` before any model
 in this repository was fitted.

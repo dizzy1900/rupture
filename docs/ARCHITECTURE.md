@@ -1,6 +1,6 @@
 # Architecture
 
-rupture does not predict earthquakes. This document describes how the system that issues and
+This document describes how the system that issues and
 scores rate forecasts, computes hazard, loss and cascades, and serves an operational aftershock
 forecast, is put together. Decisions are recorded in `docs/adr/`; this document explains the shape,
 not the rationale.
@@ -353,7 +353,7 @@ survives; the marketing claim "time-dependent" does not, and `RELEASE_STATUS.md`
 | Failure mode | Defence |
 |---|---|
 | **Leakage** — future events reach a fit or forecast; refits inside windows; k-fold splits | hard cutoff on `origin_time` asserted in tests on real timestamps; `parameter_snapshot_hash` constancy check; refits only at logged boundaries; k-fold forbidden by protocol; negative test with an injected post-cutoff event |
-| **Overclaiming** — deterministic language, skill claimed from consistency tests, ledger inflation | banned-language gate; protocol says consistency ≠ skill; promotion rule requires paired T-test with positive IGPE in 2 of 3 regions; `RELEASE_STATUS.md` under-claims by rule; qa-reviewer veto |
+| **Overclaiming** — deterministic language, skill claimed from consistency tests, ledger inflation | every published claim carries its protocol, baseline and number (CLAUDE.md § How Rupture writes about results); pre-registration committed before test data is touched; protocol says consistency ≠ skill; promotion rule requires paired T-test with positive IGPE in 2 of 3 regions; `RELEASE_STATUS.md` under-claims by rule; qa-reviewer veto |
 | **Fabricated fixtures** — synthetic rows presented as real, hand-edited fixtures | fixtures are slices of real pulls with `provenance.json` (`sha256` of the source payload); never edited by hand; adapters fetch or raise; unknowns are `null` |
 | **Silent skips** — a gate or test that passes because it did nothing | `GateStatus.SKIPPED` is legal only with a printed reason; `make promote` prints every skip; not-implemented verbs exit 2 and say which phase delivers them |
 | **Drifting contracts** — schema files diverge from the models, or change incompatibly under the same version | `rupture schema export --check` (`make schema-check`, in CI and in `VALIDATE_GATES`); `.vN` in the filename; additive-only within a version; contract tests round-trip fixtures |

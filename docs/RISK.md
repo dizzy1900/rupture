@@ -1,6 +1,6 @@
 # RISK — ground motion to loss to avoided loss (F2)
 
-rupture does not predict earthquakes. This layer answers a different question, and one that is
+This layer answers a different question, and one that is
 useful to an underwriter whether or not any forecast model has skill: **for a given rupture, what
 does a portfolio lose, and what does an intervention avoid?**
 
@@ -113,9 +113,7 @@ transcription is upstream's. rupture does not link or ship the engine. **Resolve
 ADR-0033**, which records the position, the attribution given, and the re-derivation path if it is
 ever challenged.
 
-**Paper titles.** Both published titles contain a word the banned-language gate forbids. ADR-0034
-resolved this: quoting somebody else's published title verbatim is a citation, not a claim rupture
-makes, so the allowlist admits exactly those two title strings and the titles appear in full:
+**Paper titles.** Both GSIMs are cited by their full published titles:
 
 - Boore, Stewart, Seyhan & Atkinson (2014), doi:10.1193/070113EQS184M:
   "NGA-West2 Equations for Predicting PGA, PGV, and 5% Damped PSA for Shallow Crustal Earthquakes"

@@ -1,6 +1,6 @@
 # Operational aftershock forecasts (component C4)
 
-rupture does not predict earthquakes. This service answers one question, for one mainshock, as a
+This service answers one question, for one mainshock, as a
 rate and a probability:
 
 > Given the sequence so far, what is the expected number of further events of magnitude at least

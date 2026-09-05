@@ -1,7 +1,7 @@
 # Baseline results — the ETAS pseudo-prospective schedule
 
 **These are scores, not skill claims.** A "pass" means a CSEP-style consistency test did not
-reject the forecast at α = 0.05. rupture does not predict earthquakes; it issues rate forecasts
+reject the forecast at α = 0.05. it issues rate forecasts
 and reports how they scored. The protocol that fixed every choice below — regions, thresholds,
 grid, horizons, tests, significance levels, schedule and leakage rules — was written before any
 model in this repository was fitted (`EVALUATION_PROTOCOL.md`, 2026-09-03) and is unchanged by

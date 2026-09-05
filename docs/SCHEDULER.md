@@ -3,7 +3,7 @@
 This page describes how rupture's forecasts are issued and scored on a calendar. It is a
 description, not an implementation: Prompt 1 ships the commands and the pseudo-prospective runner
 (`rupture evaluate schedule`), and ADR-0016 fixes that the scheduler itself is platform glue
-around portable job manifests in `infra/jobs/`. rupture does not predict earthquakes; the
+around portable job manifests in `infra/jobs/`. the
 schedule issues rate forecasts and records how they scored.
 
 ## Cadence

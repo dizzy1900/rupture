@@ -39,7 +39,7 @@ Consequences / Alternatives considered. All dates UTC.
 | [0031](0031-gridded-spatio-temporal-challenger.md) | C1b is a small ConvLSTM over rasterised seismicity plus static covariates | accepted |
 | [0032](0032-log-linear-ensemble.md) | The ensemble is a log-linear pool, weights fitted on a validation window, rates floored relatively | accepted |
 | [0033](0033-gsim-coefficient-provenance-and-licence.md) | GSIM coefficient provenance and the AGPL question | accepted |
-| [0034](0034-cite-published-titles-verbatim.md) | The banned-language allowlist admits published paper titles | accepted |
+| [0034](0034-cite-published-titles-verbatim.md) | The banned-language allowlist admits published paper titles | superseded |
 | [0035](0035-models-data-seam.md) | The `models/data` seam between the two challengers | accepted |
 | [0039](0039-gem-exposure-licence.md) | GEM's global exposure and vulnerability models are not openly licensed | accepted |
 | [0040](0040-promotion-rule-single-encoding.md) | Condition 2 of the promotion rule is the schedule-pooled paired T-test, and the rule is encoded once | accepted |

@@ -1,6 +1,6 @@
 # RELEASE_STATUS
 
-rupture does not predict earthquakes. This ledger says what actually ran, and under-claims by
+This ledger says what actually ran, and under-claims by
 design. Last updated 2026-09-03.
 
 **Phase:** Prompt 1 (foundations) and Prompt 2 (challengers, loss, cascades) both complete.

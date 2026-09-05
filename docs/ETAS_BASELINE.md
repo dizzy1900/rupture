@@ -1,6 +1,6 @@
 # The ETAS baseline
 
-rupture does not predict earthquakes. Its operational baseline is the ETAS model of Mizrahi,
+Its operational baseline is the ETAS model of Mizrahi,
 Nandan & Wiemer (2021), through the `etas` package pinned in ADR-0009, wrapped by
 `rupture.adapters.forecasting.etas_mizrahi.MizrahiETAS` (the `ForecastModel` port). This page
 says how a fit is configured, what is persisted, how a forecast is issued and what the known

@@ -1,6 +1,6 @@
 # Hazard (F0): the OpenQuake adapter
 
-rupture does not predict earthquakes. This document describes how rupture computes long-term
+This document describes how rupture computes long-term
 probabilities of exceedance of ground motion with the OpenQuake engine, what has been verified
 about the pinned image and what is still assumed, and what has and has not been run.
 Decisions: ADR-0008 (source models per region), ADR-0011 (pinned image), ADR-0030 (runner design).
