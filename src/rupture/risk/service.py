@@ -149,7 +149,7 @@ def create_app() -> FastAPI:
         version=__version__,
         description=(
             "Ground motion to loss to avoided loss for a portfolio. "
-            "rupture does not predict earthquakes."
+            "Rupture research output, not an operational alert."
         ),
     )
 

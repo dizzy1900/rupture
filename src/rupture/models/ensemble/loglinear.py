@@ -30,7 +30,7 @@ the validation windows, on a deterministic grid over the simplex (coarse pass th
 pass). No gradient optimiser, so the fitted weights are reproducible to the grid step and do not
 depend on an initialisation.
 
-rupture does not predict earthquakes; the ensemble issues expected counts per cell and magnitude
+the ensemble issues expected counts per cell and magnitude
 bin, as its components do.
 """
 

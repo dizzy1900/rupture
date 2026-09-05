@@ -121,7 +121,7 @@ def test_the_metadata_carries_the_caveat_and_the_provenance(tmp_path: Path) -> N
     assert metadata["rupture:shaking_source"] == "field-1"
     assert metadata["rupture:n_units"] == "1"
     assert metadata["rupture:contract"] == "cascade-exposure.v0.json"
-    assert "does not predict" in metadata["rupture:statement"]  # lang-gate: allow
+    assert "not an operational alert" in metadata["rupture:statement"]
 
 
 def test_the_threshold_survives_as_a_float_not_a_rounded_string(tmp_path: Path) -> None:

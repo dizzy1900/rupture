@@ -8,7 +8,6 @@ post-cutoff event injected into a fit history, a target outside its window, a si
 change) raise ``LeakageError``. Pass rates are reported as found; a failing N-test on the
 Ridgecrest window is expected and is not a gate failure.
 
-rupture does not predict earthquakes.
 """
 
 from __future__ import annotations

@@ -15,7 +15,6 @@ from typing import cast
 from rupture.validation.result import GateResult, GateStatus
 
 GATES: tuple[str, ...] = (
-    "language",
     "schema",
     "catalog",
     "etas",

@@ -9,7 +9,7 @@ private harness is not scored against the baseline at all.
 
 Nothing here decides whether the challenger is any good. :func:`promotion_verdict` applies § 10 of
 the protocol mechanically and reports which conditions failed.
-rupture does not predict earthquakes: a challenger that scores well has issued a rate forecast
+a challenger that scores well has issued a rate forecast
 that was not rejected, which is not a claim about any future event.
 """
 
@@ -427,7 +427,7 @@ def run_ntpp_schedule(  # noqa: PLR0915 - one linear pass over the schedule
         "generated_at": utc_now().isoformat(),
         "note": (
             "Pass means not rejected at alpha; it is not a skill claim. "
-            "rupture does not predict earthquakes."
+            "Rupture research output, not an operational alert."
         ),
     }
     reports_dir.joinpath("eval").mkdir(parents=True, exist_ok=True)

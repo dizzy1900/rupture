@@ -126,7 +126,7 @@ def write_catalog(catalog: Catalog, directory: Path) -> dict[str, Path]:
         b"rupture:sources": json.dumps(list(catalog.sources)).encode(),
         b"rupture:licences": json.dumps(licences).encode(),
         b"rupture:built_at": catalog.built_at.isoformat().encode(),
-        b"rupture:statement": b"rupture does not predict earthquakes",
+        b"rupture:statement": b"Rupture research output, not an operational alert.",
     }
     merged = {**(table.schema.metadata or {}), **extra}
     pq.write_table(table.replace_schema_metadata(merged), events_path, compression="zstd")

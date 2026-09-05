@@ -44,7 +44,7 @@ Configuration is environment variables only:
     Where issued grids are kept so ``GET /aftershock/grid/{id}`` can answer. Unset means an
     in-process cache, which is not shared between uvicorn workers.
 
-rupture does not predict earthquakes: every number here is a rate, a probability or a loss.
+every number here is a rate, a probability or a loss.
 """
 
 from __future__ import annotations
@@ -65,7 +65,7 @@ TITLE = "rupture"
 DESCRIPTION = (
     "Probabilistic seismic forecasting and cascade-loss model. Two surfaces: avoided loss for a "
     "portfolio (F2) and operational aftershock forecasts for a sequence (F1). "
-    "rupture does not predict earthquakes: every number is a rate, a probability or a loss."
+    "every number is a rate, a probability or a loss."
 )
 
 __all__ = ["DESCRIPTION", "TITLE", "create_app", "repo_root"]

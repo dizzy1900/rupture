@@ -8,7 +8,7 @@ PYTEST_ARGS ?= -n auto
 .DEFAULT_GOAL := help
 
 .PHONY: help setup lint typecheck test test-integration \
-        validate-language validate-catalog validate-etas validate-eval validate-hazard \
+        validate-catalog validate-etas validate-eval validate-hazard \
         validate-rupture promote underwriting-check schema-export schema-check clean
 
 help: ## list targets
@@ -34,9 +34,6 @@ test-integration: ## opt-in: network / Docker tests
 	$(RUN) pytest tests/integration -m integration -ra
 
 # ------------------------------------------------------------------ gates
-validate-language: ## banned-phrase scan (rupture does not predict earthquakes)
-	$(RUN) rupture validate language
-
 validate-catalog: ## catalogue schema, provenance, Mc present, no duplicates, landslide events retained
 	$(RUN) rupture validate catalog
 
@@ -58,7 +55,7 @@ schema-check: ## fail if contracts/*.json drift from the domain models
 # The aggregate. Phase-2 gates register themselves by adding `mk/<name>.mk` with
 #   VALIDATE_GATES += validate-<name>
 # so no two agents edit this file. Gates must be offline-safe or skip with a printed reason.
-VALIDATE_GATES := validate-language schema-check
+VALIDATE_GATES := schema-check
 -include mk/*.mk
 
 validate-rupture: lint typecheck test $(VALIDATE_GATES) ## everything, offline

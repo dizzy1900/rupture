@@ -14,7 +14,7 @@ cutoff that is due and not already on disk, which is what a cron entry or a sche
 under ``reports/aftershock/``. ``serve`` runs the HTTP service — by default the combined
 application (``rupture.services.app``), which carries the avoided-loss surface too.
 
-rupture does not predict earthquakes: the output is a rate and a probability for a sequence.
+the output is a rate and a probability for a sequence.
 """
 
 from __future__ import annotations
@@ -59,7 +59,7 @@ EXIT_FAIL = 1
 app = typer.Typer(
     help=(
         "Operational aftershock forecasts for a mainshock sequence. "
-        "rupture does not predict earthquakes."
+        "Rupture research output, not an operational alert."
     ),
     no_args_is_help=True,
 )

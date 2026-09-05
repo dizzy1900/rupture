@@ -23,7 +23,6 @@ events before the **training-block end**, not merely before the cutoff, so the e
 decision cannot see the validation block either. ``forecast`` refuses a history containing an
 event at or after the issue time.
 
-rupture does not predict earthquakes.
 """
 
 from __future__ import annotations

@@ -23,7 +23,6 @@ Every stage caches to disk so a run can be resumed. Nothing here re-fits ETAS fo
 the declared baseline's forecasts are read from the store the published schedule wrote, so the
 challenger is compared against exactly the forecasts the baseline was scored on.
 
-rupture does not predict earthquakes.
 """
 
 from __future__ import annotations
@@ -832,7 +831,7 @@ def run_region(region_id: str, paths: Paths, *, skip_ablation: bool = False) -> 
         "note": (
             "A pass means a consistency test did not reject the forecast at alpha; it is not a "
             "skill claim. Skill is only ever claimed from the paired comparison against ETAS. "
-            "rupture does not predict earthquakes."
+            "Rupture research output, not an operational alert."
         ),
     }
     report["uniform_component_ablation"] = uniform_component_ablation(

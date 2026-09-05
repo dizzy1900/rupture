@@ -1,6 +1,6 @@
 """`rupture challenger ...` — fit, issue and score the challenger models.
 
-rupture does not predict earthquakes. Every verb here produces expected counts per cell and
+Every verb here produces expected counts per cell and
 magnitude bin, on the same grid and bins as the ETAS baseline, scored under
 ``docs/EVALUATION_PROTOCOL.md``.
 
@@ -60,14 +60,13 @@ app = typer.Typer(
     help="Challenger models measured against the ETAS baseline.", no_args_is_help=True
 )
 ntpp_app = typer.Typer(
-    help="Neural temporal point process (C1a). rupture does not predict earthquakes.",
+    help="Neural temporal point process (C1a).",
     no_args_is_help=True,
 )
 app.add_typer(ntpp_app, name="ntpp")
 protocol_app = typer.Typer(
     help=(
-        "The gridded challenger (C1b) and the log-linear ensemble, run over the protocol "
-        "schedule. rupture does not predict earthquakes."
+        "The gridded challenger (C1b) and the log-linear ensemble, run over the protocol schedule."
     ),
     no_args_is_help=True,
 )

@@ -1,6 +1,6 @@
 """``rupture`` command-line interface.
 
-rupture does not predict earthquakes. Sub-commands live in :mod:`rupture.commands`; validation
+Sub-commands live in :mod:`rupture.commands`; validation
 gates in :mod:`rupture.validation` (resolved by name through the registry). Anything not yet
 implemented exits with status 2 and names the phase that delivers it.
 """
@@ -50,7 +50,7 @@ app = typer.Typer(
     name="rupture",
     help=(
         "Probabilistic seismic forecasting and cascade-loss model. "
-        "rupture does not predict earthquakes."
+        "Rupture research output, not an operational alert."
     ),
     no_args_is_help=True,
     add_completion=False,
@@ -92,7 +92,7 @@ def _root(
         ),
     ] = False,
 ) -> None:
-    """rupture does not predict earthquakes."""
+    """rupture — open research on earthquake predictability."""
 
 
 # ------------------------------------------------------------------ validate

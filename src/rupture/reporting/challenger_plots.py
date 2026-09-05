@@ -1,7 +1,5 @@
 """Render the figures that back ``reports/CHALLENGER_EVALUATION.md``.
 
-rupture does not predict earthquakes.
-
 The brief asks the challenger evaluation to carry plots. This module draws them, and it draws them
 **only** from evidence that is already committed to the repository:
 

@@ -6,7 +6,7 @@ of expected counts on the **same lattice and magnitude bins as the ETAS baseline
 trained weights into the parameter snapshot so the protocol's constancy check (§ 7 rule 4) has
 something to check, and it persists a fit in the layout ``baselines/etas/<region>/`` already uses.
 
-rupture does not predict earthquakes. Every number leaving this module is an expected count over a
+Every number leaving this module is an expected count over a
 window, on a grid, with the uncertainty that implies.
 """
 

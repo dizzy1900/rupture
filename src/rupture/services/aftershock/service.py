@@ -31,7 +31,7 @@ service is meant to sit behind whatever the deployment already has. Keys come fr
 (:mod:`rupture.services.auth`). With no key configured the authenticated routes answer ``503``
 rather than serving open.
 
-rupture does not predict earthquakes. A response is a rate and a probability for a sequence.
+A response is a rate and a probability for a sequence.
 """
 
 from __future__ import annotations
@@ -442,7 +442,7 @@ def create_app(
         description=(
             "Operational aftershock forecasts: the probability of at least one further event of "
             "magnitude at least m within a horizon, and the gridded rate forecast behind it. "
-            "rupture does not predict earthquakes. " + POISSON_NOTE
+            + POISSON_NOTE
         ),
     )
 

@@ -443,5 +443,5 @@ def _report(
         },
         "generated_at": utc_now().isoformat(),
         "note": "Pass means not rejected at alpha; it is not a skill claim. "
-        "rupture does not predict earthquakes.",
+        "Rupture research output, not an operational alert.",
     }

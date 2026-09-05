@@ -1,6 +1,6 @@
 """`rupture forecast ...` — fit the ETAS baseline and issue forecast grids.
 
-rupture does not predict earthquakes. ``fit`` uses only events with ``origin_time < cutoff``;
+``fit`` uses only events with ``origin_time < cutoff``;
 ``issue`` uses only events with ``origin_time < issue_time`` and a fit whose cutoff is not after
 the issue time. Any other input raises ``LeakageError`` and exits non-zero.
 """

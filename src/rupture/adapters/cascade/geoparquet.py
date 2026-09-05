@@ -45,7 +45,7 @@ METADATA_PREFIX = "rupture:"
 
 STATEMENT = (
     b"susceptibility and exposure, not a forecast of individual slope failure; "
-    b"rupture does not predict earthquakes"
+    b"Rupture research output, not an operational alert."
 )
 
 _SCALAR_COLUMNS: tuple[str, ...] = (

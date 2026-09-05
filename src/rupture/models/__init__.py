@@ -1,6 +1,6 @@
 """Learned challenger models, their ensembles, and the dataset machinery they share.
 
-rupture does not predict earthquakes. Everything under this package produces *rate* forecasts —
+Everything under this package produces *rate* forecasts —
 expected counts per cell per magnitude bin over a horizon — scored against the ETAS baseline
 under the protocol in ``docs/EVALUATION_PROTOCOL.md``.
 

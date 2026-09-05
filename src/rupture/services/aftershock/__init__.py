@@ -3,7 +3,7 @@
 Given a mainshock and a catalogue, this service issues the probability of at least one further
 event of magnitude at least *m* within a horizon, together with the gridded rate forecast it
 summarises. It is a rate-and-probability statement about a sequence, conditioned on what has
-already happened; rupture does not predict earthquakes and this service makes no claim about any
+already happened; and this service makes no claim about any
 individual event. See ``docs/AFTERSHOCK.md`` and ``reports/MODEL_CARD_aftershock.md``.
 """
 

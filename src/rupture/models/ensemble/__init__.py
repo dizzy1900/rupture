@@ -1,6 +1,6 @@
 """Log-linear ensemble of the ETAS baseline with any challenger.
 
-See ``docs/CHALLENGER_ENSEMBLE.md`` and ADR-0032. rupture does not predict earthquakes.
+See ``docs/CHALLENGER_ENSEMBLE.md`` and ADR-0032.
 """
 
 from rupture.models.ensemble.loglinear import (

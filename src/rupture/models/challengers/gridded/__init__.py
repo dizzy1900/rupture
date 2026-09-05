@@ -1,6 +1,6 @@
 """C1b: a gridded spatio-temporal challenger (ConvLSTM) on the region's own lattice.
 
-See ``docs/CHALLENGER_GRIDDED.md`` and ADR-0031. rupture does not predict earthquakes.
+See ``docs/CHALLENGER_GRIDDED.md`` and ADR-0031.
 """
 
 from rupture.models.challengers.gridded.challenger import (

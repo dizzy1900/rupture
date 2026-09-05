@@ -29,7 +29,7 @@ Two rules of construction hold everywhere below:
    results, never a model object, so the same code judges the challenger, the baseline against
    itself, or a fixture.
 
-rupture does not predict earthquakes; a promotion here means a rate model is a candidate for
+a promotion here means a rate model is a candidate for
 operational use, nothing more.
 """
 

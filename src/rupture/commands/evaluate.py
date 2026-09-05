@@ -1,6 +1,6 @@
 """`rupture evaluate ...` — CSEP consistency tests and the pseudo-prospective schedule.
 
-rupture does not predict earthquakes; these commands score the rate forecasts it issues.
+these commands score the rate forecasts it issues.
 """
 
 from __future__ import annotations

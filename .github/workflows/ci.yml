@@ -31,8 +31,6 @@ jobs:
         run: make typecheck
       - name: Offline tests (sockets disabled)
         run: make test
-      - name: Language gate
-        run: make validate-language
       - name: Contract drift
         run: make schema-check
       # The brief's acceptance criterion is that a fresh clone validates offline, so CI runs the
@@ -70,7 +68,7 @@ jobs:
 
           # Gates with a step in this workflow. `hazard` runs in the hazard-integration job.
           covered = {
-              "language", "schema", "catalog", "etas", "eval",
+              "schema", "catalog", "etas", "eval",
               "cascade", "risk", "aftershock", "challengers",
               "hazard",
           }

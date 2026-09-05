@@ -19,7 +19,7 @@ the fit the schedule names and, against a live feed, would be a fit on data the 
 model should not yet have seen. A cutoff beyond the catalogue's coverage is refused for the same
 reason and named in the outcome, rather than producing a fit that looks current and is not.
 
-rupture does not predict earthquakes: a fit is a set of rate parameters.
+a fit is a set of rate parameters.
 """
 
 from __future__ import annotations

@@ -4,7 +4,7 @@ See ADR-0009 (why this package), ADR-0018 (how a forecast is issued from a store
 refitting, and how expected counts are formed) and ``docs/ETAS_BASELINE.md`` (configuration,
 persistence, limitations).
 
-rupture does not predict earthquakes; this adapter produces expected counts per cell and
+this adapter produces expected counts per cell and
 magnitude bin over a horizon, from parameters fitted only on events before a hard cutoff.
 """
 

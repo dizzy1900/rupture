@@ -14,7 +14,7 @@ Two kinds of input:
   depth distribution of past seismicity. All three are computed once from events strictly before
   the fit cutoff and then frozen, so they cannot drift with the target window.
 
-rupture does not predict earthquakes: these are the inputs to a rate model.
+these are the inputs to a rate model.
 """
 
 from __future__ import annotations

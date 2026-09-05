@@ -36,7 +36,7 @@ first order. The number is reported as computed, with the assumption named, in
 ``docs/AFTERSHOCK.md``, ``reports/MODEL_CARD_aftershock.md`` and in the ``notes`` of every
 forecast this module issues.
 
-rupture does not predict earthquakes: everything here is a rate and a probability.
+everything here is a rate and a probability.
 """
 
 from __future__ import annotations

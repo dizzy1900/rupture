@@ -37,7 +37,7 @@ EXIT_FAIL = 1
 SERAC = "serac"
 
 app = typer.Typer(
-    help="Ground motion to loss to avoided loss (F2). rupture does not predict earthquakes.",
+    help="Ground motion to loss to avoided loss (F2).",
     no_args_is_help=True,
 )
 

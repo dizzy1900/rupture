@@ -11,7 +11,7 @@ issuance. Checks:
 - forecast grid finite, non-negative, total > 0; same seed gives the same grid;
 - ``parameter_snapshot_hash`` reproducible through save/load and by recomputation.
 
-rupture does not predict earthquakes; the gate checks that the baseline was fitted properly.
+the gate checks that the baseline was fitted properly.
 """
 
 from __future__ import annotations

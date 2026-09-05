@@ -16,7 +16,7 @@ Two choices matter more than the architecture:
 * **The loss is the Poisson negative log-likelihood** on cell counts, which is the quantity the
   CSEP likelihood tests score. Nothing is trained on a surrogate.
 
-rupture does not predict earthquakes: the network outputs a log rate per cell.
+the network outputs a log rate per cell.
 """
 
 from __future__ import annotations

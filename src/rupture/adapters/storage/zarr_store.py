@@ -57,7 +57,7 @@ class ZarrGridStore:
                 "window_end": grid.window_end.isoformat(),
                 "description": (
                     "Expected event counts per cell and magnitude bin over the horizon. "
-                    "rupture does not predict earthquakes."
+                    "Rupture research output, not an operational alert."
                 ),
             },
         )

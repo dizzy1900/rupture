@@ -51,7 +51,9 @@ def build_item(grid: ForecastGrid, zarr_path: Path) -> pystac.Item:
             "rupture:n_simulations": grid.n_simulations,
             "rupture:total_expected": grid.total_expected(),
             "rupture:magnitude_min": grid.magnitude_bin_edges[0],
-            "description": "Gridded expected counts. rupture does not predict earthquakes.",
+            "description": (
+                "Gridded expected counts. Rupture research output, not an operational alert."
+            ),
         },
     )
     item.add_asset(
@@ -108,7 +110,7 @@ def refresh_collection(directory: Path) -> Path:
         id=f"rupture-forecasts-{region_id}-{model_id}",
         description=(
             f"Gridded rate forecasts for region {region_id!r} from model {model_id!r}. "
-            "rupture does not predict earthquakes."
+            "Rupture research output, not an operational alert."
         ),
         extent=pystac.Extent(pystac.SpatialExtent([union]), pystac.TemporalExtent([interval])),
         license="Apache-2.0",

@@ -483,7 +483,7 @@ class PyCSEPEvaluator:
             "skipped": skipped,
             "note": (
                 "basemap and coastlines omitted: they need network downloads; "
-                "rupture does not predict earthquakes."
+                "Rupture research output, not an operational alert."
             ),
         }
         spath = out_dir / "summary.json"
