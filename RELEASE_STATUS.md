@@ -274,15 +274,34 @@ each of these belongs to a file another owner is editing:
   vocabulary and forbids citing a `rebutted` or `contested` work without its rebuttal in the same
   sentence; nothing checks it. A machine-readable bibliography with status tags would make that
   mechanical and does not exist.
-- **No *consistency-test or challenger* result in this repository reports its statistical power**
-  or a minimum detectable effect, which ADR-0055 makes mandatory for anything published after it.
-  This narrowed on 2026-09-10 but did not close: every alarm score now carries exact power and a
-  minimum detectable gain, and `rupture.scoring.power.minimum_detectable_information_gain` exists
-  and is tested — and **nothing on the pyCSEP path calls it**. The 116 scored windows, the
-  challenger information gains and the ensemble result are all unchanged and all still powerless.
-  Wiring the existing function into the challenger reports is a small change with a real
-  consequence: the one metric ever beaten here (Türkiye ensemble, +0.335 nats/event over 55
-  windows) would gain the figure that says whether it could have been seen by chance.
+- ~~**No consistency-test or challenger result reports its statistical power.**~~ **Closed for
+  the challenger comparisons, still open for the consistency tests (2026-09-10).** Every
+  comparison in the committed schedules now carries its minimum detectable effect, derived from
+  the interval it already published — arithmetic on committed numbers, nothing re-run
+  (`rupture alarm evidence-power`, and `validate-challengers` prints it):
+
+  | region / model | IG (nats/event) | verdict | min detectable at 80 % power |
+  |---|---|---|---|
+  | türkiye / ensemble-loglinear | **+0.3354** | significant | **0.0866** — 3.9x the detectable effect |
+  | türkiye / gridded-convlstm | +0.0587 | null | 0.4564 |
+  | nepal / ensemble-loglinear | −0.0789 | null | 0.3390 |
+  | nepal / gridded-convlstm | −0.6215 | significant, and **worse** than ETAS | 0.6132 |
+
+  Three things follow. **The one metric ever beaten here is comfortably powered** — the Türkiye
+  ensemble's gain is nearly four times the smallest effect its own test could have found, which
+  it was not previously possible to say. **Two of the four nulls are near-blind**: Türkiye's
+  gridded model saw +0.059 where only +0.456 was findable, so "no skill" says very little about
+  it. And Nepal's gridded result is significant *in the wrong direction*, which the sign-aware
+  rendering now states rather than reporting a magnitude that reads as skill.
+
+  **Still open:** the N/M/S/L/CL consistency tests. The 116 scored windows report no power, the
+  pyCSEP path does not call the power module, and simulation-based power for those tests is not
+  built. Khawaja et al.'s point stands unanswered for them.
+
+  **The assumption travels with the figures.** They are derived from intervals that assume
+  independent events, which a clustered catalogue violates, so the true detectable effects are
+  larger than the table says. A block bootstrap would fix the intervals and these together and is
+  not built.
 
 The scientific gaps, unchanged by the re-aim:
 

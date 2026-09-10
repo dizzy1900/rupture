@@ -21,6 +21,7 @@ from rupture.pipelines import io
 from rupture.scoring import power as power_mod
 from rupture.scoring import reference as refmod
 from rupture.scoring.alarm import DEFAULT_ALTERNATIVE_GAIN, score_alarm_set
+from rupture.scoring.evidence import read_all
 from rupture.scoring.registry import registry_table
 
 app = typer.Typer(
@@ -172,3 +173,29 @@ def _echo(result: AlarmScore) -> None:
         )
     for note in result.notes:
         typer.echo(f"  note: {note}")
+
+
+@app.command("evidence-power")
+def evidence_power(
+    reports: Annotated[
+        Path, typer.Option("--reports", help="Directory of committed challenger schedules.")
+    ] = Path("reports/challenger"),
+    alpha: Annotated[float, typer.Option("--alpha")] = 0.05,
+    target_power: Annotated[float, typer.Option("--target-power")] = 0.8,
+) -> None:
+    """The power figure ADR-0055 requires, computed for results that predate the requirement.
+
+    Reads the committed schedules and derives each comparison's minimum detectable effect from
+    the interval it already publishes. Nothing is re-run and no model is loaded.
+    """
+    results = read_all(reports, alpha=alpha, target_power=target_power)
+    if not results:
+        typer.echo(f"no decided comparison found under {reports}", err=True)
+        raise typer.Exit(1)
+    for result in results:
+        typer.echo(result.render())
+        typer.echo("")
+    typer.echo(
+        "Every figure inherits the independence assumption of the interval it came from. A "
+        "clustered catalogue violates it, so the true detectable effect is larger than stated."
+    )
