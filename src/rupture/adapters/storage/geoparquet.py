@@ -47,6 +47,7 @@ FORMAT_VERSION = "1"
 _SCALAR_COLUMNS: tuple[str, ...] = (
     "id",
     "origin_time",
+    "available_time",
     "origin_time_uncertainty_s",
     "latitude",
     "longitude",
@@ -101,6 +102,11 @@ def events_frame(events: tuple[Event, ...]) -> gpd.GeoDataFrame:
         geometry: list[Point] = []
     else:
         df["origin_time"] = pd.to_datetime(df["origin_time"], utc=True).astype(
+            "datetime64[us, UTC]"
+        )
+        # A catalogue built before ADR-0064, or from a source that reports no vintage, keeps a
+        # null here. Null means "unknown", never "available at once" (see VintagePolicy).
+        df["available_time"] = pd.to_datetime(df["available_time"], utc=True).astype(
             "datetime64[us, UTC]"
         )
         geometry = [
@@ -165,6 +171,7 @@ def _row_event(row: pd.Series) -> Event:
     return Event(
         id=row["id"],
         origin_time=origin,
+        available_time=_optional_utc(row.get("available_time")),
         origin_time_uncertainty_s=_none_if_nan(row["origin_time_uncertainty_s"]),
         latitude=float(row["latitude"]),
         longitude=float(row["longitude"]),
@@ -234,3 +241,15 @@ __all__ = [
     "read_log",
     "write_catalog",
 ]
+
+
+def _optional_utc(value: Any) -> datetime | None:
+    """A nullable timestamp column back into an aware datetime, or ``None``.
+
+    Parquet round-trips a missing timestamp as ``NaT``, which is neither ``None`` nor comparable,
+    so it has to be caught explicitly or an unvintaged catalogue fails validation on re-read.
+    """
+    if value is None or pd.isna(value):
+        return None
+    stamp: datetime = value.to_pydatetime() if hasattr(value, "to_pydatetime") else value
+    return stamp.replace(tzinfo=UTC) if stamp.tzinfo is None else stamp.astimezone(UTC)

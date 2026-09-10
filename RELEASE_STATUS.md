@@ -53,9 +53,9 @@ hypothesis sum type and a scorer registry. **None of it exists.** Checked agains
 
 | Proposed | Present in `src/`? |
 |---|---|
-| `ObservationSource[T].available_as_of(t)` | no. `src/rupture/ports/` holds ten port modules and none is an observation source; the time-slicing primitive is `Catalog.before(cutoff)` (`src/rupture/domain/catalog.py:131`), which filters on origin time and knows nothing about when a record became available |
-| `available_time` distinct from `valid_time` on every observation | no. `Provenance.retrieved_at` is rupture's fetch time, not the value's publication time, and `leakage.py` (50 lines) compares only `origin_time` — so every existing leakage assertion would pass on a model reading a 2026-revised magnitude at a 2019 issue time |
-| `Vintage` / a vintaged data store / `catalog.as_of(t)` | no |
+| `ObservationSource[T].available_as_of(t)` | **the port exists, nothing implements it** (ADR-0064 decision 5). `src/rupture/ports/observation_source.py` declares it; the catalogue adapters fetch the present and stamp the reported vintage, which measures exposure and cannot reconstruct a past state. Declared without an adapter on purpose, so the next person does not encode a vintage query as a `retrieved_at` filter |
+| `available_time` distinct from `valid_time` on every observation | **yes, 2026-09-10** (ADR-0064). `Event.available_time`, populated from ComCat's `updated`; `Catalog.as_of(t, policy)`; `assert_available_before` as rule 4. The sentence to the left was true and is now measured: **69 of the 217 events a 2019-07-01 fit trains on carry a record last modified after that cutoff, and 130 of 130 scored targets were last modified after the window they were scored in.** The new assertion is **not wired into the pipelines** — see below |
+| `Vintage` / a vintaged data store / `catalog.as_of(t)` | **partly.** `catalog.as_of(t, policy)` and `VintageSummary` exist; **there is no vintaged store.** One vintage is held, so the exposure is measurable and past values are not reconstructible |
 | `CompletenessField`, Mc(x, t) as a field | no. Mc is a scalar per region, estimated from the catalogue itself |
 | `Hypothesis` sum type (`RateForecast` \| `SimulatedCatalogues` \| `AlarmSet` \| `HazardFunction` \| `StateEstimate`) | **partly, 2026-09-10.** `HypothesisArm` names all five (`src/rupture/domain/hypothesis.py`) and `AlarmSet` is a real domain type with a real scorer. The other four arms have no type of their own; `ForecastGrid` is still the only other output shape |
 | `Scorer` registry with mandatory baselines, power and minimum detectable effect | **partly, 2026-09-10.** `rupture.scoring.registry` exists, keyed by arm, and refuses an unregistered arm by name. One arm of five is registered. Exact power and minimum detectable gain are computed for every alarm score; **the pyCSEP N/M/S/L/CL path is not in the registry and still reports no power**, so the 116 scored windows are unchanged |
@@ -158,6 +158,63 @@ is not new information about ETAS; what is new is that the alarm arm can express
   demonstration that the machinery works and that the reference choice is worth a factor of about
   4.5 in *G* here. It is not a regional result and nothing has been promoted.
 
+## Data vintage (2026-09-10)
+
+ADR-0054 proposed an as-of layer; ADR-0064 built enough of it to **measure the thing the layer
+would exist for**, and deliberately enforces nothing yet. The § above records this ledger's own
+statement that the claim underwriting the layer had never been tested. Here is the first test.
+
+### The exposure, measured on the committed California fixture
+
+| | |
+|---|---|
+| records carrying a vintage | 1,433 of 1,433 (ComCat `updated`) |
+| median `updated − origin` | **191.6 days** (p90 1,069 d, max 2,759 d) |
+| events a 2019-07-01 fit would train on | 217 |
+| …last modified **after** that cutoff | **69 (32 %)** |
+| targets scored across six 30-day windows | 130 |
+| …last modified **after** the window they were scored in | **130 (100 %)** |
+
+**Every one of those events passes `assert_all_before`.** The existing leakage assertions are not
+weak; they answer a different question. This one had no way to be asked before.
+
+### What moved, and what did not
+
+Restricting the 2019-07-01 ETAS fit to provably-available records:
+
+| | all records | provable vintage only |
+|---|---|---|
+| training events | 214 | 145 |
+| `gamma` | 1.544 | 1.069 |
+| total expected in the window | 1.089 | 0.653 |
+| N / M / S / L / CL verdicts | fail / pass / fail / fail / fail | fail / pass / fail / fail / fail |
+
+A 40 % change in the headline rate and **no consistency-test verdict flipped.** On this window,
+revision cannot reach the result through the training path.
+
+That is **one window, one region, one fixture**, and it is evidence for demoting the as-of layer
+from an evaluation requirement to a data-engineering convenience *only if it holds across many*.
+It is a first data point, recorded as one.
+
+### What this did not do, and cannot
+
+- **The skill difference is not computed and cannot be from a single vintage.** ComCat's
+  `updated` proves a record is *not* the one that existed at *t*; it does not say what that record
+  said. The events were in the catalogue at the time with values nobody kept.
+- **The ablation bounds one direction.** Dropping unproven records fits a smaller, different
+  catalogue. No movement is conclusive; movement is not.
+- **100 % target exposure is partly an artefact of fetch date** — a 2026 fetch of 2019 events,
+  and ComCat re-touches records for reasons unrelated to magnitude. It bounds what is *provable*,
+  not what *changed*.
+- **`assert_available_before` is not wired into any pipeline.** Turning it on would move every
+  number in the ledger in a single commit with cause and effect entangled. Measure, decide,
+  enforce — in that order, and only the first is done.
+- **There is no vintaged store and `ObservationSource` has no adapter.** Archived vintages
+  (periodic snapshots forward from now, or a provider serving as-of queries) are the next step,
+  with a lead time in months.
+- **ISC and GCMT carry no vintage**, so their events are `None` and any strict-policy filter
+  empties them. That is reported as 0 % coverage, not hidden.
+
 ## Prompt 1 — foundations
 
 | Component | Maturity | What actually ran |
@@ -191,7 +248,7 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
 | C3 ground failure (Nowicki Jessee 2018, Zhu 2017) | validated | against the real USGS product for Gorkha: liquefaction r = 0.45, landslide r = 0.16, both biased low |
 | C3 cascade exposure + discriminator client | working | serac has published no slope-unit export yet, so terrain screens report **not applied** |
 | C4 aftershock service | validated | Gorkha and Kahramanmaraş at +1 h, +1 d, +7 d. **Under-forecasts the first day 3–12×** |
-| Gates | validated | **10 gates** (`registry.GATES`): nine after the `language` gate was removed on 2026-09-04, plus `alarm` on 2026-09-10 (ADR-0063), which runs in the CI offline job; the timings below were measured when there were ten and have not been re-measured. `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the rest PASSED; `promote` refuses without a named approver. Eight run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
+| Gates | validated | **11 gates** (`registry.GATES`): nine after the `language` gate was removed on 2026-09-04, plus `alarm` (ADR-0063) and `asof` (ADR-0064) on 2026-09-10, both in the CI offline job; the timings below were measured when there were ten and have not been re-measured. `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the rest PASSED; `promote` refuses without a named approver. Eight run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
 | Evidence and figures | validated | `reports/CHALLENGER_EVALUATION.md` carries six figures — per-window information gain, cumulative pass rates, and honest-against-leaked — rendered from the committed schedule JSON by `python -m rupture.reporting.challenger_plots`, which loads no model and issues no forecast |
 
 ## Known gaps

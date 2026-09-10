@@ -49,7 +49,15 @@ hoping for. Timestamp honesty is necessary and not sufficient, because the *valu
 not have existed at time *t* — catalogues are revised, GNSS orbits lag, and the first hours after a
 mainshock are incomplete in real time in a way the archive never is. Making data vintage a
 first-class property of every source is the largest structural change on the roadmap and it is
-**not built**; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) Part I.
+**begun and not finished** (ADR-0064): every observation now carries an `available_time`, and the
+exposure is measured rather than asserted — **69 of the 217 events a 2019-07-01 fit trains on
+carry a record last modified after that cutoff, and 130 of 130 scored targets were last modified
+after the window they were scored in**, all of it passing every origin-time assertion. What moved
+when those records were dropped: a 40 % change in the forecast rate and **no test verdict**. That
+is one window and it is the first evidence either way. There is no vintaged store, the new
+assertion is not wired into the pipelines, and the skill difference cannot be computed from a
+single vintage; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) Part I and
+[RELEASE_STATUS.md](RELEASE_STATUS.md) § Data vintage.
 
 **Baselines are adversaries, not straw men,** and a null publishes an upper bound. The commonest way
 a published result turns out to be nothing is that it beat the weakest available baseline: DeVries
@@ -149,7 +157,7 @@ what the new architecture means for what is and is not built.
 ```bash
 git clone https://github.com/dizzy1900/rupture && cd rupture
 make setup                # uv sync — the locked environment, dev group included
-make validate-rupture     # everything, offline: lint, mypy --strict, tests, ten gates
+make validate-rupture     # everything, offline: lint, mypy --strict, tests, eleven gates
 uv run rupture --help
 ```
 
@@ -243,7 +251,7 @@ src/rupture/
   cascade/          earthquake-triggered ground failure and slope exposure (F3)
   models/           challenger forecast models and the ensemble
   services/         operational products (the aftershock forecast service)
-  validation/       the make validate-* gates (ten, listed in validation/registry.py)
+  validation/       the make validate-* gates (eleven, listed in validation/registry.py)
   reporting/        figures for reports/*.md, drawn only from committed evidence
   commands/         one typer sub-application per CLI noun
   cli.py            `rupture ...`
