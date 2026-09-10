@@ -133,6 +133,7 @@ source_modules = ["rupture.domain"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
+  "rupture.scoring",
 ]
 
 [[tool.importlinter.contracts]]
@@ -142,6 +143,7 @@ source_modules = ["rupture.ports"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
+  "rupture.scoring",
 ]
 
 [[tool.importlinter.contracts]]
@@ -150,4 +152,18 @@ type = "independence"
 modules = [
   "rupture.adapters.catalogs", "rupture.adapters.sources", "rupture.adapters.forecasting",
   "rupture.adapters.evaluation", "rupture.adapters.hazard",
+]
+
+# ADR-0061 commits rupture to interoperating with CSEP rather than forking it, and ADR-0055
+# records that pyCSEP has no alarm-forecast class. The alarm scorer is written to be offered
+# upstream, which it can only be if it has not entangled itself with the rest of this repository:
+# it may see the domain types and nothing else.
+[[tool.importlinter.contracts]]
+name = "scoring imports only domain (it is written to be upstreamed)"
+type = "forbidden"
+source_modules = ["rupture.scoring"]
+forbidden_modules = [
+  "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
+  "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
+  "rupture.reporting",
 ]

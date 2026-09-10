@@ -1,7 +1,7 @@
 # RELEASE_STATUS
 
 This ledger says what actually ran, and under-claims by
-design. Last updated 2026-09-04.
+design. Last updated 2026-09-10.
 
 **Phase:** Prompt 1 (foundations) and Prompt 2 (challengers, loss, cascades) both complete. The
 project was re-aimed at earthquake prediction on 2026-09-04; **that re-aim changed documents and
@@ -57,9 +57,9 @@ hypothesis sum type and a scorer registry. **None of it exists.** Checked agains
 | `available_time` distinct from `valid_time` on every observation | no. `Provenance.retrieved_at` is rupture's fetch time, not the value's publication time, and `leakage.py` (50 lines) compares only `origin_time` — so every existing leakage assertion would pass on a model reading a 2026-revised magnitude at a 2019 issue time |
 | `Vintage` / a vintaged data store / `catalog.as_of(t)` | no |
 | `CompletenessField`, Mc(x, t) as a field | no. Mc is a scalar per region, estimated from the catalogue itself |
-| `Hypothesis` sum type (`RateForecast` \| `SimulatedCatalogues` \| `AlarmSet` \| `HazardFunction` \| `StateEstimate`) | no. `ForecastGrid` is the only output shape |
-| `Scorer` registry with mandatory baselines, power and minimum detectable effect | no. Scoring is the pyCSEP N/M/S/L/CL path plus paired T- and W-tests; no test result in this repository reports its statistical power |
-| Alarm scoring (Molchan, area skill score, probability gain against a clustering-aware reference) | no |
+| `Hypothesis` sum type (`RateForecast` \| `SimulatedCatalogues` \| `AlarmSet` \| `HazardFunction` \| `StateEstimate`) | **partly, 2026-09-10.** `HypothesisArm` names all five (`src/rupture/domain/hypothesis.py`) and `AlarmSet` is a real domain type with a real scorer. The other four arms have no type of their own; `ForecastGrid` is still the only other output shape |
+| `Scorer` registry with mandatory baselines, power and minimum detectable effect | **partly, 2026-09-10.** `rupture.scoring.registry` exists, keyed by arm, and refuses an unregistered arm by name. One arm of five is registered. Exact power and minimum detectable gain are computed for every alarm score; **the pyCSEP N/M/S/L/CL path is not in the registry and still reports no power**, so the 116 scored windows are unchanged |
+| Alarm scoring (Molchan, area skill score, probability gain against a clustering-aware reference) | **yes, 2026-09-10** (ADR-0063). `rupture.scoring.molchan` / `.alarm` / `.schedule` / `.power`, gated by `validate-alarm`, 83 unit tests. Not upstreamed to pyCSEP |
 | ETAS-I as a fitted baseline | no. The pinned `lmizrahi/etas@097f08b6` ships the incompleteness machinery and the adapter calls one of its factors, but `baselines/` holds plain ETAS only and nothing in the tree fits ETAS-I |
 | Pre-registration enforced by `git merge-base --is-ancestor` (ADR-0056) | no. Pre-registration today is convention plus the challenger pipeline's `select`-before-`fit` hyperparameter freeze. Note also that the CI checkout runs at default depth, and `git merge-base --is-ancestor` exits 128 rather than 1 on a shallow clone, so the gate could not run in CI today even if it existed |
 | floatCSEP containerisation / registration in a live CSEP experiment | no |
@@ -88,6 +88,75 @@ convenience. Second, that an external contributor exists at all: ADR-0053 record
 objection that "predict earthquakes" as a public framing may repel the community whose adjudication
 confers legitimacy, and makes it falsifiable — if after twelve months no external group has
 submitted a hypothesis and no testing centre has adopted the as-of API, the objection was right.
+
+## The alarm arm (2026-09-10)
+
+ADR-0055 declared five hypothesis arms and registered a scorer for none of them; the README's
+scoring table listed **Layer 3, alarm scoring, as not built**. It is built now (ADR-0063) and this
+section says what that did and did not buy.
+
+| Component | Maturity | What actually ran |
+|---|---|---|
+| `rupture.scoring` (molchan, alarm, schedule, power, reference, registry, refusals) | validated | 83 unit tests; `mypy --strict` clean; an import-linter contract holds it to `rupture.domain` only, so it can be offered to pyCSEP |
+| `validate-alarm` gate | validated | tenth gate, ~40 s, green, wired into CI and into the CI gate-drift ratchet |
+| Alarm models (`recent-large-alarm`, any forecast read as an alarm) | validated | six 30-day windows on the committed California fixture, from 2019-07-01 |
+| `rupture alarm arms / score / power` | working | exercised by hand and by the gate; `score` has never been run on a stored alarm outside a test, because no alarm set is committed to `data/` |
+
+**The one measured result.** The reference effect that ADR-0055 cites from Zhang et al. (2024) is
+now measured in this repository, on its own committed data, with the same alarm and the same
+targets in both columns:
+
+| | area skill | p | probability gain *G* | p(G) | minimum detectable *G* |
+|---|---|---|---|---|---|
+| trivial rule vs **uniform** reference, aftershock window | 0.996 | 0.0004 | 4.91 | 0.042 | 4.39 |
+| trivial rule vs **fitted ETAS** reference, same window | 0.354 | 0.75 | 1.09 | 0.85 | none detectable |
+| trivial rule vs uniform, **pooled over six windows** | 0.341 | 1 | 0.22 | 0.999 | 1.99 |
+| trivial rule vs fitted ETAS, **pooled over six windows** | 0.338 | 1 | 0.049 | 1 | 1.34 |
+| ETAS read as its own alarm, pooled | 0.029 | 1 | — | — | — |
+
+Three things in that table are worth more than the headline.
+
+**The single window flatters the rule and the schedule does not.** Pooled over all six windows the
+trivial rule scores *worse than the reference it is being compared to* — G = 0.049 — because the
+first window is issued on 2019-07-01, three days before the Ridgecrest M6.4, and holds 123 of the
+schedule's 130 targets. A rule that can only react to what has already broken has nothing to say
+there. Reporting only the aftershock window would have been the exact failure this arm exists to
+catch, so both are in the gate's output and both are here.
+
+**The pooled null is a powered null, not a blind one.** At 130 targets and a pooled alarm fraction
+of 0.31 the smallest gain the schedule could have rejected the reference for at 80 % power is
+G = 1.34. On the single aftershock window, with two targets, the answer is that **no gain whatever
+was detectable** — not even a perfect alarm — and the score says so rather than reporting a pass.
+That distinction is ADR-0055 decision 5, and it is the first place in this repository where a null
+comes with the effect it could have seen.
+
+**ETAS scored against itself pools to 0.029, not 0.5.** The one-half identity holds when the
+targets are drawn *from* the reference, which is what the unit tests assert. On real targets the
+number measures whether the model put its expected events in the right month as well as the right
+place, and ETAS put its mass in the month *after* the mainshock. That is a property of ETAS and it
+is not new information about ETAS; what is new is that the alarm arm can express it as one number.
+
+### What the alarm arm did not do
+
+- **It is not upstreamed.** ADR-0061 says the point of writing it is to offer it to pyCSEP, which
+  has no alarm-forecast class. Nothing has been offered. The import-linter contract that keeps
+  `rupture.scoring` free of everything but `rupture.domain` is the preparation, not the delivery.
+- **It scores no external claim.** The whole argument for this arm is that it is where somebody
+  else's precursor claim can be adjudicated. No external claim has been submitted or scored, and
+  ADR-0053's falsification condition — that no external group submits a hypothesis within twelve
+  months — is untouched by this work.
+- **It did not give the consistency tests their power figures.** `power.minimum_detectable_information_gain`
+  exists and is tested, and nothing calls it from the pyCSEP path. Every one of the 116 scored
+  windows and every challenger information gain still ships without power, exactly as before.
+- **It did not build ETAS-I**, the reference ADR-0059 requires whenever sub-completeness events
+  enter a score. The alarm arm inherits plain ETAS.
+- **It does not enforce vintage.** ADR-0054 is unbuilt, so every alarm score carries a note saying
+  a revised magnitude is indistinguishable from a timely one. The scorer refuses a reference fitted
+  *after* the issue time — the leakage class detectable without a vintage store — and states the
+  one it cannot detect rather than implying it checked.
+- **The result rests on a 1,433-event test fixture**, not on the three built regions. It is a
+  demonstration that the machinery works and that the reference choice is worth a factor of about
+  4.5 in *G* here. It is not a regional result and nothing has been promoted.
 
 ## Prompt 1 — foundations
 
@@ -122,7 +191,7 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
 | C3 ground failure (Nowicki Jessee 2018, Zhu 2017) | validated | against the real USGS product for Gorkha: liquefaction r = 0.45, landslide r = 0.16, both biased low |
 | C3 cascade exposure + discriminator client | working | serac has published no slope-unit export yet, so terrain screens report **not applied** |
 | C4 aftershock service | validated | Gorkha and Kahramanmaraş at +1 h, +1 d, +7 d. **Under-forecasts the first day 3–12×** |
-| Gates | validated | **9 gates** (`registry.GATES`) since the `language` gate was removed on 2026-09-04; the timings below were measured when there were ten and have not been re-measured. `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the rest PASSED; `promote` refuses without a named approver. Eight run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
+| Gates | validated | **10 gates** (`registry.GATES`): nine after the `language` gate was removed on 2026-09-04, plus `alarm` on 2026-09-10 (ADR-0063), which runs in the CI offline job; the timings below were measured when there were ten and have not been re-measured. `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the rest PASSED; `promote` refuses without a named approver. Eight run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
 | Evidence and figures | validated | `reports/CHALLENGER_EVALUATION.md` carries six figures — per-window information gain, cumulative pass rates, and honest-against-leaked — rendered from the committed schedule JSON by `python -m rupture.reporting.challenger_plots`, which loads no model and issues no forecast |
 
 ## Known gaps
@@ -130,9 +199,9 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
 Documentation drift found while re-aiming the project, recorded rather than silently fixed, because
 each of these belongs to a file another owner is editing:
 
-- **CLAUDE.md § Make targets is stale.** It says the `GATES` tuple holds ten and names `language`
-  first; `src/rupture/validation/registry.py` holds nine and the same file's own CI paragraph says
-  nine. CLAUDE.md's rule is that the tuple wins, so the tuple wins — but the prose should be fixed.
+- ~~**CLAUDE.md § Make targets is stale.**~~ **Closed 2026-09-10.** It named `language` in the
+  `GATES` list and disagreed with its own CI paragraph on the count. Both now say ten and neither
+  names `language`; the tuple is still the single source of truth.
 - **CLAUDE.md § CLI verbs is wrong about the challenger pipeline.** It says the noun is "**Not
   mounted on `rupture`**" and must be reached through `python -m`. `src/rupture/cli.py:70` does
   `app.add_typer(challenger.app, name="challenger")`, and `rupture challenger --help` works.
@@ -148,9 +217,15 @@ each of these belongs to a file another owner is editing:
   vocabulary and forbids citing a `rebutted` or `contested` work without its rebuttal in the same
   sentence; nothing checks it. A machine-readable bibliography with status tags would make that
   mechanical and does not exist.
-- **No result in this repository reports its statistical power** or a minimum detectable effect,
-  which ADR-0055 makes mandatory for anything published after it. Every number already in this
-  ledger predates that rule and none has been recomputed under it.
+- **No *consistency-test or challenger* result in this repository reports its statistical power**
+  or a minimum detectable effect, which ADR-0055 makes mandatory for anything published after it.
+  This narrowed on 2026-09-10 but did not close: every alarm score now carries exact power and a
+  minimum detectable gain, and `rupture.scoring.power.minimum_detectable_information_gain` exists
+  and is tested — and **nothing on the pyCSEP path calls it**. The 116 scored windows, the
+  challenger information gains and the ensemble result are all unchanged and all still powerless.
+  Wiring the existing function into the challenger reports is a small change with a real
+  consequence: the one metric ever beaten here (Türkiye ensemble, +0.335 nats/event over 55
+  windows) would gain the figure that says whether it could have been seen by chance.
 
 The scientific gaps, unchanged by the re-aim:
 

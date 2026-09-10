@@ -17,6 +17,7 @@ from rupture import __version__
 from rupture.adapters.exposure import SeracExposureSource
 from rupture.commands import (
     aftershock,
+    alarm,
     cascade,
     catalog,
     challenger,
@@ -67,6 +68,7 @@ app.add_typer(hazard.app, name="hazard")
 app.add_typer(cascade.app, name="cascade")
 app.add_typer(risk.app, name="risk")
 app.add_typer(aftershock.app, name="aftershock")
+app.add_typer(alarm.app, name="alarm")
 app.add_typer(challenger.app, name="challenger")
 
 

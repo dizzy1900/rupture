@@ -54,6 +54,13 @@ jobs:
         run: make validate-aftershock
       - name: Challenger gate (leakage controls, fit honesty)
         run: make validate-challengers
+      # The alarm gate is the slowest of the offline gates (about 40 s: it fits ETAS on the
+      # fixture and issues six windows). It runs here anyway, because the reference effect it
+      # measures — the same trivial alarm scoring G = 4.9 against a uniform reference and G = 1.1
+      # against the fitted one — is the result most likely to be quietly broken by a change to
+      # the scorer, and a gate that is only ever run by hand is a gate that rots.
+      - name: Alarm gate (Molchan / area skill / power, and the reference effect)
+        run: make validate-alarm
       - name: Underwriting check (the serac corridor, priced end to end)
         run: make underwriting-check
       # A ratchet, not a formality: if someone registers a gate in
@@ -69,7 +76,7 @@ jobs:
           # Gates with a step in this workflow. `hazard` runs in the hazard-integration job.
           covered = {
               "schema", "catalog", "etas", "eval",
-              "cascade", "risk", "aftershock", "challengers",
+              "cascade", "risk", "aftershock", "challengers", "alarm",
               "hazard",
           }
           missing = [g for g in GATES if g not in covered]
