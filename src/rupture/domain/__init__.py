@@ -1,6 +1,7 @@
 """Pure domain models. Imports nothing from adapters, pipelines, cli or validation."""
 
 from rupture.domain.aftershock import AftershockForecast, MagnitudeProbability
+from rupture.domain.alarm import AlarmScore, AlarmSet, MolchanPoint, ReferenceKind
 from rupture.domain.avoided_loss_v1 import (
     AvoidedLossRequestV1,
     AvoidedLossResponseV1,
@@ -34,6 +35,7 @@ from rupture.domain.forecast import (
 )
 from rupture.domain.groundmotion import GroundMotionEngineId, GroundMotionField, Site
 from rupture.domain.hazard import HazardCurve, HazardCurveSet, ScenarioRupture
+from rupture.domain.hypothesis import ARM_DESCRIPTION, MANDATORY_REFERENCE, HypothesisArm
 from rupture.domain.loss import (
     Asset,
     AvoidedLossRequest,
@@ -65,7 +67,11 @@ from rupture.domain.vulnerability import (
 )
 
 __all__ = [
+    "ARM_DESCRIPTION",
+    "MANDATORY_REFERENCE",
     "AftershockForecast",
+    "AlarmScore",
+    "AlarmSet",
     "Asset",
     "AttributedEstimate",
     "AvoidedLossRequest",
@@ -99,6 +105,7 @@ __all__ = [
     "HomogenisationLogEntry",
     "HomogenisationStep",
     "HydropowerComponent",
+    "HypothesisArm",
     "Interval",
     "Intervention",
     "InterventionKind",
@@ -111,9 +118,11 @@ __all__ = [
     "MagnitudeType",
     "McMethod",
     "ModelProvenance",
+    "MolchanPoint",
     "MoneyRange",
     "Provenance",
     "Range",
+    "ReferenceKind",
     "Region",
     "ResponseStatus",
     "RuptureModel",

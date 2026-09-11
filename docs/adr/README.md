@@ -71,3 +71,4 @@ parallel-branch renumbering) and the gap is left rather than back-filled.
 | [0060](0060-completeness-as-a-field.md) | Completeness is a field, Mc(x, t), and it ships with every catalogue | accepted |
 | [0061](0061-interoperate-with-csep-do-not-fork.md) | Interoperate with CSEP and the existing benchmarks; do not fork them | accepted |
 | [0062](0062-third-party-licence-quarantine.md) | No explicit grant means all rights reserved: the third-party licence quarantine | accepted |
+| [0063](0063-alarm-scorer-implementation.md) | The alarm scorer: reference-first, powered, and written to be upstreamed | accepted |

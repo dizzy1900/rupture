@@ -24,6 +24,7 @@ GATES: tuple[str, ...] = (
     "risk",
     "aftershock",
     "challengers",
+    "alarm",
 )
 
 PHASE_FOR_GATE: dict[str, str] = {
@@ -34,6 +35,7 @@ PHASE_FOR_GATE: dict[str, str] = {
     "cascade": "Phase 2D (cascade-engineer)",
     "aftershock": "Prompt 2 C4 (ops-forecaster)",
     "challengers": "Prompt 2 C1 (npp-researcher, deep-grid)",
+    "alarm": "ADR-0055 (the AlarmSet arm of the hypothesis sum type)",
 }
 
 
