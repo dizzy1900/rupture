@@ -61,7 +61,7 @@ from rupture.models.promotion import (
     pass_rate_table,
     region_verdict,
 )
-from rupture.scoring.evidence import read_all
+from rupture.scoring.evidence import read_all, read_all_with_blocks
 from rupture.validation.result import GateResult, GateStatus
 
 GATE = "validate-challengers"
@@ -616,6 +616,10 @@ def run(repo_root: Path) -> GateResult:
     )
 
 
+CLUSTERING_RESAMPLES = 4000
+"""Enough for a stable 95 % percentile interval; the gate runs on every push."""
+
+
 def _power_of_the_published_results(repo_root: Path) -> tuple[list[str], list[str]]:
     """ADR-0055 decision 4, retrofitted onto results that predate it.
 
@@ -657,10 +661,39 @@ def _power_of_the_published_results(repo_root: Path) -> tuple[list[str], list[st
             + " -- these nulls are near-blind: the test could only have found an effect several "
             "times larger than anything observed, so 'no skill' says little about the model"
         )
-    lines.append(
-        "power: every figure above inherits the independence assumption of the interval it was "
-        "derived from. A clustered catalogue violates it, so the true detectable effect is "
-        "larger than stated; a block bootstrap would fix the interval and this together, and is "
-        "not built"
-    )
+    lines.extend(_clustering_lines(repo_root))
     return lines, failures
+
+
+def _clustering_lines(repo_root: Path) -> list[str]:
+    """The block bootstrap: what the published intervals look like once clustering is allowed for.
+
+    Every interval in the committed evidence assumes the per-event log-likelihood differences are
+    independent, and on the Türkiye schedule 160 of 217 target events are one aftershock
+    sequence. This resamples blocks of scored windows instead, at several block lengths, and says
+    which published verdicts survive.
+    """
+    try:
+        checks = read_all_with_blocks(
+            repo_root / "reports" / "challenger", n_resamples=CLUSTERING_RESAMPLES, seed=0
+        )
+    except (OSError, ValueError, KeyError) as exc:
+        return [f"clustering: the block bootstrap could not run ({exc})"]
+    if not checks:
+        return []
+    lines = ["clustering: block-bootstrap intervals over scored windows, at block lengths 1-8"]
+    for check in checks:
+        for row in check.render().splitlines():
+            lines.append(
+                f"clustering:   {row.strip()}" if row.startswith(" ") else f"clustering: {row}"
+            )
+    overturned = [c for c in checks if c.verdict_survives is False]
+    if overturned:
+        lines.append(
+            "clustering: "
+            + "; ".join(f"{c.powered.region_id}/{c.powered.model_id}" for c in overturned)
+            + " -- published verdict(s) that do NOT survive the clustering correction. This is a "
+            "result, not a gate failure: the finding is that the interval assumed away the "
+            "dependence that decided it"
+        )
+    return lines

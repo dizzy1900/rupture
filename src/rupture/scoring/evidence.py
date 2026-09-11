@@ -24,11 +24,19 @@ figures here. A block bootstrap would fix both at once and is not built.
 from __future__ import annotations
 
 import json
+from collections.abc import Sequence
 from dataclasses import dataclass
 from pathlib import Path
 
 from scipy.stats import norm
 
+from rupture.scoring.blocks import (
+    DEFAULT_BLOCK_LENGTHS,
+    DEFAULT_RESAMPLES,
+    BlockBootstrapResult,
+    block_length_sensitivity,
+    conclusion_holds_across_lengths,
+)
 from rupture.scoring.power import minimum_detectable_information_gain
 
 EVIDENCE_VERSION = "1.0.0"
@@ -172,35 +180,43 @@ def read_schedule(
         paired = record.get("pooled_paired_test") or {}
         if not paired.get("decided"):
             continue
+        # `target_events` from the *paired test*, not from `pooled_information_gain`. The two
+        # differ and are both published: `pooled_information_gain` is a target-count-weighted
+        # average of the per-window T-test statistics and skips windows whose per-window test was
+        # undecided (198 events and IG 0.2892 on Türkiye), while `pooled_paired_test` pools every
+        # window's per-event log rates (217 events and IG 0.3354). The interval below belongs to
+        # the second, so its event count must come from there too. Reading N from the first was a
+        # real defect; it left `sd_per_event` wrong by sqrt(198/217). The minimum detectable
+        # effect was not affected — it is (z_alpha + z_power) * standard error and the N cancels —
+        # but that was luck, not design.
         pooled = record.get("pooled_information_gain") or {}
-        n_events = int(pooled.get("target_events", 0))
+        n_events = int(paired.get("target_events", 0) or pooled.get("target_events", 0))
         if n_events <= 0:
             continue
         lower, upper = paired.get("ig_lower"), paired.get("ig_upper")
         if lower is None or upper is None:
             continue
-        out.append(
-            power_for_result(
-                region_id=region,
-                model_id=model_id,
-                benchmark_model_id=str(
-                    paired.get("benchmark_model_id")
-                    or record.get("comparison_vs_etas", {}).get("benchmark_model_id")
-                    or "etas-mizrahi"
-                ),
-                n_target_events=n_events,
-                information_gain_per_event=float(
-                    paired.get(
-                        "information_gain_per_event", pooled.get("information_gain_per_event", 0.0)
-                    )
-                ),
-                ig_lower=float(lower),
-                ig_upper=float(upper),
-                p_value=None if paired.get("p_value") is None else float(paired["p_value"]),
-                alpha=alpha,
-                target_power=target_power,
-            )
+        result = power_for_result(
+            region_id=region,
+            model_id=model_id,
+            benchmark_model_id=str(
+                paired.get("benchmark_model_id")
+                or record.get("comparison_vs_etas", {}).get("benchmark_model_id")
+                or "etas-mizrahi"
+            ),
+            n_target_events=n_events,
+            information_gain_per_event=float(
+                paired.get(
+                    "information_gain_per_event", pooled.get("information_gain_per_event", 0.0)
+                )
+            ),
+            ig_lower=float(lower),
+            ig_upper=float(upper),
+            p_value=None if paired.get("p_value") is None else float(paired["p_value"]),
+            alpha=alpha,
+            target_power=target_power,
         )
+        out.append(result)
     return out
 
 
@@ -212,3 +228,139 @@ def read_all(
     for path in sorted(reports_dir.glob("*/schedule-*-challengers.json")):
         results.extend(read_schedule(path, alpha=alpha, target_power=target_power))
     return results
+
+
+@dataclass(frozen=True, slots=True)
+class ClusteringCheck:
+    """One published comparison, its normal interval, and what a block bootstrap does to it."""
+
+    powered: PoweredResult
+    sensitivity: list[BlockBootstrapResult]
+
+    @property
+    def robust(self) -> bool | None:
+        """True when every block length agrees on whether the interval excludes zero."""
+        return conclusion_holds_across_lengths(self.sensitivity)
+
+    @property
+    def verdict_survives(self) -> bool | None:
+        """True when the published significance verdict holds at every block length.
+
+        ``False`` is the interesting answer and it is not a bug: a result published as significant
+        whose every clustering-aware interval crosses zero was significant only because the
+        interval assumed away the clustering.
+        """
+        if self.powered.significant is None or not self.sensitivity:
+            return None
+        published_significant = self.powered.significant
+        return all(r.crosses_zero != published_significant for r in self.sensitivity)
+
+    @property
+    def block_mde(self) -> float | None:
+        """Minimum detectable effect implied by the widest block interval.
+
+        The honest companion to the figure derived from the normal interval: if the interval
+        should have been this wide, the smallest findable effect is correspondingly larger.
+        """
+        if not self.sensitivity:
+            return None
+        widest = max(self.sensitivity, key=lambda r: r.width)
+        z_alpha = float(norm.isf(self.powered.alpha))
+        z_power = float(norm.isf(1.0 - self.powered.target_power))
+        z_level = float(norm.isf((1.0 - widest.level) / 2.0))
+        standard_error = widest.width / (2.0 * z_level)
+        return float((z_alpha + z_power) * standard_error)
+
+    def render(self) -> str:
+        p = self.powered
+        lines = [p.render()]
+        for result in self.sensitivity:
+            lines.append(f"    {result.render()}")
+        if self.sensitivity:
+            first = self.sensitivity[0]
+            lines.append(
+                f"    {first.n_events} event(s) over {first.n_windows} window(s), worth about "
+                f"{first.effective_blocks:.1f} independent window(s) (Kish)"
+            )
+        if self.verdict_survives is False:
+            lines.append(
+                "    THE PUBLISHED VERDICT DOES NOT SURVIVE: it was "
+                f"{'significant' if p.significant else 'null'} on an interval assuming "
+                "independent events, and every clustering-aware interval here disagrees"
+            )
+        elif self.verdict_survives is True:
+            lines.append("    the published verdict survives at every block length")
+        if self.robust is False:
+            lines.append(
+                "    the block lengths disagree with each other, so no conclusion is safe here"
+            )
+        mde = self.block_mde
+        if mde is not None:
+            lines.append(
+                f"    minimum detectable effect under the widest block interval: "
+                f"{mde:.4f} nats/event (against {p.minimum_detectable_gain:.4f} under the "
+                "independence assumption)"
+            )
+        return "\n".join(lines)
+
+
+def read_schedule_with_blocks(
+    path: Path,
+    *,
+    alpha: float = 0.05,
+    target_power: float = 0.8,
+    lengths: Sequence[int] = DEFAULT_BLOCK_LENGTHS,
+    n_resamples: int = DEFAULT_RESAMPLES,
+    seed: int | None = 0,
+) -> list[ClusteringCheck]:
+    """Every decided comparison in one schedule, with its normal and block intervals."""
+    payload = json.loads(path.read_text(encoding="utf-8"))
+    by_model = {
+        model_id: record.get("windows") or []
+        for model_id, record in (payload.get("models") or {}).items()
+    }
+    checks: list[ClusteringCheck] = []
+    for powered in read_schedule(path, alpha=alpha, target_power=target_power):
+        windows = by_model.get(powered.model_id) or []
+        if not windows:
+            checks.append(ClusteringCheck(powered=powered, sensitivity=[]))
+            continue
+        checks.append(
+            ClusteringCheck(
+                powered=powered,
+                sensitivity=block_length_sensitivity(
+                    windows,
+                    lengths=lengths,
+                    n_resamples=n_resamples,
+                    seed=seed,
+                    normal_lower=powered.ig_lower,
+                    normal_upper=powered.ig_upper,
+                ),
+            )
+        )
+    return checks
+
+
+def read_all_with_blocks(
+    reports_dir: Path,
+    *,
+    alpha: float = 0.05,
+    target_power: float = 0.8,
+    lengths: Sequence[int] = DEFAULT_BLOCK_LENGTHS,
+    n_resamples: int = DEFAULT_RESAMPLES,
+    seed: int | None = 0,
+) -> list[ClusteringCheck]:
+    """Every committed challenger schedule, with clustering-aware intervals."""
+    checks: list[ClusteringCheck] = []
+    for path in sorted(reports_dir.glob("*/schedule-*-challengers.json")):
+        checks.extend(
+            read_schedule_with_blocks(
+                path,
+                alpha=alpha,
+                target_power=target_power,
+                lengths=lengths,
+                n_resamples=n_resamples,
+                seed=seed,
+            )
+        )
+    return checks

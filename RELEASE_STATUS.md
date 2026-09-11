@@ -215,6 +215,48 @@ It is a first data point, recorded as one.
 - **ISC and GCMT carry no vintage**, so their events are `None` and any strict-policy filter
   empties them. That is reported as 0 % coverage, not hidden.
 
+## Clustering (2026-09-10)
+
+Every interval in the challenger evidence is Student-t on per-event log-likelihood differences,
+which counts an aftershock sequence as that many independent observations. This ledger has flagged
+that as the weak point of the only result the project has. ADR-0065 replaces it with a moving-block
+bootstrap over scored windows, reported at block lengths 1, 2, 3, 5 and 8 so that no single choice
+carries a conclusion.
+
+**How bad the assumption was.** 160 of Türkiye's 217 pooled target events are the single
+2023-01-26 window. By Kish's measure those 55 windows are worth about **1.8 independent windows**.
+Nepal's 66 events are worth 6.8.
+
+| region / model | published IG | published 95 % CI | block bootstrap (b = 1) | verdict |
+|---|---|---|---|---|
+| türkiye / ensemble-loglinear | **+0.3354** | [+0.267, +0.404] | **[+0.266, +0.825]** | **survives** at every block length |
+| türkiye / gridded-convlstm | +0.0587 | [−0.301, +0.419] | [−2.01, +0.53] | null, and blinder than it looked |
+| nepal / ensemble-loglinear | −0.0789 | [−0.346, +0.188] | [−0.42, +0.36] | null, unchanged |
+| nepal / gridded-convlstm | −0.6215 | [−1.105, −0.138] | **[−1.39, +0.16]** | **verdict withdrawn** |
+
+- **The only positive result in this repository survives.** The Türkiye ensemble's interval widens
+  2.5–4x and stays clear of zero. It is strongly right-skewed (≈ +2.0), which the symmetric
+  bracket could not express even where it had the sign right.
+- **One published verdict is withdrawn.** Nepal's gridded model was published as significantly
+  *worse* than ETAS (p = 0.0125). Every block interval crosses zero: it is not shown to be worse,
+  only not shown to be better. `docs/CHALLENGER_GRIDDED.md`, `reports/CHALLENGER_EVALUATION.md`
+  and `reports/MODEL_CARD_gridded.md` are corrected.
+- **Both nulls were blinder than reported.** Under the widest block interval Türkiye's gridded
+  model could only have found 1.61 nats/event rather than 0.456, and Nepal's ensemble 0.54 rather
+  than 0.339.
+- **No promotion decision moves.** Nothing was promoted before and nothing is now.
+
+**A defect in the power retrofit, found and fixed here.** `scoring/evidence.py` read
+`target_events` from `pooled_information_gain` (198 on Türkiye) while taking the interval from
+`pooled_paired_test` (217). They are different published quantities. The minimum detectable effect
+was unaffected — the event count cancels out of `(z_alpha + z_power) x standard error` — but that
+was luck, not design; `sd_per_event` was wrong by sqrt(198/217) and is now right.
+
+**What this does not fix.** It re-intervals what was already scored. It rescores nothing, and it
+cannot repair a schedule in which three quarters of the evidence is one sequence — the remedy is
+more independent sequences, meaning more regions or a longer schedule, and California's is 6
+windows of 55. The N/M/S/L/CL consistency tests still report no power.
+
 ## Prompt 1 — foundations
 
 | Component | Maturity | What actually ran |
@@ -305,9 +347,10 @@ each of these belongs to a file another owner is editing:
 
 The scientific gaps, unchanged by the re-aim:
 
-- **No challenger was promoted.** The one metric beaten (Türkiye ensemble information gain) rests
-  on an interval that assumes independent events, and corrects a baseline over-forecast rather than
-  adding information. `reports/CHALLENGER_EVALUATION.md` has the evidence.
+- **No challenger was promoted.** The one metric beaten (Türkiye ensemble information gain)
+  corrects a baseline over-forecast rather than adding information.
+  `reports/CHALLENGER_EVALUATION.md` has the evidence. **The independence assumption in its
+  interval was tested on 2026-09-10 and the result survived** — see § Clustering.
 - **The loss numbers are not underwriting-grade.** 27 % of the loss rests on fragility functions
   with no published source; all component value shares are assumed; the replacement-value interval
   is judgement. The central cost figure is sourced (IRENA 2024).
