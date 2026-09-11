@@ -24,6 +24,12 @@ from rupture.domain.catalog import (
     McMethod,
 )
 from rupture.domain.common import Provenance, RuptureModel, UTCDatetime, sha256_hex, utc_now
+from rupture.domain.completeness import (
+    HELMSTETTER_2006,
+    StaiCoefficients,
+    stai_mc,
+    stai_mc_current,
+)
 from rupture.domain.evaluation import EvaluationResult, TestName
 from rupture.domain.event import Event, EventType, MagnitudeRecord, MagnitudeType
 from rupture.domain.forecast import (
@@ -69,6 +75,7 @@ from rupture.domain.vulnerability import (
 
 __all__ = [
     "ARM_DESCRIPTION",
+    "HELMSTETTER_2006",
     "MANDATORY_REFERENCE",
     "AftershockForecast",
     "AlarmScore",
@@ -130,6 +137,7 @@ __all__ = [
     "ScenarioRupture",
     "Site",
     "SourceTypeAssessment",
+    "StaiCoefficients",
     "TectonicSetting",
     "TestName",
     "TriggerKind",
@@ -140,5 +148,7 @@ __all__ = [
     "parse_horizon",
     "sha256_hex",
     "snapshot_hash",
+    "stai_mc",
+    "stai_mc_current",
     "utc_now",
 ]
