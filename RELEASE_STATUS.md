@@ -257,6 +257,110 @@ cannot repair a schedule in which three quarters of the evidence is one sequence
 more independent sequences, meaning more regions or a longer schedule, and California's is 6
 windows of 55. The N/M/S/L/CL consistency tests still report no power.
 
+## ETAS-I, consistency power, generic aftershock parameters (2026-09-10)
+
+Three changes landed together, each adversarially reviewed by a second pass that was told to
+refute rather than agree. **Every figure below is stated as the review left it, not as the change
+proposed it** — several claims were withdrawn, and they are recorded here rather than quietly
+dropped.
+
+### ETAS-I is fittable (ADR-0066)
+
+`rupture.domain.completeness` supplies short-term aftershock incompleteness as a declared, cited
+Mc(t): `StaiCoefficients` carries a **required** `citation` field and defaults to `HELMSTETTER_2006`
+(Mc(t) = Mm − 4.5 − 0.75·log10 t, t in days). It reduces a catalogue to the per-event `mc_current`
+array the pinned `lmizrahi/etas@097f08b6` consumes under `mc="var"`, bounded by each trigger's
+expiry and truncated where a later larger event dominates — 0.03 s on 110 k events, checked against
+a brute-force quadratic reference.
+
+`MizrahiETAS` gains an opt-in `incompleteness=` flag; **plain ETAS remains the exact default** and
+its metadata and diagnostics are unchanged, so no committed fit and no published number moves.
+
+A fit was run during development on the committed California fixture at a 2020-01-01 cutoff — one
+chosen so Ridgecrest sits *inside* the window — and **b rose from 0.869 to 1.012 with the branching
+ratio crossing from 1.044 to 0.968**, the direction the mechanism predicts. Read that as a
+development measurement and nothing more: **nothing in the repository reproduces it.** No ETAS-I
+fit is committed, the only committed test that runs an ETAS-I inversion is the degenerate case
+where ETAS-I and plain ETAS coincide, and the two log-likelihoods are on different target sets and
+are not comparable. The claim "the first ETAS-I fit in the repository exists" was withdrawn in
+review.
+
+**ETAS-I cannot issue a forecast or be scored.** `forecast()`, `issuance_state()` and
+`log_likelihood()` all refuse under it, because the issuance path fixes every source's
+responsibility factor at 1 — the exact correction ETAS-I exists to apply — and the likelihood
+expression assumes a constant completeness equal to `m_ref`. Review found the last two reachable
+and they are now guarded. **ADR-0059's requirement is runnable, not run**: nothing has been
+re-scored against ETAS-I, no baseline layout exists (`save_fit` refuses the collision rather than
+inventing one), and there is no CLI flag, DVC stage or gate.
+
+**Citation caveat, flagged by the change's own author.** The HKJ06 coefficients were confirmed from
+a secondary source quoting the equation, not from the BSSA paper. For Mizrahi et al. (2021) only
+the abstract was readable, and it describes a rate- and magnitude-dependent *detection probability*
+— which is **not** what is implemented here. **No claim is made to reproduce the Mc(t) Mizrahi et
+al. used for their own California results.**
+
+### Power for the consistency tests
+
+`rupture.scoring.consistency_power` simulates the rejection threshold from the forecast and the
+rejection rate from a named alternative, with three parameterised alternative families (rate
+multiplier, spatial concentration, b-value tilt), their inverses, and `events_needed` — the general
+form of Khawaja et al.'s roughly 32,000 events.
+
+**It does not power the published tests, and the docstring now says so in a section of its own.**
+N and L match pycsep. M, S and CL do not: pycsep conditions those on the observed count
+(`use_observed_counts=True`) and this module draws a Poisson-varying total, with CL additionally
+rescaling the rates. The figures are correct for the tests as defined in the module and are **not**
+a statement about the M, S or CL results in `reports/protocol/`. An earlier docstring claimed the
+equivalence outright; it was wrong and was corrected in review. Nothing calls this module yet.
+
+### Generic Reasenberg–Jones parameters for the aftershock service
+
+`rupture.services.aftershock.generic` carries the Page et al. (2016) generic table for the 15
+Garcia et al. (2012) tectonic regimes, transcribed from the USGS/SCEC `opensha-oaf` distribution
+(CC0 1.0), with a Bayesian update of the regime prior over productivity `a` by the Poisson
+likelihood of the aftershocks observed so far. There is no tuned weight: with no elapsed window the
+posterior is the prior, with many events it is the sequence's own maximum likelihood.
+
+Measured on the committed Gorkha and Kahramanmaraş evidence, refitting nothing: **day-1
+observed/expected improves from 2.8–12.8× under-forecast to 1.4–6.4×.** Two honest qualifications
+from review: the generic prior *alone* is worse than ETAS in one of the four windows
+(Kahramanmaraş +1d, obs/ETAS 2.83 against obs/generic 5.29), and **no entry point selects the new
+path** — `service.py`, `refit.py`, `evaluation.py`, `commands/aftershock.py` and
+`validation/aftershock.py` all construct a bare forecaster, so the running system is unchanged. The
+capability exists; the service does not use it. The ledger claim that "the service now has" it was
+corrected to this.
+
+A rescaled grid now also carries honest provenance: review found `rescaled_to_total` returning
+Reasenberg–Jones counts under ETAS's `model_id` and ETAS's `parameter_snapshot_hash` — the hash the
+schedule's leakage check compares — via a `model_copy` that skipped validation. It now rebuilds a
+validated grid as `etas-mizrahi+rj-generic` with its own snapshot hash.
+
+### Prompt 2 import boundaries
+
+Four import-linter contracts now govern the Prompt 2 packages relative to each other, closing the
+Known-gaps entry below. They are a ratchet, not a refactor: the six pre-existing
+`models -> pipelines` edges are grandfathered by name, so a seventh cannot arrive silently.
+Inverting the six is a separate change. The justifying prose was cut back in review after three of
+its factual claims failed checking (`risk` does not import `cascade`; `run_ntpp_schedule` has three
+callers, not two; the dependency-graph figures were stale).
+
+### What was tried and thrown away
+
+Four further changes were implemented in the same batch and **reverted rather than shipped**,
+because review found them unsound. Recorded because a discarded attempt is evidence too:
+
+- **A `SourceRef` de-duplication** turned `validate-ingest` — a suite `promote` requires — red on
+  the committed tree, by rewriting a data file whose bytes are hashed in the ledger. It also opened
+  a Liskov hole letting `claims_supported=[]` into a `list[SourceRef]`.
+- **Mounting the real CAP generator in the replay and stream lanes** emitted messages asserting a
+  modelled hazard forecast, a fabricated `source_refs` provenance slug, and `transects_reached = 0`
+  when no model had run. `status=Test` mitigates that; it does not excuse fabricated model output.
+- **An M3 measurability sweep** had a dead guard that let an all-zero sweep be committed as a
+  measurement, wrote partial artefacts on failure despite a docstring promising it would not, and
+  served stale results with no freshness check.
+- **A prescriptive refactor of the `models -> pipelines` edges** wrote a repair instruction into
+  `pyproject.toml` that would have created a fresh violating edge.
+
 ## Prompt 1 — foundations
 
 | Component | Maturity | What actually ran |
@@ -386,7 +490,8 @@ The scientific gaps, unchanged by the re-aim:
   asymmetry is deliberate and noted here rather than tidied away. **The gridded and ensemble
   *fits* are therefore not retained** — their *scores* are, in
   `reports/challenger/<region>/schedule-<region>-challengers.json`, which is committed.
-- **No import-linter contract governs the four Prompt 2 packages relative to each other.** `domain`
+- ~~**No import-linter contract governs the four Prompt 2 packages relative to each other.**~~ **Closed 2026-09-10** — four contracts added; the six pre-existing `models -> pipelines` edges are grandfathered by name so a seventh cannot arrive silently, and inverting them remains open. The original text follows.
+- **(original entry)** **No import-linter contract governs the four Prompt 2 packages relative to each other.** `domain`
   and `ports` are protected from all of them, but nothing stops `cascade` importing `models`, and
   `models` already imports `pipelines` — six import statements across three modules
   (`models/ensemble/protocol_runner.py`, `models/challengers/ntpp/schedule.py`,

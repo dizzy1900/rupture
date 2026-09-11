@@ -36,6 +36,18 @@ first order. The number is reported as computed, with the assumption named, in
 ``docs/AFTERSHOCK.md``, ``reports/MODEL_CARD_aftershock.md`` and in the ``notes`` of every
 forecast this module issues.
 
+**The day-one under-forecast, and the switch that addresses it.** Step 2 is honest about what it
+has: one hour after the mainshock the zone's catalogue is a decade of background seismicity plus a
+handful of aftershocks, and the fit says so. Measured against the closed windows in
+``reports/aftershock/``, that under-forecasts the first day by 3-12x. :class:`RateModel` makes the
+alternative reachable and the choice explicit: ``ETAS_RJ_GENERIC`` keeps the ETAS grid's shape but
+takes its *level* from the generic Reasenberg-Jones prior of
+:mod:`rupture.services.aftershock.generic`, updated toward the sequence as events arrive. The
+default is ``ETAS``, unchanged, so the committed reports regenerate. What the switch is worth on
+the two committed sequences is measured, window for window, by
+:mod:`rupture.services.aftershock.generic_validation` -- including the two windows where it is
+worse.
+
 everything here is a rate and a probability.
 """
 
@@ -44,6 +56,7 @@ from __future__ import annotations
 import math
 from dataclasses import dataclass
 from datetime import datetime, timedelta
+from enum import StrEnum
 
 import numpy as np
 
@@ -57,7 +70,19 @@ from rupture.domain import (
     MagnitudeProbability,
     Region,
     format_horizon,
+    snapshot_hash,
     utc_now,
+)
+from rupture.services.aftershock.generic import (
+    GENERIC_RJ,
+    GENERIC_SOURCE,
+    SECONDS_PER_DAY,
+    APosterior,
+    GenericRJParameters,
+    generic_for_region,
+    generic_prior,
+    sequence_observation,
+    update,
 )
 from rupture.services.aftershock.sequences import Mainshock
 from rupture.services.aftershock.window import (
@@ -71,6 +96,35 @@ POISSON_NOTE = (
     "P = 1 - exp(-lambda) assumes events above the threshold in the window are Poisson; ETAS "
     "clusters, so this over-states P(at least one) when lambda is not small"
 )
+
+
+class RateModel(StrEnum):
+    """Which model sets the *level* of the forecast. The default is the one already published.
+
+    ``ETAS``
+        The zone's own ETAS fit decides everything: where, how big, and how many. This is what
+        ``reports/aftershock/`` and ``reports/MODEL_CARD_aftershock.md`` describe, and it is what
+        a default-constructed forecaster still does, so those reports regenerate unchanged.
+
+    ``ETAS_RJ_GENERIC``
+        ETAS still decides *where* and *how big* -- the grid's spatial pattern and its
+        magnitude-bin shape are untouched -- and the generic Reasenberg-Jones prior, updated
+        toward the sequence (:mod:`rupture.services.aftershock.generic`), decides *how many*: the
+        whole grid is multiplied by the single scalar that makes its mass at or above the region's
+        target threshold equal the R-J posterior-mean count for the same window. The two products
+        therefore stay consistent with each other, and the rung probabilities are still read off
+        the grid.
+
+        This is a hybrid, and the seam is real: ETAS's magnitude shape uses the region's published
+        b, while the R-J count that sets the level was computed with the generic table's b. The
+        rescale matches them at the target threshold only. It is offered because it measurably
+        reduces the day-one under-forecast on both committed sequences and does not pretend to be
+        a single coherent likelihood.
+    """
+
+    ETAS = "etas"
+    ETAS_RJ_GENERIC = "etas-rj-generic"
+
 
 REFIT_SCHEDULE: tuple[timedelta, ...] = (
     timedelta(hours=1),
@@ -163,14 +217,79 @@ def probabilities_from_grid(
     return tuple(out)
 
 
+RESCALED_MODEL_SUFFIX = "+rj-generic"
+"""Appended to the source model id so a rescaled grid never reads as the model it came from."""
+
+
+def rescaled_to_total(
+    grid: ForecastGrid, *, target: float, above: float, note: str
+) -> ForecastGrid:
+    """``grid`` multiplied by the scalar that makes its mass at or above ``above`` equal ``target``.
+
+    Only the level moves: every cell and every magnitude bin is multiplied by the same number, so
+    the spatial pattern and the magnitude shape the ETAS simulation produced survive intact. The
+    grid's id gains a suffix, because a rescaled grid is a different forecast and must not be
+    fetchable under the id of the one it was derived from.
+
+    A grid with no mass at or above ``above`` cannot be rescaled -- there is nothing to scale -- and
+    that is raised rather than silently turned into a flat or zero forecast.
+
+    **The result's provenance describes what it is, not what it came from.** A rescaled grid is a
+    composite: ETAS supplied the spatial pattern and the magnitude shape, a Reasenberg-Jones rate
+    supplied the level. Returning it with ETAS's ``model_id`` and ETAS's ``parameter_snapshot_hash``
+    would put a forecast nobody fitted under a label somebody did -- and that hash is what
+    ``pipelines/schedule.py`` compares to prove no parameter changed mid-schedule, so the lie would
+    be load-bearing. The id, the model id and the snapshot hash all move, and the rebuilt grid goes
+    through ``ForecastGrid`` validation rather than ``model_copy``, which skips it.
+    """
+    edges = np.asarray(grid.magnitude_bin_edges, dtype=np.float64)
+    current = float(grid.counts().sum(axis=0)[edges >= above - 1e-9].sum())
+    if current <= 0.0:
+        msg = (
+            f"grid {grid.id} carries no expected mass at or above M{above}; it cannot be rescaled "
+            "to a target count"
+        )
+        raise ValueError(msg)
+    factor = target / current
+    scaled = tuple(tuple(float(v * factor) for v in row) for row in grid.expected_counts)
+    model_id = f"{grid.model_id}{RESCALED_MODEL_SUFFIX}"
+    snapshot = snapshot_hash(
+        {
+            "source_parameter_snapshot_hash": grid.parameter_snapshot_hash,
+            "source_model_id": grid.model_id,
+            "rescale_factor": factor,
+            "rescale_above": above,
+            "rescale_target": target,
+        }
+    )
+    return ForecastGrid(
+        **{
+            **grid.model_dump(),
+            "id": ForecastGrid.make_id(model_id, grid.region_id, grid.issue_time, grid.horizon),
+            "model_id": model_id,
+            "parameter_snapshot_hash": snapshot,
+            "expected_counts": scaled,
+            "notes": f"{grid.notes or ''}; rescaled x{factor:.4g} at M>={above}: {note}".lstrip(
+                "; "
+            ),
+        }
+    )
+
+
 @dataclass(frozen=True, slots=True)
 class Issuance:
-    """One issued forecast with the grid it summarises and the fit it came from."""
+    """One issued forecast with the grid it summarises and the fit it came from.
+
+    ``posterior`` is the generic-prior posterior over the Reasenberg-Jones productivity that set
+    the level, and is ``None`` for the plain ETAS rate model -- which is the honest way to say
+    that no generic information entered that forecast at all.
+    """
 
     forecast: AftershockForecast
     grid: ForecastGrid
     fit: FitResult
     region: Region
+    posterior: APosterior | None = None
 
 
 @dataclass(frozen=True)
@@ -180,6 +299,13 @@ class AftershockForecaster:
     ``auxiliary_years`` is the ETAS auxiliary window at the start of the zone catalogue (events
     there act as triggering sources only). ``n_simulations`` is the number of stochastic
     continuations averaged for the triggered component; ``seed`` makes a forecast reproducible.
+
+    ``rate_model`` chooses what sets the level of the forecast (:class:`RateModel`) and defaults
+    to ``ETAS``, the behaviour the committed reports describe. ``generic_regime`` overrides the
+    tectonic regime that would otherwise be read off the region, for a zone whose setting the
+    coarse ``TectonicSetting`` gets wrong; ``generic_likelihood_start`` drops the first part of the
+    sequence from the Bayesian likelihood, which is the only lever here against short-term
+    aftershock incompleteness and is off by default.
     """
 
     auxiliary_years: float = 2.0
@@ -190,6 +316,35 @@ class AftershockForecaster:
     cell_size_deg: float | None = None
     ladder_offsets: tuple[float, ...] = DEFAULT_LADDER_OFFSETS
     fix_b_value: bool = True
+    rate_model: RateModel = RateModel.ETAS
+    generic_regime: str | None = None
+    generic_likelihood_start: timedelta = timedelta(0)
+
+    # ------------------------------------------------------------------ generic prior
+    def posterior_for(
+        self, *, history: Catalog, region: Region, mainshock: Mainshock, issue_time: datetime
+    ) -> APosterior:
+        """The generic-prior posterior over the R-J productivity given the sequence so far.
+
+        The likelihood counts events at or above the zone's Mc, the lowest threshold at which the
+        catalogue is claimed complete; with no Mc on the region it falls back to the target
+        threshold, which counts fewer events and so leans further on the prior.
+        """
+        parameters = (
+            generic_for_region(region)
+            if self.generic_regime is None
+            else _generic_named(self.generic_regime)
+        )
+        floor = region.mc.mc if region.mc is not None else region.target_min_magnitude
+        prior = generic_prior(parameters, mainshock_magnitude=mainshock.magnitude)
+        observation = sequence_observation(
+            history,
+            mainshock=mainshock,
+            issue_time=issue_time,
+            min_magnitude=floor,
+            start_offset=self.generic_likelihood_start,
+        )
+        return update(prior, observation)
 
     # ------------------------------------------------------------------ model
     def model_for(self, region: Region) -> MizrahiETAS:
@@ -270,6 +425,29 @@ class AftershockForecaster:
             n_simulations=self.n_simulations if n_simulations is None else n_simulations,
             seed=self.seed if seed is None else seed,
         )
+        posterior: APosterior | None = None
+        generic_note = ""
+        if self.rate_model is RateModel.ETAS_RJ_GENERIC:
+            posterior = self.posterior_for(
+                history=history, region=region, mainshock=mainshock, issue_time=issue_time
+            )
+            t1 = (issue_time - mainshock.origin_time).total_seconds() / SECONDS_PER_DAY
+            t2 = t1 + horizon.total_seconds() / SECONDS_PER_DAY
+            target = posterior.expected_count(
+                min_magnitude=region.target_min_magnitude, t1_days=t1, t2_days=t2
+            )
+            generic_note = (
+                f"level from generic R-J regime {posterior.parameters.regime} "
+                f"(a_mean {posterior.parameters.a_mean}, sigma_a "
+                f"{posterior.parameters.a_sigma_for(mainshock.magnitude):.3f}, "
+                f"p {posterior.parameters.p_value}, c {posterior.parameters.c_value_days} d, "
+                f"b {posterior.b_value:.3f}) updated on "
+                f"{posterior.observation.n_events if posterior.observation else 0} sequence "
+                f"events; {GENERIC_SOURCE}"
+            )
+            grid = rescaled_to_total(
+                grid, target=target, above=region.target_min_magnitude, note=generic_note
+            )
         thresholds = magnitude_ladder(
             mainshock.magnitude,
             floor=region.target_min_magnitude,
@@ -297,7 +475,11 @@ class AftershockForecaster:
             issue_time=issue_time,
             horizon=horizon,
             elapsed=elapsed,
-            model_id=model.model_id,
+            model_id=(
+                model.model_id
+                if self.rate_model is RateModel.ETAS
+                else f"{model.model_id}+{self.rate_model.value}"
+            ),
             model_version=model.model_version,
             parameter_snapshot_hash=fit.parameter_snapshot_hash,
             n_sequence_events=len(sequence),
@@ -309,9 +491,10 @@ class AftershockForecaster:
                 f"(Wells & Coppersmith 1994 rupture length x {ZONE_MULTIPLIER}); "
                 f"fit cutoff {fit.fit_cutoff.isoformat()}, mc={fit.mc}, "
                 f"n_training={fit.n_events}; {POISSON_NOTE}"
+                + (f"; {generic_note}" if generic_note else "")
             ),
         )
-        return Issuance(forecast=forecast, grid=grid, fit=fit, region=region)
+        return Issuance(forecast=forecast, grid=grid, fit=fit, region=region, posterior=posterior)
 
     def forecast(
         self,
@@ -339,6 +522,15 @@ class AftershockForecaster:
             n_simulations=n_simulations,
             seed=seed,
         )
+
+
+def _generic_named(regime: str) -> GenericRJParameters:
+    """Look a regime up in the generic table, listing the known ones when it is not there."""
+    try:
+        return GENERIC_RJ[regime]
+    except KeyError:
+        msg = f"unknown generic regime {regime!r}; known: {', '.join(sorted(GENERIC_RJ))}"
+        raise KeyError(msg) from None
 
 
 def _slug(text: str) -> str:
