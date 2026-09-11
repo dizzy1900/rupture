@@ -119,12 +119,33 @@ to the published ETAS schedules.
 Per-window paired testing can decide only 9 or 10 of 55 windows, so a pooled paired test over all
 target events was used as well:
 
-| Region | Model | Target events | Information gain per event | 95 % interval | Beats ETAS |
-|---|---|---|---|---|---|
-| `nepal-himalaya` | gridded | 66 | −0.622 | [−1.105, −0.138] | no |
-| | ensemble | 66 | −0.079 | [−0.346, +0.188] | no |
-| `turkiye-eaf` | gridded | 217 | +0.059 | [−0.301, +0.419] | no |
-| | ensemble | 217 | **+0.335** | [+0.267, +0.404] | **yes** (W-test agrees) |
+| Region | Model | Target events | Information gain per event | 95 % interval | Block-bootstrap interval | Beats ETAS |
+|---|---|---|---|---|---|---|
+| `nepal-himalaya` | gridded | 66 | −0.622 | [−1.105, −0.138] | [−1.39, +0.16] | no |
+| | ensemble | 66 | −0.079 | [−0.346, +0.188] | [−0.42, +0.36] | no |
+| `turkiye-eaf` | gridded | 217 | +0.059 | [−0.301, +0.419] | [−2.01, +0.53] | no |
+| | ensemble | 217 | **+0.335** | [+0.267, +0.404] | **[+0.27, +0.83]** | **yes** (W-test agrees) |
+
+**The fifth column was added on 2026-09-10 and it is the one to read.** The 95 % intervals in the
+fourth are Student-t on per-event log-likelihood differences, which counts an aftershock sequence
+as that many independent observations — and **160 of Türkiye's 217 target events are one
+sequence**, leaving those 55 windows worth about 1.8 independent windows by Kish's measure. The
+fifth column resamples blocks of scored windows instead (block length 1; the conclusions hold at
+every length from 1 to 8, `rupture alarm clustering`).
+
+Two things change and one does not:
+
+- **The ensemble's Türkiye result survives.** Its interval widens by a factor of 2.5–4 and stays
+  clear of zero. The only positive result in this repository is not an artefact of the
+  independence assumption. It is also strongly right-skewed (skew ≈ +2.0), which the symmetric
+  interval could not express.
+- **The gridded model's Nepal result does not.** It was published as significantly *worse* than
+  ETAS (p = 0.0125); every block interval crosses zero. That verdict is withdrawn.
+- **No promotion decision moves.** Nothing was promoted before and nothing is now.
+
+Every minimum-detectable-effect figure derived from the fourth column is correspondingly
+optimistic: under the widest block interval Türkiye's ensemble needs 0.355 nats/event rather than
+0.087, and Türkiye's gridded null could only have found 1.61 rather than 0.456.
 
 **Verdict: neither is promoted.** The gridded model fails both conditions in both regions. The
 ensemble meets both conditions in Türkiye and only there; the rule requires two of three regions,

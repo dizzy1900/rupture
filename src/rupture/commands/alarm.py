@@ -21,7 +21,7 @@ from rupture.pipelines import io
 from rupture.scoring import power as power_mod
 from rupture.scoring import reference as refmod
 from rupture.scoring.alarm import DEFAULT_ALTERNATIVE_GAIN, score_alarm_set
-from rupture.scoring.evidence import read_all
+from rupture.scoring.evidence import read_all, read_all_with_blocks
 from rupture.scoring.registry import registry_table
 
 app = typer.Typer(
@@ -199,3 +199,39 @@ def evidence_power(
         "Every figure inherits the independence assumption of the interval it came from. A "
         "clustered catalogue violates it, so the true detectable effect is larger than stated."
     )
+
+
+@app.command("clustering")
+def clustering(
+    reports: Annotated[
+        Path, typer.Option("--reports", help="Directory of committed challenger schedules.")
+    ] = Path("reports/challenger"),
+    resamples: Annotated[int, typer.Option("--resamples")] = 20_000,
+    seed: Annotated[int, typer.Option("--seed")] = 0,
+) -> None:
+    """Re-interval every published comparison without assuming independent events.
+
+    The committed intervals are Student-t on per-event log-likelihood differences, which treats
+    an aftershock sequence as that many independent observations. On the Türkiye schedule 160 of
+    the 217 scored events are one sequence. This resamples blocks of scored windows instead, at
+    several block lengths, and reports which published verdicts survive.
+    """
+    checks = read_all_with_blocks(reports, n_resamples=resamples, seed=seed)
+    if not checks:
+        typer.echo(f"no decided comparison found under {reports}", err=True)
+        raise typer.Exit(1)
+    for check in checks:
+        typer.echo(check.render())
+        typer.echo("")
+    overturned = [c for c in checks if c.verdict_survives is False]
+    if overturned:
+        typer.echo(
+            "Published verdict(s) that do not survive the clustering correction: "
+            + ", ".join(f"{c.powered.region_id}/{c.powered.model_id}" for c in overturned)
+        )
+        typer.echo(
+            "That is a result rather than an error: the interval assumed away the dependence "
+            "that decided it."
+        )
+    else:
+        typer.echo("Every published verdict survives at every block length.")
