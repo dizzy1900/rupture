@@ -58,6 +58,7 @@ from rupture.domain.money import (
 )
 from rupture.domain.region import MagnitudePolicy, Region, TectonicSetting
 from rupture.domain.source_type import SourceTypeAssessment
+from rupture.domain.vintage import VintagePolicy, VintageSummary
 from rupture.domain.vulnerability import (
     ConsequenceModel,
     DamageState,
@@ -133,6 +134,8 @@ __all__ = [
     "TestName",
     "TriggerKind",
     "UTCDatetime",
+    "VintagePolicy",
+    "VintageSummary",
     "format_horizon",
     "parse_horizon",
     "sha256_hex",

@@ -26,7 +26,7 @@ in this repository today.
 | Layer | What it measures | What it is measured against | State here |
 |---|---|---|---|
 | **1. Paired information gain** | mean per-event log-likelihood difference from a reference model, in nats per event, with a bootstrap interval | fitted ETAS; **ETAS-I** whenever any event below the completeness limit enters the score; Reasenberg–Jones for aftershock claims; a two-parameter logistic regression for any spatial aftershock model | **built against ETAS** — `lmizrahi/etas` pinned at commit `097f08b6` (MIT), scored through `pycsep==0.8.0`. ETAS-I is **not built**, and it is the baseline most ML claims should have been measured against |
-| **2. Consistency tests** | whether a forecast is consistent with what happened, in number, magnitude, space and likelihood | the forecast's own simulated catalogues | **built** — N/M/S/L/CL over 116 scored pseudo-prospective windows. Catalogue-based (non-Poissonian) tests are **not built**, and **no consistency test in this repository reports its power**: the exact power and minimum-detectable-effect machinery exists in `rupture.scoring.power` and is wired into the alarm arm only, so the 116 windows above predate it and none has been recomputed. Power matters: Khawaja et al. (2023, `single-study`) show the S-test cannot reject a uniform global forecast on a 0.1° grid without roughly 32,000 events |
+| **2. Consistency tests** | whether a forecast is consistent with what happened, in number, magnitude, space and likelihood | the forecast's own simulated catalogues | **built** — N/M/S/L/CL over 116 scored pseudo-prospective windows. Catalogue-based (non-Poissonian) tests are **not built**, and **no consistency test in this repository reports its power** — the 116 windows predate the rule and none has been recomputed, and simulation-based power for N/M/S/L/CL is not built. The *paired comparisons* do now: every committed challenger result carries its minimum detectable effect (ADR-0055 decision 4, retrofitted from the intervals already published), which is how we know the one metric ever beaten here is 3.9x its detectable effect and that two of the four nulls are near-blind. Power matters: Khawaja et al. (2023, `single-study`) show the S-test cannot reject a uniform global forecast on a 0.1° grid without roughly 32,000 events |
 | **3. Alarm scoring** | for any claim that is not a rate grid — Molchan trajectory, area skill score, probability gain *G* at a declared alarm fraction | a **clustering-aware** reference, never a uniform Poisson one. Zhang et al. (2024, `single-study`) found an LSTM's apparent skill vanished when the reference moved from uniform to spatially varying Poisson; Luen & Stark showed a trivial post-M5.5 rule reaches p < 0.001 on clustering alone | **built** (ADR-0063) — `rupture.scoring`, gated by `make validate-alarm`, with a uniform reference refused as the reference of record and the schedule rather than the window as the unit of evidence. The reference effect is now **measured here**, not cited: the trivial post-M5.5 rule scores *G* = 4.91 (p = 0.042) against a uniform reference and *G* = 1.09 (p = 0.85) against fitted ETAS, same window, same targets. **Not upstreamed to pyCSEP yet**, which is still the paper-sized contribution — see [CONTRIBUTING.md](CONTRIBUTING.md) |
 | **4. Predictability budget** | the gain as a fraction of the estimated remaining headroom, rather than as a bare likelihood | the entropy gap between a Poisson process and the generating process | **not built**, and the framework it rests on (Zhuang & Sornette, 2026) is a `preprint` weeks old at the time of writing. Adoptable as a method; its specific numbers are untested |
 
@@ -49,7 +49,15 @@ hoping for. Timestamp honesty is necessary and not sufficient, because the *valu
 not have existed at time *t* — catalogues are revised, GNSS orbits lag, and the first hours after a
 mainshock are incomplete in real time in a way the archive never is. Making data vintage a
 first-class property of every source is the largest structural change on the roadmap and it is
-**not built**; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) Part I.
+**begun and not finished** (ADR-0064): every observation now carries an `available_time`, and the
+exposure is measured rather than asserted — **69 of the 217 events a 2019-07-01 fit trains on
+carry a record last modified after that cutoff, and 130 of 130 scored targets were last modified
+after the window they were scored in**, all of it passing every origin-time assertion. What moved
+when those records were dropped: a 40 % change in the forecast rate and **no test verdict**. That
+is one window and it is the first evidence either way. There is no vintaged store, the new
+assertion is not wired into the pipelines, and the skill difference cannot be computed from a
+single vintage; see [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md) Part I and
+[RELEASE_STATUS.md](RELEASE_STATUS.md) § Data vintage.
 
 **Baselines are adversaries, not straw men,** and a null publishes an upper bound. The commonest way
 a published result turns out to be nothing is that it beat the weakest available baseline: DeVries
@@ -149,7 +157,7 @@ what the new architecture means for what is and is not built.
 ```bash
 git clone https://github.com/dizzy1900/rupture && cd rupture
 make setup                # uv sync — the locked environment, dev group included
-make validate-rupture     # everything, offline: lint, mypy --strict, tests, ten gates
+make validate-rupture     # everything, offline: lint, mypy --strict, tests, eleven gates
 uv run rupture --help
 ```
 
@@ -196,10 +204,10 @@ full; this is the shape.
 **A — ML and computational research, no seismology required.** Get a green tree, redraw the
 committed figures, read the 50 lines of `src/rupture/adapters/forecasting/leakage.py`, then look at
 what the leaky ablation bought. The open work is the missing one-neuron comparator, a block
-bootstrap to replace the independence-assuming interval behind the one metric ever beaten here,
-and statistical power reported with every *consistency* test — the refusal of accuracy and AUC and
-the power machinery both exist now (`rupture.scoring.refusals`, `rupture.scoring.power`) but only
-the alarm arm is wired to them, so the 116 CSEP windows still ship without a power figure. The
+bootstrap to replace the independence-assuming interval behind the one metric ever beaten here
+(which would also correct every minimum-detectable-effect figure derived from it), and
+simulation-based power for the N/M/S/L/CL consistency tests — the alarm arm and the paired
+challenger comparisons both carry power now, and the 116 CSEP windows still do not. The
 multi-month version is: **beat ETAS-I, not ETAS.** The pinned `etas` package already ships the
 incompleteness machinery and `baselines/` holds plain ETAS only.
 
@@ -243,7 +251,7 @@ src/rupture/
   cascade/          earthquake-triggered ground failure and slope exposure (F3)
   models/           challenger forecast models and the ensemble
   services/         operational products (the aftershock forecast service)
-  validation/       the make validate-* gates (ten, listed in validation/registry.py)
+  validation/       the make validate-* gates (eleven, listed in validation/registry.py)
   reporting/        figures for reports/*.md, drawn only from committed evidence
   commands/         one typer sub-application per CLI noun
   cli.py            `rupture ...`

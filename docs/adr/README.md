@@ -72,3 +72,4 @@ parallel-branch renumbering) and the gap is left rather than back-filled.
 | [0061](0061-interoperate-with-csep-do-not-fork.md) | Interoperate with CSEP and the existing benchmarks; do not fork them | accepted |
 | [0062](0062-third-party-licence-quarantine.md) | No explicit grant means all rights reserved: the third-party licence quarantine | accepted |
 | [0063](0063-alarm-scorer-implementation.md) | The alarm scorer: reference-first, powered, and written to be upstreamed | accepted |
+| [0064](0064-data-vintage-and-the-second-clock.md) | Data vintage is a property of every observation, and it is measured before it is enforced | accepted |
