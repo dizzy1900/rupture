@@ -1,0 +1,31 @@
+{
+  "source": "usgs-realtime-feed",
+  "licence": "public-domain (USGS)",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with the adapter and re-record provenance",
+  "files": {
+    "all_day.ridgecrest-2019-07-06.geojson": {
+      "source_url": "https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&starttime=2019-07-04T00%3A00%3A00&endtime=2019-08-03T00%3A00%3A00&minmagnitude=3.5&minlongitude=-122&maxlongitude=-114&minlatitude=32&maxlatitude=37.5&orderby=time-asc",
+      "retrieved_at": "2026-09-03T10:08:12.130431+00:00",
+      "cut_at": "2026-09-13T08:07:51.782696+00:00",
+      "parent_path": "data/fixtures/comcat/ridgecrest-2019-30d-m3.5.geojson",
+      "parent_sha256": "9185ef36189306cbbb035643d2ba6210d0782c27a0d4a420b1ee8177227814e3",
+      "parent_size": 303701,
+      "sha256": "6628242dee11a8a9ec4ac469268324f9c5403cdb333a6b20a5630e35f686523f",
+      "size": 183936,
+      "n_events": 245,
+      "query": {
+        "filter": "features with properties.time in [2019-07-06T00:00:00Z, 2019-07-07T00:00:00Z) and mag >= 3",
+        "parent_minmagnitude": 3.5,
+        "bbox": {
+          "min_longitude": -122.0,
+          "min_latitude": 32.0,
+          "max_longitude": -114.0,
+          "max_latitude": 37.5
+        }
+      },
+      "notes": "Cut of the committed ComCat Ridgecrest fixture, not a live all_day.geojson snapshot (that feed is a moving 24-hour window and is not reproducible). Feature properties are copied from the parent; the collection is re-serialised. Parent is M>=3.5, so this cut cannot contain 3.0<=M<3.5 events."
+    }
+  },
+  "notes": "real ComCat GeoJSON features; documented live feeds are all_hour.geojson, all_day.geojson, significant_month.geojson under https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/"
+}

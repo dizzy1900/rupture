@@ -67,6 +67,8 @@ jobs:
       # of ADR-0054 is an evaluation requirement or a data-engineering convenience.
       - name: As-of gate (data vintage exposure)
         run: make validate-asof
+      - name: Observation-feed gate (NGL as-of, USGS feed fixture)
+        run: make validate-observe
       - name: Underwriting check (the serac corridor, priced end to end)
         run: make underwriting-check
       # A ratchet, not a formality: if someone registers a gate in
@@ -83,6 +85,7 @@ jobs:
           covered = {
               "schema", "catalog", "etas", "eval",
               "cascade", "risk", "aftershock", "challengers", "alarm", "asof",
+              "observe",
               "hazard",
           }
           missing = [g for g in GATES if g not in covered]
