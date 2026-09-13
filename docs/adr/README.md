@@ -74,3 +74,4 @@ parallel-branch renumbering) and the gap is left rather than back-filled.
 | [0063](0063-alarm-scorer-implementation.md) | The alarm scorer: reference-first, powered, and written to be upstreamed | accepted |
 | [0064](0064-data-vintage-and-the-second-clock.md) | Data vintage is a property of every observation, and it is measured before it is enforced | accepted |
 | [0065](0065-block-bootstrap-intervals.md) | Intervals resample blocks of windows, because earthquakes are not independent | accepted |
+| [0066](0066-etas-i.md) | ETAS-I: a declared Mc(t), an opt-in inversion, and a fit that is not a forecast | accepted |

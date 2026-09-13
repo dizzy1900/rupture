@@ -203,8 +203,8 @@ follow, where ETAS is doing the thing ETAS is for, the challenger loses heavily.
 Protocol § 10, applied:
 
 - `nepal-himalaya`: condition 1 **not met** (N 0.89 < 0.93, L 0.59 < 0.77); condition 2 **not met**
-  (gain -0.62, upper bound below zero *under the independence assumption*; see below). Not
-  promotable here.
+  (gain -0.62, upper bound below zero *under the independence assumption*; see below).
+  Not promotable here.
 
   **Corrected 2026-09-10.** "Upper bound below zero" holds only for the Student-t interval, which
   treats the per-event log-likelihood differences as independent. A moving-block bootstrap over
