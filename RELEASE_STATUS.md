@@ -53,9 +53,9 @@ hypothesis sum type and a scorer registry. **None of it exists.** Checked agains
 
 | Proposed | Present in `src/`? |
 |---|---|
-| `ObservationSource[T].available_as_of(t)` | no. `src/rupture/ports/` holds ten port modules and none is an observation source; the time-slicing primitive is `Catalog.before(cutoff)` (`src/rupture/domain/catalog.py:131`), which filters on origin time and knows nothing about when a record became available |
-| `available_time` distinct from `valid_time` on every observation | no. `Provenance.retrieved_at` is rupture's fetch time, not the value's publication time, and `leakage.py` (50 lines) compares only `origin_time` — so every existing leakage assertion would pass on a model reading a 2026-revised magnitude at a 2019 issue time |
-| `Vintage` / a vintaged data store / `catalog.as_of(t)` | no |
+| `ObservationSource[T].available_as_of(t)` | **the port exists, nothing implements it** (ADR-0064 decision 5). `src/rupture/ports/observation_source.py` declares it; the catalogue adapters fetch the present and stamp the reported vintage, which measures exposure and cannot reconstruct a past state. Declared without an adapter on purpose, so the next person does not encode a vintage query as a `retrieved_at` filter |
+| `available_time` distinct from `valid_time` on every observation | **yes, 2026-09-10** (ADR-0064). `Event.available_time`, populated from ComCat's `updated`; `Catalog.as_of(t, policy)`; `assert_available_before` as rule 4. The sentence to the left was true and is now measured: **69 of the 217 events a 2019-07-01 fit trains on carry a record last modified after that cutoff, and 130 of 130 scored targets were last modified after the window they were scored in.** The new assertion is **not wired into the pipelines** — see below |
+| `Vintage` / a vintaged data store / `catalog.as_of(t)` | **partly.** `catalog.as_of(t, policy)` and `VintageSummary` exist; **there is no vintaged store.** One vintage is held, so the exposure is measurable and past values are not reconstructible |
 | `CompletenessField`, Mc(x, t) as a field | no. Mc is a scalar per region, estimated from the catalogue itself |
 | `Hypothesis` sum type (`RateForecast` \| `SimulatedCatalogues` \| `AlarmSet` \| `HazardFunction` \| `StateEstimate`) | **partly, 2026-09-10.** `HypothesisArm` names all five (`src/rupture/domain/hypothesis.py`) and `AlarmSet` is a real domain type with a real scorer. The other four arms have no type of their own; `ForecastGrid` is still the only other output shape |
 | `Scorer` registry with mandatory baselines, power and minimum detectable effect | **partly, 2026-09-10.** `rupture.scoring.registry` exists, keyed by arm, and refuses an unregistered arm by name. One arm of five is registered. Exact power and minimum detectable gain are computed for every alarm score; **the pyCSEP N/M/S/L/CL path is not in the registry and still reports no power**, so the 116 scored windows are unchanged |
@@ -158,6 +158,209 @@ is not new information about ETAS; what is new is that the alarm arm can express
   demonstration that the machinery works and that the reference choice is worth a factor of about
   4.5 in *G* here. It is not a regional result and nothing has been promoted.
 
+## Data vintage (2026-09-10)
+
+ADR-0054 proposed an as-of layer; ADR-0064 built enough of it to **measure the thing the layer
+would exist for**, and deliberately enforces nothing yet. The § above records this ledger's own
+statement that the claim underwriting the layer had never been tested. Here is the first test.
+
+### The exposure, measured on the committed California fixture
+
+| | |
+|---|---|
+| records carrying a vintage | 1,433 of 1,433 (ComCat `updated`) |
+| median `updated − origin` | **191.6 days** (p90 1,069 d, max 2,759 d) |
+| events a 2019-07-01 fit would train on | 217 |
+| …last modified **after** that cutoff | **69 (32 %)** |
+| targets scored across six 30-day windows | 130 |
+| …last modified **after** the window they were scored in | **130 (100 %)** |
+
+**Every one of those events passes `assert_all_before`.** The existing leakage assertions are not
+weak; they answer a different question. This one had no way to be asked before.
+
+### What moved, and what did not
+
+Restricting the 2019-07-01 ETAS fit to provably-available records:
+
+| | all records | provable vintage only |
+|---|---|---|
+| training events | 214 | 145 |
+| `gamma` | 1.544 | 1.069 |
+| total expected in the window | 1.089 | 0.653 |
+| N / M / S / L / CL verdicts | fail / pass / fail / fail / fail | fail / pass / fail / fail / fail |
+
+A 40 % change in the headline rate and **no consistency-test verdict flipped.** On this window,
+revision cannot reach the result through the training path.
+
+That is **one window, one region, one fixture**, and it is evidence for demoting the as-of layer
+from an evaluation requirement to a data-engineering convenience *only if it holds across many*.
+It is a first data point, recorded as one.
+
+### What this did not do, and cannot
+
+- **The skill difference is not computed and cannot be from a single vintage.** ComCat's
+  `updated` proves a record is *not* the one that existed at *t*; it does not say what that record
+  said. The events were in the catalogue at the time with values nobody kept.
+- **The ablation bounds one direction.** Dropping unproven records fits a smaller, different
+  catalogue. No movement is conclusive; movement is not.
+- **100 % target exposure is partly an artefact of fetch date** — a 2026 fetch of 2019 events,
+  and ComCat re-touches records for reasons unrelated to magnitude. It bounds what is *provable*,
+  not what *changed*.
+- **`assert_available_before` is not wired into any pipeline.** Turning it on would move every
+  number in the ledger in a single commit with cause and effect entangled. Measure, decide,
+  enforce — in that order, and only the first is done.
+- **There is no vintaged store and `ObservationSource` has no adapter.** Archived vintages
+  (periodic snapshots forward from now, or a provider serving as-of queries) are the next step,
+  with a lead time in months.
+- **ISC and GCMT carry no vintage**, so their events are `None` and any strict-policy filter
+  empties them. That is reported as 0 % coverage, not hidden.
+
+## Clustering (2026-09-10)
+
+Every interval in the challenger evidence is Student-t on per-event log-likelihood differences,
+which counts an aftershock sequence as that many independent observations. This ledger has flagged
+that as the weak point of the only result the project has. ADR-0065 replaces it with a moving-block
+bootstrap over scored windows, reported at block lengths 1, 2, 3, 5 and 8 so that no single choice
+carries a conclusion.
+
+**How bad the assumption was.** 160 of Türkiye's 217 pooled target events are the single
+2023-01-26 window. By Kish's measure those 55 windows are worth about **1.8 independent windows**.
+Nepal's 66 events are worth 6.8.
+
+| region / model | published IG | published 95 % CI | block bootstrap (b = 1) | verdict |
+|---|---|---|---|---|
+| türkiye / ensemble-loglinear | **+0.3354** | [+0.267, +0.404] | **[+0.266, +0.825]** | **survives** at every block length |
+| türkiye / gridded-convlstm | +0.0587 | [−0.301, +0.419] | [−2.01, +0.53] | null, and blinder than it looked |
+| nepal / ensemble-loglinear | −0.0789 | [−0.346, +0.188] | [−0.42, +0.36] | null, unchanged |
+| nepal / gridded-convlstm | −0.6215 | [−1.105, −0.138] | **[−1.39, +0.16]** | **verdict withdrawn** |
+
+- **The only positive result in this repository survives.** The Türkiye ensemble's interval widens
+  2.5–4x and stays clear of zero. It is strongly right-skewed (≈ +2.0), which the symmetric
+  bracket could not express even where it had the sign right.
+- **One published verdict is withdrawn.** Nepal's gridded model was published as significantly
+  *worse* than ETAS (p = 0.0125). Every block interval crosses zero: it is not shown to be worse,
+  only not shown to be better. `docs/CHALLENGER_GRIDDED.md`, `reports/CHALLENGER_EVALUATION.md`
+  and `reports/MODEL_CARD_gridded.md` are corrected.
+- **Both nulls were blinder than reported.** Under the widest block interval Türkiye's gridded
+  model could only have found 1.61 nats/event rather than 0.456, and Nepal's ensemble 0.54 rather
+  than 0.339.
+- **No promotion decision moves.** Nothing was promoted before and nothing is now.
+
+**A defect in the power retrofit, found and fixed here.** `scoring/evidence.py` read
+`target_events` from `pooled_information_gain` (198 on Türkiye) while taking the interval from
+`pooled_paired_test` (217). They are different published quantities. The minimum detectable effect
+was unaffected — the event count cancels out of `(z_alpha + z_power) x standard error` — but that
+was luck, not design; `sd_per_event` was wrong by sqrt(198/217) and is now right.
+
+**What this does not fix.** It re-intervals what was already scored. It rescores nothing, and it
+cannot repair a schedule in which three quarters of the evidence is one sequence — the remedy is
+more independent sequences, meaning more regions or a longer schedule, and California's is 6
+windows of 55. The N/M/S/L/CL consistency tests still report no power.
+
+## ETAS-I, consistency power, generic aftershock parameters (2026-09-10)
+
+Three changes landed together, each adversarially reviewed by a second pass that was told to
+refute rather than agree. **Every figure below is stated as the review left it, not as the change
+proposed it** — several claims were withdrawn, and they are recorded here rather than quietly
+dropped.
+
+### ETAS-I is fittable (ADR-0066)
+
+`rupture.domain.completeness` supplies short-term aftershock incompleteness as a declared, cited
+Mc(t): `StaiCoefficients` carries a **required** `citation` field and defaults to `HELMSTETTER_2006`
+(Mc(t) = Mm − 4.5 − 0.75·log10 t, t in days). It reduces a catalogue to the per-event `mc_current`
+array the pinned `lmizrahi/etas@097f08b6` consumes under `mc="var"`, bounded by each trigger's
+expiry and truncated where a later larger event dominates — 0.03 s on 110 k events, checked against
+a brute-force quadratic reference.
+
+`MizrahiETAS` gains an opt-in `incompleteness=` flag; **plain ETAS remains the exact default** and
+its metadata and diagnostics are unchanged, so no committed fit and no published number moves.
+
+A fit was run during development on the committed California fixture at a 2020-01-01 cutoff — one
+chosen so Ridgecrest sits *inside* the window — and **b rose from 0.869 to 1.012 with the branching
+ratio crossing from 1.044 to 0.968**, the direction the mechanism predicts. Read that as a
+development measurement and nothing more: **nothing in the repository reproduces it.** No ETAS-I
+fit is committed, the only committed test that runs an ETAS-I inversion is the degenerate case
+where ETAS-I and plain ETAS coincide, and the two log-likelihoods are on different target sets and
+are not comparable. The claim "the first ETAS-I fit in the repository exists" was withdrawn in
+review.
+
+**ETAS-I cannot issue a forecast or be scored.** `forecast()`, `issuance_state()` and
+`log_likelihood()` all refuse under it, because the issuance path fixes every source's
+responsibility factor at 1 — the exact correction ETAS-I exists to apply — and the likelihood
+expression assumes a constant completeness equal to `m_ref`. Review found the last two reachable
+and they are now guarded. **ADR-0059's requirement is runnable, not run**: nothing has been
+re-scored against ETAS-I, no baseline layout exists (`save_fit` refuses the collision rather than
+inventing one), and there is no CLI flag, DVC stage or gate.
+
+**Citation caveat, flagged by the change's own author.** The HKJ06 coefficients were confirmed from
+a secondary source quoting the equation, not from the BSSA paper. For Mizrahi et al. (2021) only
+the abstract was readable, and it describes a rate- and magnitude-dependent *detection probability*
+— which is **not** what is implemented here. **No claim is made to reproduce the Mc(t) Mizrahi et
+al. used for their own California results.**
+
+### Power for the consistency tests
+
+`rupture.scoring.consistency_power` simulates the rejection threshold from the forecast and the
+rejection rate from a named alternative, with three parameterised alternative families (rate
+multiplier, spatial concentration, b-value tilt), their inverses, and `events_needed` — the general
+form of Khawaja et al.'s roughly 32,000 events.
+
+**It does not power the published tests, and the docstring now says so in a section of its own.**
+N and L match pycsep. M, S and CL do not: pycsep conditions those on the observed count
+(`use_observed_counts=True`) and this module draws a Poisson-varying total, with CL additionally
+rescaling the rates. The figures are correct for the tests as defined in the module and are **not**
+a statement about the M, S or CL results in `reports/protocol/`. An earlier docstring claimed the
+equivalence outright; it was wrong and was corrected in review. Nothing calls this module yet.
+
+### Generic Reasenberg–Jones parameters for the aftershock service
+
+`rupture.services.aftershock.generic` carries the Page et al. (2016) generic table for the 15
+Garcia et al. (2012) tectonic regimes, transcribed from the USGS/SCEC `opensha-oaf` distribution
+(CC0 1.0), with a Bayesian update of the regime prior over productivity `a` by the Poisson
+likelihood of the aftershocks observed so far. There is no tuned weight: with no elapsed window the
+posterior is the prior, with many events it is the sequence's own maximum likelihood.
+
+Measured on the committed Gorkha and Kahramanmaraş evidence, refitting nothing: **day-1
+observed/expected improves from 2.8–12.8× under-forecast to 1.4–6.4×.** Two honest qualifications
+from review: the generic prior *alone* is worse than ETAS in one of the four windows
+(Kahramanmaraş +1d, obs/ETAS 2.83 against obs/generic 5.29), and **no entry point selects the new
+path** — `service.py`, `refit.py`, `evaluation.py`, `commands/aftershock.py` and
+`validation/aftershock.py` all construct a bare forecaster, so the running system is unchanged. The
+capability exists; the service does not use it. The ledger claim that "the service now has" it was
+corrected to this.
+
+A rescaled grid now also carries honest provenance: review found `rescaled_to_total` returning
+Reasenberg–Jones counts under ETAS's `model_id` and ETAS's `parameter_snapshot_hash` — the hash the
+schedule's leakage check compares — via a `model_copy` that skipped validation. It now rebuilds a
+validated grid as `etas-mizrahi+rj-generic` with its own snapshot hash.
+
+### Prompt 2 import boundaries
+
+Four import-linter contracts now govern the Prompt 2 packages relative to each other, closing the
+Known-gaps entry below. They are a ratchet, not a refactor: the six pre-existing
+`models -> pipelines` edges are grandfathered by name, so a seventh cannot arrive silently.
+Inverting the six is a separate change. The justifying prose was cut back in review after three of
+its factual claims failed checking (`risk` does not import `cascade`; `run_ntpp_schedule` has three
+callers, not two; the dependency-graph figures were stale).
+
+### What was tried and thrown away
+
+Four further changes were implemented in the same batch and **reverted rather than shipped**,
+because review found them unsound. Recorded because a discarded attempt is evidence too:
+
+- **A `SourceRef` de-duplication** turned `validate-ingest` — a suite `promote` requires — red on
+  the committed tree, by rewriting a data file whose bytes are hashed in the ledger. It also opened
+  a Liskov hole letting `claims_supported=[]` into a `list[SourceRef]`.
+- **Mounting the real CAP generator in the replay and stream lanes** emitted messages asserting a
+  modelled hazard forecast, a fabricated `source_refs` provenance slug, and `transects_reached = 0`
+  when no model had run. `status=Test` mitigates that; it does not excuse fabricated model output.
+- **An M3 measurability sweep** had a dead guard that let an all-zero sweep be committed as a
+  measurement, wrote partial artefacts on failure despite a docstring promising it would not, and
+  served stale results with no freshness check.
+- **A prescriptive refactor of the `models -> pipelines` edges** wrote a repair instruction into
+  `pyproject.toml` that would have created a fresh violating edge.
+
 ## Prompt 1 — foundations
 
 | Component | Maturity | What actually ran |
@@ -191,7 +394,7 @@ A pass means a test did not reject at α = 0.05. It is not a skill claim.
 | C3 ground failure (Nowicki Jessee 2018, Zhu 2017) | validated | against the real USGS product for Gorkha: liquefaction r = 0.45, landslide r = 0.16, both biased low |
 | C3 cascade exposure + discriminator client | working | serac has published no slope-unit export yet, so terrain screens report **not applied** |
 | C4 aftershock service | validated | Gorkha and Kahramanmaraş at +1 h, +1 d, +7 d. **Under-forecasts the first day 3–12×** |
-| Gates | validated | **10 gates** (`registry.GATES`): nine after the `language` gate was removed on 2026-09-04, plus `alarm` on 2026-09-10 (ADR-0063), which runs in the CI offline job; the timings below were measured when there were ten and have not been re-measured. `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the rest PASSED; `promote` refuses without a named approver. Eight run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
+| Gates | validated | **11 gates** (`registry.GATES`): nine after the `language` gate was removed on 2026-09-04, plus `alarm` (ADR-0063) and `asof` (ADR-0064) on 2026-09-10, both in the CI offline job; the timings below were measured when there were ten and have not been re-measured. `make validate-rupture` is green in 1 min 38 s to 2 min 51 s on an arm64 laptop, with `validate-hazard` **SKIPPED** for the printed reason (amd64-only image on an arm64 host) and the rest PASSED; `promote` refuses without a named approver. Eight run in the CI offline job on every push and pull request, alongside `make underwriting-check`; `validate-hazard` runs in the Docker job on `main`. A CI step compares the workflow's gate list against `GATES` and fails if a gate is registered without one. **`validate-risk` does not start OpenQuake** — it checks rupture's native GSIMs against OpenQuake's own committed expected values instead (ADR-0020), because the container is amd64-only and gates must run offline from a fresh clone. A reader of the brief expecting "OpenQuake runs" inside the risk gate should read that as satisfied only by `validate-hazard`, in CI |
 | Evidence and figures | validated | `reports/CHALLENGER_EVALUATION.md` carries six figures — per-window information gain, cumulative pass rates, and honest-against-leaked — rendered from the committed schedule JSON by `python -m rupture.reporting.challenger_plots`, which loads no model and issues no forecast |
 
 ## Known gaps
@@ -217,21 +420,41 @@ each of these belongs to a file another owner is editing:
   vocabulary and forbids citing a `rebutted` or `contested` work without its rebuttal in the same
   sentence; nothing checks it. A machine-readable bibliography with status tags would make that
   mechanical and does not exist.
-- **No *consistency-test or challenger* result in this repository reports its statistical power**
-  or a minimum detectable effect, which ADR-0055 makes mandatory for anything published after it.
-  This narrowed on 2026-09-10 but did not close: every alarm score now carries exact power and a
-  minimum detectable gain, and `rupture.scoring.power.minimum_detectable_information_gain` exists
-  and is tested — and **nothing on the pyCSEP path calls it**. The 116 scored windows, the
-  challenger information gains and the ensemble result are all unchanged and all still powerless.
-  Wiring the existing function into the challenger reports is a small change with a real
-  consequence: the one metric ever beaten here (Türkiye ensemble, +0.335 nats/event over 55
-  windows) would gain the figure that says whether it could have been seen by chance.
+- ~~**No consistency-test or challenger result reports its statistical power.**~~ **Closed for
+  the challenger comparisons, still open for the consistency tests (2026-09-10).** Every
+  comparison in the committed schedules now carries its minimum detectable effect, derived from
+  the interval it already published — arithmetic on committed numbers, nothing re-run
+  (`rupture alarm evidence-power`, and `validate-challengers` prints it):
+
+  | region / model | IG (nats/event) | verdict | min detectable at 80 % power |
+  |---|---|---|---|
+  | türkiye / ensemble-loglinear | **+0.3354** | significant | **0.0866** — 3.9x the detectable effect |
+  | türkiye / gridded-convlstm | +0.0587 | null | 0.4564 |
+  | nepal / ensemble-loglinear | −0.0789 | null | 0.3390 |
+  | nepal / gridded-convlstm | −0.6215 | significant, and **worse** than ETAS | 0.6132 |
+
+  Three things follow. **The one metric ever beaten here is comfortably powered** — the Türkiye
+  ensemble's gain is nearly four times the smallest effect its own test could have found, which
+  it was not previously possible to say. **Two of the four nulls are near-blind**: Türkiye's
+  gridded model saw +0.059 where only +0.456 was findable, so "no skill" says very little about
+  it. And Nepal's gridded result is significant *in the wrong direction*, which the sign-aware
+  rendering now states rather than reporting a magnitude that reads as skill.
+
+  **Still open:** the N/M/S/L/CL consistency tests. The 116 scored windows report no power, the
+  pyCSEP path does not call the power module, and simulation-based power for those tests is not
+  built. Khawaja et al.'s point stands unanswered for them.
+
+  **The assumption travels with the figures.** They are derived from intervals that assume
+  independent events, which a clustered catalogue violates, so the true detectable effects are
+  larger than the table says. A block bootstrap would fix the intervals and these together and is
+  not built.
 
 The scientific gaps, unchanged by the re-aim:
 
-- **No challenger was promoted.** The one metric beaten (Türkiye ensemble information gain) rests
-  on an interval that assumes independent events, and corrects a baseline over-forecast rather than
-  adding information. `reports/CHALLENGER_EVALUATION.md` has the evidence.
+- **No challenger was promoted.** The one metric beaten (Türkiye ensemble information gain)
+  corrects a baseline over-forecast rather than adding information.
+  `reports/CHALLENGER_EVALUATION.md` has the evidence. **The independence assumption in its
+  interval was tested on 2026-09-10 and the result survived** — see § Clustering.
 - **The loss numbers are not underwriting-grade.** 27 % of the loss rests on fragility functions
   with no published source; all component value shares are assumed; the replacement-value interval
   is judgement. The central cost figure is sourced (IRENA 2024).
@@ -267,7 +490,8 @@ The scientific gaps, unchanged by the re-aim:
   asymmetry is deliberate and noted here rather than tidied away. **The gridded and ensemble
   *fits* are therefore not retained** — their *scores* are, in
   `reports/challenger/<region>/schedule-<region>-challengers.json`, which is committed.
-- **No import-linter contract governs the four Prompt 2 packages relative to each other.** `domain`
+- ~~**No import-linter contract governs the four Prompt 2 packages relative to each other.**~~ **Closed 2026-09-10** — four contracts added; the six pre-existing `models -> pipelines` edges are grandfathered by name so a seventh cannot arrive silently, and inverting them remains open. The original text follows.
+- **(original entry)** **No import-linter contract governs the four Prompt 2 packages relative to each other.** `domain`
   and `ports` are protected from all of them, but nothing stops `cascade` importing `models`, and
   `models` already imports `pipelines` — six import statements across three modules
   (`models/ensemble/protocol_runner.py`, `models/challengers/ntpp/schedule.py`,

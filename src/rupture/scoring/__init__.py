@@ -6,6 +6,15 @@ than forking it, pyCSEP has no alarm-forecast class, and code that has not entan
 one repository's domain types is code that can be offered to another.
 """
 
+from rupture.scoring.consistency_power import (
+    ConsistencyPowerResult,
+    ConsistencyTest,
+    RejectionRegion,
+    events_needed,
+    minimum_detectable_concentration,
+    minimum_detectable_rate_multiplier,
+    simulated_power,
+)
 from rupture.scoring.errors import (
     ArmNotImplementedError,
     LeakyReferenceError,
@@ -24,14 +33,21 @@ from rupture.scoring.registry import (
 
 __all__ = [
     "ArmNotImplementedError",
+    "ConsistencyPowerResult",
+    "ConsistencyTest",
     "LeakyReferenceError",
     "MissingReferenceError",
     "RefusedMetricError",
+    "RejectionRegion",
     "ScorerEntry",
     "ScoringError",
     "UniformReferenceRefusedError",
+    "events_needed",
     "implemented_arms",
+    "minimum_detectable_concentration",
+    "minimum_detectable_rate_multiplier",
     "registry_table",
     "score",
     "scorer_for",
+    "simulated_power",
 ]
