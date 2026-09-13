@@ -9,16 +9,12 @@ from enum import StrEnum
 from pydantic import Field, model_validator
 
 from rupture.domain.common import RuptureModel, UTCDatetime, sha256_hex
+from rupture.domain.completeness_field import CompletenessField, McMethod
 from rupture.domain.event import Event, EventType
 from rupture.domain.vintage import VintagePolicy, VintageSummary
 
-
-class McMethod(StrEnum):
-    """Completeness-magnitude estimators rupture reports."""
-
-    MAXIMUM_CURVATURE = "maximum_curvature"  # Wiemer & Wyss 2000; +0.2 per Woessner & Wiemer 2005
-    B_VALUE_STABILITY = "b_value_stability"  # Cao & Gao 2002
-    MC_KS = "mc_ks"  # Mizrahi et al. 2021 (etas package cross-check)
+# McMethod is defined on CompletenessField (ADR-0060 spatial product) and re-exported here so
+# `from rupture.domain.catalog import McMethod` keeps working for existing call sites.
 
 
 class CompletenessEstimate(RuptureModel):
@@ -91,6 +87,14 @@ class Catalog(RuptureModel):
     region_id: str | None = None
     events: tuple[Event, ...]
     completeness: tuple[CompletenessEstimate, ...] = ()
+    completeness_field: CompletenessField | None = Field(
+        default=None,
+        description=(
+            "Spatial Mc(x) on a time window (ADR-0060 / ADR-0067). None means the catalogue "
+            "is scalar-only: it may carry CompletenessEstimate values and must not support a "
+            "claim that uses sub-completeness events. See :meth:`labelled_scalar_only`."
+        ),
+    )
     bounds: Bounds | None = None
     homogenisation_log: tuple[HomogenisationLogEntry, ...] = ()
     sources: tuple[str, ...] = Field(
@@ -124,6 +128,15 @@ class Catalog(RuptureModel):
             if hit is not None:
                 return hit
         return None
+
+    def labelled_scalar_only(self) -> bool:
+        """True when this catalogue has no spatial Mc field, or the field is a labelled scalar.
+
+        A catalogue in this state MUST NOT support a claim that uses sub-completeness events
+        (ADR-0060). The scalar :class:`CompletenessEstimate` tuple is not a field.
+        """
+        field = self.completeness_field
+        return field is None or field.is_scalar_only
 
     # ------------------------------------------------------------------ filters
     def _with_events(self, events: Iterable[Event], suffix: str) -> Catalog:
