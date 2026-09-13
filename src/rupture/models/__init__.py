@@ -9,6 +9,9 @@ Layout:
 - :mod:`rupture.models.data` — the shared, model-agnostic dataset, causal-window, blocked-CV and
   normalisation machinery required by ADR-0022. Every challenger builds its inputs through it.
 - :mod:`rupture.models.challengers` — one sub-package per challenger.
+- :mod:`rupture.models.comparators` — the Mignan & Broccardo one-neuron logistic and the
+  distance-plus-slip sibling; mandatory references for spatial aftershock claims (ADR-0059),
+  not challengers.
 - :mod:`rupture.models.ensemble` — the log-linear mixture, weighted on validation windows only.
 
 The rule that shapes all of it: a builder is handed a hard ``cutoff`` and **raises** on any event
@@ -18,4 +21,4 @@ at or after it. Filtering is always an explicit, separately named act
 
 from __future__ import annotations
 
-__all__ = ["challengers", "data", "ensemble"]
+__all__ = ["challengers", "comparators", "data", "ensemble"]
