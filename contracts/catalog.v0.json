@@ -168,7 +168,7 @@
     },
     "Event": {
       "additionalProperties": false,
-      "description": "A single catalogued event with homogenised Mw and full provenance.\n\n``mw`` is the homogenised moment magnitude and ``mw_conversion`` names the method that\nproduced it (e.g. ``\"identity:mwc\"`` when the source gave a moment magnitude, or\n``\"scordilis2006:mb\"`` for a converted body-wave magnitude). Both are ``None`` when no\naccepted conversion exists for the reported scale; such events stay in the catalogue and are\nexcluded from magnitude-based analyses by filter, never by deletion.",
+      "description": "A single catalogued event with homogenised Mw and full provenance.\n\n``mw`` is the homogenised moment magnitude and ``mw_conversion`` names the method that\nproduced it (e.g. ``\"identity:mwc\"`` when the source gave a moment magnitude, or\n``\"scordilis2006:mb\"`` for a converted body-wave magnitude). Both are ``None`` when no\naccepted conversion exists for the reported scale; such events stay in the catalogue and are\nexcluded from magnitude-based analyses by filter, never by deletion.\n\nAn event carries **two times, and they answer different questions.** ``origin_time`` is when\nthe earthquake happened; ``available_time`` is when this description of it came to exist. A\nforecast issued at *t* may use an event only if *both* precede *t*, and until ADR-0064 only\nthe first was checked anywhere in this repository — so a model reading a magnitude revised in\n2026 at a 2019 issue time passed every leakage assertion. On the committed California\nfixture that is not hypothetical: 69 of the 217 events before the 2019-07-01 cutoff carry a\nrecord last modified after it.",
       "properties": {
         "id": {
           "description": "rupture-wide unique id, assigned at merge; stable across rebuilds.",
@@ -192,6 +192,20 @@
           ],
           "default": null,
           "title": "Origin Time Uncertainty S"
+        },
+        "available_time": {
+          "anyOf": [
+            {
+              "format": "date-time",
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Earliest instant at which this record, in the form held here, can be shown to have existed upstream. ComCat's `updated`, ISC's revision stamp. `None` means the vintage is unknown, which is not the same as 'immediately available' and must not be treated as it (ADR-0054, ADR-0064).",
+          "title": "Available Time"
         },
         "latitude": {
           "maximum": 90.0,

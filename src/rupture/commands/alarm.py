@@ -21,6 +21,7 @@ from rupture.pipelines import io
 from rupture.scoring import power as power_mod
 from rupture.scoring import reference as refmod
 from rupture.scoring.alarm import DEFAULT_ALTERNATIVE_GAIN, score_alarm_set
+from rupture.scoring.evidence import read_all, read_all_with_blocks
 from rupture.scoring.registry import registry_table
 
 app = typer.Typer(
@@ -172,3 +173,65 @@ def _echo(result: AlarmScore) -> None:
         )
     for note in result.notes:
         typer.echo(f"  note: {note}")
+
+
+@app.command("evidence-power")
+def evidence_power(
+    reports: Annotated[
+        Path, typer.Option("--reports", help="Directory of committed challenger schedules.")
+    ] = Path("reports/challenger"),
+    alpha: Annotated[float, typer.Option("--alpha")] = 0.05,
+    target_power: Annotated[float, typer.Option("--target-power")] = 0.8,
+) -> None:
+    """The power figure ADR-0055 requires, computed for results that predate the requirement.
+
+    Reads the committed schedules and derives each comparison's minimum detectable effect from
+    the interval it already publishes. Nothing is re-run and no model is loaded.
+    """
+    results = read_all(reports, alpha=alpha, target_power=target_power)
+    if not results:
+        typer.echo(f"no decided comparison found under {reports}", err=True)
+        raise typer.Exit(1)
+    for result in results:
+        typer.echo(result.render())
+        typer.echo("")
+    typer.echo(
+        "Every figure inherits the independence assumption of the interval it came from. A "
+        "clustered catalogue violates it, so the true detectable effect is larger than stated."
+    )
+
+
+@app.command("clustering")
+def clustering(
+    reports: Annotated[
+        Path, typer.Option("--reports", help="Directory of committed challenger schedules.")
+    ] = Path("reports/challenger"),
+    resamples: Annotated[int, typer.Option("--resamples")] = 20_000,
+    seed: Annotated[int, typer.Option("--seed")] = 0,
+) -> None:
+    """Re-interval every published comparison without assuming independent events.
+
+    The committed intervals are Student-t on per-event log-likelihood differences, which treats
+    an aftershock sequence as that many independent observations. On the Türkiye schedule 160 of
+    the 217 scored events are one sequence. This resamples blocks of scored windows instead, at
+    several block lengths, and reports which published verdicts survive.
+    """
+    checks = read_all_with_blocks(reports, n_resamples=resamples, seed=seed)
+    if not checks:
+        typer.echo(f"no decided comparison found under {reports}", err=True)
+        raise typer.Exit(1)
+    for check in checks:
+        typer.echo(check.render())
+        typer.echo("")
+    overturned = [c for c in checks if c.verdict_survives is False]
+    if overturned:
+        typer.echo(
+            "Published verdict(s) that do not survive the clustering correction: "
+            + ", ".join(f"{c.powered.region_id}/{c.powered.model_id}" for c in overturned)
+        )
+        typer.echo(
+            "That is a result rather than an error: the interval assumed away the dependence "
+            "that decided it."
+        )
+    else:
+        typer.echo("Every published verdict survives at every block length.")

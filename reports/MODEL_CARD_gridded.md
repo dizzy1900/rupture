@@ -70,7 +70,7 @@ baseline on identical targets:
 
 | Region | N | M | S | L | CL | pooled information gain per event vs ETAS |
 |---|---|---|---|---|---|---|
-| `nepal-himalaya` | 0.89 (ETAS 0.93) | 0.95 (0.95) | 0.86 (0.73) | 0.59 (0.77) | 0.95 (0.86) | **-0.62** [-1.10, -0.14] |
+| `nepal-himalaya` | 0.89 (ETAS 0.93) | 0.95 (0.95) | 0.86 (0.73) | 0.59 (0.77) | 0.95 (0.86) | **-0.62** [-1.10, -0.14]; block bootstrap [-1.39, +0.16] |
 | `turkiye-eaf` | 0.89 (0.91) | 0.97 (0.93) | 0.72 (0.69) | 0.69 (0.90) | 0.79 (0.86) | **+0.06** [-0.30, +0.42] |
 
 `california` was not run for this model. It could not have changed the verdict: the model fails
@@ -109,6 +109,8 @@ A deliberately leaky ablation is run and labelled (ADR-0022 § 6). It is a measu
 discipline is worth, never a result.
 
 ## Known limitations
+
+**The Nepal interval assumed independent events (corrected 2026-09-10).** The bracket above, [-1.10, -0.14], is Student-t on per-event log-likelihood differences and was read as "significantly worse than ETAS" (p = 0.0125). A moving-block bootstrap over the scored windows crosses zero at every block length from 1 to 8, so that verdict is withdrawn: this model is not shown to be worse than ETAS in Nepal, only not shown to be better. `rupture alarm clustering` recomputes it. The promotion decision is unchanged.
 
 Listed in full in `docs/CHALLENGER_GRIDDED.md` § 7. The load-bearing ones: the magnitude
 distribution is Gutenberg-Richter and not learned; the model does not refit inside the schedule

@@ -278,6 +278,7 @@ class AftershockState:
             "status": "ok",
             "service": SURFACE,
             "model_id": "etas-mizrahi",
+            "rate_model": self.engine.rate_model.value,
             "sequences": sorted(self.sequences),
             "fits_loaded": {
                 name: sorted(entry.current_fits()) for name, entry in sorted(self.sequences.items())

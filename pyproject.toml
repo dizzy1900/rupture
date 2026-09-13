@@ -167,3 +167,62 @@ forbidden_modules = [
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
   "rupture.reporting",
 ]
+
+# ---------------------------------------------------------------- Prompt 2 boundaries
+# `domain` and `ports` were already protected from every outer package. Nothing governed the
+# Prompt 2 packages relative to *each other*, and RELEASE_STATUS recorded the consequence:
+# "nothing stops cascade importing models, and models already imports pipelines -- six import
+# statements across three modules -- an inward-facing model reaching into the orchestration
+# layer. Unforbidden, and it should not be."
+#
+# These four contracts forbid it going forward. They are a ratchet, not a refactor: the six
+# existing edges are listed by name in `ignore_imports` below, so a seventh cannot be added
+# without this file changing and someone explaining why. Inverting the six is a separate change
+# with its own evidence burden -- `models.challengers.ntpp.schedule` in particular has three
+# callers (`commands/challenger.py`, `models/challengers/ntpp/ablation.py`, and its own `main`),
+# so moving it is not the one-line edit it looks like.
+#
+# Measured with `uv run lint-imports` on 2026-09-10: 206 files, 711 dependencies. `risk` and
+# `services` genuinely import each other (`risk.service` reuses the API-key guard from
+# `services.auth`; `services.app` mounts `risk.service` for ADR-0045's single process), so no
+# contract here separates those two.
+#
+# One semantic worth knowing before adding a fifth: import-linter `forbidden` contracts chase
+# INDIRECT chains by default. A contract added here can fail on an edge that exists only through
+# an intermediate package, which is usually what you want and is occasionally a surprise.
+
+[[tool.importlinter.contracts]]
+name = "cascade is a leaf: it imports no other Prompt 2 package"
+type = "forbidden"
+source_modules = ["rupture.cascade"]
+forbidden_modules = [
+  "rupture.models", "rupture.pipelines", "rupture.risk", "rupture.services",
+]
+
+[[tool.importlinter.contracts]]
+name = "models do not import the cascade, risk or service packages"
+type = "forbidden"
+source_modules = ["rupture.models"]
+forbidden_modules = ["rupture.cascade", "rupture.risk", "rupture.services"]
+
+# The six edges that already existed when this contract was written. Each is a model reaching
+# into orchestration; each is grandfathered by name so that the seventh cannot arrive silently.
+[[tool.importlinter.contracts]]
+name = "models do not import pipelines (six pre-existing imports, each named below)"
+type = "forbidden"
+source_modules = ["rupture.models"]
+forbidden_modules = ["rupture.pipelines"]
+ignore_imports = [
+  "rupture.models.ensemble.protocol_runner -> rupture.pipelines.evaluate",
+  "rupture.models.ensemble.protocol_runner -> rupture.pipelines.io",
+  "rupture.models.challengers.ntpp.schedule -> rupture.pipelines.evaluate",
+  "rupture.models.challengers.ntpp.schedule -> rupture.pipelines.run_forecast",
+  "rupture.models.challengers.ntpp.schedule -> rupture.pipelines.schedule",
+  "rupture.models.challengers.gridded.challenger -> rupture.pipelines.completeness",
+]
+
+[[tool.importlinter.contracts]]
+name = "risk and services do not import the forecasting models"
+type = "forbidden"
+source_modules = ["rupture.risk", "rupture.services"]
+forbidden_modules = ["rupture.models"]

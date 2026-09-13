@@ -61,6 +61,7 @@ from rupture.models.promotion import (
     pass_rate_table,
     region_verdict,
 )
+from rupture.scoring.evidence import read_all, read_all_with_blocks
 from rupture.validation.result import GateResult, GateStatus
 
 GATE = "validate-challengers"
@@ -593,6 +594,8 @@ def run(repo_root: Path) -> GateResult:
                 f"evidence says '{expected}'"
             )
     findings.extend(_prose_claims(repo_root, promoted))
+    power_lines, power_failures = _power_of_the_published_results(repo_root)
+    findings.extend(power_failures)
 
     if findings:
         return GateResult(name=GATE, status=GateStatus.FAILED, findings=findings)
@@ -601,6 +604,7 @@ def run(repo_root: Path) -> GateResult:
         status=GateStatus.PASSED,
         findings=[
             *_verdict_lines(overall),
+            *power_lines,
             *notes,
             f"{len(evidence)} committed challenger schedule(s) recomputed under "
             "docs/EVALUATION_PROTOCOL.md section 10 (ADR-0040); every published claim agrees",
@@ -610,3 +614,86 @@ def run(repo_root: Path) -> GateResult:
             "no leaky ablation artefact is persisted as a baseline or counted as evidence",
         ],
     )
+
+
+CLUSTERING_RESAMPLES = 4000
+"""Enough for a stable 95 % percentile interval; the gate runs on every push."""
+
+
+def _power_of_the_published_results(repo_root: Path) -> tuple[list[str], list[str]]:
+    """ADR-0055 decision 4, retrofitted onto results that predate it.
+
+    "A p-value without a power figure is not a finding." Every comparison in the committed
+    schedules was scored before that rule existed, and none of them carries one. Nothing has to be
+    re-run to fix it: the schedules publish the pooled information gain, its confidence interval
+    and the target count, and a symmetric normal interval determines the standard error that
+    produced it.
+
+    Returned as findings rather than as a pass/fail: a null with a stated bound is a result, and
+    the gate's job here is to make sure the bound is stated, not to judge it. The one thing that
+    *is* a failure is a published comparison from which no power figure can be derived at all,
+    because then the rule cannot be satisfied by any amount of reading.
+    """
+    lines: list[str] = []
+    failures: list[str] = []
+    try:
+        results = read_all(repo_root / "reports" / "challenger")
+    except (OSError, ValueError, KeyError) as exc:
+        return [], [f"{GATE}: the committed challenger evidence could not be powered ({exc})"]
+    if not results:
+        return ["no decided challenger comparison is committed, so none can be powered"], []
+    for result in results:
+        lines.append(f"power: {result.render()}")
+        if result.minimum_detectable_gain <= 0.0:
+            failures.append(
+                f"{result.region_id}/{result.model_id}: the minimum detectable effect came out "
+                "non-positive, which means the interval it was derived from is degenerate"
+            )
+    blind = [r for r in results if r.significant is False and r.effect_over_mde < 0.2]
+    if blind:
+        lines.append(
+            "power: "
+            + "; ".join(
+                f"{r.region_id}/{r.model_id} saw {r.information_gain_per_event:+.3f} against a "
+                f"detectable {r.minimum_detectable_gain:.3f} nats/event"
+                for r in blind
+            )
+            + " -- these nulls are near-blind: the test could only have found an effect several "
+            "times larger than anything observed, so 'no skill' says little about the model"
+        )
+    lines.extend(_clustering_lines(repo_root))
+    return lines, failures
+
+
+def _clustering_lines(repo_root: Path) -> list[str]:
+    """The block bootstrap: what the published intervals look like once clustering is allowed for.
+
+    Every interval in the committed evidence assumes the per-event log-likelihood differences are
+    independent, and on the Türkiye schedule 160 of 217 target events are one aftershock
+    sequence. This resamples blocks of scored windows instead, at several block lengths, and says
+    which published verdicts survive.
+    """
+    try:
+        checks = read_all_with_blocks(
+            repo_root / "reports" / "challenger", n_resamples=CLUSTERING_RESAMPLES, seed=0
+        )
+    except (OSError, ValueError, KeyError) as exc:
+        return [f"clustering: the block bootstrap could not run ({exc})"]
+    if not checks:
+        return []
+    lines = ["clustering: block-bootstrap intervals over scored windows, at block lengths 1-8"]
+    for check in checks:
+        for row in check.render().splitlines():
+            lines.append(
+                f"clustering:   {row.strip()}" if row.startswith(" ") else f"clustering: {row}"
+            )
+    overturned = [c for c in checks if c.verdict_survives is False]
+    if overturned:
+        lines.append(
+            "clustering: "
+            + "; ".join(f"{c.powered.region_id}/{c.powered.model_id}" for c in overturned)
+            + " -- published verdict(s) that do NOT survive the clustering correction. This is a "
+            "result, not a gate failure: the finding is that the interval assumed away the "
+            "dependence that decided it"
+        )
+    return lines

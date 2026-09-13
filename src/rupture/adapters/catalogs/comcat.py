@@ -131,6 +131,15 @@ def parse_comcat_geojson_report(payload: bytes | str, *, provenance: Provenance)
             skipped.append((fid, "no time or coordinates"))
             continue
         origin = datetime.fromtimestamp(props["time"] / 1000.0, tz=UTC)
+        # ComCat's `updated` is the last time this record changed, which is the earliest instant
+        # the values below can be *shown* to have existed. It is not when the event entered the
+        # catalogue -- that was minutes after origin, with values nobody kept -- so it bounds the
+        # vintage from the late side only. ADR-0064 says what that does and does not license.
+        available = (
+            datetime.fromtimestamp(props["updated"] / 1000.0, tz=UTC)
+            if props.get("updated") is not None
+            else None
+        )
         mag_type = normalise_magnitude_type(props.get("magType"))
         mag_value = float(props["mag"])
         mw, conv = identity_mw(mag_type, mag_value)
@@ -147,6 +156,7 @@ def parse_comcat_geojson_report(payload: bytes | str, *, provenance: Provenance)
                 id=f"{SOURCE_ID}:{fid}",
                 origin_time=origin,
                 origin_time_uncertainty_s=_opt_float(props.get("timeError")),
+                available_time=available,
                 latitude=float(coords[1]),
                 longitude=float(coords[0]),
                 horizontal_uncertainty_km=_opt_float(props.get("horizontalError")),
