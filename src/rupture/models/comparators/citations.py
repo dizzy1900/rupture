@@ -26,7 +26,7 @@ EVIDENCE_SENTENCE = (
     "10.1038/s41586-019-1582-8 matched it with two-parameter logistic AUC 0.85 — `contested`, "
     "and Meade et al. Reply Nature 574 E4-E5 doi 10.1038/s41586-019-1583-7 is on the record; "
     "independently, a three-parameter logistic on log distance-to-rupture and log mean slip "
-    "reached 0.86. Those numbers are not a win for DeVries and are not recomputed here."
+    "reached 0.86. Those published AUC figures are historical and are not recomputed here."
 )
 
 COUNT_CONVERSION_NOTE = (

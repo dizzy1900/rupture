@@ -266,8 +266,9 @@ class OneNeuronAftershockModel:
 
     def occupancy_map(self, history: Catalog, issue_time: datetime) -> _F8:
         """Occupancy P per lattice cell from history strictly before ``issue_time``."""
-        _fit, _region, lattice, projection = self._require_state()
+        fit, _region, lattice, projection = self._require_state()
         logistic = self._require_logistic()
+        assert_issue_after_fit(issue_time, fit.fit_cutoff)
         assert_all_before(history, issue_time, what="one-neuron occupancy history")
         anchors = lf.mainshock_anchors(history, m_main=self.m_main) or self._anchors
         log_distance = lf.log10_distance_to_anchors(

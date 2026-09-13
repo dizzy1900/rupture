@@ -8,8 +8,8 @@ DeVries et al. 2018 Nature doi 10.1038/s41586-018-0438-y reported AUC 0.849 on a
 location — `rebutted`; Mignan & Broccardo 2019 Nature 574 E1–E3 doi 10.1038/s41586-019-1582-8
 matched it with two-parameter logistic AUC 0.85 — `contested`, and Meade et al. Reply Nature 574
 E4–E5 doi 10.1038/s41586-019-1583-7 is on the record. Independently, a three-parameter logistic
-on log distance-to-rupture and log mean slip reached 0.86. Those numbers are historical. They
-are not a win for DeVries, and this repository will not recompute them.
+on log distance-to-rupture and log mean slip reached 0.86. Those numbers are historical, and
+this repository will not recompute them.
 
 Code: `src/rupture/models/comparators/`. Model card:
 `reports/MODEL_CARD_one_neuron.md`. The baseline table is ADR-0059.
@@ -91,7 +91,7 @@ it records a higher area skill score against the **same clustering-aware referen
 declared `tau` chosen before the targets, with a positive information-gain or probability-gain
 interval that does not rest on independent-event assumptions the aftershocks violate.
 
-Matching DeVries et al.'s AUC, or beating Coulomb failure stress, is not a result. Beating this
+Matching that published AUC, or beating Coulomb failure stress, is not a result. Beating this
 logistic, and distance-plus-slip when a slip field exists, on the AlarmSet arm, might be.
 
 This PR does not run that comparison. The model card says so.

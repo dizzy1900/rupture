@@ -1,8 +1,10 @@
 """Three-parameter logistic on log-distance and log mean slip.
 
 This is the sibling of :class:`~rupture.models.comparators.logistic.OneNeuronAftershockModel`
-that Mignan & Broccardo reported at 0.86 on the pooled DeVries cells. It will not silently
-drop the slip feature: construction without a :class:`SlipField` raises
+that Mignan & Broccardo reported at 0.86 on the pooled cells of DeVries et al. 2018 Nature doi
+10.1038/s41586-018-0438-y — `rebutted`; Meade et al. Reply Nature 574 E4-E5 doi
+10.1038/s41586-019-1583-7 is on the record. It will not silently drop the slip feature:
+construction without a :class:`SlipField` raises
 :class:`~rupture.models.comparators.errors.MissingSlipFieldError` naming the finite-fault /
 slip field that is missing.
 
