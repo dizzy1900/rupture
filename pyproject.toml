@@ -133,7 +133,7 @@ source_modules = ["rupture.domain"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.scoring",
+  "rupture.scoring", "rupture.reporting",
 ]
 
 [[tool.importlinter.contracts]]
@@ -143,15 +143,32 @@ source_modules = ["rupture.ports"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.scoring",
+  "rupture.scoring", "rupture.reporting",
 ]
 
+# ADR-0002 listed five families. ADR-0071 extends the list to every adapters.* package that
+# exists on disk. Two pre-existing cross-family seams are grandfathered by name in
+# ignore_imports: the OpenQuake ground-motion adapters reuse hazard's docker runner, and
+# cascade.chamoli drives a scenario through the native GSIM. A new edge, or a new family that
+# is not listed here, fails the build (see tests/unit/architecture/test_adapter_families.py).
 [[tool.importlinter.contracts]]
 name = "adapters do not import each other across families"
 type = "independence"
 modules = [
   "rupture.adapters.catalogs", "rupture.adapters.sources", "rupture.adapters.forecasting",
   "rupture.adapters.evaluation", "rupture.adapters.hazard",
+  "rupture.adapters.groundmotion", "rupture.adapters.exposure",
+  "rupture.adapters.vulnerability", "rupture.adapters.storage", "rupture.adapters.cascade",
+]
+ignore_imports = [
+  # groundmotion OpenQuake adapters wrap hazard's pinned docker runner rather than duplicating it.
+  "rupture.adapters.groundmotion.openquake_scenario -> rupture.adapters.hazard.job_builder",
+  "rupture.adapters.groundmotion.openquake_scenario -> rupture.adapters.hazard.openquake_docker",
+  "rupture.adapters.groundmotion.openquake_event_based -> rupture.adapters.hazard.job_builder",
+  "rupture.adapters.groundmotion.openquake_event_based -> rupture.adapters.hazard.openquake_docker",
+  # cascade.chamoli is the non-ShakeMap scenario route: a hypothetical rupture through NativeGsim.
+  "rupture.adapters.cascade.chamoli -> rupture.adapters.groundmotion.distances",
+  "rupture.adapters.cascade.chamoli -> rupture.adapters.groundmotion.native",
 ]
 
 # ADR-0061 commits rupture to interoperating with CSEP rather than forking it, and ADR-0055
@@ -166,6 +183,20 @@ forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
   "rupture.reporting",
+]
+
+# ADR-0049 put figures in `rupture.reporting` and noted that no import-linter contract mentioned
+# the package. ADR-0071 closes that: reporting may see domain (and the stdlib / matplotlib it
+# already uses); it must not reach into pipelines, CLI, validation, services or adapters. The
+# current modules are clean, so there is nothing to grandfather.
+[[tool.importlinter.contracts]]
+name = "reporting imports only domain (figures are drawn from committed evidence)"
+type = "forbidden"
+source_modules = ["rupture.reporting"]
+forbidden_modules = [
+  "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
+  "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
+  "rupture.scoring",
 ]
 
 # ---------------------------------------------------------------- Prompt 2 boundaries

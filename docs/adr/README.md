@@ -8,12 +8,13 @@ Consequences / Alternatives considered. All dates UTC.
 the amending ADRs are named in a dated Amendment section at the foot of the file. ADR-0053 to
 ADR-0062 record the 2026-09-04 re-aim at earthquake prediction. Numbering runs from 0053 because
 0051 and 0052 were already taken; 0036–0038 were never issued (the numbers were consumed by a
-parallel-branch renumbering) and the gap is left rather than back-filled.
+parallel-branch renumbering) and the gap is left rather than back-filled. 0067–0070 are reserved
+for parallel worktrees; ADR-0071 is issued from this one and the gap is left the same way.
 
 | ADR | Title | Status |
 |---|---|---|
 | [0001](0001-self-contained-repo-conventions.md) | Self-contained repository conventions | accepted |
-| [0002](0002-hexagonal-architecture.md) | Hexagonal architecture (ports and adapters) | accepted |
+| [0002](0002-hexagonal-architecture.md) | Hexagonal architecture (ports and adapters) | accepted (amended 2026-09-13) |
 | [0003](0003-python-toolchain.md) | Python 3.12, uv, ruff, mypy --strict, pytest with sockets disabled | accepted |
 | [0004](0004-catalogue-sources-obspy-comcat-geojson.md) | Catalogue sources: obspy FDSN for ComCat and ISC; ComCat GeoJSON to keep `type`; libcomcat optional | accepted |
 | [0005](0005-isc-gem-csv-ingestion.md) | ISC-GEM CSV ingestion via a manual, form-gated download | accepted |
@@ -57,7 +58,7 @@ parallel-branch renumbering) and the gap is left rather than back-filled.
 | [0046](0046-etas-log-likelihood.md) | The ETAS log-likelihood rupture persists | accepted |
 | [0047](0047-classical-psha-job-derived-from-the-source-model-manifest.md) | A classical PSHA job is derived from the source-model manifest, not written by hand | accepted |
 | [0048](0048-licence-and-ci-platform.md) | Apache-2.0 as the repository licence, GitHub Actions as the CI platform, and a gate-coverage ratchet | accepted |
-| [0049](0049-report-figures-from-committed-evidence.md) | Report figures are rendered from committed evidence, never from a model | accepted |
+| [0049](0049-report-figures-from-committed-evidence.md) | Report figures are rendered from committed evidence, never from a model | accepted (amended 2026-09-13) |
 | [0050](0050-learned-ground-failure-hook.md) | a documented hook for a learned global ground-failure model, not trained here | accepted |
 | [0051](0051-chamoli-ronti-scenario.md) | the Chamoli / Ronti scenario case: how a scenario without a published answer is built | accepted |
 | [0052](0052-cascade-exposure-geoparquet.md) | CascadeExposure as GeoParquet: geometry, and the caveat in the file's metadata | accepted |
@@ -74,3 +75,5 @@ parallel-branch renumbering) and the gap is left rather than back-filled.
 | [0063](0063-alarm-scorer-implementation.md) | The alarm scorer: reference-first, powered, and written to be upstreamed | accepted |
 | [0064](0064-data-vintage-and-the-second-clock.md) | Data vintage is a property of every observation, and it is measured before it is enforced | accepted |
 | [0065](0065-block-bootstrap-intervals.md) | Intervals resample blocks of windows, because earthquakes are not independent | accepted |
+| [0066](0066-etas-i.md) | ETAS-I: a declared Mc(t), an opt-in inversion, and a fit that is not a forecast | accepted |
+| [0071](0071-reporting-and-adapter-family-contracts.md) | Import-linter contracts for reporting and the remaining adapter families | accepted |

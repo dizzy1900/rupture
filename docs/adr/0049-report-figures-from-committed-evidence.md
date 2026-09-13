@@ -1,6 +1,6 @@
 # ADR-0049: Report figures are rendered from committed evidence, never from a model
 
-- **Status:** accepted
+- **Status:** accepted (amended 2026-09-13)
 - **Date:** 2026-09-03 (UTC)
 
 ## Context
@@ -86,3 +86,9 @@ drawn from.
   mode as a number without provenance.
 - **Use the pycsep plotting helpers.** They draw per-forecast consistency-test distributions, one
   window at a time; the question here is about 55 windows at once.
+
+## Amendment (2026-09-13)
+
+[ADR-0071](0071-reporting-and-adapter-family-contracts.md) adds the import-linter contract this
+ADR noted as missing. `rupture.reporting` is forbidden from importing adapters, pipelines, CLI,
+validation, services and the other outer packages. The current modules needed no ignores.
