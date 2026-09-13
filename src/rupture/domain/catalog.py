@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections.abc import Iterable
 from datetime import datetime
+from enum import StrEnum
 
 from pydantic import Field, model_validator
 
@@ -11,6 +12,9 @@ from rupture.domain.common import RuptureModel, UTCDatetime, sha256_hex
 from rupture.domain.completeness_field import CompletenessField, McMethod
 from rupture.domain.event import Event, EventType
 from rupture.domain.vintage import VintagePolicy, VintageSummary
+
+# McMethod is defined on CompletenessField (ADR-0060 spatial product) and re-exported here so
+# `from rupture.domain.catalog import McMethod` keeps working for existing call sites.
 
 
 class CompletenessEstimate(RuptureModel):
