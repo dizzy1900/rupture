@@ -12,7 +12,7 @@ from rupture.adapters.catalogs.fixtures import FixtureError, load_fixture_dir
 from rupture.adapters.observations.ngl import NglGnssSource, parse_tenv3
 from rupture.adapters.observations.usgs_feed import parse_usgs_feed_geojson
 from rupture.domain import VintagePolicy
-from rupture.domain.observation import GnssProduct, readable_as_of
+from rupture.domain.observation import GnssPosition, GnssProduct, readable_as_of
 from rupture.validation.result import GateResult, GateStatus
 
 
@@ -20,7 +20,16 @@ def run(repo_root: Path) -> GateResult:
     findings: list[str] = []
     failures: list[str] = []
     fixtures = repo_root / "data" / "fixtures"
+    _check_ngl(fixtures, findings, failures)
+    _check_usgs_feed(fixtures, findings, failures)
+    if failures:
+        return GateResult(
+            name="validate-observe", status=GateStatus.FAILED, findings=findings + failures
+        )
+    return GateResult(name="validate-observe", status=GateStatus.PASSED, findings=findings)
 
+
+def _check_ngl(fixtures: Path, findings: list[str], failures: list[str]) -> None:
     try:
         ngl_files = load_fixture_dir(fixtures / "gnss" / "ngl", adapter_version="gate")
     except FixtureError as exc:
@@ -50,21 +59,28 @@ def run(repo_root: Path) -> GateResult:
             for p in positions
         ):
             failures.append(f"{fx.path.name}: non-finite coordinates or provenance mismatch")
+        _check_ngl_as_of(positions, findings, failures)
 
-        source = NglGnssSource("P595", positions=positions, product=GnssProduct.FINAL)
-        last = positions[-1]
-        kept = source.available_as_of(last.available_time, policy=VintagePolicy.EXCLUDE_UNKNOWN)
-        if last in kept or any(p.available_time == last.available_time for p in kept):
-            failures.append(
-                "as-of half-open violated: a position with available_time == as_of was served"
-            )
-        if any(not readable_as_of(p.available_time, last.available_time) for p in kept):
-            failures.append("as-of returned a position with available_time >= as_of")
-        findings.append(
-            f"as-of {last.available_time.isoformat()}: kept {len(kept)} of {len(positions)} "
-            "(boundary excluded)"
+
+def _check_ngl_as_of(
+    positions: tuple[GnssPosition, ...], findings: list[str], failures: list[str]
+) -> None:
+    source = NglGnssSource("P595", positions=positions, product=GnssProduct.FINAL)
+    last = positions[-1]
+    kept = source.available_as_of(last.available_time, policy=VintagePolicy.EXCLUDE_UNKNOWN)
+    if last in kept or any(p.available_time == last.available_time for p in kept):
+        failures.append(
+            "as-of half-open violated: a position with available_time == as_of was served"
         )
+    if any(not readable_as_of(p.available_time, last.available_time) for p in kept):
+        failures.append("as-of returned a position with available_time >= as_of")
+    findings.append(
+        f"as-of {last.available_time.isoformat()}: kept {len(kept)} of {len(positions)} "
+        "(boundary excluded)"
+    )
 
+
+def _check_usgs_feed(fixtures: Path, findings: list[str], failures: list[str]) -> None:
     try:
         usgs_files = load_fixture_dir(fixtures / "usgs_feed", adapter_version="gate")
     except FixtureError as exc:
@@ -79,9 +95,3 @@ def run(repo_root: Path) -> GateResult:
             failures.append(f"{fx.path.name}: provenance sha256 mismatch")
         if not any(e.source_event_id == "ci38457511" for e in events):
             failures.append(f"{fx.path.name}: Ridgecrest M7.1 ci38457511 missing")
-
-    if failures:
-        return GateResult(
-            name="validate-observe", status=GateStatus.FAILED, findings=findings + failures
-        )
-    return GateResult(name="validate-observe", status=GateStatus.PASSED, findings=findings)

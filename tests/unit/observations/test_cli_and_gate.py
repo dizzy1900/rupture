@@ -2,12 +2,12 @@
 
 from __future__ import annotations
 
+from tests.unit.observations.conftest import REPO_ROOT
 from typer.testing import CliRunner
 
 from rupture.commands.observe import app
 from rupture.validation import observe as gate
 from rupture.validation.result import GateStatus
-from tests.unit.observations.conftest import REPO_ROOT
 
 
 def test_ngl_info_and_asof_and_feed_info_run_offline() -> None:

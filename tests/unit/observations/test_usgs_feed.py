@@ -4,6 +4,8 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from tests.unit.observations.conftest import FIXTURES, fixture_file
+
 from rupture.adapters.observations.usgs_feed import (
     FEEDS,
     UsgsRealtimeFeed,
@@ -11,7 +13,6 @@ from rupture.adapters.observations.usgs_feed import (
 )
 from rupture.domain import EventType, VintagePolicy
 from rupture.domain.observation import ObservableKind
-from tests.unit.observations.conftest import fixture_file
 
 
 def test_ridgecrest_cut_parses_m71_with_comcat_vintage_clock() -> None:
@@ -30,17 +31,13 @@ def test_ridgecrest_cut_parses_m71_with_comcat_vintage_clock() -> None:
 
 
 def test_offline_feed_source_does_not_fetch() -> None:
-    from tests.unit.observations.conftest import FIXTURES
-
     src = UsgsRealtimeFeed(offline_fixtures=FIXTURES)
     assert src.kind is ObservableKind.CATALOGUE_EVENT
     catalog = src.catalog()
     assert len(catalog) > 0
     as_of = catalog.events[0].origin_time
     kept = src.available_as_of(as_of, policy=VintagePolicy.EXCLUDE_UNKNOWN)
-    assert all(
-        e.available_time is not None and e.available_time < as_of for e in kept.events
-    )
+    assert all(e.available_time is not None and e.available_time < as_of for e in kept.events)
 
 
 def test_documented_feeds_include_hour_day_and_significant_month() -> None:

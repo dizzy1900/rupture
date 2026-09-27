@@ -4,6 +4,9 @@ from __future__ import annotations
 
 from datetime import UTC, datetime
 
+from tests.unit.catalogs.conftest import fixture_file as catalog_fixture
+from tests.unit.observations.conftest import REPO_ROOT
+
 from rupture.adapters.observations.fdsn_events import (
     BASE_URL,
     FdsnEventSource,
@@ -13,8 +16,6 @@ from rupture.adapters.observations.fdsn_events import (
 from rupture.adapters.sources.regions import load_region
 from rupture.domain import Catalog, VintagePolicy, utc_now
 from rupture.domain.observation import ObservableKind
-from tests.unit.catalogs.conftest import fixture_file as catalog_fixture
-from tests.unit.observations.conftest import REPO_ROOT
 
 
 def test_fdsn_text_parser_reads_a_real_bulletin_payload() -> None:

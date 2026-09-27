@@ -28,9 +28,7 @@ def events_available_as_of(
     return tuple(kept)
 
 
-def catalog_available_as_of(
-    catalog: Catalog, instant: datetime, policy: VintagePolicy
-) -> Catalog:
+def catalog_available_as_of(catalog: Catalog, instant: datetime, policy: VintagePolicy) -> Catalog:
     """Return a new catalogue containing only rows readable as of ``instant``."""
     kept = events_available_as_of(catalog.events, instant, policy)
     return catalog.model_copy(

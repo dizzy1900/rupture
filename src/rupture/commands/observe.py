@@ -58,18 +58,13 @@ def ngl_info(
     typer.echo(f"station {first.station_id}")
     typer.echo(f"  source: {source.source_id}  product: {first.product.value}")
     typer.echo(f"  n_positions: {len(positions)}")
+    typer.echo(f"  valid_time: [{first.valid_time.isoformat()}, {last.valid_time.isoformat()}]")
     typer.echo(
-        f"  valid_time: [{first.valid_time.isoformat()}, {last.valid_time.isoformat()}]"
-    )
-    typer.echo(
-        f"  available_time: [{first.available_time.isoformat()}, "
-        f"{last.available_time.isoformat()}]"
+        f"  available_time: [{first.available_time.isoformat()}, {last.available_time.isoformat()}]"
     )
     typer.echo(f"  licence: {first.provenance.licence}")
     typer.echo(f"  citation: {CITATION}")
-    typer.echo(
-        "  note: data port only — not Bletery & Nocquet adjudication, not a prediction"
-    )
+    typer.echo("  note: data port only — not Bletery & Nocquet adjudication, not a prediction")
 
 
 @app.command("ngl-asof")

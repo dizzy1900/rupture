@@ -197,9 +197,7 @@ class FdsnEventSource:
             msg = "end must be after start"
             raise ValueError(msg)
         url = query_url(region, start, end, min_magnitude=min_magnitude)
-        payload = fetch_bytes(
-            url, cache_dir=self.cache_dir, ok_statuses=frozenset({200, 204})
-        )
+        payload = fetch_bytes(url, cache_dir=self.cache_dir, ok_statuses=frozenset({200, 204}))
         if payload.status_code not in {200, 204}:
             msg = f"IRIS FDSN event query returned HTTP {payload.status_code} for {url}"
             raise FetchError(msg)

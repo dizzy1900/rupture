@@ -7,6 +7,7 @@ from datetime import UTC, datetime, timedelta
 
 import pytest
 from pydantic import ValidationError
+from tests.unit.observations.conftest import FIXTURES, fixture_file
 
 from rupture.adapters.observations.ngl import (
     FINAL_ORBIT_LAG,
@@ -18,7 +19,6 @@ from rupture.adapters.observations.ngl import (
 )
 from rupture.domain import Provenance
 from rupture.domain.observation import GnssPosition, GnssProduct, ObservableKind
-from tests.unit.observations.conftest import FIXTURES, fixture_file
 
 
 def test_p595_fixture_parses_station_finite_coordinates_and_provenance() -> None:
@@ -42,14 +42,12 @@ def test_final_and_rapid_lags_are_named_constants_not_inline_arithmetic() -> Non
     instant = datetime(2019, 7, 4, tzinfo=UTC)
     assert lag_for_product(GnssProduct.FINAL) is FINAL_ORBIT_LAG
     assert lag_for_product(GnssProduct.RAPID) is RAPID_ORBIT_LAG
-    assert (
-        stamp_available_time(instant, GnssProduct.FINAL, publish_stamp=None)
-        == instant + timedelta(days=14)
-    )
-    assert (
-        stamp_available_time(instant, GnssProduct.RAPID, publish_stamp=None)
-        == instant + timedelta(days=1)
-    )
+    assert stamp_available_time(
+        instant, GnssProduct.FINAL, publish_stamp=None
+    ) == instant + timedelta(days=14)
+    assert stamp_available_time(
+        instant, GnssProduct.RAPID, publish_stamp=None
+    ) == instant + timedelta(days=1)
     published = datetime(2019, 7, 5, 12, tzinfo=UTC)
     assert stamp_available_time(instant, GnssProduct.FINAL, publish_stamp=published) == published
 

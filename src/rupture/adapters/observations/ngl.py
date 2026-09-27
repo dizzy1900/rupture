@@ -25,6 +25,7 @@ from __future__ import annotations
 
 from datetime import UTC, datetime, timedelta
 from pathlib import Path
+from typing import assert_never
 
 from rupture.adapters.catalogs._http import FetchError, fetch_bytes
 from rupture.adapters.catalogs.fixtures import load_fixture_dir
@@ -102,8 +103,7 @@ def lag_for_product(product: GnssProduct) -> timedelta:
         return FINAL_ORBIT_LAG
     if product is GnssProduct.RAPID:
         return RAPID_ORBIT_LAG
-    msg = f"unknown GNSS product {product!r}"
-    raise ValueError(msg)
+    assert_never(product)
 
 
 def stamp_available_time(
@@ -284,7 +284,9 @@ class NglGnssSource:
             msg = f"no NGL fixture for station {self.station_id}; have {names}"
             raise FileNotFoundError(msg)
         payload = matching[0]
-        positions = parse_tenv3(payload.content, provenance=payload.provenance, product=self.product)
+        positions = parse_tenv3(
+            payload.content, provenance=payload.provenance, product=self.product
+        )
         unexpected = [p.station_id for p in positions if p.station_id != self.station_id]
         if unexpected:
             msg = f"NGL fixture station {unexpected[0]} != requested {self.station_id}"
@@ -325,12 +327,11 @@ class NglGnssSource:
     ) -> tuple[GnssPosition, ...]:
         """Positions this source can prove it held at ``instant`` (half-open).
 
-        Every row carries ``available_time``, so ``policy`` cannot admit an unknown vintage.
-        It is still required so the call site names the assumption.
+        Every row carries ``available_time``, so ``policy`` cannot admit an unknown vintage and
+        both policies return the same rows. It is still required so the call site names the
+        assumption.
         """
-        if policy not in (VintagePolicy.EXCLUDE_UNKNOWN, VintagePolicy.INCLUDE_UNKNOWN):
-            msg = f"unknown vintage policy {policy!r}"
-            raise ValueError(msg)
+        del policy  # every position has a vintage; see the docstring
         return tuple(p for p in self._load() if readable_as_of(p.available_time, instant))
 
     def vintage(self, reference_time: datetime | None = None) -> VintageSummary:

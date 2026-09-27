@@ -2,10 +2,11 @@
 
 from __future__ import annotations
 
+from tests.unit.observations.conftest import fixture_file
+
 from rupture.adapters.observations.ngl import NglGnssSource, parse_tenv3
 from rupture.domain import VintagePolicy
 from rupture.domain.observation import GnssProduct, readable_as_of
-from tests.unit.observations.conftest import fixture_file
 
 
 def _source() -> NglGnssSource:
