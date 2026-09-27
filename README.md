@@ -205,8 +205,8 @@ full; this is the shape.
 
 **A — ML and computational research, no seismology required.** Get a green tree, redraw the
 committed figures, read the 50 lines of `src/rupture/adapters/forecasting/leakage.py`, then look at
-what the leaky ablation bought. The open work is the missing one-neuron comparator, a block
-simulation-based power for the N/M/S/L/CL consistency tests — the alarm arm and the paired
+what the leaky ablation bought. The open work is scoring the one-neuron comparator (implemented,
+never run on a schedule), simulation-based power for the N/M/S/L/CL consistency tests — the alarm arm and the paired
 challenger comparisons carry power now, and the 116 CSEP windows still do not — and more
 independent sequences, because the block bootstrap (ADR-0065) shows Türkiye's 217 scored events
 are worth about 1.8 independent windows and no interval can fix that. The
