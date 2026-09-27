@@ -21,7 +21,6 @@ from rupture.domain.catalog import (
     CompletenessEstimate,
     HomogenisationLogEntry,
     HomogenisationStep,
-    McMethod,
 )
 from rupture.domain.common import Provenance, RuptureModel, UTCDatetime, sha256_hex, utc_now
 from rupture.domain.completeness import (
@@ -30,6 +29,7 @@ from rupture.domain.completeness import (
     stai_mc,
     stai_mc_current,
 )
+from rupture.domain.completeness_field import CompletenessCell, CompletenessField, McMethod
 from rupture.domain.evaluation import EvaluationResult, TestName
 from rupture.domain.event import Event, EventType, MagnitudeRecord, MagnitudeType
 from rupture.domain.forecast import (
@@ -90,7 +90,9 @@ __all__ = [
     "CascadeExposure",
     "CascadeKind",
     "Catalog",
+    "CompletenessCell",
     "CompletenessEstimate",
+    "CompletenessField",
     "ConfidenceTier",
     "ConsequenceModel",
     "DamageState",

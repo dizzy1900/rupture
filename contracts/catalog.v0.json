@@ -76,6 +76,88 @@
       "title": "Bounds",
       "type": "object"
     },
+    "CompletenessCell": {
+      "additionalProperties": false,
+      "description": "One grid cell of a spatial completeness field.\n\n``lon`` and ``lat`` are the south-west corner of the cell (the origin). ``mc`` is the\nestimate from ``method`` or ``None`` when the cell is unknown. ``n_events`` is the number\nof earthquakes with homogenised Mw that fell in the cell and were offered to the estimator;\nevents without Mw are excluded from this count and tallied on the parent field's notes.",
+      "properties": {
+        "lon": {
+          "description": "South-west corner longitude (cell origin).",
+          "maximum": 180.0,
+          "minimum": -180.0,
+          "title": "Lon",
+          "type": "number"
+        },
+        "lat": {
+          "description": "South-west corner latitude (cell origin).",
+          "maximum": 90.0,
+          "minimum": -90.0,
+          "title": "Lat",
+          "type": "number"
+        },
+        "mc": {
+          "anyOf": [
+            {
+              "maximum": 9.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Mc in this cell, or None when unknown (too few events, or the method refused).",
+          "title": "Mc"
+        },
+        "n_events": {
+          "description": "Earthquakes with homogenised Mw in this cell.",
+          "minimum": 0,
+          "title": "N Events",
+          "type": "integer"
+        },
+        "method": {
+          "$ref": "#/$defs/McMethod"
+        },
+        "mc_low": {
+          "anyOf": [
+            {
+              "maximum": 9.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Lower end of an optional interval; None when no interval is claimed.",
+          "title": "Mc Low"
+        },
+        "mc_high": {
+          "anyOf": [
+            {
+              "maximum": 9.0,
+              "minimum": 0.0,
+              "type": "number"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Upper end of an optional interval; None when no interval is claimed.",
+          "title": "Mc High"
+        }
+      },
+      "required": [
+        "lon",
+        "lat",
+        "n_events",
+        "method"
+      ],
+      "title": "CompletenessCell",
+      "type": "object"
+    },
     "CompletenessEstimate": {
       "additionalProperties": false,
       "description": "One Mc estimate for a catalogue slice. Report every method run; do not pick silently.",
@@ -164,6 +246,85 @@
         "computed_at"
       ],
       "title": "CompletenessEstimate",
+      "type": "object"
+    },
+    "CompletenessField": {
+      "additionalProperties": false,
+      "description": "Mc(x) on a declared time window: a grid, an estimator, and a provenance trail.\n\n``is_scalar_only`` is the ADR-0060 label: True means this object is a degenerate stand-in\nfor a scalar CompletenessEstimate, not a spatial field, and must not be silently read as\nMc(x). Estimators that actually bin space set it False even when every cell is unknown.",
+      "properties": {
+        "region_id": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "title": "Region Id"
+        },
+        "cell_size_deg": {
+          "exclusiveMinimum": 0.0,
+          "title": "Cell Size Deg",
+          "type": "number"
+        },
+        "cells": {
+          "default": [],
+          "items": {
+            "$ref": "#/$defs/CompletenessCell"
+          },
+          "title": "Cells",
+          "type": "array"
+        },
+        "estimator": {
+          "description": "Named Mc estimator used for every cell.",
+          "minLength": 1,
+          "title": "Estimator",
+          "type": "string"
+        },
+        "window_start": {
+          "format": "date-time",
+          "title": "Window Start",
+          "type": "string"
+        },
+        "window_end": {
+          "format": "date-time",
+          "title": "Window End",
+          "type": "string"
+        },
+        "computed_at": {
+          "format": "date-time",
+          "title": "Computed At",
+          "type": "string"
+        },
+        "notes": {
+          "anyOf": [
+            {
+              "type": "string"
+            },
+            {
+              "type": "null"
+            }
+          ],
+          "default": null,
+          "description": "Provenance and exclusions (events without Mw, cutoff, circularity caveat).",
+          "title": "Notes"
+        },
+        "is_scalar_only": {
+          "default": false,
+          "title": "Is Scalar Only",
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "cell_size_deg",
+        "estimator",
+        "window_start",
+        "window_end",
+        "computed_at"
+      ],
+      "title": "CompletenessField",
       "type": "object"
     },
     "Event": {
@@ -605,6 +766,18 @@
       },
       "title": "Completeness",
       "type": "array"
+    },
+    "completeness_field": {
+      "anyOf": [
+        {
+          "$ref": "#/$defs/CompletenessField"
+        },
+        {
+          "type": "null"
+        }
+      ],
+      "default": null,
+      "description": "Spatial Mc(x) on a time window (ADR-0060). None means the catalogue is scalar-only: it may carry CompletenessEstimate values and must not support a claim that uses sub-completeness events. See :meth:`labelled_scalar_only`."
     },
     "bounds": {
       "anyOf": [
