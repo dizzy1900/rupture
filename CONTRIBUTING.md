@@ -372,9 +372,15 @@ deliberately leaky variants, **which are never results**. (The sub-application *
 document in this tree still saying the noun is reachable only through `python -m` is stale;
 CLAUDE.md § CLI verbs is the one that says it, and `RELEASE_STATUS.md` § Known gaps records it.)
 
-What is *not* yet built, and is proposed rather than delivered: a runner that refuses to score
-unless `git merge-base --is-ancestor <pre-registration commit> <commit introducing the test data>`
-succeeds. That check is enforceable rather than aspirational, and it is a wanted contribution.
+The ancestry check is built (ADR-0056). Put the registration at
+`experiments/<id>/preregistration.yaml` — the format and a template are in
+`experiments/README.md` — and `make validate-prereg` finds its add-commit and runs
+`git merge-base --is-ancestor <pre-registration commit> <commit introducing the test data>`.
+Registration first is **strong**; data already in the tree is labelled **weak (data predates
+registration)**; an in-place edit after the add-commit fails, because amendments are new files.
+What is *not* built is the other half: no scoring runner yet refuses to score an experiment
+whose registration the gate has not passed, so the gate checks registrations and the link to a
+scored result is still a convention.
 
 ### 3. The evaluation
 
@@ -678,9 +684,9 @@ or that it could not verify:
   implementation, and no standing review board — the sign-off described above is a norm this
   document is establishing, not a mechanism the tooling enforces. Until a scorer exists, an
   alarm-based claim cannot be adjudicated in this repository at all.
-- **The pre-registration ancestry check is not implemented.** The `git merge-base --is-ancestor`
-  gate described under *the pre-registration* is a proposal. What exists today is the ordered
-  challenger pipeline whose `select` step freezes hyperparameters before `fit`.
+- **The pre-registration ancestry check checks registrations, not scoring runs.**
+  `make validate-prereg` enforces ADR-0056 on every `experiments/<id>/preregistration.yaml`, and
+  no experiment is registered yet. No scoring path refuses to run without a passing registration.
 - **ETAS-I is not a fitted baseline here.** The pinned `etas` dependency carries the incompleteness
   terms and Rupture's adapter calls `responsibility_factor`, but `baselines/` contains plain ETAS
   and the NTPP challenger only. Any claim in this file that a submission "must beat ETAS-I" is a

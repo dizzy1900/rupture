@@ -133,7 +133,7 @@ source_modules = ["rupture.domain"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.scoring",
+  "rupture.scoring", "rupture.preregistration",
 ]
 
 [[tool.importlinter.contracts]]
@@ -143,7 +143,7 @@ source_modules = ["rupture.ports"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.scoring",
+  "rupture.scoring", "rupture.preregistration",
 ]
 
 [[tool.importlinter.contracts]]
@@ -165,7 +165,7 @@ source_modules = ["rupture.scoring"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.reporting",
+  "rupture.reporting", "rupture.preregistration",
 ]
 
 # ---------------------------------------------------------------- Prompt 2 boundaries
