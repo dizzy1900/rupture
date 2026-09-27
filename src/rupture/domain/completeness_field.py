@@ -3,18 +3,18 @@
 ADR-0060 says completeness is a field with uncertainty, Mc(x, t). Helmstetter Mc(t) already
 lives in :mod:`rupture.domain.completeness`. This module is the *spatial* product: a coarse
 grid of cells, each of which either carries a named-estimator Mc or is explicitly unknown
-(``mc=None``). It is not a space-time cube. Combining the two into Mc(x, t) is ADR-0067's
-unbuilt remainder.
+(``mc=None``). It is not a space-time cube. Combining the two into Mc(x, t) is the unbuilt
+remainder of ADR-0060 decision 1.
 
 ``lon`` / ``lat`` on a cell are the **south-west corner** (the cell origin), not the centre.
-The cell covers ``[lon, lon + cell_size_deg)`` × ``[lat, lat + cell_size_deg)``. That is the
+The cell covers ``[lon, lon + cell_size_deg)`` by ``[lat, lat + cell_size_deg)``. That is the
 unambiguous convention for a regular lon/lat grid; a centre would require the reader to
 reconstruct the origin.
 
 A cell with too few events has ``mc=None``. Unknown is null, never a guessed Mc.
 
 ``McMethod`` lives here because the field product and the scalar :class:`CompletenessEstimate`
-share it; :mod:`rupture.domain.catalog` re-exports the enum so existing imports keep working.
+share it; import it from :mod:`rupture.domain`, which exports it with both.
 """
 
 from __future__ import annotations
@@ -43,13 +43,17 @@ class CompletenessCell(RuptureModel):
     events without Mw are excluded from this count and tallied on the parent field's notes.
     """
 
-    lon: float = Field(ge=-180.0, le=180.0, description="South-west corner longitude (cell origin).")
+    lon: float = Field(
+        ge=-180.0, le=180.0, description="South-west corner longitude (cell origin)."
+    )
     lat: float = Field(ge=-90.0, le=90.0, description="South-west corner latitude (cell origin).")
     mc: float | None = Field(
         default=None,
         ge=0.0,
         le=9.0,
-        description="Mc in this cell, or None when unknown (too few events, or the method refused).",
+        description=(
+            "Mc in this cell, or None when unknown (too few events, or the method refused)."
+        ),
     )
     n_events: int = Field(ge=0, description="Earthquakes with homogenised Mw in this cell.")
     method: McMethod
@@ -77,12 +81,16 @@ class CompletenessCell(RuptureModel):
         if (self.mc_low is None) != (self.mc_high is None):
             msg = "mc_low and mc_high must both be set or both be None"
             raise ValueError(msg)
-        if (
-            self.mc_low is not None
-            and self.mc_high is not None
-            and self.mc_low > self.mc_high
-        ):
+        if self.mc_low is not None and self.mc_high is not None and self.mc_low > self.mc_high:
             msg = "mc_low must be <= mc_high"
+            raise ValueError(msg)
+        if (
+            self.mc is not None
+            and self.mc_low is not None
+            and self.mc_high is not None
+            and not self.mc_low <= self.mc <= self.mc_high
+        ):
+            msg = "the interval [mc_low, mc_high] must contain mc"
             raise ValueError(msg)
         return self
 
@@ -109,8 +117,14 @@ class CompletenessField(RuptureModel):
     is_scalar_only: bool = False
 
     @model_validator(mode="after")
-    def _window_ordered(self) -> CompletenessField:
-        if self.window_start > self.window_end:
-            msg = "window_start must be at or before window_end"
+    def _window_and_cells(self) -> CompletenessField:
+        # Windows are half-open [start, end) throughout rupture, so start == end is empty and an
+        # Mc estimated on an empty window is not an estimate.
+        if self.window_start >= self.window_end:
+            msg = "window_start must be strictly before window_end (the window is [start, end))"
+            raise ValueError(msg)
+        origins = [(cell.lon, cell.lat) for cell in self.cells]
+        if len(origins) != len(set(origins)):
+            msg = "two cells share an origin; a field has one Mc per cell"
             raise ValueError(msg)
         return self

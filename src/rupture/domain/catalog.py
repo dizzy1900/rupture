@@ -13,8 +13,8 @@ from rupture.domain.completeness_field import CompletenessField, McMethod
 from rupture.domain.event import Event, EventType
 from rupture.domain.vintage import VintagePolicy, VintageSummary
 
-# McMethod is defined on CompletenessField (ADR-0060 spatial product) and re-exported here so
-# `from rupture.domain.catalog import McMethod` keeps working for existing call sites.
+# McMethod is defined beside CompletenessField (the ADR-0060 spatial product), which shares it
+# with CompletenessEstimate. Import it from `rupture.domain`, which exports both.
 
 
 class CompletenessEstimate(RuptureModel):
@@ -90,7 +90,7 @@ class Catalog(RuptureModel):
     completeness_field: CompletenessField | None = Field(
         default=None,
         description=(
-            "Spatial Mc(x) on a time window (ADR-0060 / ADR-0067). None means the catalogue "
+            "Spatial Mc(x) on a time window (ADR-0060). None means the catalogue "
             "is scalar-only: it may carry CompletenessEstimate values and must not support a "
             "claim that uses sub-completeness events. See :meth:`labelled_scalar_only`."
         ),
