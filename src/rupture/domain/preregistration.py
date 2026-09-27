@@ -102,7 +102,11 @@ class Preregistration(RuptureModel):
     )
     preregistration_commit: str | None = Field(
         default=None,
-        description="Git sha of the add-commit (C_P); filled when the gate checks the file.",
+        description=(
+            "Optional back-reference to the add-commit (C_P). The gate derives C_P from git and "
+            "never writes this field; a registration cannot name its own add-commit, so it is "
+            "normally absent. When present it must equal C_P or the gate fails."
+        ),
     )
 
     @model_validator(mode="after")

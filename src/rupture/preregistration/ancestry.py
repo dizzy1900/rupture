@@ -16,8 +16,8 @@ from pathlib import Path
 SHALLOW_REMEDY = (
     "shallow clone: git rev-parse --is-shallow-repository is true, so ancestry cannot be "
     "verified. This is an error, not a skip. Remedy: checkout with fetch-depth: 0 (a blobless "
-    "filter clone is fine; depth 1 is not). serac already sets fetch-depth: 0; rupture's "
-    ".github/workflows/ci.yml currently does not — the orchestrator must add it with this gate."
+    "filter clone is fine; depth 1 is not). rupture's .github/workflows/ci.yml sets "
+    "fetch-depth: 0 for this reason; restoring a shallow checkout disables the gate."
 )
 
 

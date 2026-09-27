@@ -15,8 +15,8 @@ in a fenced block, not a registration the gate will score.
 ## File format
 
 Every field is required except `alarm_rate` (required only when `arm` is `alarm_set`)
-and `preregistration_commit` (filled when the gate checks the file; leave it off when
-writing the registration). Extra keys are forbidden. The document is frozen after its
+and `preregistration_commit` (leave it off: a file cannot name its own add-commit, and
+setting it later is an in-place amendment, which fails). Extra keys are forbidden. The document is frozen after its
 add-commit: later edits to the same path invalidate it. Amendments are a **new** file.
 
 | Field | What it is |
@@ -35,15 +35,16 @@ add-commit: later edits to the same path invalidate it. Amendments are a **new**
 | `statistical_power` | `alpha`, `target_power`, and `effect` (the named alternative) |
 | `failure_criterion` | What result would count as the hypothesis being wrong |
 | `test_data_paths` | Repository-relative paths whose *add* commits are C_D. Use the DVC pointer, not the remote bytes. `[]` if the test data does not exist yet (prospective): ancestry is then vacuous |
-| `preregistration_commit` | Optional. When set, must equal the file's unique add-commit |
+| `preregistration_commit` | Optional, and normally absent. The gate never writes it. When set, it must equal the file's unique add-commit or the gate fails |
 
 Ancestry:
 
 - **strong** — the registration commit is an ancestor of the data commit.
 - **weak (data predates registration)** — the data was already in the tree. Most of what
   rupture can do under the pseudo-prospective protocol is this, and the label says so.
-- **fail** — in-place amendment, a re-add with more than one add-commit, or a claim of
-  the strong form when the data predates the registration.
+- **fail** — an in-place amendment, a path with more than one add-commit (deleted and
+  re-added), a `preregistration_commit` that is not the add-commit, or registration and
+  data on divergent histories (neither commit is an ancestor of the other).
 - **error** — git failed, the clone is shallow, or an object is missing (exit 128). A
   shallow clone is an error, not a skip. CI must use `fetch-depth: 0`.
 
@@ -78,5 +79,5 @@ failure_criterion: >
   the declared alarm rate.
 test_data_paths:
   - data/fixtures/catalogs/california/provenance.json
-# preregistration_commit: filled by the gate; omit when writing
+# preregistration_commit: omit; the gate derives C_P from git
 ```

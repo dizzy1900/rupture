@@ -35,9 +35,11 @@ Four rules travel with the scoring function and bind every result published here
 **Pre-registration.** An experiment declares its hypothesis, region, magnitude range, lead time,
 alarm rate and scoring rule in a committed file *before* it touches the test data. Git is the
 timestamp, so anyone can verify from public history that the hypothesis preceded the result. This
-is the one thing an open repository can do that a closed lab cannot easily do. Today it is enforced
-by convention and by hyperparameter freezing in the challenger pipeline; the mechanical
-`git merge-base --is-ancestor` check specified in ADR-0056 is **not implemented**.
+is the one thing an open repository can do that a closed lab cannot easily do. The mechanical
+`git merge-base --is-ancestor` check specified in ADR-0056 is **built** as `make validate-prereg`:
+it reads every `experiments/<id>/preregistration.yaml`, refuses in-place amendments and shallow
+clones, and labels a replay on data already in the tree as *weak*. **No experiment is registered
+yet**, so the gate currently passes on an empty directory; see [experiments/README.md](experiments/README.md).
 
 **No leakage, and latency is a leakage class.** All evaluation is time-forward with a hard cut, and
 this is asserted in tests against real catalogue timestamps rather than in prose. Rupture holds its

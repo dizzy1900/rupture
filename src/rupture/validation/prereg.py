@@ -5,21 +5,13 @@ records the file's sha256, requires a unique add-commit C_P, refuses in-place am
 (decision 4: amendments are new files), and classifies git ancestry of each declared
 ``test_data_paths`` entry against C_P.
 
-A shallow clone **errors**, it does not skip. CI must check out with ``fetch-depth: 0``
-(a blobless filter clone is fine; depth 1 is not). serac already does this; rupture's
-``.github/workflows/ci.yml`` currently does not — adding this gate without that setting
-makes every CI job fail the check, which is the intended failure rather than a silent skip.
+A shallow clone **errors**, it does not skip. CI checks out with ``fetch-depth: 0`` (a
+blobless filter clone is fine; depth 1 is not); reverting that makes the gate fail, which is
+the intended failure rather than a silent skip.
 
 This module is the gate. Git subprocesses live in :mod:`rupture.preregistration`, not in
-:mod:`rupture.scoring` (import-linter: scoring imports only domain).
-
-Orchestrator wiring (this worktree does not edit these files):
-
-* ``src/rupture/validation/registry.py`` ``GATES``: add ``"prereg"``.
-* ``PHASE_FOR_GATE``: ``"prereg": "ADR-0056 (pre-registration by git ancestry)"``.
-* ``cli.py``: no change; gate commands are generated from ``GATES``.
-* ``.github/workflows/ci.yml``: ``fetch-depth: 0`` on the offline checkout; a
-  ``make validate-prereg`` step; ``"prereg"`` in the ``covered`` set.
+:mod:`rupture.scoring` (import-linter: scoring imports only domain). It is registered in
+``registry.GATES`` as ``prereg``, wired by ``mk/prereg.mk``, and has its own CI step.
 """
 
 from __future__ import annotations
