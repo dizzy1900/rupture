@@ -159,7 +159,11 @@ class Catalog(RuptureModel):
         )
 
     def as_of(self, instant: datetime, policy: VintagePolicy) -> Catalog:
-        """Events whose *record* is provably no younger than ``instant`` (ADR-0064).
+        """Events whose *record* provably existed before ``instant`` (ADR-0064).
+
+        Half-open, as ADR-0054 fixes it: a record is readable at ``instant`` only when
+        ``available_time < instant``, strictly. A record published in the same instant as the
+        issue is excluded, which is the rule :func:`assert_available_before` already enforces.
 
         This is the filter :meth:`before` is not. ``before`` asks when the earthquake happened;
         this asks when the description of it came to exist, which is the question a forecast
@@ -175,7 +179,7 @@ class Catalog(RuptureModel):
             (
                 e
                 for e in self.events
-                if (keep_unknown if e.available_time is None else e.available_time <= instant)
+                if (keep_unknown if e.available_time is None else e.available_time < instant)
             ),
             f"asof-{instant.isoformat()}-{policy.value}",
         )
@@ -206,7 +210,7 @@ class Catalog(RuptureModel):
             else sum(
                 1
                 for e in stamped
-                if e.available_time is not None and e.available_time <= reference_time
+                if e.available_time is not None and e.available_time < reference_time
             )
         )
         return VintageSummary(

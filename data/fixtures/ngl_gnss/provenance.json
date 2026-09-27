@@ -1,0 +1,24 @@
+{
+  "source": "ngl-gnss",
+  "licence": "no SPDX; NGL homepage (retrieved 2026-09-13) requires citation of Blewitt, G., W. C. Hammond, and C. Kreemer (2018), Harnessing the GPS data explosion for interdisciplinary science, Eos, 99, https://doi.org/10.1029/2018EO104623; no licence identifier published",
+  "citation": "Blewitt, G., W. C. Hammond, and C. Kreemer (2018), Harnessing the GPS data explosion for interdisciplinary science, Eos, 99, https://doi.org/10.1029/2018EO104623",
+  "adapter_version": "0.1.0",
+  "rule": "never edited by hand; regenerate with the adapter and re-record provenance",
+  "files": {
+    "P595.tenv3.head": {
+      "source_url": "https://geodesy.unr.edu/gps_timeseries/IGS14/tenv3/IGS14/P595.tenv3",
+      "documented_url": "http://geodesy.unr.edu/gps_timeseries/tenv3/IGS14/P595.tenv3",
+      "retrieved_at": "2026-09-13T08:07:51.782696+00:00",
+      "parent_sha256": "6b2d6df594002cdad577207001e27a529b0d24c0b4ad38ae3064fba18ef1bf08",
+      "parent_size": 1402500,
+      "sha256": "a4fe887798608e4bac962d07ef9713a5b75231f5a4189ce02a27039b71ee2c24",
+      "size": 4488,
+      "n_data_lines": 21,
+      "query": {
+        "excerpt": "header line plus the first 21 data lines, byte-exact prefix of complete lines"
+      },
+      "notes": "Ridgecrest-area PBO station P595, IGS14 daily tenv3 (final product). Parent fetched 2026-09-13 from the current NGL layout /gps_timeseries/IGS14/tenv3/IGS14/ (the documented path /gps_timeseries/tenv3/IGS14/P595.tenv3 returned HTTP 404). HTTP on port 80 timed out from the fetch host; HTTPS on 443 served the file."
+    }
+  },
+  "notes": "byte-exact line prefix of a real NGL tenv3 file; the rest of the series is not committed"
+}

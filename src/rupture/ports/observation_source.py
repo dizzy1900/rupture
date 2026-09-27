@@ -4,11 +4,14 @@ ADR-0054's central idea in one method. A source that can only hand back its curr
 every consumer to assume that state was always true, and that assumption is invisible until
 somebody measures it. ``available_as_of`` makes the assumption a parameter.
 
-Nothing in ``rupture.adapters`` implements this yet: the catalogue adapters fetch the present and
-stamp each record with the vintage the provider reports, which is enough to *measure* the exposure
-(the ``asof`` gate) and not enough to *reconstruct* a past state. A real implementation needs
-archived vintages — periodic snapshots, or a provider that serves them — and ADR-0064 records that
-as the next step rather than pretending this port is satisfied.
+Two adapters implement it (ADR-0067): ``catalogs.usgs_feed.UsgsRealtimeFeed`` and
+``catalogs.fdsn_events.FdsnEventSource``. Both filter the *current* payload by the vintage each
+record reports (``Catalog.as_of``), which is enough to *measure* exposure and not enough to
+*reconstruct* a past state: a record revised after the instant is dropped, not restored to what it
+said then. A real reconstruction needs archived vintages — periodic snapshots, or a provider that
+serves them — and ADR-0064 records that as the next step. The NGL GNSS adapter has an
+``available_as_of`` of the same shape that returns positions rather than a ``Catalog``, so it does
+not satisfy this ``Catalog``-typed port.
 """
 
 from __future__ import annotations

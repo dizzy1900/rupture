@@ -1,4 +1,8 @@
-"""HTTP fetch with provenance for the catalogue adapters.
+"""HTTP fetch with provenance, shared by the adapter families (ADR-0071).
+
+Shared infrastructure, not a family: it imports only ``rupture`` itself and ``rupture.domain``,
+and an import-linter contract forbids it from importing any adapter family, so reusing it
+never couples two families.
 
 Every fetch returns the raw bytes together with ``retrieved_at`` and the ``sha256`` of the
 payload, so the caller can build :class:`~rupture.domain.Provenance` without re-hashing. An

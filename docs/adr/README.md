@@ -76,4 +76,5 @@ for parallel worktrees; ADR-0071 is issued from this one and the gap is left the
 | [0064](0064-data-vintage-and-the-second-clock.md) | Data vintage is a property of every observation, and it is measured before it is enforced | accepted |
 | [0065](0065-block-bootstrap-intervals.md) | Intervals resample blocks of windows, because earthquakes are not independent | accepted |
 | [0066](0066-etas-i.md) | ETAS-I: a declared Mc(t), an opt-in inversion, and a fit that is not a forecast | accepted |
+| [0067](0067-ngl-gnss-observation-source.md) | NGL GNSS as the first continuous ObservationSource | accepted |
 | [0071](0071-reporting-and-adapter-family-contracts.md) | Import-linter contracts for reporting and the remaining adapter families | accepted |

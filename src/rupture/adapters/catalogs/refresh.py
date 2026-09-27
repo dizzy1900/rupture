@@ -15,9 +15,9 @@ from pathlib import Path
 from typing import Any
 from urllib.parse import urlencode
 
+from rupture.adapters._http import FetchError, fetch_bytes
 from rupture.adapters.catalogs import comcat, gcmt, isc
-from rupture.adapters.catalogs._http import FetchError, fetch_bytes
-from rupture.adapters.catalogs.fixtures import write_fixture_provenance
+from rupture.adapters.fixtures import write_fixture_provenance
 
 BBox = tuple[float, float, float, float]  # min_lon, min_lat, max_lon, max_lat
 

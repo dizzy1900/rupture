@@ -1,4 +1,7 @@
-"""Offline fixture support shared by the catalogue adapters.
+"""Offline fixture support shared by the adapter families (ADR-0071).
+
+Shared infrastructure, not a family: it imports only ``rupture.domain``, and an import-linter
+contract forbids it from importing any adapter family.
 
 A fixture directory (``data/fixtures/<source>/``) holds real payloads cut by the adapter plus a
 ``provenance.json`` describing every file: the exact URL / query, ``retrieved_at``, the

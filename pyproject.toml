@@ -159,6 +159,7 @@ modules = [
   "rupture.adapters.evaluation", "rupture.adapters.hazard",
   "rupture.adapters.groundmotion", "rupture.adapters.exposure",
   "rupture.adapters.vulnerability", "rupture.adapters.storage", "rupture.adapters.cascade",
+  "rupture.adapters.observations",
 ]
 ignore_imports = [
   # groundmotion OpenQuake adapters wrap hazard's pinned docker runner rather than duplicating it.
@@ -169,6 +170,28 @@ ignore_imports = [
   # cascade.chamoli is the non-ShakeMap scenario route: a hypothetical rupture through NativeGsim.
   "rupture.adapters.cascade.chamoli -> rupture.adapters.groundmotion.distances",
   "rupture.adapters.cascade.chamoli -> rupture.adapters.groundmotion.native",
+]
+
+# Shared adapter infrastructure (ADR-0071 addendum). HTTP fetch-with-provenance and offline
+# fixture loading are used by more than one family, so they live as plain modules directly
+# under rupture.adapters rather than inside any family. That is only safe if they stay leaves:
+# a shared module that imported a family would let every other family reach it through the
+# back door. So they may import domain and the standard library, and nothing else in rupture.
+# tests/unit/architecture/test_adapter_families.py fails if a new top-level adapters module
+# appears without being listed here.
+[[tool.importlinter.contracts]]
+name = "shared adapter infrastructure imports no adapter family"
+type = "forbidden"
+source_modules = ["rupture.adapters._http", "rupture.adapters.fixtures"]
+forbidden_modules = [
+  "rupture.adapters.catalogs", "rupture.adapters.sources", "rupture.adapters.forecasting",
+  "rupture.adapters.evaluation", "rupture.adapters.hazard",
+  "rupture.adapters.groundmotion", "rupture.adapters.exposure",
+  "rupture.adapters.vulnerability", "rupture.adapters.storage", "rupture.adapters.cascade",
+  "rupture.adapters.observations",
+  "rupture.pipelines", "rupture.cli", "rupture.validation", "rupture.commands", "rupture.risk",
+  "rupture.cascade", "rupture.models", "rupture.services", "rupture.scoring",
+  "rupture.reporting", "rupture.preregistration",
 ]
 
 # ADR-0061 commits rupture to interoperating with CSEP rather than forking it, and ADR-0055
