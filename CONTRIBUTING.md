@@ -116,9 +116,10 @@ thing that will decide whether your model is real.
   independently corroborated by the Shah & Innig reanalysis, and Meade's Reply (Nature 574 E4–E5)
   is on the record beside it. The audit behind this document found the critique tagged `replicated`,
   which overstates how closed the exchange is; `docs/RESEARCH_LANDSCAPE.md` § 5 is the register and
-  this line cites it rather than restating it.* Rupture has no such comparator in the tree. Adding one, as
-  a `ForecastModel` implementation that any spatial claim must be scored against, is a small,
-  self-contained, high-value first contribution.
+  this line cites it rather than restating it.* **The comparator now exists** —
+  `rupture.models.comparators`, documented in `docs/COMPARATOR_ONE_NEURON.md` — and has never
+  been scored. Running it on the AlarmSet arm against a clustering-aware reference, and making
+  the harness refuse a spatial claim that skipped it, is the weekend task that remains.
 - **Replace the Student-t interval with a block bootstrap.** `RELEASE_STATUS.md` records that the
   one metric a Rupture challenger ever beat — the Türkiye log-linear ensemble, +0.335 nats/event
   information gain over ETAS — "rests on an interval that assumes independent events". Aftershocks
@@ -401,9 +402,10 @@ challenger, the baseline against itself, or a fixture.
 **Your baseline is an adversary, properly fitted, or your result is nothing.** For catalogue rate
 forecasting that is ETAS, and — whenever your model uses events below the completeness threshold —
 ETAS-I. For an alarm-based claim it is a random alarm set matched on alarm rate and spatial
-footprint. For a spatial aftershock model it is the two-parameter logistic regression. Rupture has
-plain ETAS fitted and published for all three regions; it does not yet have the others, which is
-why building them is listed above as wanted work rather than assumed as present.
+footprint. For a spatial aftershock model it is the two-parameter logistic regression, which is
+implemented (`rupture.models.comparators`) and has not yet been scored on any schedule. Rupture
+has plain ETAS fitted and published for all three regions; the other baselines are not fitted and
+published there, which is why that work is listed above as wanted rather than assumed as present.
 
 ### 4. What you get back
 

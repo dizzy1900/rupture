@@ -5,8 +5,8 @@
 DeVries et al. 2018 Nature doi 10.1038/s41586-018-0438-y reported AUC 0.849 on aftershock
 location — `rebutted`; Mignan & Broccardo 2019 Nature 574 E1–E3 doi 10.1038/s41586-019-1582-8
 matched it with two-parameter logistic AUC 0.85 — `contested`, and Meade et al. Reply Nature 574
-E4–E5 doi 10.1038/s41586-019-1583-7 is on the record. Independently, a three-parameter logistic
-on log distance-to-rupture and log mean slip reached 0.86. Those published AUC figures are
+E4–E5 doi 10.1038/s41586-019-1583-7 is on the record. In the same comment, a three-parameter
+logistic on log distance-to-rupture and log mean slip reached 0.86. Those published AUC figures are
 historical and are not recomputed here.
 
 | | |

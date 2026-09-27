@@ -6,7 +6,9 @@ This is the mandatory straw-man for any spatial aftershock or static-stress clas
 Features, documented, no target leakage:
 
 * ``x = log10(distance_km)`` to the nearest training event with ``mw >= m_main``, clipped to
-  ``distance_floor_km`` (default 0.1 km). That is the two-parameter Mignan & Broccardo shape.
+  ``distance_floor_km`` (default 0.1 km). That is the two-parameter form of Mignan &
+  Broccardo's one-neuron model with distance substituted for their scalar stress metric, which
+  rupture does not compute (``docs/COMPARATOR_ONE_NEURON.md``).
 * Optional ``z = log10(mean slip proxy)`` only when a finite-fault / :class:`SlipField` is
   supplied. Without it the model is the single-feature distance logistic and says so in notes.
 

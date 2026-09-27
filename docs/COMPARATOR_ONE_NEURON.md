@@ -7,8 +7,8 @@ scored on the protocol windows in the pull request that added it.
 DeVries et al. 2018 Nature doi 10.1038/s41586-018-0438-y reported AUC 0.849 on aftershock
 location — `rebutted`; Mignan & Broccardo 2019 Nature 574 E1–E3 doi 10.1038/s41586-019-1582-8
 matched it with two-parameter logistic AUC 0.85 — `contested`, and Meade et al. Reply Nature 574
-E4–E5 doi 10.1038/s41586-019-1583-7 is on the record. Independently, a three-parameter logistic
-on log distance-to-rupture and log mean slip reached 0.86. Those numbers are historical, and
+E4–E5 doi 10.1038/s41586-019-1583-7 is on the record. In the same comment, a three-parameter
+logistic on log distance-to-rupture and log mean slip reached 0.86. Those numbers are historical, and
 this repository will not recompute them.
 
 Code: `src/rupture/models/comparators/`. Model card:
@@ -23,8 +23,11 @@ P_i = 1 / (1 + exp(-(a + b * x_i [+ c * z_i])))
 ```
 
 - `x_i = log10(distance_km)` from cell *i*'s centre to the nearest training event with
-  `mw >= m_main`, clipped to a documented floor (0.1 km). That is the two-parameter Mignan &
-  Broccardo shape. The implementation lives in `OneNeuronAftershockModel`
+  `mw >= m_main`, clipped to a documented floor (0.1 km). That is the two-parameter form of
+  Mignan & Broccardo's one-neuron model, **not their feature**: their single input was a scalar
+  stress metric (`docs/RESEARCH_LANDSCAPE.md` § 5), which rupture does not compute. Distance is
+  the substitute, because their own result is that the network had rediscovered a distance power
+  law. The implementation lives in `OneNeuronAftershockModel`
   (`model_id = one-neuron-logistic`, version `0.1.0`).
 - `z_i = log10(mean slip proxy)` only when a finite-fault / `SlipField` is supplied, sampled at
   the cell. Without it the model is the single-feature distance logistic and says so in
@@ -98,8 +101,8 @@ This PR does not run that comparison. The model card says so.
 
 ## Wiring the orchestrator must do
 
-The CLI, the model registry and `RELEASE_STATUS.md` are intentionally untouched here. A later
-change that scores spatial claims needs to:
+The CLI and the model registry are untouched; `RELEASE_STATUS.md` records the comparator as
+implemented and unscored. A later change that scores spatial claims needs to:
 
 - instantiate `OneNeuronAftershockModel` (and `DistanceSlipAftershockModel` when a finite-fault
   table exists) alongside the challenger;
