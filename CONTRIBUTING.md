@@ -628,13 +628,13 @@ dispatch. It sets `RUPTURE_HAZARD_REQUIRE=1`, so a skip there is a failure. Loca
 **Architecture.** Hexagonal, and enforced. `src/rupture/domain/` holds pure pydantic v2 models and
 imports nothing from any outer layer; `src/rupture/ports/` holds `Protocol` classes and imports
 only `domain`; `adapters/` implement ports. All three are import-linter contracts in
-`pyproject.toml` and fail CI. Two things the contracts do **not** cover, stated rather than
-implied: the adapter-independence contract lists five families (`catalogs`, `sources`,
-`forecasting`, `evaluation`, `hazard`) and not the newer ones (`groundmotion`, `exposure`,
-`vulnerability`, `cascade`, `storage`); and nothing forbids `cascade` importing `models`, or
-`models` importing `pipelines`, which it already does in four places. Both are in
-`RELEASE_STATUS.md` § Known gaps. Do not read a green `lint-imports` as a statement about those
-edges.
+`pyproject.toml` and fail CI. The adapter-independence contract lists every `adapters.*`
+package on disk, and `tests/unit/architecture/test_adapter_families.py` fails if a new family
+arrives unlisted; `rupture.reporting` may import only `domain` (ADR-0071). What a green
+`lint-imports` does **not** say, stated rather than implied: twelve pre-existing edges are
+grandfathered by name — six `models -> pipelines` imports, and six cross-family adapter imports
+(`groundmotion` into `hazard`'s OpenQuake runner, `cascade.chamoli` into `groundmotion`). A new
+edge fails the build; those twelve are allowed until someone inverts them.
 
 **Tests.** `tests/unit` is offline (sockets disabled), `tests/integration` is opt-in and marked
 `integration`, `tests/contract` covers JSON Schema round-trips and the fixtures shared with
