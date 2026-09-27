@@ -1,6 +1,6 @@
 # ADR-0002 — Hexagonal architecture (ports and adapters)
 
-- **Status:** accepted
+- **Status:** accepted (amended 2026-09-13)
 - **Date:** 2026-09-03
 
 ## Context
@@ -45,3 +45,11 @@ contracts can be exported and challengers swapped in without touching the models
   contracts to third-party schemas.
 - **Enforce the layering by review only.** Rejected: import-linter makes it a build failure at
   negligible cost.
+
+## Amendment (2026-09-13)
+
+[ADR-0071](0071-reporting-and-adapter-family-contracts.md) extends the independence contract from
+the five families listed above to every `adapters.*` package that exists on disk (`groundmotion`,
+`exposure`, `vulnerability`, `cascade`, `storage` in addition to the original five). Six
+pre-existing cross-family imports are grandfathered by name. The Decision above still stands;
+the list of families does not.

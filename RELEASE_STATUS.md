@@ -521,6 +521,14 @@ The scientific gaps, unchanged by the re-aim:
   orchestration layer. Unforbidden, and it should not be. The adapter-independence contract is
   likewise still written for the five original families and does not mention `groundmotion`,
   `exposure`, `vulnerability`, `cascade` or `storage`.
+- ~~**The adapter-independence contract names five of ten families; `reporting` has no contract.**~~
+  **Closed 2026-09-27** (ADR-0071): the independence contract lists every `adapters.*` package on
+  disk, a unit test fails if a new family arrives unlisted, and `rupture.reporting` may import
+  only `domain`. **Six cross-family adapter imports are grandfathered by name** —
+  `groundmotion.openquake_scenario` and `groundmotion.openquake_event_based` into
+  `hazard.job_builder` and `hazard.openquake_docker`, and `cascade.chamoli` into
+  `groundmotion.distances` and `groundmotion.native` — so a seventh fails the build. Inverting the
+  six is open. The two entries this closes follow unchanged.
 - **`src/rupture/reporting/` is a new top-level package with no import-linter contract of its own**
   and no CLI mounting: the challenger figures are redrawn with
   `uv run python -m rupture.reporting.challenger_plots`. It reads committed JSON and writes PNGs,

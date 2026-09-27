@@ -263,9 +263,10 @@ reports/            the published evidence: model cards, protocol and challenger
 ```
 
 The architecture is hexagonal: `domain/` imports nothing from `adapters/`, enforced in CI by
-import-linter. Two edges the contracts do **not** cover are stated in `RELEASE_STATUS.md` rather
-than implied — the adapter-independence contract names five of ten adapter families, and nothing
-currently forbids `models` importing `pipelines`, which it already does.
+import-linter. Every adapter family, the `reporting` package and the Prompt 2 packages relative to
+each other are under a contract (ADR-0071). Twelve pre-existing edges are grandfathered by name —
+six `models -> pipelines` imports and six cross-family adapter imports — so a thirteenth fails the
+build; inverting the twelve is open and recorded in `RELEASE_STATUS.md` § Known gaps.
 
 ## Sibling project
 
