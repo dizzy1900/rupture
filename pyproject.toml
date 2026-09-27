@@ -133,7 +133,7 @@ source_modules = ["rupture.domain"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.scoring", "rupture.reporting",
+  "rupture.scoring", "rupture.reporting", "rupture.preregistration",
 ]
 
 [[tool.importlinter.contracts]]
@@ -143,7 +143,7 @@ source_modules = ["rupture.ports"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.scoring", "rupture.reporting",
+  "rupture.scoring", "rupture.reporting", "rupture.preregistration",
 ]
 
 # ADR-0002 listed five families. ADR-0071 extends the list to every adapters.* package that
@@ -182,7 +182,7 @@ source_modules = ["rupture.scoring"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.reporting",
+  "rupture.reporting", "rupture.preregistration",
 ]
 
 # ADR-0049 put figures in `rupture.reporting` and noted that no import-linter contract mentioned
@@ -196,7 +196,7 @@ source_modules = ["rupture.reporting"]
 forbidden_modules = [
   "rupture.adapters", "rupture.pipelines", "rupture.cli", "rupture.validation",
   "rupture.commands", "rupture.risk", "rupture.cascade", "rupture.models", "rupture.services",
-  "rupture.scoring",
+  "rupture.scoring", "rupture.preregistration",
 ]
 
 # ---------------------------------------------------------------- Prompt 2 boundaries

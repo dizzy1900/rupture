@@ -21,8 +21,9 @@ fact about today's code, not a rule.
 ## Decision
 
 1. **`rupture.reporting` is a forbidden contract.** It must not import `adapters`, `pipelines`,
-   `cli`, `validation`, `commands`, `risk`, `cascade`, `models`, `services` or `scoring`. Domain
-   is allowed; so are the standard library and matplotlib. The current modules are clean, so
+   `cli`, `validation`, `commands`, `risk`, `cascade`, `models`, `services`, `scoring` or
+   `preregistration` (the ADR-0056 package, which landed first and is added to the domain, ports
+   and scoring contracts the same way). Domain is allowed; so are the standard library and matplotlib. The current modules are clean, so
    there is nothing to grandfather.
 
 2. **The adapter independence contract lists every `adapters.*` package that exists on disk.**
