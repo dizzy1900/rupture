@@ -8,9 +8,9 @@ from __future__ import annotations
 import math
 from pathlib import Path
 
-from rupture.adapters.catalogs.fixtures import FixtureError, load_fixture_dir
+from rupture.adapters.catalogs.usgs_feed import parse_usgs_feed_geojson
+from rupture.adapters.fixtures import FixtureError, load_fixture_dir
 from rupture.adapters.observations.ngl import NglGnssSource, parse_tenv3
-from rupture.adapters.observations.usgs_feed import parse_usgs_feed_geojson
 from rupture.domain import VintagePolicy
 from rupture.domain.observation import GnssPosition, GnssProduct, readable_as_of
 from rupture.validation.result import GateResult, GateStatus

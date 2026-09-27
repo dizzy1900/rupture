@@ -6,7 +6,7 @@ from datetime import UTC, datetime
 
 from tests.unit.observations.conftest import FIXTURES, fixture_file
 
-from rupture.adapters.observations.usgs_feed import (
+from rupture.adapters.catalogs.usgs_feed import (
     FEEDS,
     UsgsRealtimeFeed,
     parse_usgs_feed_geojson,

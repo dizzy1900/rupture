@@ -27,8 +27,8 @@ from datetime import UTC, datetime, timedelta
 from pathlib import Path
 from typing import assert_never
 
-from rupture.adapters.catalogs._http import FetchError, fetch_bytes
-from rupture.adapters.catalogs.fixtures import load_fixture_dir
+from rupture.adapters._http import FetchError, fetch_bytes
+from rupture.adapters.fixtures import load_fixture_dir
 from rupture.domain import Provenance, VintagePolicy, VintageSummary
 from rupture.domain.observation import (
     GnssPosition,

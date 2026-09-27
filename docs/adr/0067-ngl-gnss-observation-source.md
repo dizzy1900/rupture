@@ -52,8 +52,11 @@ adapters stamp ComCat's `updated` and stop there.
 5. **This is not Bletery & Nocquet adjudication.** It is the data port that adjudication needs.
    Nothing here inverts strain, scores a precursor, or claims that GNSS predicts earthquakes.
 
-6. **USGS real-time GeoJSON and IRIS FDSN event query** ship in the same adapter family as
-   catalogue-shaped `ObservationSource`s so the as-of clock is one code path. The USGS live
+6. **USGS real-time GeoJSON and IRIS FDSN event query** ship as catalogue-shaped
+   `ObservationSource`s in the `catalogs` adapter family (`catalogs.usgs_feed`,
+   `catalogs.fdsn_events`), beside the ComCat parser they reuse; their `available_as_of` is
+   `Catalog.as_of`, so the as-of clock is one code path. NGL stays in `observations` and shares
+   only `rupture.adapters._http` and `rupture.adapters.fixtures` with them (ADR-0071 amendment). The USGS live
    `all_day` feed is a moving window and is not committed; the fixture is a cut of the already
    committed ComCat Ridgecrest GeoJSON. IRIS `fdsnws/event/1/query` returned HTTP 410 Gone on
    2026-09-13; the adapter keeps the documented URL and fails loudly rather than inventing a

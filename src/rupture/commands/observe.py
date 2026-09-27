@@ -1,11 +1,7 @@
 """`rupture observe ...` — inspect latency-aware observation feeds, mostly offline.
 
-Intended mount (orchestrator, do not edit ``src/rupture/cli.py`` from this worktree)::
-
-    from rupture.commands import observe
-    app.add_typer(observe.app, name="observe")
-
-These commands read committed fixtures or, without ``--offline-fixtures``, would fetch. They
+Mounted on the CLI as ``rupture observe`` (``src/rupture/cli.py``). These commands read
+committed fixtures or, without ``--offline-fixtures``, would fetch. They
 do not adjudicate GNSS precursors and they do not claim GNSS predicts earthquakes.
 """
 
@@ -17,8 +13,8 @@ from typing import Annotated
 
 import typer
 
+from rupture.adapters.catalogs.usgs_feed import FEEDS, UsgsRealtimeFeed
 from rupture.adapters.observations.ngl import CITATION, NglGnssSource
-from rupture.adapters.observations.usgs_feed import FEEDS, UsgsRealtimeFeed
 from rupture.domain import VintagePolicy
 from rupture.domain.observation import GnssProduct
 

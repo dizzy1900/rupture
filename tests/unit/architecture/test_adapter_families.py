@@ -1,6 +1,6 @@
 """The independence contract must name every adapters.* family that exists on disk.
 
-ADR-0002 listed five families. ADR-0071 extends the list to all ten packages under
+ADR-0002 listed five families. ADR-0071 extends the list to every package under
 ``src/rupture/adapters/``. A new family that lands without being added to
 ``pyproject.toml`` would otherwise sit outside the contract, which is how the last five
 arrived. This test is the second ratchet: ``lint-imports`` catches a new *edge*; this
@@ -112,3 +112,29 @@ def test_reporting_is_forbidden_from_outer_layers_and_is_clean() -> None:
     forbidden = set(contract["forbidden_modules"])
     assert forbidden >= REQUIRED_REPORTING_FORBIDDEN
     assert "ignore_imports" not in contract
+
+
+SHARED_CONTRACT = "shared adapter infrastructure imports no adapter family"
+
+
+def test_top_level_adapter_modules_are_exactly_the_shared_leaves() -> None:
+    """A plain module directly under rupture.adapters belongs to no family, so the independence
+    contract cannot see it. Every such module must be a declared shared leaf, forbidden from
+    importing any family; otherwise it is a side door between families."""
+    contract = _contract_named(SHARED_CONTRACT)
+    declared = {m.removeprefix("rupture.adapters.") for m in contract["source_modules"]}
+    on_disk = {
+        info.name for info in pkgutil.iter_modules(rupture.adapters.__path__) if not info.ispkg
+    }
+    assert on_disk == declared, (
+        f"top-level adapter modules on disk {sorted(on_disk)} must match the shared-leaf "
+        f"contract {sorted(declared)} (ADR-0071)"
+    )
+
+
+def test_shared_leaves_are_forbidden_every_family() -> None:
+    contract = _contract_named(SHARED_CONTRACT)
+    assert contract["type"] == "forbidden"
+    assert "ignore_imports" not in contract
+    families = set(_contract_named("adapters do not import each other across families")["modules"])
+    assert families <= set(contract["forbidden_modules"])

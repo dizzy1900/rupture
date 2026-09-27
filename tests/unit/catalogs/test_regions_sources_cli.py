@@ -9,7 +9,7 @@ import pytest
 from shapely.geometry import Point
 from typer.testing import CliRunner
 
-from rupture.adapters.catalogs.fixtures import FixtureError, load_fixture_dir
+from rupture.adapters.fixtures import FixtureError, load_fixture_dir
 from rupture.adapters.sources import gem_faults, openquake_sources, regions
 from rupture.cli import app
 from rupture.domain import MagnitudePolicy, Region, TectonicSetting, sha256_hex

@@ -7,7 +7,7 @@ from datetime import UTC, datetime
 from tests.unit.catalogs.conftest import fixture_file as catalog_fixture
 from tests.unit.observations.conftest import REPO_ROOT
 
-from rupture.adapters.observations.fdsn_events import (
+from rupture.adapters.catalogs.fdsn_events import (
     BASE_URL,
     FdsnEventSource,
     parse_fdsn_text,

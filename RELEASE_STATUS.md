@@ -53,7 +53,7 @@ hypothesis sum type and a scorer registry. **None of it exists.** Checked agains
 
 | Proposed | Present in `src/`? |
 |---|---|
-| `ObservationSource[T].available_as_of(t)` | **the port exists, nothing implements it** (ADR-0064 decision 5). `src/rupture/ports/observation_source.py` declares it; the catalogue adapters fetch the present and stamp the reported vintage, which measures exposure and cannot reconstruct a past state. Declared without an adapter on purpose, so the next person does not encode a vintage query as a `retrieved_at` filter |
+| `ObservationSource[T].available_as_of(t)` | **2026-09-27: two catalogue-shaped feeds implement it; nothing reconstructs a past state.** `catalogs.usgs_feed` and `catalogs.fdsn_events` implement the port by filtering the current payload with `Catalog.as_of`; NGL GNSS has the same method returning positions, not a `Catalog` (ADR-0067; see § Observation feeds). What follows is the 2026-09-10 text: **the port exists, nothing implements it** (ADR-0064 decision 5). `src/rupture/ports/observation_source.py` declares it; the catalogue adapters fetch the present and stamp the reported vintage, which measures exposure and cannot reconstruct a past state. Declared without an adapter on purpose, so the next person does not encode a vintage query as a `retrieved_at` filter |
 | `available_time` distinct from `valid_time` on every observation | **yes, 2026-09-10** (ADR-0064). `Event.available_time`, populated from ComCat's `updated`; `Catalog.as_of(t, policy)`; `assert_available_before` as rule 4. The sentence to the left was true and is now measured: **69 of the 217 events a 2019-07-01 fit trains on carry a record last modified after that cutoff, and 130 of 130 scored targets were last modified after the window they were scored in.** The new assertion is **not wired into the pipelines** — see below |
 | `Vintage` / a vintaged data store / `catalog.as_of(t)` | **partly.** `catalog.as_of(t, policy)` and `VintageSummary` exist; **there is no vintaged store.** One vintage is held, so the exposure is measurable and past values are not reconstructible |
 | `CompletenessField`, Mc(x, t) as a field | **the type only, 2026-09-27.** `rupture.domain.CompletenessField` is Mc(x) on a declared `[start, end)` window — a grid of cells, each with a named estimator and either an Mc (optionally with an interval that must contain it) or `mc = None` when unknown — and `Catalog.completeness_field` carries it, published in `contracts/catalog.v0.json`. **Nothing produces one**: no estimator bins space, every catalogue in the tree has `completeness_field = null`, `Catalog.labelled_scalar_only()` is therefore true everywhere, and `validate-catalog` does not yet require the field (ADR-0060 decision 2). It has no time argument, so it is Mc(x), not Mc(x, t). The time filters (`before`, `between`, `as_of`) carry the field over unchanged, as they already do the scalar estimates, so nothing yet checks a field's window against a forecast cutoff. Mc remains a scalar per region, estimated from the catalogue itself |
@@ -374,6 +374,32 @@ because review found them unsound. Recorded because a discarded attempt is evide
 - **A prescriptive refactor of the `models -> pipelines` edges** wrote a repair instruction into
   `pyproject.toml` that would have created a fresh violating edge.
 
+## Observation feeds (2026-09-27)
+
+ADR-0067. The first adapters that read below the catalogue, and the first implementations of the
+`ObservationSource` port.
+
+| Component | Maturity | What actually ran |
+|---|---|---|
+| `adapters.observations.ngl` — NGL GNSS daily tenv3 | working | parses a committed 21-line byte-exact prefix of station P595's IGS14 series (`data/fixtures/ngl_gnss/`); `available_as_of` is half-open on `available_time` = `valid_time` + a **documented** 14-day final-orbit lag (1 day for rapid). The lags are the provider's, **not measured here** |
+| `adapters.catalogs.usgs_feed` — USGS real-time GeoJSON | working | parses a one-day cut of the committed ComCat Ridgecrest GeoJSON (245 events), **not a live `all_day` snapshot**: that feed is a moving window and nothing in the tree has recorded one |
+| `adapters.catalogs.fdsn_events` — FDSN event text | working, **endpoint dead** | the parser is tested; the documented IRIS `fdsnws/event/1/query` returned HTTP 410 Gone on 2026-09-13 and the adapter fails loudly rather than rerouting |
+| `rupture observe` and `make validate-observe` | working | 15 offline unit tests; the gate checks the fixtures parse with matching provenance and that a position available exactly at the as-of instant is not served. Runs in CI |
+
+What it did not do:
+
+- **Nothing reads these feeds.** No forecast, fit, feature or score uses a GNSS position or a
+  real-time feed record. They are a data port, not an experiment, and not an adjudication of any
+  GNSS precursor claim.
+- **No archived vintage exists.** NGL availability is reconstructed from a documented lag;
+  USGS and FDSN availability is the `updated` stamp on the current record. A record revised after
+  an as-of instant is dropped, never restored to what it said then — the limit ADR-0064 records.
+- **The adapter layout changed to keep the contracts honest.** Adding `observations` to the
+  independence contract exposed eight imports into `catalogs`. The two catalogue-shaped feeds
+  moved into `catalogs`, and HTTP fetch and fixture loading moved to shared leaves
+  (`rupture.adapters._http`, `rupture.adapters.fixtures`) that a new contract forbids from
+  importing any family. The by-name exceptions stayed at six (ADR-0071 amendment).
+
 ## The one-neuron comparator (2026-09-27)
 
 ADR-0059 names the two-parameter logistic of Mignan & Broccardo (2019, `contested`) and
@@ -537,7 +563,9 @@ The scientific gaps, unchanged by the re-aim:
 - ~~**The adapter-independence contract names five of ten families; `reporting` has no contract.**~~
   **Closed 2026-09-27** (ADR-0071): the independence contract lists every `adapters.*` package on
   disk, a unit test fails if a new family arrives unlisted, and `rupture.reporting` may import
-  only `domain`. **Six cross-family adapter imports are grandfathered by name** —
+  only `domain`. Code shared across families lives in two declared leaves, `rupture.adapters._http`
+  and `rupture.adapters.fixtures`, which a contract forbids from importing any family, and a test
+  fails if another top-level adapter module appears undeclared (ADR-0071 amendment). **Six cross-family adapter imports are grandfathered by name** —
   `groundmotion.openquake_scenario` and `groundmotion.openquake_event_based` into
   `hazard.job_builder` and `hazard.openquake_docker`, and `cascade.chamoli` into
   `groundmotion.distances` and `groundmotion.native` — so a seventh fails the build. Inverting the

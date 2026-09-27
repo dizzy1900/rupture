@@ -21,11 +21,10 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
+from rupture.adapters._http import FetchError, fetch_bytes
 from rupture.adapters.catalogs._common import identity_mw, normalise_magnitude_type
-from rupture.adapters.catalogs._http import FetchError, fetch_bytes
 from rupture.adapters.catalogs.comcat import map_event_type
-from rupture.adapters.catalogs.fixtures import load_fixture_dir
-from rupture.adapters.observations._asof import catalog_available_as_of
+from rupture.adapters.fixtures import load_fixture_dir
 from rupture.domain import (
     Catalog,
     Event,
@@ -201,7 +200,7 @@ class UsgsRealtimeFeed:
         return _catalog_of(tuple(events), note=f"online USGS feed {self.feed}")
 
     def available_as_of(self, instant: datetime, *, policy: VintagePolicy) -> Catalog:
-        return catalog_available_as_of(self._load(), instant, policy)
+        return self._load().as_of(instant, policy)
 
     def vintage(self, reference_time: datetime | None = None) -> VintageSummary:
         return self._load().vintage_summary(reference_time)

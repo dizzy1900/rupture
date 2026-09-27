@@ -23,13 +23,13 @@ from datetime import UTC, datetime
 from pathlib import Path
 from urllib.parse import urlencode
 
+from rupture.adapters._http import FetchError, fetch_bytes
 from rupture.adapters.catalogs._common import (
     filter_events,
     identity_mw,
     normalise_magnitude_type,
 )
-from rupture.adapters.catalogs._http import FetchError, fetch_bytes
-from rupture.adapters.catalogs.fixtures import load_fixture_dir
+from rupture.adapters.fixtures import load_fixture_dir
 from rupture.domain import (
     Catalog,
     Event,

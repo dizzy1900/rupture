@@ -7,7 +7,7 @@ from pathlib import Path
 
 import pytest
 
-from rupture.adapters.catalogs.fixtures import FixtureFile, load_fixture_dir
+from rupture.adapters.fixtures import FixtureFile, load_fixture_dir
 from rupture.adapters.sources.regions import load_region
 from rupture.domain import Provenance, Region
 

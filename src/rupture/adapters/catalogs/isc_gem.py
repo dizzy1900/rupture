@@ -27,7 +27,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 
 from rupture.adapters.catalogs._common import filter_events
-from rupture.adapters.catalogs.fixtures import load_fixture_dir
+from rupture.adapters.fixtures import load_fixture_dir
 from rupture.domain import (
     Catalog,
     Event,

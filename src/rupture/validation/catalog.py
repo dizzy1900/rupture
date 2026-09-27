@@ -27,7 +27,7 @@ from pathlib import Path
 
 import jsonschema
 
-from rupture.adapters.catalogs.fixtures import PROVENANCE_FILE, FixtureError, load_fixture_dir
+from rupture.adapters.fixtures import PROVENANCE_FILE, FixtureError, load_fixture_dir
 from rupture.adapters.sources.regions import default_regions_root, load_region
 from rupture.adapters.storage.geoparquet import read_catalog, write_catalog
 from rupture.domain import Catalog, EventType, McMethod, contracts
