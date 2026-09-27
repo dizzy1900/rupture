@@ -361,6 +361,28 @@ because review found them unsound. Recorded because a discarded attempt is evide
 - **A prescriptive refactor of the `models -> pipelines` edges** wrote a repair instruction into
   `pyproject.toml` that would have created a fresh violating edge.
 
+## The one-neuron comparator (2026-09-27)
+
+ADR-0059 names the two-parameter logistic of Mignan & Broccardo (2019, `contested`) and
+distance-plus-slip as the mandatory comparator for any spatial aftershock claim. It is
+**implemented and unscored**.
+
+| Component | Maturity | What actually ran |
+|---|---|---|
+| `rupture.models.comparators` — `OneNeuronAftershockModel` (`one-neuron-logistic`), `DistanceSlipAftershockModel` (`distance-slip-logistic`), `alarm_from_logistic` | working | 19 unit tests, offline, fitting on the committed ComCat California fixture (Ridgecrest box) and the Gorkha 30-day slice with the USGS NEIC finite-fault table; `assert_all_before` / `assert_issue_after_fit` fire on real timestamps. The fits are test fixtures, not results |
+
+What it did not do:
+
+- **It has not been scored.** No protocol window, no region, no Molchan trajectory, no area
+  skill, no information gain. `reports/MODEL_CARD_one_neuron.md` says "not scored" and is not
+  machine-read by `validate-challengers`.
+- **Its single feature is not Mignan & Broccardo's.** Their two-parameter fit was on a scalar
+  stress metric, which rupture does not compute; this one uses log distance to the nearest
+  `mw >= m_main` training event. The functional form matches; the input does not.
+- **Nothing requires it.** No scoring path refuses a spatial claim that was not scored against
+  it, and no gate checks for it. ADR-0059's requirement for spatial claims is available, not
+  enforced.
+
 ## Prompt 1 — foundations
 
 | Component | Maturity | What actually ran |
