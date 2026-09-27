@@ -6,6 +6,14 @@ persistence, limitations).
 
 this adapter produces expected counts per cell and
 magnitude bin over a horizon, from parameters fitted only on events before a hard cutoff.
+
+Two models live in this class. With ``incompleteness=None`` — the default, and the one every
+committed fit and every published number in this repository was produced by — it is plain ETAS,
+``etas-mizrahi``. With a :class:`~rupture.domain.completeness.StaiCoefficients` it is **ETAS-I**,
+``etas-i-mizrahi``: the same inversion run with a per-event completeness magnitude so that the
+sequence-early events plain ETAS treats as missing are modelled as unobserved rather than absent
+(ADR-0059, ADR-0066). The two carry different ``model_id`` values, and ``load_fit`` refuses a fit
+whose id does not match, so a fit of one can never be mistaken for a fit of the other.
 """
 
 from __future__ import annotations
@@ -40,11 +48,21 @@ from rupture.adapters.forecasting.leakage import (
     assert_all_before,
     assert_issue_after_fit,
 )
-from rupture.domain import Catalog, FitResult, ForecastGrid, Region, snapshot_hash, utc_now
+from rupture.domain import (
+    Catalog,
+    FitResult,
+    ForecastGrid,
+    Region,
+    StaiCoefficients,
+    snapshot_hash,
+    stai_mc_current,
+    utc_now,
+)
 
 log = logging.getLogger(__name__)
 
 MODEL_ID = "etas-mizrahi"
+MODEL_ID_INCOMPLETE = "etas-i-mizrahi"
 ETAS_COMMIT = "097f08b69a4f06f9c38d14799dedfbd4543144e3"
 THETA_KEYS: tuple[str, ...] = (
     "log10_mu",
@@ -193,7 +211,10 @@ def point_process_log_likelihood(calc: Any) -> LogLikelihood:
     the part of the primary window that follows source ``j`` — and ``xi + 1`` / ``zeta + 1`` are
     the package's completeness corrections for triggering by unobserved events and for a
     target-time completeness above the reference magnitude (both are exactly 1 when ``mc`` is a
-    constant equal to ``m_ref``, which is how this adapter configures every fit).
+    constant equal to ``m_ref``, which is how this adapter configures every **plain-ETAS** fit --
+    and is exactly what an ETAS-I fit does not have, which is why
+    :meth:`MizrahiETAS.log_likelihood` refuses under ETAS-I rather than returning this number
+    for a variable-completeness fit).
 
     Conditioning, stated because it bounds what the number may be compared with:
 
@@ -365,6 +386,13 @@ class MizrahiETAS:
         Caps on the EM loop (the package's own ``invert`` has none and would run until its
         tolerance is met). Hitting a cap yields ``converged=False``; the fit is still persisted
         and ``forecast`` refuses to use it.
+    incompleteness:
+        ``None`` (default) fits plain ETAS. Supplying STAI coefficients switches the model to
+        ETAS-I: a per-event ``mc_current`` is attached to the catalogue and the package's
+        variable-completeness inversion (``mc="var"``, ``m_ref``) is used instead of a scalar cut.
+        The default must stay ``None``: every fit under ``baselines/`` and every number in
+        ``reports/`` was produced by the plain model, and a default that quietly changed the
+        inversion would move all of them without anybody editing a line.
     """
 
     model_id: str = MODEL_ID
@@ -381,6 +409,7 @@ class MizrahiETAS:
         theta_0: Mapping[str, float | None] | None = None,
         max_iterations: int = 200,
         max_seconds: float = 1800.0,
+        incompleteness: StaiCoefficients | None = None,
     ) -> None:
         if auxiliary_years <= 0:
             msg = "auxiliary_years must be positive"
@@ -388,6 +417,8 @@ class MizrahiETAS:
         if max_iterations < 1 or max_seconds <= 0:
             msg = "max_iterations must be >= 1 and max_seconds positive"
             raise ValueError(msg)
+        self.incompleteness = incompleteness
+        self.model_id = MODEL_ID if incompleteness is None else MODEL_ID_INCOMPLETE
         self.max_iterations = max_iterations
         self.max_seconds = max_seconds
         self.auxiliary_years = auxiliary_years
@@ -544,6 +575,12 @@ class MizrahiETAS:
             "log_likelihood_terms": None if loglik is None else loglik.as_dict(),
             "etas_commit": ETAS_COMMIT,
         }
+        # Added only for ETAS-I, so that a plain-ETAS diagnostics block is byte-for-byte what it
+        # was before this model existed and no committed fit is made to look stale.
+        if self.incompleteness is not None:
+            diagnostics["incompleteness"] = self._incompleteness_diagnostics(
+                metadata["catalog"], mc_value
+            )
         result = FitResult(
             model_id=self.model_id,
             model_version=self.model_version,
@@ -602,6 +639,25 @@ class MizrahiETAS:
         return converged, reason
 
     # ------------------------------------------------------------------ forecast
+    def _refuse_if_incomplete(self, what: str) -> None:
+        """Refuse any plain-ETAS-only path when this instance is configured for ETAS-I.
+
+        Three methods share one reason. The issuance path fixes every source's responsibility
+        factor ``xi_plus_1`` at 1 and simulates above a single scalar cut, and the log-likelihood
+        expression is derived assuming the completeness factors are exactly 1 — all of which hold
+        only when ``mc`` is a constant equal to ``m_ref``. Under ETAS-I none of them does, so a
+        number from any of these paths would be a plain-ETAS quantity carrying an ETAS-I label.
+        Fitting is what ADR-0066 delivered; issuing and scoring are not.
+        """
+        if self.incompleteness is None:
+            return
+        msg = (
+            f"{what}() is refused under ETAS-I: it assumes a constant completeness equal to "
+            "m_ref, which is exactly what ETAS-I does not have. ETAS-I can be fitted but not yet "
+            "issued or scored. See ADR-0066."
+        )
+        raise NotImplementedError(msg)
+
     def forecast(
         self,
         history: Catalog,
@@ -621,7 +677,15 @@ class MizrahiETAS:
         component is the mean over ``n_simulations`` stochastic continuations of the history; the
         background component and the magnitude distribution are analytic. With ``seed`` set the
         result is reproducible (the package draws from numpy's global RNG, which is seeded here).
+
+        **ETAS-I cannot issue from here yet and says so rather than issuing something wrong.**
+        Two pieces of this path are plain-ETAS assumptions written into the code: the issuance
+        state sets every source's responsibility factor ``xi_plus_1`` to 1, which is exactly the
+        correction ETAS-I exists to apply, and the continuation is simulated above a single scalar
+        cut. Fitting is the part that is built (ADR-0066); issuing is not, and a number produced
+        by mixing the two would be an ETAS-I label on a plain-ETAS forecast.
         """
+        self._refuse_if_incomplete("forecast")
         fit, region, lattice = self._require_fit()
         if n_simulations < 1:
             msg = "n_simulations must be >= 1"
@@ -739,7 +803,13 @@ class MizrahiETAS:
 
         Leakage: the reconstructed window ends at ``fit.fit_cutoff`` and the slice is asserted to
         end strictly before it, exactly as in :meth:`fit`.
+
+        Refused under ETAS-I. :func:`point_process_log_likelihood` derives its expression on the
+        assumption that the completeness factors are exactly 1, which holds only when ``mc`` is a
+        constant equal to ``m_ref``. Under ETAS-I it is neither, so the number this returns would
+        be a plain-ETAS likelihood wearing an ETAS-I fit's parameters.
         """
+        self._refuse_if_incomplete("log_likelihood")
         if self._fit is None or self._region is None:
             msg = "no fit loaded: call fit() or load_fit() first"
             raise RuntimeError(msg)
@@ -787,7 +857,14 @@ class MizrahiETAS:
         the simulation's source catalogue. Mirrors ``ETASSimulation.prepare`` without ``invert``:
         one expectation step with the stored theta yields the background probabilities that
         define the background-location law.
+
+        Refused under ETAS-I for the same reason :meth:`forecast` is, and it is the method the
+        reason is *about*: the state it builds fixes every source's ``xi_plus_1`` at 1, and that
+        factor is precisely the responsibility correction ETAS-I exists to apply. Guarding
+        ``forecast`` alone left this reachable, so a caller could obtain a plain-ETAS state from
+        an ETAS-I fit and never be told.
         """
+        self._refuse_if_incomplete("issuance_state")
         fit, region, _ = self._require_fit()
         assert_all_before(history, issue_time, what="issuance history")
         theta: dict[str, Any] = {k: fit.parameters[k] for k in THETA_KEYS}
@@ -910,14 +987,51 @@ class MizrahiETAS:
             msg = f"history has {len(below)} event(s) below mc={mc}; filter with at_least(mc)"
             raise ValueError(msg)
 
-    @staticmethod
-    def _frame(catalog: Catalog) -> pd.DataFrame:
+    def _frame(self, catalog: Catalog, mc: float, delta_m: float) -> pd.DataFrame:
         rows = [
             (e.id, e.latitude, e.longitude, pd.Timestamp(_naive_utc(e.origin_time)), e.mw)
             for e in catalog.events
         ]
         df = pd.DataFrame(rows, columns=["id", "latitude", "longitude", "time", "magnitude"])
-        return df.set_index("id")
+        df = df.set_index("id")
+        if self.incompleteness is not None:
+            df["mc_current"] = self._mc_current(df, mc, delta_m)
+        return df
+
+    def _mc_current(
+        self, frame: pd.DataFrame, mc: float, delta_m: float
+    ) -> npt.NDArray[np.float64]:
+        """Per-event completeness for ``mc="var"``, snapped **up** onto the magnitude-bin grid.
+
+        Two things have to line up for the package to behave. It rounds magnitudes onto the
+        ``delta_m`` grid and then keeps ``magnitude >= mc_current``; a threshold sitting between
+        two bin centres therefore acts as the bin above it anyway, so snapping up makes the
+        effective cut explicit instead of emergent, and it is the conservative direction — it can
+        only discard a marginal event, never admit one the network may not have seen. It also
+        silences the package's own "rounding issues found" warning, which fires precisely when
+        ``mc_current`` is off-grid and which would otherwise be noise in every ETAS-I log.
+
+        Snapping up also keeps ``m_ref = mc`` a valid floor: every value is >= ``mc``, so the
+        package never has to lower ``m_ref`` behind our back (``inversion.py`` does that silently,
+        which would change the reference magnitude the fitted parameters are expressed in).
+        """
+        if self.incompleteness is None:  # pragma: no cover - guarded by the caller
+            raise RuntimeError("incompleteness is not configured")
+        if len(frame) == 0:
+            return np.zeros(0, dtype=np.float64)
+        # Rebase on the first event in integer nanoseconds before going to float: the curve is a
+        # log of an elapsed time, and a raw epoch in float64 days throws away the sub-second
+        # resolution that the first minutes of a sequence are made of.
+        ns = frame["time"].to_numpy(dtype="datetime64[ns]").astype(np.int64)
+        days = (ns - ns.min()) / 86_400e9
+        raw = stai_mc_current(
+            days,
+            frame["magnitude"].to_numpy(dtype=np.float64),
+            background_mc=mc,
+            coefficients=self.incompleteness,
+        )
+        snapped: npt.NDArray[np.float64] = np.ceil(raw / delta_m - 1e-9) * delta_m
+        return snapped
 
     def _metadata(
         self,
@@ -930,16 +1044,47 @@ class MizrahiETAS:
         timewindow_end: datetime,
         name: str,
     ) -> dict[str, Any]:
-        return {
+        delta_m = region.magnitude_bin_width
+        metadata: dict[str, Any] = {
             "name": name,
-            "catalog": self._frame(catalog),
+            "catalog": self._frame(catalog, mc, delta_m),
             "auxiliary_start": _naive_utc(auxiliary_start),
             "timewindow_start": _naive_utc(timewindow_start),
             "timewindow_end": _naive_utc(timewindow_end),
             "mc": mc,
-            "delta_m": region.magnitude_bin_width,
+            "delta_m": delta_m,
             "coppersmith_multiplier": self.coppersmith_multiplier,
             "shape_coords": shape_coords_lat_lon(region),
+        }
+        if self.incompleteness is not None:
+            # ``mc="var"`` is the package's variable-completeness inversion: it reads the
+            # ``mc_current`` column above and expresses every fitted parameter relative to
+            # ``m_ref``. ``m_ref = mc`` — the network's long-run cut — because that is the floor
+            # the STAI curve decays back to, so no event can sit below it.
+            metadata["mc"] = "var"
+            metadata["m_ref"] = mc
+        return metadata
+
+    def _incompleteness_diagnostics(self, frame: pd.DataFrame, mc: float) -> dict[str, Any]:
+        """What the STAI curve actually did to this catalogue, so a reader can audit it."""
+        if self.incompleteness is None:  # pragma: no cover - guarded by the caller
+            raise RuntimeError("incompleteness is not configured")
+        values = frame["mc_current"].to_numpy(dtype=np.float64)
+        raised = values > mc + 1e-9
+        return {
+            "coefficients": self.incompleteness.model_dump(mode="json"),
+            "m_ref": mc,
+            "background_mc": mc,
+            "max_mc_current": float(values.max()) if values.size else None,
+            "n_events_above_background_mc": int(raised.sum()),
+            "n_events_below_their_mc_current": int(
+                (frame["magnitude"].to_numpy(dtype=np.float64) < values).sum()
+            ),
+            "note": (
+                "mc_current is the Helmstetter-style STAI curve of the events in this training "
+                "slice only; a trigger outside the region polygon or below the cut leaves no "
+                "trace here. See ADR-0066."
+            ),
         }
 
     @staticmethod
@@ -959,6 +1104,20 @@ def archive_dir(baselines_dir: Path, region_id: str, cutoff: datetime) -> Path:
     return fit_dir(baselines_dir, region_id) / "fits" / f"{cutoff:%Y%m%dT%H%M%SZ}"
 
 
+def _refuse_foreign_model(directory: Path, model_id: str) -> None:
+    """Raise if ``directory`` already holds a fit of a different model."""
+    path = directory / FIT_RESULT_FILE
+    if not path.exists():
+        return
+    existing = json.loads(path.read_text(encoding="utf-8")).get("model_id")
+    if existing is not None and existing != model_id:
+        msg = (
+            f"{path} holds a {existing!r} fit; refusing to overwrite it with a {model_id!r} one. "
+            "Plain ETAS and ETAS-I share a baselines directory (ADR-0066)."
+        )
+        raise ValueError(msg)
+
+
 def save_fit(fit: FitResult, baselines_dir: Path, *, canonical: bool = True) -> Path:
     """Write ``fit_result.json``, ``parameters.json`` and ``diagnostics.json``; return the dir.
 
@@ -974,6 +1133,13 @@ def save_fit(fit: FitResult, baselines_dir: Path, *, canonical: bool = True) -> 
     being at the top level.
     """
     out = fit_dir(baselines_dir, fit.region_id)
+    archive = archive_dir(baselines_dir, fit.region_id, fit.fit_cutoff)
+    # ``fit_dir`` keys on the region alone, so plain ETAS and ETAS-I of the same region resolve to
+    # the same directory (ADR-0066 gave them different ``model_id`` values but not different
+    # paths). Refuse the collision instead of silently replacing one baseline with the other;
+    # separating the two on disk is a layout change with DVC outputs attached to it.
+    for directory in (out, archive):
+        _refuse_foreign_model(directory, fit.model_id)
     out.mkdir(parents=True, exist_ok=True)
     previous: dict[str, str | None] = {
         name: (out / name).read_text(encoding="utf-8") if (out / name).exists() else None
@@ -1001,7 +1167,6 @@ def save_fit(fit: FitResult, baselines_dir: Path, *, canonical: bool = True) -> 
     (out / DIAGNOSTICS_FILE).write_text(
         json.dumps(fit.diagnostics, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
-    archive = archive_dir(baselines_dir, fit.region_id, fit.fit_cutoff)
     archive.mkdir(parents=True, exist_ok=True)
     for name in (FIT_RESULT_FILE, PARAMETERS_FILE, DIAGNOSTICS_FILE):
         (archive / name).write_text((out / name).read_text(encoding="utf-8"), encoding="utf-8")

@@ -67,6 +67,11 @@ def load_fixture_catalog(*, reported_as_mw: bool = True) -> Catalog:
             Event(
                 id=f"comcat:{feat['id']}",
                 origin_time=datetime.fromtimestamp(p["time"] / 1000.0, tz=UTC),
+                available_time=(
+                    datetime.fromtimestamp(p["updated"] / 1000.0, tz=UTC)
+                    if p.get("updated") is not None
+                    else None
+                ),
                 latitude=lat,
                 longitude=lon,
                 depth_km=depth,

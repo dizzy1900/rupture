@@ -10,6 +10,7 @@ from pydantic import Field, model_validator
 
 from rupture.domain.common import RuptureModel, UTCDatetime, sha256_hex
 from rupture.domain.event import Event, EventType
+from rupture.domain.vintage import VintagePolicy, VintageSummary
 
 
 class McMethod(StrEnum):
@@ -144,6 +145,68 @@ class Catalog(RuptureModel):
             f"{start.isoformat()}-{end.isoformat()}",
         )
 
+    def as_of(self, instant: datetime, policy: VintagePolicy) -> Catalog:
+        """Events whose *record* is provably no younger than ``instant`` (ADR-0064).
+
+        This is the filter :meth:`before` is not. ``before`` asks when the earthquake happened;
+        this asks when the description of it came to exist, which is the question a forecast
+        issued at ``instant`` actually needs answered. Compose them — a fit at *t* wants
+        ``.before(t).as_of(t, policy)`` — because an event can fail either test independently.
+
+        ``policy`` is required and never inferred: a catalogue with no vintage at all is emptied
+        by ``EXCLUDE_UNKNOWN`` and passed through untouched by ``INCLUDE_UNKNOWN``, and which of
+        those a result assumed is exactly the thing that must not be silent.
+        """
+        keep_unknown = policy is VintagePolicy.INCLUDE_UNKNOWN
+        return self._with_events(
+            (
+                e
+                for e in self.events
+                if (keep_unknown if e.available_time is None else e.available_time <= instant)
+            ),
+            f"asof-{instant.isoformat()}-{policy.value}",
+        )
+
+    def n_events_without_vintage(self) -> int:
+        """Events carrying no ``available_time``. Unknown vintage is not "available at once"."""
+        return sum(1 for e in self.events if e.available_time is None)
+
+    def revised_after(self, instant: datetime) -> tuple[Event, ...]:
+        """Events whose record was last modified at or after ``instant``. Unknown vintage is not
+        counted here — it is counted by :meth:`vintage_summary` as missing coverage instead."""
+        return tuple(
+            e for e in self.events if e.available_time is not None and e.available_time >= instant
+        )
+
+    def vintage_summary(self, reference_time: datetime | None = None) -> VintageSummary:
+        """How much of this slice is of proven vintage, and how late the records arrived."""
+        stamped = [e for e in self.events if e.available_time is not None]
+        lags = sorted(
+            (e.available_time - e.origin_time).total_seconds() / 86400.0
+            for e in stamped
+            if e.available_time is not None
+        )
+        revised = None if reference_time is None else len(self.revised_after(reference_time))
+        available = (
+            None
+            if reference_time is None
+            else sum(
+                1
+                for e in stamped
+                if e.available_time is not None and e.available_time <= reference_time
+            )
+        )
+        return VintageSummary(
+            n_events=len(self.events),
+            n_with_available_time=len(stamped),
+            n_available_by=available,
+            n_revised_after=revised,
+            reference_time=reference_time,
+            lag_days_median=_quantile(lags, 0.5),
+            lag_days_p90=_quantile(lags, 0.9),
+            lag_days_max=lags[-1] if lags else None,
+        )
+
     def of_type(self, *types: EventType) -> Catalog:
         """Keep only the given event types (e.g. earthquakes only for ETAS fits and targets)."""
         return self._with_events((e for e in self.events if e.event_type in types), "-".join(types))
@@ -162,3 +225,11 @@ class Catalog(RuptureModel):
         for e in self.events:
             out[e.event_type] += 1
         return out
+
+
+def _quantile(sorted_values: list[float], q: float) -> float | None:
+    """Nearest-rank quantile of an already-sorted list; ``None`` when empty."""
+    if not sorted_values:
+        return None
+    idx = min(len(sorted_values) - 1, max(0, round(q * (len(sorted_values) - 1))))
+    return sorted_values[idx]

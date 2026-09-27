@@ -197,9 +197,10 @@ after `uv sync`.
 | `validate-aftershock` | the operational aftershock service's fits, horizons and refusals (`mk/aftershock.mk`) |
 | `validate-challengers` | challenger leakage controls and fit honesty (`mk/challengers.mk`) |
 | `validate-alarm` | the `AlarmSet` arm: registry refusals, the Molchan/area-skill calibration identity, exact power and minimum detectable gain, and the measured effect of the reference choice (`mk/alarm.mk`) |
+| `validate-asof` | data vintage: what fraction of a fit and of a scored window rests on records revised after the cut, and what moves when they are dropped (`mk/asof.mk`) |
 | `schema-export` | regenerate contracts/*.json from the domain models |
 | `schema-check` | fail if contracts/*.json drift from the domain models |
-| `validate-rupture` | everything, offline (`lint typecheck test` + `$(VALIDATE_GATES)`); with every `mk/*.mk` fragment present that is ten gates |
+| `validate-rupture` | everything, offline (`lint typecheck test` + `$(VALIDATE_GATES)`); with every `mk/*.mk` fragment present that is eleven gates |
 | `promote` | refuse unless every gate is green **and** `PROMOTE_APPROVED_BY` names a human approver; then print the promotion record, naming each skipped gate and its reason |
 | `underwriting-check` | run the serac Nepal corridor portfolio through the MHT scenario and print expected and avoided loss with intervals; exits non-zero if any figure is missing or the response is a stub |
 | `clean` | remove caches; `git clean -fdX reports` removes the *ignored* files under `reports/` and leaves the committed evidence and model cards alone |
@@ -209,8 +210,8 @@ How the gates are wired:
 - Each `validate-<name>` target runs `uv run rupture validate <name>` (equivalently `rupture
   validate gate <name>`). Gate names are the `GATES` tuple in
   `src/rupture/validation/registry.py`, which holds ten: `schema`, `catalog`, `etas`, `eval`,
-  `hazard`, `cascade`, `risk`, `aftershock`, `challengers`, `alarm`. (`language` was in this list
-  and was deleted with the positioning it enforced in `b641034`; `alarm` arrived with ADR-0063.)
+  `hazard`, `cascade`, `risk`, `aftershock`, `challengers`, `alarm`, `asof`. (`language` was in this list
+  and was deleted with the positioning it enforced in `b641034`; `alarm` arrived with ADR-0063 and `asof` with ADR-0064.)
   That
   tuple is the single source of truth — if this list and the tuple ever disagree, the tuple is
   right and this file is stale. Each gate is a module `src/rupture/validation/<name>.py` exposing
@@ -260,7 +261,7 @@ over this table**; where an option list here is shorter than the module's, read 
 | `python -m rupture.commands.challenger ntpp select \| fit \| issue \| schedule \| ablate` | the challenger pipeline, in the order it must be run in: freeze hyperparameters on validation windows, fit before the cutoff, issue, run the whole pseudo-prospective schedule, run the deliberately leaky ablations. **Not mounted on `rupture`** — `cli.py` has no `challenger` sub-app, so this noun is reached through `python -m` | npp-researcher |
 | `python -m rupture.reporting.challenger_plots` | redraw the figures in `reports/CHALLENGER_EVALUATION.md` from committed evidence; loads no model and issues no forecast | docs owner |
 | `rupture schema export [--out DIR] [--check]` | write (or drift-check) JSON Schema for every domain contract into `contracts/` | architect |
-| `rupture validate <gate>` | run one gate; `<gate>` is any name in the `GATES` tuple (`schema`, `catalog`, `etas`, `eval`, `hazard`, `cascade`, `risk`, `aftershock`, `challengers`, `alarm`), and `rupture validate gate <name>` is the same by argument | gate owner |
+| `rupture validate <gate>` | run one gate; `<gate>` is any name in the `GATES` tuple (`schema`, `catalog`, `etas`, `eval`, `hazard`, `cascade`, `risk`, `aftershock`, `challengers`, `alarm`, `asof`), and `rupture validate gate <name>` is the same by argument | gate owner |
 | `rupture promote --approved-by <person>` | re-run every gate and print the promotion record, naming each skipped gate and its reason; refuses if any gate blocks **or** if no approver is named | architect |
 | `rupture underwriting-check [--portfolio trishuli-corridor] [--scenario mht-m8-hypothetical]` | price the serac Nepal corridor portfolio against the MHT scenario and print expected loss and avoided loss, each with its interval, confidence tier and provenance; exits non-zero if a figure is missing or the response is a stub | architect |
 

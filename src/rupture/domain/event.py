@@ -56,6 +56,14 @@ class Event(RuptureModel):
     ``"scordilis2006:mb"`` for a converted body-wave magnitude). Both are ``None`` when no
     accepted conversion exists for the reported scale; such events stay in the catalogue and are
     excluded from magnitude-based analyses by filter, never by deletion.
+
+    An event carries **two times, and they answer different questions.** ``origin_time`` is when
+    the earthquake happened; ``available_time`` is when this description of it came to exist. A
+    forecast issued at *t* may use an event only if *both* precede *t*, and until ADR-0064 only
+    the first was checked anywhere in this repository — so a model reading a magnitude revised in
+    2026 at a 2019 issue time passed every leakage assertion. On the committed California
+    fixture that is not hypothetical: 69 of the 217 events before the 2019-07-01 cutoff carry a
+    record last modified after it.
     """
 
     id: str = Field(
@@ -63,6 +71,15 @@ class Event(RuptureModel):
     )
     origin_time: UTCDatetime
     origin_time_uncertainty_s: float | None = Field(default=None, ge=0.0)
+    available_time: UTCDatetime | None = Field(
+        default=None,
+        description=(
+            "Earliest instant at which this record, in the form held here, can be shown to have "
+            "existed upstream. ComCat's `updated`, ISC's revision stamp. `None` means the "
+            "vintage is unknown, which is not the same as 'immediately available' and must not "
+            "be treated as it (ADR-0054, ADR-0064)."
+        ),
+    )
     latitude: float = Field(ge=-90.0, le=90.0)
     longitude: float = Field(ge=-180.0, le=180.0)
     horizontal_uncertainty_km: float | None = Field(default=None, ge=0.0)

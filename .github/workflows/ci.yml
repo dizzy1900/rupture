@@ -61,6 +61,12 @@ jobs:
       # the scorer, and a gate that is only ever run by hand is a gate that rots.
       - name: Alarm gate (Molchan / area skill / power, and the reference effect)
         run: make validate-alarm
+      # The as-of gate measures data-vintage exposure on the committed fixture: what fraction of
+      # a fit and of a scored window rests on records revised after the cut. It runs in CI
+      # because the numbers it prints are the only evidence bearing on whether the as-of layer
+      # of ADR-0054 is an evaluation requirement or a data-engineering convenience.
+      - name: As-of gate (data vintage exposure)
+        run: make validate-asof
       - name: Underwriting check (the serac corridor, priced end to end)
         run: make underwriting-check
       # A ratchet, not a formality: if someone registers a gate in
@@ -76,7 +82,7 @@ jobs:
           # Gates with a step in this workflow. `hazard` runs in the hazard-integration job.
           covered = {
               "schema", "catalog", "etas", "eval",
-              "cascade", "risk", "aftershock", "challengers", "alarm",
+              "cascade", "risk", "aftershock", "challengers", "alarm", "asof",
               "hazard",
           }
           missing = [g for g in GATES if g not in covered]

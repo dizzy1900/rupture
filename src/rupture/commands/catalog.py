@@ -17,7 +17,7 @@ from rupture.adapters.sources.regions import (
     write_region,
 )
 from rupture.adapters.storage.geoparquet import read_catalog, write_catalog
-from rupture.domain import Catalog, CompletenessEstimate, McMethod, Region
+from rupture.domain import Catalog, CompletenessEstimate, McMethod, Region, VintagePolicy
 from rupture.pipelines.build_catalog import MergeConfig, build_catalog, mw_coverage_at
 
 REPO_ROOT = Path(__file__).resolve().parents[3]
@@ -246,3 +246,55 @@ def refresh_fixtures(
 
     for line in refresh_all(root / "data" / "fixtures"):
         typer.echo(line)
+
+
+@app.command("vintage")
+def vintage(
+    catalog: Annotated[Path, typer.Option("--catalog", help="Catalogue directory.")],
+    at: Annotated[
+        str | None,
+        typer.Option("--at", help="Reference instant (ISO 8601 UTC); exposure is measured here."),
+    ] = None,
+    policy: Annotated[
+        str,
+        typer.Option(
+            "--policy",
+            help="exclude-unknown | include-unknown: what to do with records of unknown vintage.",
+        ),
+    ] = "exclude-unknown",
+) -> None:
+    """How much of a catalogue is of proven vintage, and how much a cut at ``--at`` would drop.
+
+    The question this answers is not "when did these earthquakes happen" — ``inspect`` answers
+    that — but "when did these *descriptions* of them come to exist". A forecast issued at *t*
+    needs both, and until ADR-0064 nothing in rupture could ask the second.
+    """
+    try:
+        vintage_policy = VintagePolicy(policy)
+    except ValueError as exc:
+        typer.echo(
+            f"rupture catalog vintage: unknown policy {policy!r}; use "
+            f"{' or '.join(p.value for p in VintagePolicy)}",
+            err=True,
+        )
+        raise typer.Exit(1) from exc
+    cat = read_catalog(catalog)
+    reference = _parse_utc(at) if at else None
+    summary = cat.vintage_summary(reference)
+    typer.echo(f"{cat.id}: {summary.render()}")
+    if summary.coverage < 1.0:
+        typer.echo(
+            f"  {cat.n_events_without_vintage()} record(s) carry no vintage at all. Unknown is "
+            "not 'available immediately'; under exclude-unknown they are refused."
+        )
+    if reference is not None:
+        kept = cat.as_of(reference, vintage_policy)
+        typer.echo(
+            f"  as_of({reference.isoformat()}, {vintage_policy.value}): "
+            f"{len(kept)} of {len(cat)} event(s) survive"
+        )
+        if summary.exposed_fraction:
+            typer.echo(
+                f"  {summary.exposed_fraction:.1%} of this slice is not provably the slice that "
+                "existed at that instant; every origin-time leakage assertion passes on all of it"
+            )

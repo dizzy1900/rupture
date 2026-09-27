@@ -8,6 +8,7 @@ from rupture.ports.forecast_model import ForecastModel
 from rupture.ports.grid_store import GridStore
 from rupture.ports.ground_motion import GroundMotionEngine
 from rupture.ports.hazard_engine import ClassicalPSHAJob, HazardEngine, ScenarioGroundMotionJob
+from rupture.ports.observation_source import ObservationSource
 from rupture.ports.tracker import RunRecord, Tracker
 from rupture.ports.vulnerability import VulnerabilityModel
 
@@ -21,6 +22,7 @@ __all__ = [
     "GridStore",
     "GroundMotionEngine",
     "HazardEngine",
+    "ObservationSource",
     "RunRecord",
     "ScenarioGroundMotionJob",
     "SlopeUnitSource",
