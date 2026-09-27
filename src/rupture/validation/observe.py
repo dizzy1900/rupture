@@ -1,6 +1,6 @@
 """``validate-observe``: committed observation fixtures parse, and as-of is half-open.
 
-Offline: reads ``data/fixtures/gnss/ngl`` and ``data/fixtures/usgs_feed``. Does not fetch.
+Offline: reads ``data/fixtures/ngl_gnss`` and ``data/fixtures/usgs_feed``. Does not fetch.
 """
 
 from __future__ import annotations
@@ -31,12 +31,12 @@ def run(repo_root: Path) -> GateResult:
 
 def _check_ngl(fixtures: Path, findings: list[str], failures: list[str]) -> None:
     try:
-        ngl_files = load_fixture_dir(fixtures / "gnss" / "ngl", adapter_version="gate")
+        ngl_files = load_fixture_dir(fixtures / "ngl_gnss", adapter_version="gate")
     except FixtureError as exc:
-        failures.append(f"gnss/ngl fixtures: {exc}")
+        failures.append(f"ngl_gnss fixtures: {exc}")
         ngl_files = []
     if not ngl_files:
-        failures.append("gnss/ngl: no listed fixture payloads")
+        failures.append("ngl_gnss: no listed fixture payloads")
 
     for fx in ngl_files:
         positions = parse_tenv3(fx.content, provenance=fx.provenance, product=GnssProduct.FINAL)

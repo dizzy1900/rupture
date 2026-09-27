@@ -22,7 +22,7 @@ from rupture.domain.observation import GnssPosition, GnssProduct, ObservableKind
 
 
 def test_p595_fixture_parses_station_finite_coordinates_and_provenance() -> None:
-    fx = fixture_file("gnss/ngl", "P595.tenv3.head")
+    fx = fixture_file("ngl_gnss", "P595.tenv3.head")
     positions = parse_tenv3(fx.content, provenance=fx.provenance, product=GnssProduct.FINAL)
     assert len(positions) == 21
     assert all(p.station_id == "P595" for p in positions)

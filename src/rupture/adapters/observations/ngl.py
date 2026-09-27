@@ -271,7 +271,7 @@ class NglGnssSource:
 
     def _from_fixtures(self) -> tuple[GnssPosition, ...]:
         assert self.offline_fixtures is not None
-        directory = self.offline_fixtures / "gnss" / "ngl"
+        directory = self.offline_fixtures / "ngl_gnss"
         files = load_fixture_dir(directory, adapter_version=ADAPTER_VERSION)
         matching = [
             f

@@ -10,7 +10,7 @@ from rupture.domain.observation import GnssProduct, readable_as_of
 
 
 def _source() -> NglGnssSource:
-    fx = fixture_file("gnss/ngl", "P595.tenv3.head")
+    fx = fixture_file("ngl_gnss", "P595.tenv3.head")
     positions = parse_tenv3(fx.content, provenance=fx.provenance, product=GnssProduct.FINAL)
     return NglGnssSource("P595", positions=positions, product=GnssProduct.FINAL)
 
