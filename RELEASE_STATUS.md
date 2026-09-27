@@ -196,6 +196,19 @@ That is **one window, one region, one fixture**, and it is evidence for demoting
 from an evaluation requirement to a data-engineering convenience *only if it holds across many*.
 It is a first data point, recorded as one.
 
+### The as-of boundary, corrected (2026-09-27)
+
+`Catalog.as_of`, `Catalog.vintage_summary(...).n_available_by` and the gate's own as-of slice
+kept a record with `available_time <= t`. ADR-0054 fixes the rule as `available_time < t`,
+strictly, and `assert_available_before` already refused `>= t` — so the filter kept exactly the
+boundary record the assertion rejects, and a record at `t` was counted both as available and as
+revised. All three are now strict, and a unit test fails if a record available exactly at the cut
+is kept (it fails against the old `<=`). **No number moved:** `make validate-asof` printed the
+same findings before and after, and `reports/validate-asof/vintage.json` is byte-identical,
+because no record in the committed California fixture has an `available_time` equal to the fit
+cut or to any window edge (the nearest is 3.8 days from 2019-07-01). The correction changes the
+rule, not this fixture's results.
+
 ### What this did not do, and cannot
 
 - **The skill difference is not computed and cannot be from a single vintage.** ComCat's

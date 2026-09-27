@@ -191,7 +191,7 @@ def _as_of_catalog(catalog: Catalog, cutoff: datetime) -> Catalog:
     keep = tuple(
         e
         for e in catalog.events
-        if e.origin_time >= cutoff or (e.available_time is not None and e.available_time <= cutoff)
+        if e.origin_time >= cutoff or (e.available_time is not None and e.available_time < cutoff)
     )
     return catalog.model_copy(update={"events": keep, "id": f"{catalog.id}/asof-{cutoff.date()}"})
 

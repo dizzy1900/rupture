@@ -22,6 +22,7 @@ from rupture.validation._fixture import load_fixture
 from tests.unit.conftest import make_event
 
 CUT = datetime(2019, 7, 1, tzinfo=UTC)
+_TICK = timedelta(microseconds=1)
 
 
 def _stamped(
@@ -155,3 +156,30 @@ def test_a_third_of_the_2019_training_slice_is_of_unproven_vintage(
         assert_available_before(
             training, CUT, what="training", policy=VintagePolicy.EXCLUDE_UNKNOWN
         )
+
+
+def test_a_record_available_exactly_at_the_cut_is_excluded(provenance: Provenance) -> None:
+    """ADR-0054: readable at t iff available_time < t. The boundary is not served."""
+    at_cut = _stamped(provenance, "at-cut", CUT - timedelta(days=10), CUT)
+    just_before = _stamped(provenance, "just-before", CUT - timedelta(days=10), CUT - _TICK)
+    catalog = Catalog(
+        id="boundary",
+        events=(at_cut, just_before),
+        built_at=CUT,
+        builder_version="tests",
+    )
+    for policy in VintagePolicy:
+        assert {e.id for e in catalog.as_of(CUT, policy).events} == {"just-before"}
+    summary = catalog.vintage_summary(CUT)
+    assert summary.n_available_by == 1
+    assert summary.n_revised_after == 1, "available and revised must partition the stamped rows"
+    # as_of and the leakage assertion agree at the boundary: what as_of keeps, the assertion
+    # accepts; the record it drops is the one the assertion refuses.
+    assert_available_before(
+        catalog.as_of(CUT, VintagePolicy.EXCLUDE_UNKNOWN),
+        CUT,
+        what="boundary",
+        policy=VintagePolicy.EXCLUDE_UNKNOWN,
+    )
+    with pytest.raises(LeakageError, match="not provably available"):
+        assert_available_before(catalog, CUT, what="boundary", policy=VintagePolicy.EXCLUDE_UNKNOWN)

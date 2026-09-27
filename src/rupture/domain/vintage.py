@@ -49,7 +49,10 @@ class VintageSummary(RuptureModel):
     n_available_by: int | None = Field(
         default=None,
         ge=0,
-        description="Events provably available by the reference instant, if one was given.",
+        description=(
+            "Events provably available strictly before the reference instant (ADR-0054), if "
+            "one was given."
+        ),
     )
     n_revised_after: int | None = Field(
         default=None,
