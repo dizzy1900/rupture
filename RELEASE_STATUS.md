@@ -56,14 +56,14 @@ hypothesis sum type and a scorer registry. **None of it exists.** Checked agains
 | `ObservationSource[T].available_as_of(t)` | **the port exists, nothing implements it** (ADR-0064 decision 5). `src/rupture/ports/observation_source.py` declares it; the catalogue adapters fetch the present and stamp the reported vintage, which measures exposure and cannot reconstruct a past state. Declared without an adapter on purpose, so the next person does not encode a vintage query as a `retrieved_at` filter |
 | `available_time` distinct from `valid_time` on every observation | **yes, 2026-09-10** (ADR-0064). `Event.available_time`, populated from ComCat's `updated`; `Catalog.as_of(t, policy)`; `assert_available_before` as rule 4. The sentence to the left was true and is now measured: **69 of the 217 events a 2019-07-01 fit trains on carry a record last modified after that cutoff, and 130 of 130 scored targets were last modified after the window they were scored in.** The new assertion is **not wired into the pipelines** — see below |
 | `Vintage` / a vintaged data store / `catalog.as_of(t)` | **partly.** `catalog.as_of(t, policy)` and `VintageSummary` exist; **there is no vintaged store.** One vintage is held, so the exposure is measurable and past values are not reconstructible |
-| `CompletenessField`, Mc(x, t) as a field | no. Mc is a scalar per region, estimated from the catalogue itself |
+| `CompletenessField`, Mc(x, t) as a field | **the type only, 2026-09-27.** `rupture.domain.CompletenessField` is Mc(x) on a declared `[start, end)` window — a grid of cells, each with a named estimator and either an Mc (optionally with an interval that must contain it) or `mc = None` when unknown — and `Catalog.completeness_field` carries it, published in `contracts/catalog.v0.json`. **Nothing produces one**: no estimator bins space, every catalogue in the tree has `completeness_field = null`, `Catalog.labelled_scalar_only()` is therefore true everywhere, and `validate-catalog` does not yet require the field (ADR-0060 decision 2). It has no time argument, so it is Mc(x), not Mc(x, t). The time filters (`before`, `between`, `as_of`) carry the field over unchanged, as they already do the scalar estimates, so nothing yet checks a field's window against a forecast cutoff. Mc remains a scalar per region, estimated from the catalogue itself |
 | `Hypothesis` sum type (`RateForecast` \| `SimulatedCatalogues` \| `AlarmSet` \| `HazardFunction` \| `StateEstimate`) | **partly, 2026-09-10.** `HypothesisArm` names all five (`src/rupture/domain/hypothesis.py`) and `AlarmSet` is a real domain type with a real scorer. The other four arms have no type of their own; `ForecastGrid` is still the only other output shape |
 | `Scorer` registry with mandatory baselines, power and minimum detectable effect | **partly, 2026-09-10.** `rupture.scoring.registry` exists, keyed by arm, and refuses an unregistered arm by name. One arm of five is registered. Exact power and minimum detectable gain are computed for every alarm score; **the pyCSEP N/M/S/L/CL path is not in the registry and still reports no power**, so the 116 scored windows are unchanged |
 | Alarm scoring (Molchan, area skill score, probability gain against a clustering-aware reference) | **yes, 2026-09-10** (ADR-0063). `rupture.scoring.molchan` / `.alarm` / `.schedule` / `.power`, gated by `validate-alarm`, 83 unit tests. Not upstreamed to pyCSEP |
 | ETAS-I as a fitted baseline | no. The pinned `lmizrahi/etas@097f08b6` ships the incompleteness machinery and the adapter calls one of its factors, but `baselines/` holds plain ETAS only and nothing in the tree fits ETAS-I |
-| Pre-registration enforced by `git merge-base --is-ancestor` (ADR-0056) | no. Pre-registration today is convention plus the challenger pipeline's `select`-before-`fit` hyperparameter freeze. Note also that the CI checkout runs at default depth, and `git merge-base --is-ancestor` exits 128 rather than 1 on a shallow clone, so the gate could not run in CI today even if it existed |
+| Pre-registration enforced by `git merge-base --is-ancestor` (ADR-0056) | **the gate, yes, 2026-09-27; the scoring link, no.** `make validate-prereg` (`src/rupture/validation/prereg.py`, `rupture.preregistration`) validates every `experiments/<id>/preregistration.yaml` against the ADR-0056 schema, requires exactly one add-commit, fails an in-place amendment, classifies each declared test-data path as strong or weak, and **fails** rather than skips on a shallow clone; CI now checks out with `fetch-depth: 0` so it can run. **No experiment is registered**, so on this tree it passes on an empty directory and has adjudicated nothing. No scoring path refuses to run without a passing registration |
 | floatCSEP containerisation / registration in a live CSEP experiment | no |
-| The `asof`, `prereg` and evidence/licence gates named in ADRs 0054, 0056, 0058 and 0062 | no. No `src/rupture/validation/<name>.py`, no `mk/<name>.mk`, no CI step, no entry in the workflow's `covered` set |
+| The `asof`, `prereg` and evidence/licence gates named in ADRs 0054, 0056, 0058 and 0062 | **`asof` and `prereg` yes; evidence/licence no.** `validate-asof` (ADR-0064) and `validate-prereg` (ADR-0056) each have a module, an `mk/<name>.mk`, a CI step and an entry in `covered`. The evidence-status and licence gates of ADRs 0058 and 0062 have none of those |
 
 ### What the roadmap has not started
 
@@ -361,6 +361,28 @@ because review found them unsound. Recorded because a discarded attempt is evide
 - **A prescriptive refactor of the `models -> pipelines` edges** wrote a repair instruction into
   `pyproject.toml` that would have created a fresh violating edge.
 
+## The one-neuron comparator (2026-09-27)
+
+ADR-0059 names the two-parameter logistic of Mignan & Broccardo (2019, `contested`) and
+distance-plus-slip as the mandatory comparator for any spatial aftershock claim. It is
+**implemented and unscored**.
+
+| Component | Maturity | What actually ran |
+|---|---|---|
+| `rupture.models.comparators` — `OneNeuronAftershockModel` (`one-neuron-logistic`), `DistanceSlipAftershockModel` (`distance-slip-logistic`), `alarm_from_logistic` | working | 19 unit tests, offline, fitting on the committed ComCat California fixture (Ridgecrest box) and the Gorkha 30-day slice with the USGS NEIC finite-fault table; `assert_all_before` / `assert_issue_after_fit` fire on real timestamps. The fits are test fixtures, not results |
+
+What it did not do:
+
+- **It has not been scored.** No protocol window, no region, no Molchan trajectory, no area
+  skill, no information gain. `reports/MODEL_CARD_one_neuron.md` says "not scored" and is not
+  machine-read by `validate-challengers`.
+- **Its single feature is not Mignan & Broccardo's.** Their two-parameter fit was on a scalar
+  stress metric, which rupture does not compute; this one uses log distance to the nearest
+  `mw >= m_main` training event. The functional form matches; the input does not.
+- **Nothing requires it.** No scoring path refuses a spatial claim that was not scored against
+  it, and no gate checks for it. ADR-0059's requirement for spatial claims is available, not
+  enforced.
+
 ## Prompt 1 — foundations
 
 | Component | Maturity | What actually ran |
@@ -499,6 +521,14 @@ The scientific gaps, unchanged by the re-aim:
   orchestration layer. Unforbidden, and it should not be. The adapter-independence contract is
   likewise still written for the five original families and does not mention `groundmotion`,
   `exposure`, `vulnerability`, `cascade` or `storage`.
+- ~~**The adapter-independence contract names five of ten families; `reporting` has no contract.**~~
+  **Closed 2026-09-27** (ADR-0071): the independence contract lists every `adapters.*` package on
+  disk, a unit test fails if a new family arrives unlisted, and `rupture.reporting` may import
+  only `domain`. **Six cross-family adapter imports are grandfathered by name** —
+  `groundmotion.openquake_scenario` and `groundmotion.openquake_event_based` into
+  `hazard.job_builder` and `hazard.openquake_docker`, and `cascade.chamoli` into
+  `groundmotion.distances` and `groundmotion.native` — so a seventh fails the build. Inverting the
+  six is open. The two entries this closes follow unchanged.
 - **`src/rupture/reporting/` is a new top-level package with no import-linter contract of its own**
   and no CLI mounting: the challenger figures are redrawn with
   `uv run python -m rupture.reporting.challenger_plots`. It reads committed JSON and writes PNGs,

@@ -116,9 +116,10 @@ thing that will decide whether your model is real.
   independently corroborated by the Shah & Innig reanalysis, and Meade's Reply (Nature 574 E4–E5)
   is on the record beside it. The audit behind this document found the critique tagged `replicated`,
   which overstates how closed the exchange is; `docs/RESEARCH_LANDSCAPE.md` § 5 is the register and
-  this line cites it rather than restating it.* Rupture has no such comparator in the tree. Adding one, as
-  a `ForecastModel` implementation that any spatial claim must be scored against, is a small,
-  self-contained, high-value first contribution.
+  this line cites it rather than restating it.* **The comparator now exists** —
+  `rupture.models.comparators`, documented in `docs/COMPARATOR_ONE_NEURON.md` — and has never
+  been scored. Running it on the AlarmSet arm against a clustering-aware reference, and making
+  the harness refuse a spatial claim that skipped it, is the weekend task that remains.
 - **Replace the Student-t interval with a block bootstrap.** `RELEASE_STATUS.md` records that the
   one metric a Rupture challenger ever beat — the Türkiye log-linear ensemble, +0.335 nats/event
   information gain over ETAS — "rests on an interval that assumes independent events". Aftershocks
@@ -371,9 +372,15 @@ deliberately leaky variants, **which are never results**. (The sub-application *
 document in this tree still saying the noun is reachable only through `python -m` is stale;
 CLAUDE.md § CLI verbs is the one that says it, and `RELEASE_STATUS.md` § Known gaps records it.)
 
-What is *not* yet built, and is proposed rather than delivered: a runner that refuses to score
-unless `git merge-base --is-ancestor <pre-registration commit> <commit introducing the test data>`
-succeeds. That check is enforceable rather than aspirational, and it is a wanted contribution.
+The ancestry check is built (ADR-0056). Put the registration at
+`experiments/<id>/preregistration.yaml` — the format and a template are in
+`experiments/README.md` — and `make validate-prereg` finds its add-commit and runs
+`git merge-base --is-ancestor <pre-registration commit> <commit introducing the test data>`.
+Registration first is **strong**; data already in the tree is labelled **weak (data predates
+registration)**; an in-place edit after the add-commit fails, because amendments are new files.
+What is *not* built is the other half: no scoring runner yet refuses to score an experiment
+whose registration the gate has not passed, so the gate checks registrations and the link to a
+scored result is still a convention.
 
 ### 3. The evaluation
 
@@ -401,9 +408,10 @@ challenger, the baseline against itself, or a fixture.
 **Your baseline is an adversary, properly fitted, or your result is nothing.** For catalogue rate
 forecasting that is ETAS, and — whenever your model uses events below the completeness threshold —
 ETAS-I. For an alarm-based claim it is a random alarm set matched on alarm rate and spatial
-footprint. For a spatial aftershock model it is the two-parameter logistic regression. Rupture has
-plain ETAS fitted and published for all three regions; it does not yet have the others, which is
-why building them is listed above as wanted work rather than assumed as present.
+footprint. For a spatial aftershock model it is the two-parameter logistic regression, which is
+implemented (`rupture.models.comparators`) and has not yet been scored on any schedule. Rupture
+has plain ETAS fitted and published for all three regions; the other baselines are not fitted and
+published there, which is why that work is listed above as wanted rather than assumed as present.
 
 ### 4. What you get back
 
@@ -628,13 +636,13 @@ dispatch. It sets `RUPTURE_HAZARD_REQUIRE=1`, so a skip there is a failure. Loca
 **Architecture.** Hexagonal, and enforced. `src/rupture/domain/` holds pure pydantic v2 models and
 imports nothing from any outer layer; `src/rupture/ports/` holds `Protocol` classes and imports
 only `domain`; `adapters/` implement ports. All three are import-linter contracts in
-`pyproject.toml` and fail CI. Two things the contracts do **not** cover, stated rather than
-implied: the adapter-independence contract lists five families (`catalogs`, `sources`,
-`forecasting`, `evaluation`, `hazard`) and not the newer ones (`groundmotion`, `exposure`,
-`vulnerability`, `cascade`, `storage`); and nothing forbids `cascade` importing `models`, or
-`models` importing `pipelines`, which it already does in four places. Both are in
-`RELEASE_STATUS.md` § Known gaps. Do not read a green `lint-imports` as a statement about those
-edges.
+`pyproject.toml` and fail CI. The adapter-independence contract lists every `adapters.*`
+package on disk, and `tests/unit/architecture/test_adapter_families.py` fails if a new family
+arrives unlisted; `rupture.reporting` may import only `domain` (ADR-0071). What a green
+`lint-imports` does **not** say, stated rather than implied: twelve pre-existing edges are
+grandfathered by name — six `models -> pipelines` imports, and six cross-family adapter imports
+(`groundmotion` into `hazard`'s OpenQuake runner, `cascade.chamoli` into `groundmotion`). A new
+edge fails the build; those twelve are allowed until someone inverts them.
 
 **Tests.** `tests/unit` is offline (sockets disabled), `tests/integration` is opt-in and marked
 `integration`, `tests/contract` covers JSON Schema round-trips and the fixtures shared with
@@ -676,9 +684,9 @@ or that it could not verify:
   implementation, and no standing review board — the sign-off described above is a norm this
   document is establishing, not a mechanism the tooling enforces. Until a scorer exists, an
   alarm-based claim cannot be adjudicated in this repository at all.
-- **The pre-registration ancestry check is not implemented.** The `git merge-base --is-ancestor`
-  gate described under *the pre-registration* is a proposal. What exists today is the ordered
-  challenger pipeline whose `select` step freezes hyperparameters before `fit`.
+- **The pre-registration ancestry check checks registrations, not scoring runs.**
+  `make validate-prereg` enforces ADR-0056 on every `experiments/<id>/preregistration.yaml`, and
+  no experiment is registered yet. No scoring path refuses to run without a passing registration.
 - **ETAS-I is not a fitted baseline here.** The pinned `etas` dependency carries the incompleteness
   terms and Rupture's adapter calls `responsibility_factor`, but `baselines/` contains plain ETAS
   and the NTPP challenger only. Any claim in this file that a submission "must beat ETAS-I" is a

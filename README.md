@@ -35,9 +35,11 @@ Four rules travel with the scoring function and bind every result published here
 **Pre-registration.** An experiment declares its hypothesis, region, magnitude range, lead time,
 alarm rate and scoring rule in a committed file *before* it touches the test data. Git is the
 timestamp, so anyone can verify from public history that the hypothesis preceded the result. This
-is the one thing an open repository can do that a closed lab cannot easily do. Today it is enforced
-by convention and by hyperparameter freezing in the challenger pipeline; the mechanical
-`git merge-base --is-ancestor` check specified in ADR-0056 is **not implemented**.
+is the one thing an open repository can do that a closed lab cannot easily do. The mechanical
+`git merge-base --is-ancestor` check specified in ADR-0056 is **built** as `make validate-prereg`:
+it reads every `experiments/<id>/preregistration.yaml`, refuses in-place amendments and shallow
+clones, and labels a replay on data already in the tree as *weak*. **No experiment is registered
+yet**, so the gate currently passes on an empty directory; see [experiments/README.md](experiments/README.md).
 
 **No leakage, and latency is a leakage class.** All evaluation is time-forward with a hard cut, and
 this is asserted in tests against real catalogue timestamps rather than in prose. Rupture holds its
@@ -203,8 +205,8 @@ full; this is the shape.
 
 **A — ML and computational research, no seismology required.** Get a green tree, redraw the
 committed figures, read the 50 lines of `src/rupture/adapters/forecasting/leakage.py`, then look at
-what the leaky ablation bought. The open work is the missing one-neuron comparator, a block
-simulation-based power for the N/M/S/L/CL consistency tests — the alarm arm and the paired
+what the leaky ablation bought. The open work is scoring the one-neuron comparator (implemented,
+never run on a schedule), simulation-based power for the N/M/S/L/CL consistency tests — the alarm arm and the paired
 challenger comparisons carry power now, and the 116 CSEP windows still do not — and more
 independent sequences, because the block bootstrap (ADR-0065) shows Türkiye's 217 scored events
 are worth about 1.8 independent windows and no interval can fix that. The
@@ -261,9 +263,10 @@ reports/            the published evidence: model cards, protocol and challenger
 ```
 
 The architecture is hexagonal: `domain/` imports nothing from `adapters/`, enforced in CI by
-import-linter. Two edges the contracts do **not** cover are stated in `RELEASE_STATUS.md` rather
-than implied — the adapter-independence contract names five of ten adapter families, and nothing
-currently forbids `models` importing `pipelines`, which it already does.
+import-linter. Every adapter family, the `reporting` package and the Prompt 2 packages relative to
+each other are under a contract (ADR-0071). Twelve pre-existing edges are grandfathered by name —
+six `models -> pipelines` imports and six cross-family adapter imports — so a thirteenth fails the
+build; inverting the twelve is open and recorded in `RELEASE_STATUS.md` § Known gaps.
 
 ## Sibling project
 
