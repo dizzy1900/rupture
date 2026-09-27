@@ -26,6 +26,7 @@ GATES: tuple[str, ...] = (
     "challengers",
     "alarm",
     "asof",
+    "prereg",
 )
 
 PHASE_FOR_GATE: dict[str, str] = {
@@ -38,6 +39,7 @@ PHASE_FOR_GATE: dict[str, str] = {
     "challengers": "Prompt 2 C1 (npp-researcher, deep-grid)",
     "alarm": "ADR-0055 (the AlarmSet arm of the hypothesis sum type)",
     "asof": "ADR-0054/ADR-0064 (data vintage as a first-class property)",
+    "prereg": "ADR-0056 (pre-registration by git ancestry)",
 }
 
 

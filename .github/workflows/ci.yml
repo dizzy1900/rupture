@@ -19,7 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
+      # fetch-depth: 0 is required by validate-prereg (ADR-0056): ancestry cannot be verified
+      # on a shallow clone, and a skip would be a silent pass.
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
@@ -67,6 +71,8 @@ jobs:
       # of ADR-0054 is an evaluation requirement or a data-engineering convenience.
       - name: As-of gate (data vintage exposure)
         run: make validate-asof
+      - name: Pre-registration gate (git ancestry)
+        run: make validate-prereg
       - name: Underwriting check (the serac corridor, priced end to end)
         run: make underwriting-check
       # A ratchet, not a formality: if someone registers a gate in
@@ -83,6 +89,7 @@ jobs:
           covered = {
               "schema", "catalog", "etas", "eval",
               "cascade", "risk", "aftershock", "challengers", "alarm", "asof",
+              "prereg",
               "hazard",
           }
           missing = [g for g in GATES if g not in covered]
@@ -114,6 +121,8 @@ jobs:
       RUPTURE_HAZARD_REQUIRE: "1"
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: astral-sh/setup-uv@v6
         with:
           enable-cache: true
